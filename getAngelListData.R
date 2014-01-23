@@ -58,7 +58,7 @@ getAngelListData <- function () {
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
   startups <- unlist(lapply(1:4, getDataPaginated), recursive=F)
   startupsDF <- data.frame(startups)
-  
+   
   python.exec('import pandas as pd')
 }
 
