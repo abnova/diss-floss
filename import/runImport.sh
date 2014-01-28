@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 echo ""
 echo "Starting import process..."
 echo "=========================="
