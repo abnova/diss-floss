@@ -18,7 +18,7 @@ library(RJSONIO)
 #CB_API_KEY <- Sys.getenv("CRUNCHBASE_API_KEY")
 CB_API_KEY <- "uuxr6qxxm3be8zwbpt5kuvs2"
 
-# Per CB APIs documentation
+# Limit per CB APIs v.1 documentation
 CB_REPLY_OBJS_PER_PAGE <- 10
 
 # CrunchBase FULL data set APIs endpoint URL for FLOSS startups
@@ -47,7 +47,7 @@ totalPages <<- 0
 #' @examples
 #' getDataPaginated(1)
 
-getCBDataPaginated <- function (query, field, page) {
+getCBDataPaginated <- function (query, field, page, progress, useProgress) {
   
   # Construct CB API request (this search is for companies only!)
   url <- paste(CB_API_SEARCH_URL, "?query=", query, collapse="", sep="")
@@ -68,9 +68,12 @@ getCBDataPaginated <- function (query, field, page) {
     if (startups$total %% CB_REPLY_OBJS_PER_PAGE > 0)
       totalPages <<- totalPages + 1
     firstPage <<- FALSE
-    DEBUG_INFO("Retrieving CB data... Pages:")
+    DEBUG_INFO("Retrieving CB data (each '.' represents a page):")
   }
-  DEBUG_INFO(c(page, '.'))
+
+  # Update progress bar
+  if (useProgress)
+    setTxtProgressBar(progress, page)
 }
 
 
@@ -94,17 +97,31 @@ getCBDataPaginated <- function (query, field, page) {
 
 getCBDataAPI <- function (query, field) {
   
+  # Dummy call just to obtain 'progress' handle so it can be passed on
+  progress <- txtProgressBar(max = 1,
+                             initial = NA,
+                             char = '>',
+                             style = 3)
+  
   # Initial call is separate from the subsequent calls
   # in order to retrieve data for calculation of totalPages
-  try(getCBDataPaginated(query, field, page <- 1))
+  try(getCBDataPaginated(query, field, page <- 1, progress, FALSE))
   
-  #pages <- 2:totalPages
+  # Real progress bar call (notice 'initial' is no longer NA)
+  progress <- txtProgressBar(max = totalPages - 1,
+                             initial = 0,
+                             char = '>',
+                             style = 3)
+  
   # Continue with the rest of reply's pages
   reply <- lapply(2:totalPages,
-                  function(page) try(getCBDataPaginated(query, field, page), silent=FALSE))
+                  function(page) try(getCBDataPaginated(query, field, page, progress, TRUE), silent=FALSE))
+  
+  close(progress)  
   
   startups <- unlist(reply, recursive=F)
   #startupsDF <- data.frame(startups)
 }
 
-getCBDataAPI("open+source", "overview")
+#getCBDataAPI("open+source", "overview")
+getCBDataAPI("wearable", "overview")
