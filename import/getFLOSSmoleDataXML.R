@@ -44,7 +44,7 @@ importRepoFiles <- function(row){
   if (TRUE) { # via HTML tables
     doc <- htmlParse(htmlPage)
     tables <- getNodeSet(doc, "//table")
-    filenames <- readHTMLTable(tables[[1]], skip.rows = 7,
+    filenames <- readHTMLTable(tables[[1]],
                                trim = TRUE,
                                stringsAsFactors = FALSE)
     
@@ -91,7 +91,10 @@ importRepoFiles <- function(row){
   # "Error in bzfile(links) : invalid 'description' argument"
   data <- lapply(links,
                  function(url) try(read.table(bzfile(links),
-                                              header=TRUE, sep=",", row.names=NULL)))
+                                              #allowEscapes=TRUE,
+                                              #header=TRUE,
+                                              #encoding="latin1",
+                                              sep=",", row.names=NULL)))
   
   #for (file in repoFiles) {
     #data <- read.table(bzfile(file, open = "r"),
