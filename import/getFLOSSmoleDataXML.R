@@ -7,11 +7,9 @@
 
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(XML)) install.packages('XML')
-#if (!require(RODBC)) install.packages('RODBC')
 
 library(RCurl)
 library(XML)
-#library(RODBC)
 
 
 # URL of FLOSSmole repository root directory
@@ -31,19 +29,26 @@ BZIP_FNAME <- ".*\\.txt\\.bz2"
 
 importRepoFiles <- function(row){
   
-  # This is unneeded, since link to each file is an absolute URL
-  # Remove, if/when made sure that correct link is being processed
   url <- paste(FLOSSMOLE_REPO_BASE, "/",
                repo$code[row], "/",
                repo$year[row], "/",
                repo$year[row], "-", repo$month[row],
                collapse="", sep="")
 
-  htmlPage <- getURL(url, followlocation = TRUE)
+  # Moved the next line to both places (via HTML tables & XML elements)
+  #htmlPage <- getURL(url, followlocation = TRUE)
   
   if (TRUE) { # via HTML tables
-    doc <- htmlParse(htmlPage)
+    
+    #htmlPage = rawToChar(getBinaryURL(url, followlocation = TRUE))
+    htmlPage = rawToChar(getURLContent(url, followlocation = TRUE,
+                                       binary = TRUE))
+    
+    #doc <- htmlParse(htmlPage, asText = TRUE)
+    doc <- htmlTreeParse(htmlPage, useInternalNodes = TRUE, asText=TRUE)
+    
     tables <- getNodeSet(doc, "//table")
+    
     filenames <- readHTMLTable(tables[[1]],
                                trim = TRUE,
                                stringsAsFactors = FALSE)
@@ -55,26 +60,21 @@ importRepoFiles <- function(row){
   }
   
   if (FALSE) { # via XML elements
-    doc <- htmlParse(htmlPage)
-    #links = getNodeSet(doc, "//table[@class='a href']")
-    ##links = getNodeSet(doc, "//a/@href")
-    ##sapply(links, xmlGetAttr, "href")
-    ###links <- xpathSApply(doc, "//link[@rel='alternate']", xmlAttrs)
     
-    #links <- xpathSApply(doc, "//a/@href")
+    htmlPage <- getURL(url, followlocation = TRUE)
+    
+    doc <- htmlParse(htmlPage)
+    
     links <- xpathSApply(doc, "//*/a[@class='href']", xmlValue)
     print(doc)
-    
-    #links <- grepl(".txt.bz2", links)
     print(links)
+    
     xpathSApply(doc, '//*[@class="href"]', xmlAttrs)
 
-    links <- lapply(links, function(x) grep(".txt.bz2", x, links))
+    links <- lapply(links, function(x) grep(BZIP_EXT, x, links))
   }
   
   curlHandle <- getCurlHandle()
-  #opts = curlOptions(wildcardmatch = "\\.txt.bz2$")  
-  #curlSetOpt(.opts <- list(wildcardmatch = "\\.txt.bz2$"), curl = curlHandle)  
   
   # 'links' is a list of files' FULL URLs
   links <- lapply(filenames, function(x) paste(url, x, sep="/"))
@@ -86,20 +86,12 @@ importRepoFiles <- function(row){
                                                followlocation = TRUE)))
   print(repoFiles)
 
-  # Tried to call URLdecode(links), but still produces two errors:
-  # "Error in curlMultiPerform(multiHandle) : embedded nul in string:"
-  # "Error in bzfile(links) : invalid 'description' argument"
   data <- lapply(links,
                  function(url) try(read.table(bzfile(links),
                                               #allowEscapes=TRUE,
                                               #header=TRUE,
                                               #encoding="latin1",
                                               sep=",", row.names=NULL)))
-  
-  #for (file in repoFiles) {
-    #data <- read.table(bzfile(file, open = "r"),
-    #                   header=TRUE, sep=",", row.names=NULL)
-  #}
 }
 
 
