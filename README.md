@@ -1,4 +1,4 @@
 diss-floss
 ==========
 
-Repo for my dissertation research
+Data analysis for my Ph.D. dissertation research
