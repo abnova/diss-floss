@@ -44,8 +44,8 @@ importRepoFiles <- function(row){
     htmlPage = rawToChar(getURLContent(url, followlocation = TRUE,
                                        binary = TRUE))
     
-    #doc <- htmlParse(htmlPage, asText = TRUE)
-    doc <- htmlTreeParse(htmlPage, useInternalNodes = TRUE, asText=TRUE)
+    #doc <- htmlTreeParse(htmlPage, useInternalNodes = TRUE, asText=TRUE)
+    doc <- htmlParse(htmlPage, asText = TRUE)
     
     tables <- getNodeSet(doc, "//table")
     
@@ -58,6 +58,7 @@ importRepoFiles <- function(row){
     filenames <- lapply(filenames,
                         function(x) grep(BZIP_EXT, x, value = TRUE))
   }
+  
   
   if (FALSE) { # via XML elements
     
@@ -80,18 +81,36 @@ importRepoFiles <- function(row){
   links <- lapply(filenames, function(x) paste(url, x, sep="/"))
   print(links)
   
-  repoFiles <- lapply(links,
-                      function(url) try(getURL(url,
-                                               curl = curlHandle,
-                                               followlocation = TRUE)))
-  print(repoFiles)
+  if (TRUE) {
+    #repoFiles <- lapply(links,
+    #                    function(url) try(getURL(url,
+    #                                             curl = curlHandle,
+    #                                             followlocation = TRUE)))
+    #print(repoFiles)
+    repoFiles = rawToChar(getURLContent(url, followlocation = TRUE,
+                                        curl = curlHandle, binary = TRUE))
+    
+  }
 
-  data <- lapply(links,
-                 function(url) try(read.table(bzfile(links),
-                                              #allowEscapes=TRUE,
-                                              #header=TRUE,
-                                              #encoding="latin1",
-                                              sep=",", row.names=NULL)))
+  #htmlPage = rawToChar(getURLContent(url, followlocation = TRUE,
+  #                                   binary = TRUE))
+  
+  if (FALSE) {
+    data <- lapply(i <- 1:length(links),
+                   function(url) try(read.table(bzfile(links[[i]]),
+                                                #allowEscapes=TRUE,
+                                                #header=TRUE,
+                                                #encoding="latin1",
+                                                sep=",", row.names=NULL)))
+  }
+
+  getData <- function(x) try(read.table(bzfile(x),
+                                        sep = ",", row.names = NULL))
+
+  data <- lapply(seq_along(links), function(i) {print(i);
+                                                print(mode(links[[i]]));
+                                                print(links[[i]]);
+                                                getData(links[[i]])})
 }
 
 
