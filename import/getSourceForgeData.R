@@ -121,7 +121,7 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
 #' @examples
 #' srdaGetData(1)
 
-srdaGetData <- function() {
+srdaGetData <- function() { #srdaGetResult() might be a better name
   
   curl = getCurlHandle()
   #curlSetOpt(cookiejar = 'cookies.txt', curl = curl)
@@ -129,7 +129,33 @@ srdaGetData <- function() {
   resultsURL <- paste(SRDA_HOST_URL, SRDA_QRESULT_URL,
                       collapse="", sep="")
   
-  try(getURL(url, curl = curl, followlocation = TRUE))
+  #results <- getURL(resultsURL, curl = curl, followlocation = TRUE)
+  #print(results)
+  
+  results <- readLines(resultsURL)
+  results <- lapply(results, function(x) gsub(".$", "", x))
+  print(results)
+  
+  if (FALSE)
+  for (line in 1:length(results)) {
+    print(nchar(results[line]))
+    print(results[line])
+    substr(results[line], 1, nchar(results[line])-1)
+    #gsub(".$", "", results[line])
+    #gsub(":$", "", results[line])
+    print(nchar(results[line]))
+    print(results[line])
+    print(paste("=== line", line))
+  }
+  data <- read.table(textConnection(results), header = FALSE,
+                     sep = DATA_SEP, row.names = NULL)
+  #print(data)
+  
+  #data <- read.table(resultsURL, header = FALSE, sep = DATA_SEP,
+  #                   row.names = NULL)
+  
+  #data <- data.frame(results)
+  return (data)
 }
 
 
@@ -173,7 +199,8 @@ getSourceForgeData <- function (request) {
   srdaRequestData(queryURL,
                   rq$select, rq$from, rq$where, DATA_SEP, ADD_SQL)
   
-  srdaGetData()
+  data <- srdaGetData()
+  print(data)
 }
 
 getSourceForgeData("SELECT * FROM sf0305.users WHERE user_id < 100 ")

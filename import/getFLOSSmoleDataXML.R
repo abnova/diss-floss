@@ -20,32 +20,26 @@ REPO_CODE  <- c("fc",   "fsf",  "gc",   "gh",   "lpd",  "sv",   "tig")
 REPO_YEAR  <- c("2013", "2012", "2012", "2013", "2012", "2013", "2013")
 REPO_MONTH <- c("Dec",  "Nov",  "Nov",  "Feb",  "Sep",  "Dec",  "Dec")
 
-repo <- data.frame(code = REPO_CODE, year = REPO_YEAR, month = REPO_MONTH,
-                   stringsAsFactors=FALSE)
+repos <- data.frame(code = REPO_CODE, year = REPO_YEAR, month = REPO_MONTH,
+                    stringsAsFactors=FALSE)
 
 BZIP_EXT <- ".txt\\.bz2"
 BZIP_FNAME <- ".*\\.txt\\.bz2"
 
 
-importRepoFiles <- function(row){
+importRepoFiles <- function(repos, row){
   
   url <- paste(FLOSSMOLE_REPO_BASE, "/",
-               repo$code[row], "/",
-               repo$year[row], "/",
-               repo$year[row], "-", repo$month[row],
+               repos$code[row], "/",
+               repos$year[row], "/",
+               repos$year[row], "-", repos$month[row],
                collapse="", sep="")
 
-  # Moved the next line to both places (via HTML tables & XML elements)
-  #htmlPage <- getURL(url, followlocation = TRUE)
+  htmlPage = rawToChar(getBinaryURL(url, followlocation = TRUE))
+
+  doc <- htmlParse(htmlPage, asText = TRUE)
   
   if (TRUE) { # via HTML tables
-    
-    #htmlPage = rawToChar(getBinaryURL(url, followlocation = TRUE))
-    htmlPage = rawToChar(getURLContent(url, followlocation = TRUE,
-                                       binary = TRUE))
-    
-    #doc <- htmlTreeParse(htmlPage, useInternalNodes = TRUE, asText=TRUE)
-    doc <- htmlParse(htmlPage, asText = TRUE)
     
     tables <- getNodeSet(doc, "//table")
     
@@ -62,13 +56,7 @@ importRepoFiles <- function(row){
   
   if (FALSE) { # via XML elements
     
-    htmlPage <- getURL(url, followlocation = TRUE)
-    
-    doc <- htmlParse(htmlPage)
-    
     links <- xpathSApply(doc, "//*/a[@class='href']", xmlValue)
-    print(doc)
-    print(links)
     
     xpathSApply(doc, '//*[@class="href"]', xmlAttrs)
 
@@ -77,48 +65,53 @@ importRepoFiles <- function(row){
   
   curlHandle <- getCurlHandle()
   
-  # 'links' is a list of files' FULL URLs
+  # generate list of files' FULL (absolute) URLs
   links <- lapply(filenames, function(x) paste(url, x, sep="/"))
-  print(links)
-  
-  if (TRUE) {
-    #repoFiles <- lapply(links,
-    #                    function(url) try(getURL(url,
-    #                                             curl = curlHandle,
-    #                                             followlocation = TRUE)))
-    #print(repoFiles)
-    repoFiles = rawToChar(getURLContent(url, followlocation = TRUE,
-                                        curl = curlHandle, binary = TRUE))
-    
-  }
-
-  #htmlPage = rawToChar(getURLContent(url, followlocation = TRUE,
-  #                                   binary = TRUE))
   
   if (FALSE) {
-    data <- lapply(i <- 1:length(links),
-                   function(url) try(read.table(bzfile(links[[i]]),
-                                                #allowEscapes=TRUE,
-                                                #header=TRUE,
-                                                #encoding="latin1",
-                                                sep=",", row.names=NULL)))
+    repoFiles = rawToChar(getBinaryURL(url, followlocation = TRUE))
   }
 
-  getData <- function(x) try(read.table(bzfile(x),
-                                        sep = ",", row.names = NULL))
+  getData <- function(url) {
 
-  data <- lapply(seq_along(links), function(i) {print(i);
-                                                print(mode(links[[i]]));
-                                                print(links[[i]]);
-                                                getData(links[[i]])})
+    print("Entered getData()!")
+    print(url)
+    
+    if (TRUE) { # via local file
+      
+      file <- tempfile(pattern = "tmp", tmpdir = ".", fileext = ".bz2")    
+      download.file(url, destfile = file, mode = "w")
+      conn <- gzcon(bzfile(file, open = "r"))
+      try(read.table(conn, sep = ",", row.names = NULL), silent = TRUE)
+      close(conn)
+      unlink(file)
+    }
+    else { # via RCurl
+      
+      bConn <- getBinaryURL(url, followlocation = TRUE)
+      bzConn <- gzcon(rawConnection(bConn, "rb"))
+      tConn <- bzfile(bzConn)
+      #tConn <- textConnection(readLines(bzConn))
+      try(read.table(tConn, sep = ",", row.names = NULL), silent = TRUE)
+      close(tConn)
+    }
+    
+    #try(read.table(bzfile(gzcon(url(x))), sep = ",", row.names = NULL))
+    #try(read.table(x, sep = ",", row.names = NULL))
+  }
+
+  if (FALSE) {
+    data <- lapply(seq_along(links), function(i) {getData(links[[i]])})
+  }
+  else {
+    data <- lapply(links, function(x) {getData(x)})
+  }
 }
 
 
-getFLOSSmoleData <- function() {
-  #by(repo, 1:nrow(repo), function(row) importRepoFiles)
-  #lapply(repo, function(row) importRepoFiles(1:nrow(repo)))
-  lapply(row <- 1:nrow(repo), function(row) importRepoFiles(row))
+getFLOSSmoleData <- function(repos) {
+  lapply(row <- 1:nrow(repos), function(row) importRepoFiles(repos, row))
 }
 
 
-getFLOSSmoleData()
+getFLOSSmoleData(repos)
