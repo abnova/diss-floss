@@ -38,7 +38,8 @@ importRepoFiles <- function(repos, row){
   htmlPage = rawToChar(getBinaryURL(url, followlocation = TRUE))
 
   doc <- htmlParse(htmlPage, asText = TRUE)
-  
+
+  # current method
   if (TRUE) { # via HTML tables
     
     tables <- getNodeSet(doc, "//table")
@@ -52,31 +53,32 @@ importRepoFiles <- function(repos, row){
     filenames <- lapply(filenames,
                         function(x) grep(BZIP_EXT, x, value = TRUE))
   }
-  
-  
-  if (FALSE) { # via XML elements
+  else { # via XML elements
     
     links <- xpathSApply(doc, "//*/a[@class='href']", xmlValue)
     
     xpathSApply(doc, '//*[@class="href"]', xmlAttrs)
-
+    
     links <- lapply(links, function(x) grep(BZIP_EXT, x, links))
   }
   
+  # currently not used - does it make sense to use it perf.-wise?
   curlHandle <- getCurlHandle()
   
-  # generate list of files' FULL (absolute) URLs
+  # generate list of current repository files' FULL (absolute) URLs
   links <- lapply(filenames, function(x) paste(url, x, sep="/"))
   
-  if (FALSE) {
-    repoFiles = rawToChar(getBinaryURL(url, followlocation = TRUE))
-  }
 
-  getData <- function(url) {
+  # Retrieve current repository's archived file and extract its
+  # contents ("broken" CSV) into a data frame for further analysis
+  getData <- function(i) {
 
-    print("Entered getData()!")
-    print(url)
+    print(links[[i]][seq_along(links)])
+    url <- links[[i]][seq_along(links)]
+    #url <- links[[i]][seq_along(links)]
+    #url <- links[[i]][1]
     
+    # current method
     if (TRUE) { # via local file
       
       file <- tempfile(pattern = "tmp", tmpdir = ".", fileext = ".bz2")    
@@ -91,24 +93,19 @@ importRepoFiles <- function(repos, row){
       bConn <- getBinaryURL(url, followlocation = TRUE)
       bzConn <- gzcon(rawConnection(bConn, "rb"))
       tConn <- bzfile(bzConn)
-      #tConn <- textConnection(readLines(bzConn))
       try(read.table(tConn, sep = ",", row.names = NULL), silent = TRUE)
       close(tConn)
     }
-    
-    #try(read.table(bzfile(gzcon(url(x))), sep = ",", row.names = NULL))
-    #try(read.table(x, sep = ",", row.names = NULL))
-  }
+  } #end_of_getData()
 
-  if (FALSE) {
-    data <- lapply(seq_along(links), function(i) {getData(links[[i]])})
-  }
-  else {
-    data <- lapply(links, function(x) {getData(x)})
-  }
+  # get data by iterating through list
+  # of full URLs of the current repository files
+  data <- lapply(seq_along(links), getData)
+  #data <- lapply(seq_along(links), "[[", getData)
 }
 
 
+# Retrieve all data by iterating through requested repositories
 getFLOSSmoleData <- function(repos) {
   lapply(row <- 1:nrow(repos), function(row) importRepoFiles(repos, row))
 }
