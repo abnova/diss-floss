@@ -24,11 +24,13 @@ repos <- data.frame(code = REPO_CODE, year = REPO_YEAR, month = REPO_MONTH,
                     stringsAsFactors=FALSE)
 
 BZIP_EXT <- ".txt\\.bz2"
-BZIP_FNAME <- ".*\\.txt\\.bz2"
 
 
 importRepoFiles <- function(repos, row){
   
+  print(paste("importRepoFiles -", row))
+  
+  # construct URL for current FLOSS repository in FLOSSmole
   url <- paste(FLOSSMOLE_REPO_BASE, "/",
                repos$code[row], "/",
                repos$year[row], "/",
@@ -44,8 +46,7 @@ importRepoFiles <- function(repos, row){
     
     tables <- getNodeSet(doc, "//table")
     
-    filenames <- readHTMLTable(tables[[1]],
-                               trim = TRUE,
+    filenames <- readHTMLTable(tables[[1]], trim = TRUE,
                                stringsAsFactors = FALSE)
     
     filenames <- list(filenames[,2])
@@ -73,10 +74,7 @@ importRepoFiles <- function(repos, row){
   # contents ("broken" CSV) into a data frame for further analysis
   getData <- function(i) {
 
-    print(links[[i]][seq_along(links)])
-    url <- links[[i]][seq_along(links)]
-    #url <- links[[i]][seq_along(links)]
-    #url <- links[[i]][1]
+    url <- links[[1]][i]
     
     # current method
     if (TRUE) { # via local file
@@ -84,8 +82,12 @@ importRepoFiles <- function(repos, row){
       file <- tempfile(pattern = "tmp", tmpdir = ".", fileext = ".bz2")    
       download.file(url, destfile = file, mode = "w")
       conn <- gzcon(bzfile(file, open = "r"))
-      try(read.table(conn, sep = ",", row.names = NULL), silent = TRUE)
+      #tConn <- textConnection(readLines(conn))
+      try(fileData <- read.table(conn, sep = ",", row.names = NULL),
+          silent = FALSE)
+      #head(fileData)
       close(conn)
+      #close(tConn)
       unlink(file)
     }
     else { # via RCurl
@@ -100,8 +102,7 @@ importRepoFiles <- function(repos, row){
 
   # get data by iterating through list
   # of full URLs of the current repository files
-  data <- lapply(seq_along(links), getData)
-  #data <- lapply(seq_along(links), "[[", getData)
+  data <- lapply(seq_along(links[[1]]), getData)
 }
 
 
