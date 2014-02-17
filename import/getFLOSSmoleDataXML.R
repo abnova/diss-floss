@@ -81,13 +81,18 @@ importRepoFiles <- function(repos, row){
       
       file <- tempfile(pattern = "tmp", tmpdir = ".", fileext = ".bz2")    
       download.file(url, destfile = file, mode = "w")
-      conn <- gzcon(bzfile(file, open = "r"))
+      data <- bzfile(file, open = "r")
+      #conn <- gzcon(bzfile(file, open = "r"))
       #tConn <- textConnection(readLines(conn))
-      try(fileData <- read.table(conn, sep = ",", row.names = NULL),
+      #try(fileData <- read.table(tConn, sep = ",", row.names = NULL),
+      #    silent = FALSE)
+      try(fileData <- read.table(data, header = TRUE, fill = TRUE,
+                                 sep = "\t"),
           silent = FALSE)
-      #head(fileData)
-      close(conn)
+      print(head(fileData))
+      #close(conn)
       #close(tConn)
+      close(data)
       unlink(file)
     }
     else { # via RCurl
@@ -112,4 +117,4 @@ getFLOSSmoleData <- function(repos) {
 }
 
 
-getFLOSSmoleData(repos)
+print(system.time(getFLOSSmoleData(repos)))
