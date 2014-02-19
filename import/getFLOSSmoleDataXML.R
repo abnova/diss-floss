@@ -7,9 +7,11 @@
 
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(XML)) install.packages('XML')
+if (!require(digest)) install.packages('digest')
 
 library(RCurl)
 library(XML)
+library(digest)
 
 
 # URL of FLOSSmole repository root directory
@@ -19,16 +21,25 @@ FLOSSMOLE_REPO_BASE <- "http://flossdata.syr.edu/data"
 REPO_CODE  <- c("fc",   "fsf",  "gc",   "gh",   "lpd",  "sv",   "tig")
 REPO_YEAR  <- c("2013", "2012", "2012", "2013", "2012", "2013", "2013")
 REPO_MONTH <- c("Dec",  "Nov",  "Nov",  "Feb",  "Sep",  "Dec",  "Dec")
+REPO_NAME  <- c("FreeCode",
+                "Free Software Foundation",
+                "Google Code",
+                "GitHub",
+                "LaunchPad",
+                "Savannah",
+                "Tigris")
 
-repos <- data.frame(code = REPO_CODE, year = REPO_YEAR, month = REPO_MONTH,
+repos <- data.frame(code = REPO_CODE, year = REPO_YEAR,
+                    month = REPO_MONTH, name = REPO_NAME,
                     stringsAsFactors=FALSE)
 
-BZIP_EXT <- ".txt\\.bz2"
+BZIP_EXT  <- ".txt\\.bz2"
+RDATA_EXT <- ".Rdata"
 
 
 importRepoFiles <- function(repos, row){
   
-  print(paste("importRepoFiles -", row))
+  message("Verifying repository: ", repos$name[row], "\n")
   
   # construct URL for current FLOSS repository in FLOSSmole
   url <- paste(FLOSSMOLE_REPO_BASE, "/",
@@ -76,6 +87,17 @@ importRepoFiles <- function(repos, row){
 
     url <- links[[1]][i]
     
+    # calculate URL's digest and generate corresponding RData file name
+    fileDigest <- digest(url, algo="md5", serialize=F)
+    rdataFile <- paste(fileDigest, RDATA_EXT, sep = "")
+    
+    # check if the archive file has already been processed
+    message("Checking file \"", url, "\"... ", appendLF = FALSE)
+    if (file.exists(rdataFile)) {
+      message("Processing skipped: .Rdata file found.\n")
+      return()
+    }
+    
     # current method
     if (TRUE) { # via local file
       
@@ -89,11 +111,21 @@ importRepoFiles <- function(repos, row){
       try(fileData <- read.table(data, header = TRUE, fill = TRUE,
                                  sep = "\t"),
           silent = FALSE)
-      print(head(fileData))
+      
+      # save current data frame to RData file
+      save(fileData, file = rdataFile)
+      #save.image()
+      
+      # clean up
+      rm(fileData)
+      #unlink(rdataFile)
+      #unlink(".RData")
+      
+      #print(head(fileData))
       #close(conn)
       #close(tConn)
       close(data)
-      unlink(file)
+      unlink(file, force = TRUE)
     }
     else { # via RCurl
       
