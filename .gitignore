@@ -1,5 +1,7 @@
 .Rproj.user
 .Rhistory
 .RData
+.Rdata
+*.bz2
 cookies.txt
-tmp*.bz2
+auth.txt
