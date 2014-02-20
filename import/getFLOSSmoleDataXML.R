@@ -35,6 +35,7 @@ repos <- data.frame(code = REPO_CODE, year = REPO_YEAR,
 
 BZIP_EXT  <- ".txt\\.bz2"
 RDATA_EXT <- ".Rdata"
+RDATA_DIR <- "cache" #TODO: consider passing this via CL args
 
 
 importRepoFiles <- function(repos, row){
@@ -89,7 +90,7 @@ importRepoFiles <- function(repos, row){
     
     # calculate URL's digest and generate corresponding RData file name
     fileDigest <- digest(url, algo="md5", serialize=F)
-    rdataFile <- paste(fileDigest, RDATA_EXT, sep = "")
+    rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
     
     # check if the archive file has already been processed
     message("Checking file \"", url, "\"... ", appendLF = FALSE)

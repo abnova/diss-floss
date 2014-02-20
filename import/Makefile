@@ -27,7 +27,8 @@ importAngelList: getAngelListData.R
 importCrunchBase: getCrunchBaseDataAPI.R
 	$(RSCRIPT) $(R_OPTS) < $<
 
+.PHONY: clean
 
 # remove intermediate files
 clean:
-	rm -rf tmp*.bz2 *.Rdata
+	rm -f tmp*.bz2 *.Rdata

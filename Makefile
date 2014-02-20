@@ -67,4 +67,4 @@ demo: presentation
 
 # remove intermediate files
 clean:
-	rm -rf tmp*.bz2 *.Rdata
+	rm -f tmp*.bz2 *.Rdata
