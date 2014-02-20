@@ -1,2 +1,4 @@
-crunchbase_monthly_export.xlsx
+*.csv
+*.xls
+*.xlsx
 getCBdata.sh

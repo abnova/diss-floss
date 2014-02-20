@@ -1,7 +1,11 @@
 .Rproj.user
 .Rhistory
-.RData
-.Rdata
+
+*.RData
+*.Rdata
+*.Rout
+
 *.bz2
 cookies.txt
 auth.txt
+runtime/*
