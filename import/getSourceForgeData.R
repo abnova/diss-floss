@@ -129,32 +129,13 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   resultsURL <- paste(SRDA_HOST_URL, SRDA_QRESULT_URL,
                       collapse="", sep="")
   
-  #results <- getURL(resultsURL, curl = curl, followlocation = TRUE)
-  #print(results)
-  
   results <- readLines(resultsURL)
   results <- lapply(results, function(x) gsub(".$", "", x))
-  print(results)
   
-  if (FALSE)
-  for (line in 1:length(results)) {
-    print(nchar(results[line]))
-    print(results[line])
-    substr(results[line], 1, nchar(results[line])-1)
-    #gsub(".$", "", results[line])
-    #gsub(":$", "", results[line])
-    print(nchar(results[line]))
-    print(results[line])
-    print(paste("=== line", line))
-  }
-  data <- read.table(textConnection(results), header = FALSE,
-                     sep = DATA_SEP, row.names = NULL)
-  #print(data)
+  data <- read.table(textConnection(unlist(results)), header = FALSE,
+                     sep = DATA_SEP, quote = "\"",
+                     colClasses = "character", row.names = NULL)
   
-  #data <- read.table(resultsURL, header = FALSE, sep = DATA_SEP,
-  #                   row.names = NULL)
-  
-  #data <- data.frame(results)
   return (data)
 }
 
@@ -184,7 +165,7 @@ getSourceForgeData <- function (request) {
                     collapse="", sep="")
   queryURL <- paste(SRDA_HOST_URL, SRDA_QUERY_URL, collapse="", sep="")
   
-  # To replace with getting u/p as command line options
+  # TODO: replace with retrieving credentials via command line options
   username <- "blekh"
   password <- "abNovaSRDA7"
   
