@@ -35,12 +35,12 @@ repos <- data.frame(code = REPO_CODE, year = REPO_YEAR,
 
 BZIP_EXT  <- ".txt\\.bz2"
 RDATA_EXT <- ".Rdata"
-RDATA_DIR <- "cache" #TODO: consider passing this via CL args
+RDATA_DIR <- "../cache" #TODO: consider passing this via CL args
 
 
 importRepoFiles <- function(repos, row){
   
-  message("Verifying repository: ", repos$name[row], "\n")
+  message("\nVerifying repository: ", repos$name[row], "\n")
   
   # construct URL for current FLOSS repository in FLOSSmole
   url <- paste(FLOSSMOLE_REPO_BASE, "/",
@@ -93,7 +93,7 @@ importRepoFiles <- function(repos, row){
     rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
     
     # check if the archive file has already been processed
-    message("Checking file \"", url, "\"... ", appendLF = FALSE)
+    message("Checking file \"", url, "\"...\n")
     if (file.exists(rdataFile)) {
       message("Processing skipped: .Rdata file found.\n")
       return()
@@ -105,26 +105,15 @@ importRepoFiles <- function(repos, row){
       file <- tempfile(pattern = "tmp", tmpdir = ".", fileext = ".bz2")    
       download.file(url, destfile = file, mode = "w")
       data <- bzfile(file, open = "r")
-      #conn <- gzcon(bzfile(file, open = "r"))
-      #tConn <- textConnection(readLines(conn))
-      #try(fileData <- read.table(tConn, sep = ",", row.names = NULL),
-      #    silent = FALSE)
       try(fileData <- read.table(data, header = TRUE, fill = TRUE,
                                  sep = "\t"),
           silent = FALSE)
       
       # save current data frame to RData file
       save(fileData, file = rdataFile)
-      #save.image()
       
       # clean up
       rm(fileData)
-      #unlink(rdataFile)
-      #unlink(".RData")
-      
-      #print(head(fileData))
-      #close(conn)
-      #close(tConn)
       close(data)
       unlink(file, force = TRUE)
     }

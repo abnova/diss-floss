@@ -21,9 +21,9 @@
 
 # Major variable definitions
 
-PROJECT=diss-floss
-HOME_DIR=~/diss-floss
-REPORT=$(PROJECT)-slides
+PROJECT="diss-floss"
+HOME_DIR="~/diss-floss"
+REPORT={$(PROJECT)-slides}
 
 COLLECTION_DIR=import
 PREPARATION_DIR=prepare
