@@ -181,7 +181,10 @@ getSourceForgeData <- function (request) {
                   rq$select, rq$from, rq$where, DATA_SEP, ADD_SQL)
   
   data <- srdaGetData()
-  print(data)
+  #print(data)
 }
+
+
+message("\nRetrieving SourceForge data...\n")
 
 getSourceForgeData("SELECT * FROM sf0305.users WHERE user_id < 100 ")

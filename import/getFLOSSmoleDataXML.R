@@ -37,10 +37,13 @@ BZIP_EXT  <- ".txt\\.bz2"
 RDATA_EXT <- ".Rdata"
 RDATA_DIR <- "../cache" #TODO: consider passing this via CL args
 
+DEBUG <- FALSE # TODO: retrieve debug flag via CL arguments
+
 
 importRepoFiles <- function(repos, row){
   
-  message("\nVerifying repository: ", repos$name[row], "\n")
+  message("* Verifying repository: ", repos$name[row], " *",
+          ifelse(DEBUG, "\n", ""))
   
   # construct URL for current FLOSS repository in FLOSSmole
   url <- paste(FLOSSMOLE_REPO_BASE, "/",
@@ -93,9 +96,9 @@ importRepoFiles <- function(repos, row){
     rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
     
     # check if the archive file has already been processed
-    message("Checking file \"", url, "\"...\n")
+    if (DEBUG) {message("Checking file \"", url, "\"...")}
     if (file.exists(rdataFile)) {
-      message("Processing skipped: .Rdata file found.\n")
+      if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
       return()
     }
     
@@ -139,4 +142,10 @@ getFLOSSmoleData <- function(repos) {
 }
 
 
-print(system.time(getFLOSSmoleData(repos)))
+message("\nRetrieving FLOSSmole data...\n")
+if (DEBUG) {
+  print(system.time(getFLOSSmoleData(repos)))
+} else {
+  system.time(getFLOSSmoleData(repos))
+}
+message("\n")

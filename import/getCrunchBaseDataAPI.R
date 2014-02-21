@@ -7,6 +7,8 @@
 #' 
 #' TODO: Introduce defines for various types & sheets of CB data 
 #' TODO: Update documentation; replace AL references to CB
+#' TODO(general): "wrap" packages operations in a function loadPackages(),
+#'     then call suppressMessages(loadPackages()) if 'verbose' is disabled
 
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(RJSONIO)) install.packages('RJSONIO')
@@ -68,7 +70,7 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
     if (startups$total %% CB_REPLY_OBJS_PER_PAGE > 0)
       totalPages <<- totalPages + 1
     firstPage <<- FALSE
-    DEBUG_INFO("Retrieving CB data (each '.' represents a page):")
+    message("\nRetrieving CrunchBase data...\n")
   }
 
   # Update progress bar
@@ -117,9 +119,11 @@ getCBDataAPI <- function (query, field) {
   reply <- lapply(2:totalPages,
                   function(page) try(getCBDataPaginated(query, field, page, progress, TRUE), silent=FALSE))
   
-  close(progress)  
+  close(progress)
+  print(head(reply))
   
   startups <- unlist(reply, recursive=F)
+  print(head(startups))
   #startupsDF <- data.frame(startups)
 }
 

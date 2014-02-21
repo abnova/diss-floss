@@ -7,11 +7,11 @@
 
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(RJSONIO)) install.packages('RJSONIO')
-if (!require(rPython)) install.packages('rPython')
+#if (!require(rPython)) install.packages('rPython')
 
 library(RCurl)
 library(RJSONIO)
-library(rPython)
+#library(rPython)
 
 # AngelList APIs endpoint URL for FLOSS startups
 # ('Market' tag = '1', 'FLOSS' tag = '59')
@@ -59,9 +59,14 @@ getDataPaginated <- function (page) {
 getAngelListData <- function () {
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
   startups <- unlist(lapply(1:4, getDataPaginated), recursive=F)
+  
+  #print(startups)
   #startupsDF <- data.frame(startups)
    
-  python.exec('import pandas as pd')
+  #python.exec('import pandas as pd')
 }
+
+
+message("\nRetrieving AngelList data...\n")
 
 getAngelListData()
