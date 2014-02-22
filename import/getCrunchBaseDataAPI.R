@@ -70,12 +70,30 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
     if (startups$total %% CB_REPLY_OBJS_PER_PAGE > 0)
       totalPages <<- totalPages + 1
     firstPage <<- FALSE
-    message("\nRetrieving CrunchBase data...\n")
   }
 
   # Update progress bar
   if (useProgress)
     setTxtProgressBar(progress, page)
+  
+  return(startups)
+}
+
+
+#' convertMultiWordQuery
+#'
+#' Converts multi-word query string into CrunchBase query format
+#' by replacing spaces between words with '+' characters
+#'
+#' @param query Multi-word query string
+#' @return Query string converted into string per CrunchBase APIs
+#' @export
+#'
+#' @examples
+#' convertMultiWordQuery()
+
+convertMultiWordQuery <- function (query) {
+  return (gsub(" ", "+", query))
 }
 
 
@@ -99,6 +117,8 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
 
 getCBDataAPI <- function (query, field) {
   
+  query <- convertMultiWordQuery(query)
+  
   # Dummy call just to obtain 'progress' handle so it can be passed on
   progress <- txtProgressBar(max = 1,
                              initial = NA,
@@ -120,12 +140,21 @@ getCBDataAPI <- function (query, field) {
                   function(page) try(getCBDataPaginated(query, field, page, progress, TRUE), silent=FALSE))
   
   close(progress)
-  print(head(reply))
+  #print(head(reply))
   
   startups <- unlist(reply, recursive=F)
-  print(head(startups))
+  #print(head(startups))
   #startupsDF <- data.frame(startups)
 }
 
+
+field <- "overview"
+query <- "wearable"
+
+message("\nRetrieving CrunchBase data for request ",
+        "['", field, "' = \"", query, "\"]...\n")
+
 #getCBDataAPI("open+source", "overview")
-getCBDataAPI("wearable", "overview")
+getCBDataAPI(query, field)
+
+message("\n")
