@@ -11,10 +11,11 @@
 #'     then call suppressMessages(loadPackages()) if 'verbose' is disabled
 
 if (!require(RCurl)) install.packages('RCurl')
-if (!require(RJSONIO)) install.packages('RJSONIO')
+if (!require(jsonlite))
+  install.packages("jsonlite", repos="http://cran.r-project.org")
 
 library(RCurl)
-library(RJSONIO)
+library(jsonlite)
 
 # Retrieve CrunchBase API key, stored in ENV for security
 #CB_API_KEY <- Sys.getenv("CRUNCHBASE_API_KEY")
@@ -24,6 +25,7 @@ CB_API_KEY <- "uuxr6qxxm3be8zwbpt5kuvs2"
 CB_REPLY_OBJS_PER_PAGE <- 10
 
 # CrunchBase FULL data set APIs endpoint URL for FLOSS startups
+# TODO: update or delete
 CB_FLOSS_DATA <- "http://api.angel.co/1/tags/59/startups"
 
 CB_API_SEARCH_URL <- "http://api.crunchbase.com/v/1/search.js"
@@ -35,6 +37,9 @@ firstPage <<- TRUE
 # Another solution would be to create a custom environment
 # (for details see: http://rpubs.com/chrisbrunsdon/local)
 totalPages <<- 0
+
+DEBUG <- FALSE
+
 
 #' getDataPaginated
 #'
@@ -61,8 +66,8 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
   # Retrieve data
   startupData <- getURL(url)
   
-  # Convert JSON data to list
-  startups <- fromJSON(startupData)
+  # Convert JSON data to data frame
+  startups <- jsonlite::fromJSON(startupData)
   
   # Calculate number of pages in the response; do it only once
   if (firstPage == TRUE) {
@@ -140,19 +145,18 @@ getCBDataAPI <- function (query, field) {
                   function(page) try(getCBDataPaginated(query, field, page, progress, TRUE), silent=FALSE))
   
   close(progress)
-  #print(head(reply))
-  
-  startups <- unlist(reply, recursive=F)
-  #print(head(startups))
-  #startupsDF <- data.frame(startups)
+  if (DEBUG) print(head(reply))
 }
 
 
 field <- "overview"
 query <- "wearable"
 
-message("\nRetrieving CrunchBase data for request ",
-        "['", field, "' = \"", query, "\"]...\n")
+debugInfo <- paste(" for request ['", field, "' = \"", query, "\"]",
+                   sep = "")
+
+message("\nRetrieving CrunchBase data",
+        ifelse(DEBUG, debugInfo, ""), "...\n")
 
 #getCBDataAPI("open+source", "overview")
 getCBDataAPI(query, field)

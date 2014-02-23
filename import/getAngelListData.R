@@ -6,16 +6,17 @@
 #' @author Aleksandr Blekh \email{blekh@@nova.edu}
 
 if (!require(RCurl)) install.packages('RCurl')
-if (!require(RJSONIO)) install.packages('RJSONIO')
-#if (!require(rPython)) install.packages('rPython')
+if (!require(jsonlite))
+  install.packages("jsonlite", repos="http://cran.r-project.org")
 
 library(RCurl)
-library(RJSONIO)
-#library(rPython)
+library(jsonlite)
 
 # AngelList APIs endpoint URL for FLOSS startups
 # ('Market' tag = '1', 'FLOSS' tag = '59')
 API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
+
+DEBUG <- FALSE
 
 
 #' getDataPaginated
@@ -34,7 +35,7 @@ API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
 getDataPaginated <- function (page) {
   url <- paste(API_ENDPOINT_URL, "?page=", page, collapse="", sep="")
   startupData <- getURL(url)
-  fromJSON(startupData)
+  jsonlite::fromJSON(startupData)
 }
 
 
@@ -58,12 +59,10 @@ getDataPaginated <- function (page) {
 
 getAngelListData <- function () {
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
-  startups <- unlist(lapply(1:4, getDataPaginated), recursive=F)
+  #startups <- unlist(lapply(1:4, getDataPaginated), recursive=F)
+  startups <- lapply(1:4, getDataPaginated)
   
-  #print(startups)
-  #startupsDF <- data.frame(startups)
-   
-  #python.exec('import pandas as pd')
+  if (DEBUG) print(startups)
 }
 
 

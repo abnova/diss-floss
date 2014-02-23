@@ -61,6 +61,7 @@ presentation: results
 
 # run demo presentation slides
 demo: presentation
+	# knitr(Markdown) => HTML page
 	# HTML5 presentation via RStudio/RPubs or Slidify
 	# OR
 	# Shiny app
