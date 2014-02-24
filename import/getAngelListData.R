@@ -16,7 +16,7 @@ library(jsonlite)
 # ('Market' tag = '1', 'FLOSS' tag = '59')
 API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
 
-DEBUG <- FALSE
+DEBUG <- TRUE
 
 
 #' getDataPaginated
@@ -35,7 +35,10 @@ DEBUG <- FALSE
 getDataPaginated <- function (page) {
   url <- paste(API_ENDPOINT_URL, "?page=", page, collapse="", sep="")
   startupData <- getURL(url)
-  jsonlite::fromJSON(startupData)
+  data <- jsonlite::fromJSON(startupData)
+  startups <- do.call('rbind', data)
+  if (DEBUG) print(class(startups))
+  return (startups)
 }
 
 
@@ -62,7 +65,11 @@ getAngelListData <- function () {
   #startups <- unlist(lapply(1:4, getDataPaginated), recursive=F)
   startups <- lapply(1:4, getDataPaginated)
   
-  if (DEBUG) print(startups)
+  if (DEBUG) {
+    print(class(startups))
+    #print(startups) 
+  }
+  return (startups)
 }
 
 

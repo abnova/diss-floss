@@ -17,10 +17,6 @@ if (!require(jsonlite))
 library(RCurl)
 library(jsonlite)
 
-# Retrieve CrunchBase API key, stored in ENV for security
-#CB_API_KEY <- Sys.getenv("CRUNCHBASE_API_KEY")
-CB_API_KEY <- "uuxr6qxxm3be8zwbpt5kuvs2"
-
 # Limit per CB APIs v.1 documentation
 CB_REPLY_OBJS_PER_PAGE <- 10
 

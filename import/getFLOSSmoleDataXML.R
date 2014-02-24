@@ -13,7 +13,6 @@ library(RCurl)
 library(XML)
 library(digest)
 
-
 # URL of FLOSSmole repository root directory
 FLOSSMOLE_REPO_BASE <- "http://flossdata.syr.edu/data"
 

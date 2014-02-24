@@ -10,7 +10,6 @@ if (!require(RCurl)) install.packages('RCurl')
 
 library(RCurl)
 
-
 # Users must authenticate to access Query Form
 SRDA_HOST_URL  <- "http://zerlot.cse.nd.edu"
 SRDA_LOGIN_URL <- "/mediawiki/index.php?title=Special:Userlogin"
@@ -21,8 +20,6 @@ SRDA_QUERY_URL <- "/cgi-bin/form.pl"
 
 # SRDA URL that Query Form sends POST requests to
 SRDA_QRESULT_URL <- "/qresult/blekh/blekh.txt"
-
-
 
 # Parameters for result's format
 DATA_SEP <- ":" # data separator
@@ -165,12 +162,8 @@ getSourceForgeData <- function (request) {
                     collapse="", sep="")
   queryURL <- paste(SRDA_HOST_URL, SRDA_QUERY_URL, collapse="", sep="")
   
-  # TODO: replace with retrieving credentials via command line options
-  username <- "blekh"
-  password <- "abNovaSRDA7"
-  
   # Log into the system 
-  try(srdaLogin(loginURL, username, password))
+  try(srdaLogin(loginURL, SRDA_USER, SRDA_PASS))
   
   rq <- srdaConvertRequest(request)
   

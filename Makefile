@@ -36,7 +36,10 @@ RSCRIPT=Rscript
 
 # Targets and rules 
 
-all: collection preparation analysis results presentation
+all: rprofile collection preparation analysis results presentation
+
+rprofile:
+	R CMD BATCH ./.Rprofile
 
 collection:
 	cd $(COLLECTION_DIR) && $(MAKE)

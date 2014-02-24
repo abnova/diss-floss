@@ -7,5 +7,4 @@
 
 *.bz2
 cookies.txt
-auth.txt
 runtime/*
