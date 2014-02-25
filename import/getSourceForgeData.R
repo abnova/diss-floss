@@ -164,6 +164,7 @@ getSourceForgeData <- function (request) {
   
   # Log into the system 
   try(srdaLogin(loginURL, SRDA_USER, SRDA_PASS))
+  #try(srdaLogin(loginURL, getOption("SRDA_USER"), getOption("SRDA_PASS")))
   
   rq <- srdaConvertRequest(request)
   
