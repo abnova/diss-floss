@@ -8,9 +8,11 @@
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(jsonlite))
   install.packages("jsonlite", repos="http://cran.r-project.org")
+if (!require(plyr)) install.packages('plyr')
 
 library(RCurl)
 library(jsonlite)
+library(plyr)
 
 # AngelList APIs endpoint URL for FLOSS startups
 # ('Market' tag = '1', 'FLOSS' tag = '59')
@@ -35,9 +37,9 @@ DEBUG <- TRUE
 getDataPaginated <- function (page) {
   url <- paste(API_ENDPOINT_URL, "?page=", page, collapse="", sep="")
   startupData <- getURL(url)
-  data <- jsonlite::fromJSON(startupData)
-  startups <- do.call('rbind', data)
-  if (DEBUG) print(class(startups))
+  data <- data.frame(jsonlite::fromJSON(startupData))
+  startups <- rbind.fill(data)
+  #if (DEBUG) View(head(startups))
   return (startups)
 }
 
@@ -61,12 +63,12 @@ getDataPaginated <- function (page) {
 #'         getAngelListData('Market', 'FLOSS')
 
 getAngelListData <- function () {
+  
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
-  #startups <- unlist(lapply(1:4, getDataPaginated), recursive=F)
   startups <- lapply(1:4, getDataPaginated)
   
   if (DEBUG) {
-    print(class(startups))
+    #cat(class(startups))
     #print(startups) 
   }
   return (startups)
