@@ -35,11 +35,25 @@ DEBUG <- TRUE
 #' getDataPaginated(1)
 
 getDataPaginated <- function (page) {
+  
+  # construct full URL for paginated API request
   url <- paste(API_ENDPOINT_URL, "?page=", page, collapse="", sep="")
+  
+  # retrieve API reply (JSON data)
   startupData <- getURL(url)
-  data <- data.frame(jsonlite::fromJSON(startupData))
-  startups <- rbind.fill(data)
-  #if (DEBUG) View(head(startups))
+  
+  #options(stringsAsFactors = FALSE)
+  
+  # parse JSON reply (field 'startups' will contain data frame)
+  data <- jsonlite::fromJSON(startupData)
+  
+  if (DEBUG && page == 1) View(data$startups)
+  
+  # collect only NOT hidden rows from the source data frame
+  startups <- rbind.fill(data$startups[data$startups$hidden == FALSE, ])
+  
+  if (DEBUG && page == 1) View(startups)
+  
   return (startups)
 }
 
@@ -67,9 +81,14 @@ getAngelListData <- function () {
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
   startups <- lapply(1:4, getDataPaginated)
   
+  startups <- data.frame(startups)
+  #startups <- unlist(startups)
+  #startups <- data.frame(unlist(startups))
+  
   if (DEBUG) {
-    #cat(class(startups))
-    #print(startups) 
+    print(nrow(startups))
+    print(class(startups))
+    #print(head(startups))
   }
   return (startups)
 }
