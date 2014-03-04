@@ -42,6 +42,7 @@ getDataPaginated <- function (page) {
   # retrieve API reply (JSON data)
   startupData <- getURL(url)
   
+  # Could this impact 'jsonlite' conversion behavior?
   #options(stringsAsFactors = FALSE)
   
   # parse JSON reply (field 'startups' will contain data frame)
@@ -51,6 +52,11 @@ getDataPaginated <- function (page) {
   
   # collect only NOT hidden rows from the source data frame
   startups <- rbind.fill(data$startups[data$startups$hidden == FALSE, ])
+  
+  # change the type of column from data frame to list,
+  # since NEXT rbind.fill() cannot handle data frame column
+  #TODO (the following line currently fails)
+  #startups$status <- as.list(startups$status)
   
   if (DEBUG && page == 1) View(startups)
   
@@ -81,9 +87,12 @@ getAngelListData <- function () {
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
   startups <- lapply(1:4, getDataPaginated)
   
-  startups <- data.frame(startups)
-  #startups <- unlist(startups)
-  #startups <- data.frame(unlist(startups))
+  if (DEBUG) print(str(startups))
+  
+  # the following rbind.fill() call produces this error:
+  # "Data frame column 'status' not supported by rbind.fill"
+  # Tentative solution: convert DF column to list (see TODO above)
+  startups <- rbind.fill(startups)
   
   if (DEBUG) {
     print(nrow(startups))
