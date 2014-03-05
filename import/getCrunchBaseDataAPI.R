@@ -13,9 +13,11 @@
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(jsonlite))
   install.packages("jsonlite", repos="http://cran.r-project.org")
+if (!require(plyr)) install.packages('plyr')
 
 library(RCurl)
 library(jsonlite)
+library(plyr)
 
 # Limit per CB APIs v.1 documentation
 CB_REPLY_OBJS_PER_PAGE <- 10
@@ -34,7 +36,7 @@ firstPage <<- TRUE
 # (for details see: http://rpubs.com/chrisbrunsdon/local)
 totalPages <<- 0
 
-DEBUG <- FALSE # TODO: retrieve debug flag via CL arguments
+DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 
 #' getDataPaginated
@@ -63,13 +65,16 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
   startupData <- getURL(url)
   
   # Convert JSON data to data frame
-  startups <- jsonlite::fromJSON(startupData)
+  startups <- jsonlite::fromJSON(startupData, simplifyVector = FALSE)
   
   # Calculate number of pages in the response; do it only once
   if (firstPage == TRUE) {
     totalPages <<- startups$total %/% CB_REPLY_OBJS_PER_PAGE
     if (startups$total %% CB_REPLY_OBJS_PER_PAGE > 0)
       totalPages <<- totalPages + 1
+    if (DEBUG) message("\nAPI reply contains: ",
+                       startups$total, " startups and ",
+                       totalPages, " pages.\n")
     firstPage <<- FALSE
   }
 
@@ -77,7 +82,7 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
   if (useProgress)
     setTxtProgressBar(progress, page)
   
-  return(startups)
+  return(startups$results)
 }
 
 
@@ -140,8 +145,23 @@ getCBDataAPI <- function (query, field) {
   reply <- lapply(2:totalPages,
                   function(page) try(getCBDataPaginated(query, field, page, progress, TRUE), silent=FALSE))
   
+  cat("\n\n")
+  
+  #startups <- rbind.fill(reply)
+  startups <- jsonlite:::simplify(reply)
+
+  # save current data frame to RData file
+  #TODO: Think about feasibility of caching non-archival data,
+  # such as AngelList and CrunchBase
+  #save(startups, file = rdataFile)
+  
+  # clean up
+  #rm(startups)
+  
   close(progress)
-  if (DEBUG) print(head(reply))
+  #if (DEBUG) print(head(reply))
+  
+  return (startups)
 }
 
 
