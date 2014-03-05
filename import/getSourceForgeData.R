@@ -7,8 +7,10 @@
 #' @author Aleksandr Blekh \email{blekh@@nova.edu}
 
 if (!require(RCurl)) install.packages('RCurl')
+if (!require(digest)) install.packages('digest')
 
 library(RCurl)
+library(digest)
 
 # Users must authenticate to access Query Form
 SRDA_HOST_URL  <- "http://zerlot.cse.nd.edu"
@@ -26,6 +28,11 @@ DATA_SEP <- ":" # data separator
 ADD_SQL  <- "0" # add SQL to file
 
 REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), CHR(13),' ')"
+
+RDATA_EXT <- ".Rdata"
+RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
+
+DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 
 #' srdaLogin()
@@ -157,6 +164,17 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
 
 getSourceForgeData <- function (request) {
 
+  # calculate request's digest and generate corresponding RData file name
+  fileDigest <- digest(request, algo="md5", serialize=F)
+  rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
+  
+  # check if the archive file has already been processed
+  if (DEBUG) {message("Checking request \"", request, "\"...")}
+  if (file.exists(rdataFile)) {
+    if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
+    return()
+  }
+  
   # Construct SRDA login and query URLs
   loginURL <- paste(SRDA_HOST_URL, SRDA_LOGIN_URL, SRDA_LOGIN_REQ,
                     collapse="", sep="")
@@ -175,7 +193,13 @@ getSourceForgeData <- function (request) {
                   rq$select, rq$from, rq$where, DATA_SEP, ADD_SQL)
   
   data <- srdaGetData()
-  #print(data)
+  if (DEBUG) print(data)
+  
+  # save current data frame to RData file
+  save(data, file = rdataFile)
+  
+  # clean up
+  rm(data)
 }
 
 

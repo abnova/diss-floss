@@ -34,7 +34,7 @@ repos <- data.frame(code = REPO_CODE, year = REPO_YEAR,
 
 BZIP_EXT  <- ".txt\\.bz2"
 RDATA_EXT <- ".Rdata"
-RDATA_DIR <- "../cache" #TODO: consider passing this via CL args
+RDATA_DIR <- "../cache/FLOSSmole" #TODO: consider passing this via CL args
 
 DEBUG <- FALSE # TODO: retrieve debug flag via CL arguments
 

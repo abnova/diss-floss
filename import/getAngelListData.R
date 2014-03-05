@@ -18,7 +18,7 @@ library(plyr)
 # ('Market' tag = '1', 'FLOSS' tag = '59')
 API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
 
-DEBUG <- TRUE
+DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 
 #' getDataPaginated
@@ -46,12 +46,14 @@ getDataPaginated <- function (page) {
   #options(stringsAsFactors = FALSE)
   
   # parse JSON reply (field 'startups' will contain data frame)
-  data <- jsonlite::fromJSON(startupData)
+  data <- jsonlite::fromJSON(startupData) #JO <, simplifyVector = FALSE)>
   
   if (DEBUG && page == 1) View(data$startups)
   
   # collect only NOT hidden rows from the source data frame
   startups <- rbind.fill(data$startups[data$startups$hidden == FALSE, ])
+  #startups <- data$startups[data$startups$hidden == FALSE, ]
+  #startups <- data$startups #JO
   
   # change the type of column from data frame to list,
   # since NEXT rbind.fill() cannot handle data frame column
@@ -82,21 +84,25 @@ getDataPaginated <- function (page) {
 #'         getAngelListData(1, 59)
 #'         getAngelListData('Market', 'FLOSS')
 
-getAngelListData <- function () {
+getAngelListData <- function (pages=1:4) {
   
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
-  startups <- lapply(1:4, getDataPaginated)
+  startups <- lapply(pages, getDataPaginated)
   
-  if (DEBUG) print(str(startups))
+  #if (DEBUG) print(str(startups))
   
   # the following rbind.fill() call produces this error:
   # "Data frame column 'status' not supported by rbind.fill"
   # Tentative solution: convert DF column to list (see TODO above)
   startups <- rbind.fill(startups)
   
+  #startups <- do.call(c, startups) #JO
+  #startups <- jsonlite:::simplify(startups) #JO
+  
   if (DEBUG) {
     print(nrow(startups))
     print(class(startups))
+    View(startups)
     #print(head(startups))
   }
   return (startups)

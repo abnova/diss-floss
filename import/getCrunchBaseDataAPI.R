@@ -34,7 +34,7 @@ firstPage <<- TRUE
 # (for details see: http://rpubs.com/chrisbrunsdon/local)
 totalPages <<- 0
 
-DEBUG <- FALSE
+DEBUG <- FALSE # TODO: retrieve debug flag via CL arguments
 
 
 #' getDataPaginated
