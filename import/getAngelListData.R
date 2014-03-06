@@ -14,6 +14,8 @@ library(RCurl)
 library(jsonlite)
 library(plyr)
 
+source("../utils/debug.R")
+
 # AngelList APIs endpoint URL for FLOSS startups
 # ('Market' tag = '1', 'FLOSS' tag = '59')
 API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
@@ -96,13 +98,16 @@ getAngelListData <- function (pages=1:4) {
   # Tentative solution: convert DF column to list (see TODO above)
   startups <- rbind.fill(startups)
   
+  # ldply() might replace combination of lapply() and rbind.fill()
+  ##startups <- ldply(pages, getDataPaginated)
+  
   #startups <- do.call(c, startups) #JO
   #startups <- jsonlite:::simplify(startups) #JO
   
   if (DEBUG) {
     print(nrow(startups))
     print(class(startups))
-    View(startups)
+    print(startups)
     #print(head(startups))
   }
   return (startups)

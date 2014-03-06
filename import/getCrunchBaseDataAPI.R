@@ -19,6 +19,8 @@ library(RCurl)
 library(jsonlite)
 library(plyr)
 
+source("../utils/debug.R")
+
 # Limit per CB APIs v.1 documentation
 CB_REPLY_OBJS_PER_PAGE <- 10
 
