@@ -8,7 +8,7 @@ DEBUG_VAR <- function (var) {
 
 View <- function (...) {
   if (.Platform$GUI == "RStudio")
-    utils::View(...)
+    View(...)
   else
     print(...)
 }

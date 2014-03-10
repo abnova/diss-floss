@@ -50,7 +50,7 @@ getDataPaginated <- function (page) {
   # parse JSON reply (field 'startups' will contain data frame)
   data <- jsonlite::fromJSON(startupData) #JO <, simplifyVector = FALSE)>
   
-  if (DEBUG && page == 1) View(data$startups)
+  #if (DEBUG && page == 1) View(data$startups)
   
   # collect only NOT hidden rows from the source data frame
   startups <- rbind.fill(data$startups[data$startups$hidden == FALSE, ])
@@ -62,7 +62,7 @@ getDataPaginated <- function (page) {
   #TODO (the following line currently fails)
   #startups$status <- as.list(startups$status)
   
-  if (DEBUG && page == 1) View(startups)
+  #if (DEBUG && page == 1) View(startups)
   
   return (startups)
 }
@@ -107,7 +107,7 @@ getAngelListData <- function (pages=1:4) {
   if (DEBUG) {
     print(nrow(startups))
     print(class(startups))
-    print(startups)
+    print(head(startups))
     #print(head(startups))
   }
   return (startups)
