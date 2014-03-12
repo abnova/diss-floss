@@ -84,7 +84,7 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
   if (useProgress)
     setTxtProgressBar(progress, page)
   
-  return(startups$results)
+  return (startups$results)
 }
 
 
@@ -135,7 +135,7 @@ getCBDataAPI <- function (query, field) {
   
   # Initial call is separate from the subsequent calls
   # in order to retrieve data for calculation of totalPages
-  try(getCBDataPaginated(query, field, page <- 1, progress, FALSE))
+  getCBDataPaginated(query, field, page <- 1, progress, FALSE)
   
   # Real progress bar call (notice 'initial' is no longer NA)
   progress <- txtProgressBar(max = totalPages - 1,
@@ -144,12 +144,14 @@ getCBDataAPI <- function (query, field) {
                              style = 3)
   
   # Continue with the rest of reply's pages
-  reply <- lapply(2:totalPages,
-                  function(page) try(getCBDataPaginated(query, field, page, progress, TRUE), silent=FALSE))
+  reply <- lapply(1:totalPages,
+                  function(page) 
+                    try(getCBDataPaginated(query, field, page, progress, TRUE),
+                    silent=FALSE))
   
   cat("\n\n")
   
-  #startups <- rbind.fill(reply)
+  reply <- do.call(c, reply)
   startups <- jsonlite:::simplify(reply)
 
   # save current data frame to RData file
@@ -168,7 +170,7 @@ getCBDataAPI <- function (query, field) {
 
 
 field <- "overview"
-query <- "wearable"
+query <- "drone" # "wearable"
 
 debugInfo <- paste(" for request ['", field, "' = \"", query, "\"]",
                    sep = "")
