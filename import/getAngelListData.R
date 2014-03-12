@@ -22,6 +22,12 @@ API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
+# Use Jeroen Ooms' "simplify" approach by default:
+# jsonlite::fromJSON(..., simplifyVector=FALSE),
+# then do.call(c, ...) & jsonlite:::simplify()
+# instead of jsonlite::fromJSON() & TWO plyr::rbind.fill() calls
+JO <- TRUE
+
 
 #' getDataPaginated
 #'
@@ -44,25 +50,30 @@ getDataPaginated <- function (page) {
   # retrieve API reply (JSON data)
   startupData <- getURL(url)
   
-  # Could this impact 'jsonlite' conversion behavior?
-  #options(stringsAsFactors = FALSE)
-  
   # parse JSON reply (field 'startups' will contain data frame)
-  data <- jsonlite::fromJSON(startupData) #JO <, simplifyVector = FALSE)>
+  if (JO)
+    data <- jsonlite::fromJSON(startupData, simplifyVector = FALSE)
+  else
+    data <- jsonlite::fromJSON(startupData)
   
-  if (DEBUG && page == 1) View(data$startups)
+  #debug()
+  #if (DEBUG && page == 1) str(data$startups, vec.len=12)
   
   # collect only NOT hidden rows from the source data frame
-  startups <- rbind.fill(data$startups[data$startups$hidden == FALSE, ])
-  #startups <- data$startups[data$startups$hidden == FALSE, ]
-  #startups <- data$startups #JO
+  if (JO) {
+    startups <- data$startups[data$startups$hidden == FALSE]
+    #startups <- data$startups
+  }
+  else {
+    startups <- rbind.fill(data$startups[data$startups$hidden == FALSE, ])
+    
+    # change the type of column from data frame to list,
+    # since NEXT rbind.fill() cannot handle data frame column
+    #TODO (the following line currently fails)
+    #startups$status <- as.list(startups$status)
+  }
   
-  # change the type of column from data frame to list,
-  # since NEXT rbind.fill() cannot handle data frame column
-  #TODO (the following line currently fails)
-  #startups$status <- as.list(startups$status)
-  
-  if (DEBUG && page == 1) View(startups)
+  if (DEBUG && page == 1) str(startups, vec.len=12)
   
   return (startups)
 }
@@ -91,24 +102,26 @@ getAngelListData <- function (pages=1:4) {
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
   startups <- lapply(pages, getDataPaginated)
   
-  #if (DEBUG) print(str(startups))
+  if (DEBUG) str(startups)
   
-  # the following rbind.fill() call produces this error:
-  # "Data frame column 'status' not supported by rbind.fill"
-  # Tentative solution: convert DF column to list (see TODO above)
-  startups <- rbind.fill(startups)
+  if (JO) {
+    startups <- do.call(c, startups)
+    startups <- jsonlite:::simplify(startups)
+  }
+  else {
+    # the following rbind.fill() call produces this error:
+    # "Data frame column 'status' not supported by rbind.fill"
+    # Tentative solution: convert DF column to list (see TODO above)
+    startups <- rbind.fill(startups)
+  }
   
   # ldply() might replace combination of lapply() and rbind.fill()
   ##startups <- ldply(pages, getDataPaginated)
   
-  #startups <- do.call(c, startups) #JO
-  #startups <- jsonlite:::simplify(startups) #JO
-  
   if (DEBUG) {
-    print(nrow(startups))
-    print(class(startups))
-    print(head(startups))
-    #print(head(startups))
+    #print(nrow(startups))
+    #print(class(startups))
+    str(startups)
   }
   return (startups)
 }
@@ -116,4 +129,8 @@ getAngelListData <- function (pages=1:4) {
 
 message("\nRetrieving AngelList data...\n")
 
-getAngelListData()
+allData <- getAngelListData()
+if (DEBUG) str(allData, vec.len=12)
+
+#allStartups <- data.frame(allData)
+#if (DEBUG) str(allStartups, vec.len=12)
