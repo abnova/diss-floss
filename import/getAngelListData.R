@@ -29,6 +29,20 @@ DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 JO <- TRUE
 
 
+getNumPages <- function () {
+  
+  startupData <- getURL(API_ENDPOINT_URL)
+  
+  data <- jsonlite::fromJSON(startupData)
+
+  if (DEBUG) message("\nAPI reply contains: ",
+                     data$total, " startups and ",
+                     data$last_page, " pages.\n")
+  
+  return (data$last_page)
+}
+
+
 #' getDataPaginated
 #'
 #' Downloads RESTful API's response in JSON paginated format.
@@ -97,7 +111,9 @@ getDataPaginated <- function (page) {
 #'         getAngelListData(1, 59)
 #'         getAngelListData('Market', 'FLOSS')
 
-getAngelListData <- function (pages=1:4) {
+getAngelListData <- function () {
+  
+  pages <- 1:getNumPages()
   
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
   startups <- lapply(pages, getDataPaginated)

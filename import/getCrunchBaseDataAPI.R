@@ -147,7 +147,7 @@ getCBDataAPI <- function (query, field) {
   reply <- lapply(1:totalPages,
                   function(page) 
                     try(getCBDataPaginated(query, field, page, progress, TRUE),
-                    silent=FALSE))
+                    silent = TRUE))
   
   cat("\n\n")
   
