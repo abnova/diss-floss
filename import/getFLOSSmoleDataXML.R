@@ -32,16 +32,24 @@ REPO_NAME  <- c("FreeCode",
 
 repos <- data.frame(code = REPO_CODE, year = REPO_YEAR,
                     month = REPO_MONTH, name = REPO_NAME,
-                    stringsAsFactors=FALSE)
+                    stringsAsFactors = FALSE)
 
 BZIP_EXT  <- ".txt\\.bz2"
 RDATA_EXT <- ".Rdata"
 RDATA_DIR <- "../cache/FLOSSmole" #TODO: consider passing this via CL args
 
-DEBUG <- FALSE # TODO: retrieve debug flag via CL arguments
+lookup <- data.frame(digest = "", url = "", stringsAsFactors = FALSE)
+
+DATA_LOOKUP <- FALSE
+LOOKUP_FILE <- "DataLookup"
+
+DATA_ATTRIB <- TRUE
+ATTRIB_NAME <- "DataSource"
+
+DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 
-importRepoFiles <- function(repos, row){
+importRepoFiles <- function(repos, row) {
   
   message("* Verifying repository: ", repos$name[row], " *",
           ifelse(DEBUG, "\n", ""))
@@ -100,6 +108,10 @@ importRepoFiles <- function(repos, row){
     if (DEBUG) {message("Checking file \"", url, "\"...")}
     if (file.exists(rdataFile)) {
       if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
+      if (DEBUG) {
+        print(load(rdataFile))
+        print(class(fileData))
+      }
       return()
     }
     
@@ -112,6 +124,18 @@ importRepoFiles <- function(repos, row){
       try(fileData <- read.table(data, header = TRUE, fill = TRUE,
                                  sep = "\t"),
           silent = FALSE)
+      
+      if (DATA_ATTRIB) {
+
+        # set URL as DF's attribute to be stored as metadata
+        # for future lookups when restoring data from R objects
+        attr(fileData, ATTRIB_NAME, exact = TRUE) <- url
+        
+      } else if (DATA_LOOKUP) {
+        
+        # for convinience we use full file name instead of digest
+        rbind(lookup, rdataFile, url)
+      }
       
       # save current data frame to RData file
       save(fileData, file = rdataFile)
@@ -134,6 +158,11 @@ importRepoFiles <- function(repos, row){
   # get data by iterating through list
   # of full URLs of the current repository files
   data <- lapply(seq_along(links[[1]]), getData)
+  
+  if (DATA_LOOKUP) {
+    # save lookup data frame to a separate RData file
+    save(lookup, file = LOOKUP_FILE)
+  }
 }
 
 
