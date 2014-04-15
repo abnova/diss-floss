@@ -70,11 +70,13 @@ getDataPaginated <- function (page) {
   else
     data <- jsonlite::fromJSON(startupData)
   
-  #debug()
   #if (DEBUG && page == 1) str(data$startups, vec.len=12)
+  #if (DEBUG) message("Page ", page, " - # of attributes: ",
+  #                   length(data$startups))
   
   # collect only NOT hidden rows from the source data frame
   if (JO) {
+    print(class(data$startups))
     startups <- data$startups[data$startups$hidden == FALSE]
     #startups <- data$startups
   }
@@ -87,7 +89,7 @@ getDataPaginated <- function (page) {
     #startups$status <- as.list(startups$status)
   }
   
-  if (DEBUG && page == 1) str(startups, vec.len=12)
+  #if (DEBUG && page == 1) str(startups, vec.len=12)
   
   return (startups)
 }
@@ -118,7 +120,7 @@ getAngelListData <- function () {
   # TODO: Dyn. construct URL here: url <- paste(baseURL, ...) 
   startups <- lapply(pages, getDataPaginated)
   
-  if (DEBUG) str(startups)
+  #if (DEBUG) str(startups)
   
   if (JO) {
     startups <- do.call(c, startups)
@@ -136,7 +138,7 @@ getAngelListData <- function () {
   
   if (DEBUG) {
     #print(nrow(startups))
-    #print(class(startups))
+    print(class(startups))
     str(startups)
   }
   return (startups)
@@ -146,7 +148,8 @@ getAngelListData <- function () {
 message("\nRetrieving AngelList data...\n")
 
 allData <- getAngelListData()
-if (DEBUG) str(allData, vec.len=12)
+if (DEBUG) str(allData, vec.len=12, list.len=5)
+#View(allData)
 
 #allStartups <- data.frame(allData)
 #if (DEBUG) str(allStartups, vec.len=12)
