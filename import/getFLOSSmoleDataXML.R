@@ -46,12 +46,12 @@ LOOKUP_FILE <- "DataLookup"
 DATA_ATTRIB <- TRUE
 ATTRIB_NAME <- "DataSource"
 
-DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
+DEBUG <- FALSE # TODO: retrieve debug flag via CL arguments
 
 
 importRepoFiles <- function(repos, row) {
   
-  message("* Verifying repository: ", repos$name[row], " *",
+  message("* Verifying repository: ", repos$name[row], " ...",
           ifelse(DEBUG, "\n", ""))
   
   # construct URL for current FLOSS repository in FLOSSmole
@@ -108,10 +108,6 @@ importRepoFiles <- function(repos, row) {
     if (DEBUG) {message("Checking file \"", url, "\"...")}
     if (file.exists(rdataFile)) {
       if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
-      if (DEBUG) {
-        print(load(rdataFile))
-        print(class(fileData))
-      }
       return()
     }
     
@@ -129,12 +125,15 @@ importRepoFiles <- function(repos, row) {
 
         # set URL as DF's attribute to be stored as metadata
         # for future lookups when restoring data from R objects
-        attr(fileData, ATTRIB_NAME, exact = TRUE) <- url
+        attr(fileData, ATTRIB_NAME) <- url
         
       } else if (DATA_LOOKUP) {
         
         # for convinience we use full file name instead of digest
         rbind(lookup, rdataFile, url)
+        
+      } else {
+        warning("Data objects attribute or lookup method is undefined!")
       }
       
       # save current data frame to RData file
