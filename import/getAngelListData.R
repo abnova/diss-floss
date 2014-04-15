@@ -8,11 +8,11 @@
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(jsonlite))
   install.packages("jsonlite", repos="http://cran.r-project.org")
-if (!require(plyr)) install.packages('plyr')
+#if (!require(plyr)) install.packages('plyr')
 
 library(RCurl)
 library(jsonlite)
-library(plyr)
+#library(plyr)
 
 source("../utils/debug.R")
 
@@ -28,6 +28,11 @@ DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 # instead of jsonlite::fromJSON() & TWO plyr::rbind.fill() calls
 JO <- TRUE
 
+if (JO) {
+  if (!require(plyr)) install.packages('plyr')
+  library(plyr)
+}
+
 
 getNumPages <- function () {
   
@@ -36,7 +41,7 @@ getNumPages <- function () {
   data <- jsonlite::fromJSON(startupData)
 
   if (DEBUG) message("\nAPI reply contains: ",
-                     data$total, " startups and ",
+                     data$total, " startups, ",
                      data$last_page, " pages.\n")
   
   return (data$last_page)
@@ -76,7 +81,7 @@ getDataPaginated <- function (page) {
   
   # collect only NOT hidden rows from the source data frame
   if (JO) {
-    print(class(data$startups))
+    #if (DEBUG) print(class(data$startups))
     startups <- data$startups[data$startups$hidden == FALSE]
     #startups <- data$startups
   }
@@ -138,8 +143,8 @@ getAngelListData <- function () {
   
   if (DEBUG) {
     #print(nrow(startups))
-    print(class(startups))
-    str(startups)
+    #print(class(startups))
+    #str(startups)
   }
   return (startups)
 }
@@ -148,8 +153,8 @@ getAngelListData <- function () {
 message("\nRetrieving AngelList data...\n")
 
 allData <- getAngelListData()
-if (DEBUG) str(allData, vec.len=12, list.len=5)
-#View(allData)
+#if (DEBUG) str(allData, vec.len=12, list.len=5)
+#if (DEBUG) View(allData)
 
 #allStartups <- data.frame(allData)
 #if (DEBUG) str(allStartups, vec.len=12)

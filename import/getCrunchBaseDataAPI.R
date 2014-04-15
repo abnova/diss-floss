@@ -75,7 +75,7 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
     if (startups$total %% CB_REPLY_OBJS_PER_PAGE > 0)
       totalPages <<- totalPages + 1
     if (DEBUG) message("\nAPI reply contains: ",
-                       startups$total, " startups and ",
+                       startups$total, " startups, ",
                        totalPages, " pages.\n")
     firstPage <<- FALSE
   }
