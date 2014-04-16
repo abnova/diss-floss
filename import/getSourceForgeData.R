@@ -54,7 +54,8 @@ curl <<- getCurlHandle()
 
 srdaLogin <- function (loginURL, username, password) {
   
-  curlSetOpt(curl = curl, cookiejar = 'cookies.txt',
+  curlSetOpt(curl = curl, cookiefile = '', #'rqCookies.txt',
+             #cookiejar = 'cookies.txt',
              ssl.verifyhost = FALSE, ssl.verifypeer = FALSE,
              followlocation = TRUE, verbose = TRUE)
   
@@ -127,7 +128,6 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
   #opts <- curlOptions(verbose = TRUE, followLocation = TRUE, header = TRUE)
   
   if(url.exists(requestURL)) {
-    print("Before second postForm()")
     reply <- postForm(requestURL, .params = params, #.opts = opts,
                       curl = curl, style = "POST")
     #if (DEBUG) print(reply)
