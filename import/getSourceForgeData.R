@@ -36,7 +36,14 @@ RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
-curl <<- getCurlHandle()
+cookiesFile <- "cookies.txt"
+
+curl <- getCurlHandle()
+
+curlSetOpt(curl = curl, postredir = 3, #autoreferer = TRUE,
+           cookiefile = cookiesFile, cookiejar = cookiesFile,
+           ssl.verifyhost = FALSE, ssl.verifypeer = FALSE,
+           followlocation = TRUE, verbose = TRUE)
 
 
 #' srdaLogin()
@@ -53,18 +60,13 @@ curl <<- getCurlHandle()
 #' getDataPaginated(1)
 
 srdaLogin <- function (loginURL, username, password) {
-  
-  curlSetOpt(curl = curl, cookiefile = '', #'rqCookies.txt',
-             #cookiejar = 'cookies.txt',
-             ssl.verifyhost = FALSE, ssl.verifypeer = FALSE,
-             followlocation = TRUE, verbose = TRUE)
-  
-  params <- list('wpName1' = username, 'wpPassword1' = password)
+
+  params <- list('wpName' = username, 'wpPassword' = password,
+                 'wpRemember' = "1")
   
   if(url.exists(loginURL)) {
     reply <- postForm(loginURL, .params = params, curl = curl,
                       style = "POST")
-    #if (DEBUG) print(reply)
     info <- getCurlInfo(curl)
     return (ifelse(info$response.code == 200, TRUE, FALSE))
   }
@@ -93,10 +95,10 @@ srdaConvertRequest <- function (request) {
   #lookup table
   #tokenize and filter request values
   
-  #return (list(select = "*", from = "sf0305.users", where = "user_id < 100"))
-  return (list(select = "*",
-               from = "sf1104.users a, sf1104.artifact b",
-               where = "b.artifact_id = 304727"))
+  return (list(select = "*", from = "sf0305.users", where = "user_id < 100"))
+  #return (list(select = "*",
+  #             from = "sf1104.users a, sf1104.artifact b",
+  #             where = "b.artifact_id = 304727"))
   
 }
 
@@ -116,21 +118,15 @@ srdaConvertRequest <- function (request) {
 
 srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
   
-  #curl = getCurlHandle()
-  #curlSetOpt(cookiejar = 'cookies.txt', curl = curl)
-  
   params <- list('uitems' = select,
                  'utables' = from,
                  'uwhere' = where,
                  'useparator' = sep,
                  'append_query' = sql)
   
-  #opts <- curlOptions(verbose = TRUE, followLocation = TRUE, header = TRUE)
-  
   if(url.exists(requestURL)) {
     reply <- postForm(requestURL, .params = params, #.opts = opts,
                       curl = curl, style = "POST")
-    #if (DEBUG) print(reply)
   }
 }
 
@@ -155,14 +151,12 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   
   results <- readLines(resultsURL)
   results <- lapply(results, function(x) gsub(".$", "", x))
+  #if (DEBUG) print(results)
   
-  print(results)
   data <- read.table(textConnection(unlist(results)), header = FALSE,
                      sep = DATA_SEP, quote = "\"",
                      colClasses = "character", row.names = NULL)
-  
-  #if (DEBUG) print(data)
-
+  if (DEBUG) print(data)
   return (data)
 }
 
@@ -217,7 +211,6 @@ getSourceForgeData <- function (request) {
                   rq$select, rq$from, rq$where, DATA_SEP, ADD_SQL)
   
   data <- srdaGetData()
-  
   #if (DEBUG) print(data)
   
   # save current data frame to RData file
@@ -230,10 +223,11 @@ getSourceForgeData <- function (request) {
 
 message("\nRetrieving SourceForge data...\n")
 
-#getSourceForgeData("SELECT * FROM sf0305.users WHERE user_id < 100 ")
-getSourceForgeData("SELECT * 
+getSourceForgeData("SELECT * FROM sf0305.users WHERE user_id < 100 ")
+if (FALSE) getSourceForgeData("SELECT * 
 FROM sf1104.users a, sf1104.artifact b
 WHERE a.user_id = b.submitted_by AND b.artifact_id = 304727")
 
-# clean up
-close(curl)
+# clean up, with a side effect of writing cookie file to disk
+rm(curl)
+gc()
