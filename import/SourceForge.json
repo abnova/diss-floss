@@ -1,0 +1,21 @@
+{
+  "configID": "SourceForge",
+  "configType": "import",
+  "schema": "sf0314",
+  "data": [
+    {
+      "indicatorName": "totalProjects",
+      "indicatorDescription": "Total number of unique projects",
+      "indicatorType": "numeric",
+      "resultType": "numeric",
+      "requestSQL": "SELECT COUNT(DISTINCT group_id) FROM $schema.user_group",
+    }
+    {
+      "indicatorName": "totalDevs",
+      "indicatorDescription": "Total number of developers per project",
+      "indicatorType": "numeric",
+      "resultType": "data.frame",
+      "requestSQL": "SELECT COUNT(*) FROM $schema.user_group WHERE group_id = $group_id",
+    }
+  ]
+}
