@@ -40,10 +40,12 @@ cookiesFile <- "cookies.txt"
 
 curl <- getCurlHandle()
 
-curlSetOpt(curl = curl, postredir = 3, #autoreferer = TRUE,
-           cookiefile = cookiesFile, cookiejar = cookiesFile,
-           ssl.verifyhost = FALSE, ssl.verifypeer = FALSE,
-           followlocation = TRUE, verbose = TRUE)
+invisible(
+  curlSetOpt(curl = curl, postredir = 3, #autoreferer = TRUE,
+             cookiefile = cookiesFile, cookiejar = cookiesFile,
+             ssl.verifyhost = FALSE, ssl.verifypeer = FALSE,
+             followlocation = TRUE, verbose = TRUE)
+  )
 
 
 #' srdaLogin()
@@ -156,7 +158,7 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   data <- read.table(textConnection(unlist(results)), header = FALSE,
                      sep = DATA_SEP, quote = "\"",
                      colClasses = "character", row.names = NULL)
-  if (DEBUG) print(data)
+  #if (DEBUG) print(data)
   return (data)
 }
 
@@ -189,7 +191,7 @@ getSourceForgeData <- function (request) {
   if (DEBUG) {message("Checking request \"", request, "\"...")}
   if (file.exists(rdataFile)) {
     if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
-    return()
+    return(invisible())
   }
   
   # Construct SRDA login and query URLs
@@ -211,6 +213,7 @@ getSourceForgeData <- function (request) {
                   rq$select, rq$from, rq$where, DATA_SEP, ADD_SQL)
   
   data <- srdaGetData()
+  
   #if (DEBUG) print(data)
   
   # save current data frame to RData file
@@ -230,4 +233,4 @@ WHERE a.user_id = b.submitted_by AND b.artifact_id = 304727")
 
 # clean up, with a side effect of writing cookie file to disk
 rm(curl)
-gc()
+x <- gc()
