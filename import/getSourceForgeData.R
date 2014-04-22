@@ -8,11 +8,14 @@
 
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(digest)) install.packages('digest')
+#if (!require(stringr)) install.packages('stringr')
 
 library(RCurl)
 library(digest)
+#library(stringr)
 
 source("../utils/debug.R")
+source("../utils/string.R")
 
 # Users must authenticate to access Query Form
 SRDA_HOST_URL  <- "http://zerlot.cse.nd.edu"
@@ -44,7 +47,7 @@ invisible(
   curlSetOpt(curl = curl, postredir = 3, #autoreferer = TRUE,
              cookiefile = cookiesFile, cookiejar = cookiesFile,
              ssl.verifyhost = FALSE, ssl.verifypeer = FALSE,
-             followlocation = TRUE, verbose = TRUE)
+             followlocation = TRUE, verbose = FALSE)
   )
 
 
@@ -93,15 +96,12 @@ srdaLogin <- function (loginURL, username, password) {
 
 srdaConvertRequest <- function (request) {
   
-  #TODO
-  #lookup table
-  #tokenize and filter request values
+  sql <- unlist(strsplit(request, split="SELECT|FROM|WHERE"))
+  names(sql) <- c("dummy", "select", "from", "where")
+  sql <- as.list(sql)
+  sql <- lapply(sql, trimLT) #str_trim
   
-  return (list(select = "*", from = "sf0305.users", where = "user_id < 100"))
-  #return (list(select = "*",
-  #             from = "sf1104.users a, sf1104.artifact b",
-  #             where = "b.artifact_id = 304727"))
-  
+  return (sql)
 }
 
 
@@ -129,6 +129,11 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
   if(url.exists(requestURL)) {
     reply <- postForm(requestURL, .params = params, #.opts = opts,
                       curl = curl, style = "POST")
+    info <- getCurlInfo(curl)
+    return (ifelse(info$response.code == 200, TRUE, FALSE))
+  }
+  else {
+    error("Can't access request URL!")
   }
 }
 
@@ -158,6 +163,7 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   data <- read.table(textConnection(unlist(results)), header = FALSE,
                      sep = DATA_SEP, quote = "\"",
                      colClasses = "character", row.names = NULL)
+  #if (DEBUG) print("==========")
   #if (DEBUG) print(data)
   return (data)
 }
@@ -190,7 +196,7 @@ getSourceForgeData <- function (request) {
   # check if the archive file has already been processed
   if (DEBUG) {message("Checking request \"", request, "\"...")}
   if (file.exists(rdataFile)) {
-    if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
+    if (DEBUG) {message("Processing skipped: .Rdata file found.")}
     return(invisible())
   }
   
@@ -199,21 +205,24 @@ getSourceForgeData <- function (request) {
                     collapse="", sep="")
   queryURL <- paste(SRDA_HOST_URL, SRDA_QUERY_URL, collapse="", sep="")
   
-  # Log into the system 
-  if (!srdaLogin(loginURL, SRDA_USER, SRDA_PASS))
-    error("Login failed!")
+  # Log into the system
+  success <- srdaLogin(loginURL, SRDA_USER, SRDA_PASS)
+  if (!success) error("Login failed!")
+  
   #try(srdaLogin(loginURL, getOption("SRDA_USER"), getOption("SRDA_PASS")))
   
+  # Convert (tokenize) SQL request into parts
   rq <- srdaConvertRequest(request)
   
   REPLACE_CLAUSE <- "" #temp
   rq$select <- paste(rq$select, REPLACE_CLAUSE, collapse="", sep=" ")
   
-  srdaRequestData(queryURL,
-                  rq$select, rq$from, rq$where, DATA_SEP, ADD_SQL)
+  # Submit data request
+  success <- srdaRequestData(queryURL, rq$select, rq$from, rq$where,
+                             DATA_SEP, ADD_SQL)
+  if (!success) error("Data request failed!")
   
   data <- srdaGetData()
-  
   #if (DEBUG) print(data)
   
   # save current data frame to RData file
@@ -228,8 +237,10 @@ message("\nRetrieving SourceForge data...\n")
 
 getSourceForgeData("SELECT * FROM sf0305.users WHERE user_id < 100 ")
 if (FALSE) getSourceForgeData("SELECT * 
-FROM sf1104.users a, sf1104.artifact b
+FROM sf1104.users a, sf1104.artifact b 
 WHERE a.user_id = b.submitted_by AND b.artifact_id = 304727")
+
+message("\nSourceForge data collection finished. Status: SUCCESS\n")
 
 # clean up, with a side effect of writing cookie file to disk
 rm(curl)
