@@ -10,12 +10,12 @@ if (!require(RCurl)) install.packages('RCurl')
 if (!require(digest)) install.packages('digest')
 if (!require(jsonlite))
   install.packages("jsonlite", repos="http://cran.r-project.org")
-#if (!require(stringr)) install.packages('stringr')
+if (!require(stringr)) install.packages('stringr')
 
 library(RCurl)
 library(digest)
 library(jsonlite)
-#library(stringr)
+library(stringr)
 
 source("../utils/debug.R")
 source("../utils/string.R")
@@ -102,7 +102,7 @@ srdaLogin <- function (loginURL, username, password) {
 
 srdaConvertRequest <- function (request) {
   
-  sql <- unlist(strsplit(request, split="SELECT|FROM|WHERE"))
+  sql <- unlist(strsplit(request, split = "SELECT|FROM|WHERE"))
   names(sql) <- c("dummy", "select", "from", "where")
   sql <- as.list(sql)
   sql <- lapply(sql, trimLT) #str_trim
@@ -175,6 +175,41 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
 }
 
 
+# Substitute all references to config. variables and parameters
+substituteVarParam <- function(config, request) {
+  
+  #print(config$data$requestSQL)
+  VAR_REF   <- "\\$\\{\\w+\\}"
+  PARAM_REF <- "\\%\\{\\w+\\}"
+  
+  vars <- str_locate_all(request, VAR_REF)
+  print(vars)
+  #str_replace_all(request, VAR_REF, paste(deparse(eval(config)), "$", varName)
+
+  request <- "SELECT * FROM aa WHERE bb = 1"
+  
+  #var <- gregexpr(VAR_REF, request, fixed = TRUE)
+  print("Hello")
+  #if (var == -1) return
+  #print(var)
+  #elem <- substring(request, var, var + attr(var, "match.length") - 1)
+  #print(elem)
+  #for (e in elem) {
+  #  if (nchar(e) == 0) next
+  #  varName <- substring(e, 3, nchar(e) - 1)
+  #  print(varName)
+  #  val <- paste(deparse(eval(config)), "$", varName)
+  #  print(e)
+  #  print(val)
+  #  print(request)
+  #  gsub(e, val, request)
+  
+  #gsub(elem, config$elem, rq)
+  #print(request)
+  return (request)
+}
+
+
 #' getSourceForgeData
 #'
 #' Downloads FLOSS startup data by using AngelList's RESTful API,
@@ -193,10 +228,14 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
 #'         getAngelListData(1, 59)
 #'         getAngelListData('Market', 'FLOSS')
 
-getSourceForgeData <- function (row, dataFrame) {
+getSourceForgeData <- function (row, config) { # dataFrame
   
-  request <- dataFrame[row, "requestSQL"]
-
+  # $data
+  # Extract SQL request from the function's argument
+  #request <- dataFrame[row, "requestSQL"]
+  request <- config$data[row, "requestSQL"]
+  print(request)
+  
   # calculate request's digest and generate corresponding RData file name
   fileDigest <- digest(request, algo="md5", serialize=F)
   rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
@@ -218,6 +257,9 @@ getSourceForgeData <- function (row, dataFrame) {
   if (!success) error("Login failed!")
   
   #try(srdaLogin(loginURL, getOption("SRDA_USER"), getOption("SRDA_PASS")))
+
+  # Substitute all references to config. variables and parameters
+  request <- substituteVarParam(config, request)
   
   # Convert (tokenize) SQL request into parts
   rq <- srdaConvertRequest(request)
@@ -243,6 +285,10 @@ getSourceForgeData <- function (row, dataFrame) {
 
 message("\nReading configuration file ...\n")
 
+# Variables in JSON-based config. file are as follows:
+# ${elem} - refers to the 'elem' JSON element in the file
+# %{val} - refers to the value of the argument passed by caller
+
 config <- jsonlite::fromJSON(SRDA_CONFIG)
 msg <- paste("Data ", config$action, " from ", config$source,
              ", using schema \"", config$schema, "\".", sep = "")
@@ -253,10 +299,10 @@ if (DEBUG) message(msg)
 message("\nRetrieving SourceForge data ...\n")
 
 # Collect data, iterating through the request queue
-lapply(1:2, #nrow(config$data),
-       function(row) getSourceForgeData(row, config$data))
+lapply(seq_along(nrow(config$data)),
+       function(row) getSourceForgeData(row, config))
 
-message("\nSourceForge data collection finished. Status: SUCCESS\n")
+message("\nSourceForge data collection finished. Status: SUCCESS.\n")
 
 # clean up, with a side effect of writing cookie file to disk
 rm(curl)
