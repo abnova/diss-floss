@@ -1,21 +1,37 @@
 {
-  "configID": "SourceForge",
-  "configType": "import",
-  "schema": "sf0314",
-  "data": [
-    {
-      "indicatorName": "totalProjects",
-      "indicatorDescription": "Total number of unique projects",
-      "indicatorType": "numeric",
-      "resultType": "numeric",
-      "requestSQL": "SELECT COUNT(DISTINCT group_id) FROM $schema.user_group",
-    }
-    {
-      "indicatorName": "totalDevs",
-      "indicatorDescription": "Total number of developers per project",
-      "indicatorType": "numeric",
-      "resultType": "data.frame",
-      "requestSQL": "SELECT COUNT(*) FROM $schema.user_group WHERE group_id = $group_id",
-    }
-  ]
+   "source":"SourceForge",
+   "action":"import",
+   "schema":"sf0314",
+   "data":[
+      {
+         "indicatorName":"test1",
+         "indicatorDescription":"Test Indicator 1",
+         "indicatorType":"numeric",
+         "resultType":"numeric",
+         "requestSQL":"SELECT * FROM sf0305.users WHERE user_id < 100"
+      },
+      {
+         "indicatorName":"test2",
+         "indicatorDescription":"Test Indicator 2",
+         "indicatorType":"numeric",
+         "resultType":"numeric",
+         "requestSQL":"SELECT * 
+                       FROM sf1104.users a, sf1104.artifact b 
+                       WHERE a.user_id = b.submitted_by AND b.artifact_id = 304727"
+      },
+      {
+         "indicatorName":"totalProjects",
+         "indicatorDescription":"Total number of unique projects",
+         "indicatorType":"numeric",
+         "resultType":"numeric",
+         "requestSQL":"SELECT COUNT(DISTINCT group_id) FROM $schema.user_group"
+      },
+      {
+         "indicatorName":"totalDevs",
+         "indicatorDescription":"Total number of developers per project",
+         "indicatorType":"numeric",
+         "resultType":"data.frame",
+         "requestSQL":"SELECT COUNT(*) FROM $schema.user_group WHERE group_id = $group_id"
+      }
+   ]
 }

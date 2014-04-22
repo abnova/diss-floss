@@ -8,14 +8,20 @@
 
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(digest)) install.packages('digest')
+if (!require(jsonlite))
+  install.packages("jsonlite", repos="http://cran.r-project.org")
 #if (!require(stringr)) install.packages('stringr')
 
 library(RCurl)
 library(digest)
+library(jsonlite)
 #library(stringr)
 
 source("../utils/debug.R")
 source("../utils/string.R")
+
+# SRDA data collection configuration file
+SRDA_CONFIG <- "./SourceForge.json"
 
 # Users must authenticate to access Query Form
 SRDA_HOST_URL  <- "http://zerlot.cse.nd.edu"
@@ -187,16 +193,18 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
 #'         getAngelListData(1, 59)
 #'         getAngelListData('Market', 'FLOSS')
 
-getSourceForgeData <- function (request) {
+getSourceForgeData <- function (row, dataFrame) {
+  
+  request <- dataFrame[row, "requestSQL"]
 
   # calculate request's digest and generate corresponding RData file name
   fileDigest <- digest(request, algo="md5", serialize=F)
   rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
   
   # check if the archive file has already been processed
-  if (DEBUG) {message("Checking request \"", request, "\"...")}
+  if (DEBUG) {message("Processing request \"", request, "\"...")}
   if (file.exists(rdataFile)) {
-    if (DEBUG) {message("Processing skipped: .Rdata file found.")}
+    if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
     return(invisible())
   }
   
@@ -233,12 +241,20 @@ getSourceForgeData <- function (request) {
 }
 
 
-message("\nRetrieving SourceForge data...\n")
+message("\nReading configuration file ...\n")
 
-getSourceForgeData("SELECT * FROM sf0305.users WHERE user_id < 100 ")
-if (FALSE) getSourceForgeData("SELECT * 
-FROM sf1104.users a, sf1104.artifact b 
-WHERE a.user_id = b.submitted_by AND b.artifact_id = 304727")
+config <- jsonlite::fromJSON(SRDA_CONFIG)
+msg <- paste("Data ", config$action, " from ", config$source,
+             ", using schema \"", config$schema, "\".", sep = "")
+if (DEBUG) message(msg)
+msg <- paste("Total number of requests to submit:", nrow(config$data))
+if (DEBUG) message(msg)
+
+message("\nRetrieving SourceForge data ...\n")
+
+# Collect data, iterating through the request queue
+lapply(1:2, #nrow(config$data),
+       function(row) getSourceForgeData(row, config$data))
 
 message("\nSourceForge data collection finished. Status: SUCCESS\n")
 
