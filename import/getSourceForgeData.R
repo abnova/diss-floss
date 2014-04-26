@@ -6,11 +6,20 @@
 #'
 #' @author Aleksandr Blekh \email{blekh@@nova.edu}
 
+# TODO:
+# Wrap all package installation & loading
+# in a function or, at least, do it via vector.
+
 if (!require(RCurl)) install.packages('RCurl')
 if (!require(digest)) install.packages('digest')
 if (!require(jsonlite))
   install.packages("jsonlite", repos="http://cran.r-project.org")
 if (!require(stringr)) install.packages('stringr')
+
+suppressPackageStartupMessages(suppressWarnings(library(RCurl)))
+suppressPackageStartupMessages(suppressWarnings(library(digest)))
+suppressPackageStartupMessages(suppressWarnings(library(jsonlite)))
+suppressPackageStartupMessages(suppressWarnings(library(stringr)))
 
 library(RCurl)
 library(digest)
@@ -20,8 +29,12 @@ library(stringr)
 source("../utils/debug.R")
 source("../utils/string.R")
 
-# SRDA data collection configuration file
-SRDA_CONFIG <- "./SourceForge.json"
+
+# SRDA data collection configuration template file
+SRDA_TEMPLATE <- "./SourceForge.cfg.tmpl"
+
+# SRDA data collection configuration file (auto-generated)
+SRDA_CONFIG <- "./SourceForge.cfg.json"
 
 # Users must authenticate to access Query Form
 SRDA_HOST_URL  <- "http://zerlot.cse.nd.edu"
@@ -175,38 +188,22 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
 }
 
 
-# Substitute all references to config. variables and parameters
-substituteVarParam <- function(config, request) {
+# Parse SRAD data collection JSON-like config. template file
+# by substituting all references to config. variables with
+# corresponding JSON elements' values and generate config. file.
+generateConfig <- function(configTemplate, configFile) {
   
-  #print(config$data$requestSQL)
-  VAR_REF   <- "\\$\\{\\w+\\}"
-  PARAM_REF <- "\\%\\{\\w+\\}"
+  suppressPackageStartupMessages(suppressWarnings(library(tcltk)))
+  if (!require(gsubfn)) install.packages('gsubfn')
+  library(gsubfn)
   
-  vars <- str_locate_all(request, VAR_REF)
-  print(vars)
-  #str_replace_all(request, VAR_REF, paste(deparse(eval(config)), "$", varName)
-
-  request <- "SELECT * FROM aa WHERE bb = 1"
+  cfgTmpl <- readLines(configTemplate)
   
-  #var <- gregexpr(VAR_REF, request, fixed = TRUE)
-  print("Hello")
-  #if (var == -1) return
-  #print(var)
-  #elem <- substring(request, var, var + attr(var, "match.length") - 1)
-  #print(elem)
-  #for (e in elem) {
-  #  if (nchar(e) == 0) next
-  #  varName <- substring(e, 3, nchar(e) - 1)
-  #  print(varName)
-  #  val <- paste(deparse(eval(config)), "$", varName)
-  #  print(e)
-  #  print(val)
-  #  print(request)
-  #  gsub(e, val, request)
+  defns <- strapplyc(cfgTmpl, '"\\*([^"]*)":"([^"]*)"', simplify = rbind)
+  dict <- setNames(defns[, 2], defns[, 1])
+  config <- gsubfn("[$]{([[:alpha:]][[:alnum:].]*)}", dict, cfgTmpl)
   
-  #gsub(elem, config$elem, rq)
-  #print(request)
-  return (request)
+  writeLines(config, con = configFile)
 }
 
 
@@ -258,9 +255,6 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   #try(srdaLogin(loginURL, getOption("SRDA_USER"), getOption("SRDA_PASS")))
 
-  # Substitute all references to config. variables and parameters
-  request <- substituteVarParam(config, request)
-  
   # Convert (tokenize) SQL request into parts
   rq <- srdaConvertRequest(request)
   
@@ -283,11 +277,41 @@ getSourceForgeData <- function (row, config) { # dataFrame
 }
 
 
-message("\nReading configuration file ...\n")
+# Verify the need to generate configuration file,
+# based on files' presence and modification times
 
-# Variables in JSON-based config. file are as follows:
-# ${elem} - refers to the 'elem' JSON element in the file
-# %{val} - refers to the value of the argument passed by caller
+if (file.exists(SRDA_CONFIG)) {
+  if (file.exists(SRDA_TEMPLATE)) {
+    delta <- difftime(file.info(SRDA_CONFIG)$mtime,
+                      file.info(SRDA_TEMPLATE)$mtime,
+                      units = "secs")
+    update <- as.numeric(delta) < 0  # config is older
+  }
+  else {
+    warning("Configuration template file is missing!")
+    update <- FALSE
+  }
+} else if (file.exists(SRDA_TEMPLATE)) {
+  update <- TRUE
+} else {
+  stop("Template and configuration files are both missing!")
+}
+
+
+# Generate configuration file, if needed
+
+if (update) {
+  
+  message("\nParsing configuration template file ...\n")
+  
+  # Variables in JSON-based config. template file are as follows:
+  # ${elem} - refers to the 'elem' JSON element in the file
+  # %{val} - refers to the value of the argument passed by caller
+  
+  generateConfig(SRDA_TEMPLATE, SRDA_CONFIG)
+}
+
+message("\nReading configuration file ...\n")
 
 config <- jsonlite::fromJSON(SRDA_CONFIG)
 msg <- paste("Data ", config$action, " from ", config$source,
