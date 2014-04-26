@@ -79,11 +79,12 @@ getDataPaginated <- function (page) {
   #if (DEBUG) message("Page ", page, " - # of attributes: ",
   #                   length(data$startups))
   
-  # collect only NOT hidden rows from the source data frame
+  # collect only NOT hidden rows from the source list (JO) / data frame
   if (JO) {
-    #if (DEBUG) print(class(data$startups))
-    startups <- data$startups[data$startups$hidden == FALSE]
-    #startups <- data$startups
+    # create logical index vector 'hidden'
+    hidden <- sapply(data$startups, "[[", "hidden")
+    # subset list, based on the index vector
+    startups <- data$startups[!hidden]
   }
   else {
     startups <- rbind.fill(data$startups[data$startups$hidden == FALSE, ])
