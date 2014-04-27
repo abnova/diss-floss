@@ -24,14 +24,14 @@
          "indicatorDescription":"Total number of unique projects",
          "indicatorType":"numeric",
          "resultType":"numeric",
-         "requestSQL":"SELECT COUNT(DISTINCT group_id) FROM SourceForge import sf0314.user_group"
+         "requestSQL":"SELECT COUNT(DISTINCT group_id) FROM sf0314.user_group"
       },
       {
          "indicatorName":"totalDevs",
          "indicatorDescription":"Total number of developers per project",
          "indicatorType":"numeric",
          "resultType":"data.frame",
-         "requestSQL":"SELECT COUNT(*) FROM SourceForge import sf0314.user_group WHERE group_id = 78745"
+         "requestSQL":"SELECT COUNT(*) FROM sf0314.user_group WHERE group_id = 78745"
       }
    ]
 }

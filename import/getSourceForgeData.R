@@ -16,10 +16,10 @@ if (!require(jsonlite))
   install.packages("jsonlite", repos="http://cran.r-project.org")
 if (!require(stringr)) install.packages('stringr')
 
-suppressPackageStartupMessages(suppressWarnings(library(RCurl)))
-suppressPackageStartupMessages(suppressWarnings(library(digest)))
-suppressPackageStartupMessages(suppressWarnings(library(jsonlite)))
-suppressPackageStartupMessages(suppressWarnings(library(stringr)))
+# INFO: Possible methods of suppressing messages
+#suppressMessages(library(RCurl))
+#suppressPackageStartupMessages(library(RCurl))
+#invisible(capture.output(library(RCurl, quietly=TRUE)))
 
 library(RCurl)
 library(digest)
@@ -28,7 +28,6 @@ library(stringr)
 
 source("../utils/debug.R")
 source("../utils/string.R")
-
 
 # SRDA data collection configuration template file
 SRDA_TEMPLATE <- "./SourceForge.cfg.tmpl"
@@ -204,7 +203,7 @@ generateConfig <- function(configTemplate, configFile) {
   cfgTmpl <- readLines(configTemplate)
   
   defns <- strapplyc(cfgTmpl, regexKeyValue, simplify = rbind)
-  dict <- setNames(defns[, 2], defns[, 1])
+  dict <- setNames(as.list(defns[, 2]), defns[, 1])
   config <- gsubfn(regexVariable, dict, cfgTmpl)
   
   writeLines(config, con = configFile)
