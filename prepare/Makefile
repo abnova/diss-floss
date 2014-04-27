@@ -1,7 +1,7 @@
 # Major variable definitions
 
-#RSCRIPT=Rscript
-RSCRIPT=R CMD BATCH
+RSCRIPT=Rscript
+#RSCRIPT=R CMD BATCH
 R_OPTS=--no-save --no-restore --verbose
 #R_OUT=> outputFile.Rout 2>&1
 
@@ -10,22 +10,25 @@ R_OPTS=--no-save --no-restore --verbose
 
 # Targets and rules 
 
-preparation:
+prepare: sample \
+         merge \
+         cleanup \
+         transform
 
-#importFLOSSmole: getFLOSSmoleDataXML.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+sample: sample.R
+	$(RSCRIPT) $(R_OPTS) $<
 
-#importSourceForge: getSourceForgeData.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+merge: merge.R
+	$(RSCRIPT) $(R_OPTS) $<
 
-#importAngelList: getAngelListData.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+cleanup: cleanup.R
+	$(RSCRIPT) $(R_OPTS) $<
 
-#importCrunchBase: getCrunchBaseDataAPI.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+transform: transform.R
+	$(RSCRIPT) $(R_OPTS) $<
 
 .PHONY: clean
 
 # remove intermediate files
 clean:
-	rm -f tmp*.bz2 *.Rdata
+	rm -f tmp*.bz2 *.Rdata .Rout
