@@ -52,7 +52,7 @@ ADD_SQL  <- "0" # add SQL to file
 
 REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), CHR(13),' ')"
 
-RDATA_EXT <- ".Rdata"
+RDATA_EXT <- ".RData"
 RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
@@ -114,11 +114,12 @@ srdaLogin <- function (loginURL, username, password) {
 
 srdaConvertRequest <- function (request) {
   
-  sql <- unlist(strsplit(request, split = "SELECT|FROM|WHERE"))
-  sql <- sql[-1] # remove empty element produced by strsplit()
+  sql <- strsplit(request, split = "SELECT|FROM|WHERE")
+  sql <- sql[[1]][-1] # remove 1st empty element produced by strsplit()
+  if (length(sql) == 2) # 'where' is empty, add dummy element
+    sql <- c(sql, "")
   names(sql) <- c("select", "from", "where")
-  sql <- as.list(sql)
-  sql <- lapply(sql, trimLT) #str_trim
+  sql <- lapply(sql, str_trim)
   
   return (sql)
 }
@@ -234,7 +235,6 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # Extract SQL request from the function's argument
   #request <- dataFrame[row, "requestSQL"]
   request <- config$data[row, "requestSQL"]
-  print(request)
   
   # calculate request's digest and generate corresponding RData file name
   fileDigest <- digest(request, algo="md5", serialize=F)
@@ -244,7 +244,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
   if (DEBUG) {message("Processing request \"", request, "\"...")}
   if (file.exists(rdataFile)) {
     if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
-    return(invisible())
+    return (invisible())
   }
   
   # Construct SRDA login and query URLs

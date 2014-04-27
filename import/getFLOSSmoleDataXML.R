@@ -35,7 +35,7 @@ repos <- data.frame(code = REPO_CODE, year = REPO_YEAR,
                     stringsAsFactors = FALSE)
 
 BZIP_EXT  <- ".txt\\.bz2"
-RDATA_EXT <- ".Rdata"
+RDATA_EXT <- ".RData"
 RDATA_DIR <- "../cache/FLOSSmole" #TODO: consider passing this via CL args
 
 lookup <- data.frame(digest = "", url = "", stringsAsFactors = FALSE)
