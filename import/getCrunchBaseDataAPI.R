@@ -74,7 +74,7 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
     totalPages <<- startups$total %/% CB_REPLY_OBJS_PER_PAGE
     if (startups$total %% CB_REPLY_OBJS_PER_PAGE > 0)
       totalPages <<- totalPages + 1
-    if (DEBUG) message("\nAPI reply contains: ",
+    if (DEBUG) message("API reply contains: ",
                        startups$total, " startups, ",
                        totalPages, " pages.\n")
     firstPage <<- FALSE
@@ -149,8 +149,6 @@ getCBDataAPI <- function (query, field) {
                     try(getCBDataPaginated(query, field, page, progress, TRUE),
                     silent = TRUE))
   
-  cat("\n\n")
-  
   reply <- do.call(c, reply)
   startups <- jsonlite:::simplify(reply)
 
@@ -165,7 +163,7 @@ getCBDataAPI <- function (query, field) {
   close(progress)
   #if (DEBUG) print(head(reply))
   
-  return (startups)
+  return (invisible(startups))
 }
 
 
