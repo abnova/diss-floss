@@ -5,13 +5,13 @@
 #'
 #' @author Aleksandr Blekh \email{blekh@@nova.edu}
 
-if (!require(RCurl)) install.packages('RCurl')
-if (!require(XML)) install.packages('XML')
-if (!require(digest)) install.packages('digest')
+if (!suppressMessages(require(RCurl))) install.packages('RCurl')
+if (!suppressMessages(require(XML))) install.packages('XML')
+if (!suppressMessages(require(digest))) install.packages('digest')
 
-library(RCurl)
-library(XML)
-library(digest)
+#library(RCurl)
+#library(XML)
+#library(digest)
 
 source("../utils/debug.R")
 
@@ -51,7 +51,7 @@ DEBUG <- FALSE # TODO: retrieve debug flag via CL arguments
 
 importRepoFiles <- function(repos, row) {
   
-  message("* Verifying repository: ", repos$name[row], " ...",
+  message("Verifying repository: ", repos$name[row], " ...",
           ifelse(DEBUG, "\n", ""))
   
   # construct URL for current FLOSS repository in FLOSSmole
@@ -171,10 +171,11 @@ getFLOSSmoleData <- function(repos) {
 }
 
 
-message("\nRetrieving FLOSSmole data...\n")
-if (DEBUG) {
-  print(system.time(getFLOSSmoleData(repos)))
-} else {
-  system.time(getFLOSSmoleData(repos))
-}
-message("\n")
+message("\n=== FLOSSmole data collection ===\n")
+
+message("Retrieving FLOSSmole data...\n")
+
+allData <- getFLOSSmoleData(repos)
+
+#print(system.time(getFLOSSmoleData(repos)))
+#system.time(getFLOSSmoleData(repos))

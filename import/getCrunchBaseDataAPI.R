@@ -10,14 +10,14 @@
 #' TODO(general): "wrap" packages operations in a function loadPackages(),
 #'     then call suppressMessages(loadPackages()) if 'verbose' is disabled
 
-if (!require(RCurl)) install.packages('RCurl')
-if (!require(jsonlite))
+if (!suppressMessages(require(RCurl))) install.packages('RCurl')
+if (!suppressMessages(require(jsonlite)))
   install.packages("jsonlite", repos="http://cran.r-project.org")
-if (!require(plyr)) install.packages('plyr')
+if (!suppressMessages(require(plyr))) install.packages('plyr')
 
-library(RCurl)
-library(jsonlite)
-library(plyr)
+#library(RCurl)
+#library(jsonlite)
+#library(plyr)
 
 source("../utils/debug.R")
 
@@ -163,9 +163,12 @@ getCBDataAPI <- function (query, field) {
   close(progress)
   #if (DEBUG) print(head(reply))
   
-  return (invisible(startups))
+  #return (invisible(startups)) # return's assignment = invisible() 
+  return (startups)
 }
 
+
+message("\n=== CrunchBase data collection ===\n")
 
 field <- "overview"
 query <- "drone" # "wearable"
@@ -173,10 +176,10 @@ query <- "drone" # "wearable"
 debugInfo <- paste(" for request ['", field, "' = \"", query, "\"]",
                    sep = "")
 
-message("\nRetrieving CrunchBase data",
+message("Retrieving CrunchBase data",
         ifelse(DEBUG, debugInfo, ""), "...\n")
 
 #getCBDataAPI("open+source", "overview")
-getCBDataAPI(query, field)
+allData <- getCBDataAPI(query, field)
 
 message("\n")

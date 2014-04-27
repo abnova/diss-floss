@@ -10,21 +10,22 @@
 # Wrap all package installation & loading
 # in a function or, at least, do it via vector.
 
-if (!require(RCurl)) install.packages('RCurl')
-if (!require(digest)) install.packages('digest')
-if (!require(jsonlite))
+if (!suppressMessages(require(RCurl))) install.packages('RCurl')
+if (!suppressMessages(require(digest))) install.packages('digest')
+if (!suppressMessages(require(jsonlite)))
   install.packages("jsonlite", repos="http://cran.r-project.org")
-if (!require(stringr)) install.packages('stringr')
+if (!suppressMessages(require(stringr))) install.packages('stringr')
 
 # INFO: Possible methods of suppressing messages
 #suppressMessages(library(RCurl))
 #suppressPackageStartupMessages(library(RCurl))
 #invisible(capture.output(library(RCurl, quietly=TRUE)))
 
-library(RCurl)
-library(digest)
-library(jsonlite)
-library(stringr)
+# library() calls are not needed as require() load packages, too
+#library(RCurl)
+#library(digest)
+#library(jsonlite)
+#library(stringr)
 
 source("../utils/debug.R")
 source("../utils/string.R")
@@ -195,8 +196,8 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
 generateConfig <- function(configTemplate, configFile) {
   
   suppressPackageStartupMessages(suppressWarnings(library(tcltk)))
-  if (!require(gsubfn)) install.packages('gsubfn')
-  library(gsubfn)
+  if (!suppressMessages(require(gsubfn))) install.packages('gsubfn')
+  #library(gsubfn)
   
   regexKeyValue <- '"_([^"]*)":"([^"]*)"'
   regexVariable <- "[$]{([[:alpha:]][[:alnum:].]*)}"
@@ -321,7 +322,9 @@ if (updateNeeded()) {
   generateConfig(SRDA_TEMPLATE, SRDA_CONFIG)
 }
 
-message("\nReading configuration file ...\n")
+message("\n=== SRDA data collection ===\n")
+
+message("Reading configuration file ...\n")
 
 config <- jsonlite::fromJSON(SRDA_CONFIG)
 msg <- paste("Data ", config["_action"],
@@ -337,7 +340,7 @@ message("\nRetrieving SourceForge data ...\n")
 lapply(seq(nrow(config$data)),
        function(row) getSourceForgeData(row, config))
 
-message("\nSourceForge data collection finished. Status: SUCCESS.\n")
+#message("\nSourceForge data collection finished. Status: SUCCESS.\n")
 
 # clean up, with a side effect of writing cookie file to disk
 rm(curl)

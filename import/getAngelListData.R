@@ -5,14 +5,12 @@
 #'
 #' @author Aleksandr Blekh \email{blekh@@nova.edu}
 
-if (!require(RCurl)) install.packages('RCurl')
-if (!require(jsonlite))
+if (!suppressMessages(require(RCurl))) install.packages('RCurl')
+if (!suppressMessages(require(jsonlite)))
   install.packages("jsonlite", repos="http://cran.r-project.org")
-#if (!require(plyr)) install.packages('plyr')
 
-library(RCurl)
-library(jsonlite)
-#library(plyr)
+#library(RCurl)
+#library(jsonlite)
 
 source("../utils/debug.R")
 
@@ -29,8 +27,8 @@ DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 JO <- TRUE
 
 if (JO) {
-  if (!require(plyr)) install.packages('plyr')
-  library(plyr)
+  if (!suppressMessages(require(plyr))) install.packages('plyr')
+  #library(plyr)
 }
 
 
@@ -151,7 +149,9 @@ getAngelListData <- function () {
 }
 
 
-message("\nRetrieving AngelList data...\n")
+message("\n=== AngelList data collection ===\n")
+
+message("Retrieving AngelList data...\n")
 
 allData <- getAngelListData()
 #if (DEBUG) str(allData, vec.len=12, list.len=5)
