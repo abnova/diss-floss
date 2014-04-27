@@ -116,7 +116,8 @@ srdaLogin <- function (loginURL, username, password) {
 srdaConvertRequest <- function (request) {
   
   sql <- unlist(strsplit(request, split = "SELECT|FROM|WHERE"))
-  names(sql) <- c("dummy", "select", "from", "where")
+  sql <- sql[-1] # remove empty element produced by strsplit()
+  names(sql) <- c("select", "from", "where")
   sql <- as.list(sql)
   sql <- lapply(sql, trimLT) #str_trim
   
@@ -197,11 +198,14 @@ generateConfig <- function(configTemplate, configFile) {
   if (!require(gsubfn)) install.packages('gsubfn')
   library(gsubfn)
   
+  regexKeyValue <- '"_([^"]*)":"([^"]*)"'
+  regexVariable <- "[$]{([[:alpha:]][[:alnum:].]*)}"
+  
   cfgTmpl <- readLines(configTemplate)
   
-  defns <- strapplyc(cfgTmpl, '"\\*([^"]*)":"([^"]*)"', simplify = rbind)
+  defns <- strapplyc(cfgTmpl, regexKeyValue, simplify = rbind)
   dict <- setNames(defns[, 2], defns[, 1])
-  config <- gsubfn("[$]{([[:alpha:]][[:alnum:].]*)}", dict, cfgTmpl)
+  config <- gsubfn(regexVariable, dict, cfgTmpl)
   
   writeLines(config, con = configFile)
 }
@@ -280,27 +284,34 @@ getSourceForgeData <- function (row, config) { # dataFrame
 # Verify the need to generate configuration file,
 # based on files' presence and modification times
 
-if (file.exists(SRDA_CONFIG)) {
-  if (file.exists(SRDA_TEMPLATE)) {
-    delta <- difftime(file.info(SRDA_CONFIG)$mtime,
-                      file.info(SRDA_TEMPLATE)$mtime,
-                      units = "secs")
-    update <- as.numeric(delta) < 0  # config is older
+updateNeeded <- function () {
+  
+  if (file.exists(SRDA_CONFIG)) {
+    if (file.exists(SRDA_TEMPLATE)) {
+      delta <- difftime(file.info(SRDA_CONFIG)$mtime,
+                        file.info(SRDA_TEMPLATE)$mtime,
+                        units = "secs")
+      update <- as.numeric(delta) < 0  # config is older
+    }
+    else {
+      warning("Configuration template file is missing!")
+      update <- FALSE
+    }
+  } else if (file.exists(SRDA_TEMPLATE)) {
+    update <- TRUE
+  } else {
+    stop("Template and configuration files are both missing!")
+    # stop execution of the script as critical config info is missing
+    quit(status = -1)
   }
-  else {
-    warning("Configuration template file is missing!")
-    update <- FALSE
-  }
-} else if (file.exists(SRDA_TEMPLATE)) {
-  update <- TRUE
-} else {
-  stop("Template and configuration files are both missing!")
+  
+  return (update)
 }
 
 
 # Generate configuration file, if needed
 
-if (update) {
+if (updateNeeded()) {
   
   message("\nParsing configuration template file ...\n")
   
@@ -314,8 +325,9 @@ if (update) {
 message("\nReading configuration file ...\n")
 
 config <- jsonlite::fromJSON(SRDA_CONFIG)
-msg <- paste("Data ", config$action, " from ", config$source,
-             ", using schema \"", config$schema, "\".", sep = "")
+msg <- paste("Data ", config["_action"],
+             " from ", config["_source"],
+             ", using schema \"", config["_schema"], "\".", sep = "")
 if (DEBUG) message(msg)
 msg <- paste("Total number of requests to submit:", nrow(config$data))
 if (DEBUG) message(msg)
@@ -323,7 +335,7 @@ if (DEBUG) message(msg)
 message("\nRetrieving SourceForge data ...\n")
 
 # Collect data, iterating through the request queue
-lapply(seq_along(nrow(config$data)),
+lapply(seq(nrow(config$data)),
        function(row) getSourceForgeData(row, config))
 
 message("\nSourceForge data collection finished. Status: SUCCESS.\n")
