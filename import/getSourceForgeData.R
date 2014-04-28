@@ -337,10 +337,10 @@ if (DEBUG) message(msg)
 message("\nRetrieving SourceForge data ...\n")
 
 # Collect data, iterating through the request queue
-lapply(seq(nrow(config$data)),
-       function(row) getSourceForgeData(row, config))
+allData <- lapply(seq(nrow(config$data)),
+                  function(row) getSourceForgeData(row, config))
 
-#message("\nSourceForge data collection finished. Status: SUCCESS.\n")
+message("\nSourceForge data collection completed successfully.\n")
 
 # clean up, with a side effect of writing cookie file to disk
 rm(curl)

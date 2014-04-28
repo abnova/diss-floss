@@ -159,3 +159,5 @@ allData <- getAngelListData()
 
 #allStartups <- data.frame(allData)
 #if (DEBUG) str(allStartups, vec.len=12)
+
+message("\nAngelList data collection completed successfully.\n")

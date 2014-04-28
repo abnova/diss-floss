@@ -182,4 +182,4 @@ message("Retrieving CrunchBase data",
 #getCBDataAPI("open+source", "overview")
 allData <- getCBDataAPI(query, field)
 
-message("\n")
+message("\nCrunchBase data collection completed successfully.\n")

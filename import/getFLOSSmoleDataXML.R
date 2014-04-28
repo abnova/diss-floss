@@ -179,3 +179,5 @@ allData <- getFLOSSmoleData(repos)
 
 #print(system.time(getFLOSSmoleData(repos)))
 #system.time(getFLOSSmoleData(repos))
+
+message("\nFLOSSmole data collection completed successfully.\n")
