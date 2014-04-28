@@ -30,6 +30,8 @@ if (!suppressMessages(require(stringr))) install.packages('stringr')
 source("../utils/debug.R")
 source("../utils/string.R")
 
+skipped <<- 0 # counter for # of times the script skipped processing
+
 # SRDA data collection configuration template file
 SRDA_TEMPLATE <- "./SourceForge.cfg.tmpl"
 
@@ -242,8 +244,9 @@ getSourceForgeData <- function (row, config) { # dataFrame
   rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
   
   # check if the archive file has already been processed
-  if (DEBUG) {message("Processing request \"", request, "\"...")}
+  if (DEBUG) {message("Processing request \"", request, "\" ...")}
   if (file.exists(rdataFile)) {
+    skipped <<- skipped + 1
     if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
     return (invisible())
   }
@@ -327,20 +330,25 @@ message("\n=== SRDA data collection ===\n")
 message("Reading configuration file ...\n")
 
 config <- jsonlite::fromJSON(SRDA_CONFIG)
-msg <- paste("Data ", config["_action"],
-             " from ", config["_source"],
-             ", using schema \"", config["_schema"], "\".", sep = "")
-if (DEBUG) message(msg)
-msg <- paste("Total number of requests to submit:", nrow(config$data))
-if (DEBUG) message(msg)
 
-message("\nRetrieving SourceForge data ...\n")
+if (DEBUG) {
+  msg <- paste("Data ", config["_action"],
+               " from ", config["_source"],
+               ", using schema \"", config["_schema"], "\".", sep = "")
+  message(msg)
+  
+  msg <- paste("Total number of requests to submit:", nrow(config$data))
+  message(msg, "\n")
+} 
+
+message("Retrieving SourceForge data ...\n")
 
 # Collect data, iterating through the request queue
 allData <- lapply(seq(nrow(config$data)),
                   function(row) getSourceForgeData(row, config))
 
-message("\nSourceForge data collection completed successfully.\n")
+if (skipped == 0) message("") # add new line
+message("SourceForge data collection completed successfully.\n")
 
 # clean up, with a side effect of writing cookie file to disk
 rm(curl)

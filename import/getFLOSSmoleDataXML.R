@@ -46,12 +46,12 @@ LOOKUP_FILE <- "DataLookup"
 DATA_ATTRIB <- TRUE
 ATTRIB_NAME <- "DataSource"
 
-DEBUG <- FALSE # TODO: retrieve debug flag via CL arguments
+DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 
 importRepoFiles <- function(repos, row) {
   
-  message("Verifying repository: ", repos$name[row], " ...",
+  message("* Verifying repository: ", repos$name[row], " ...",
           ifelse(DEBUG, "\n", ""))
   
   # construct URL for current FLOSS repository in FLOSSmole
@@ -173,7 +173,7 @@ getFLOSSmoleData <- function(repos) {
 
 message("\n=== FLOSSmole data collection ===\n")
 
-message("Retrieving FLOSSmole data...\n")
+message("Retrieving FLOSSmole data ...\n")
 
 allData <- getFLOSSmoleData(repos)
 
