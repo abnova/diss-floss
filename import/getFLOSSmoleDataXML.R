@@ -13,6 +13,7 @@ if (!suppressMessages(require(digest))) install.packages('digest')
 #library(XML)
 #library(digest)
 
+warnings(file = "./FLOSSmole.warn.log")
 source("../utils/debug.R")
 
 # URL of FLOSSmole repository root directory
@@ -118,7 +119,8 @@ importRepoFiles <- function(repos, row) {
       download.file(url, destfile = file, mode = "w")
       data <- bzfile(file, open = "r")
       try(fileData <- read.table(data, header = TRUE, fill = TRUE,
-                                 sep = "\t"),
+                                 sep = "\t", quote = "",
+                                 stringsAsFactors = FALSE),
           silent = FALSE)
       
       if (DATA_ATTRIB) {

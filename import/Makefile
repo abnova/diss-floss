@@ -2,8 +2,8 @@
 
 RSCRIPT=Rscript
 #RSCRIPT=R CMD BATCH
-R_OPTS=--no-save --no-restore --silent
-R_OPTS_DEBUG=--no-save --no-restore --verbose
+R_OPTS=--no-restore --verbose
+R_OPTS_PROD=--no-save --no-restore --silent
 #R_OUT=> outputFile.Rout 2>&1
 
 # --no-save --no-restore --verbose myRfile.R > outputFile.Rout 2>&1
