@@ -120,7 +120,7 @@ importRepoFiles <- function(repos, row) {
       data <- bzfile(file, open = "r")
       try(fileData <- read.table(data, header = TRUE, fill = TRUE,
                                  sep = "\t", quote = "",
-                                 stringsAsFactors = FALSE),
+                                 stringsAsFactors = TRUE),
           silent = FALSE)
       
       if (DATA_ATTRIB) {

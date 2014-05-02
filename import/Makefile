@@ -28,8 +28,14 @@ importAngelList: getAngelListData.R
 importCrunchBase: getCrunchBaseDataAPI.R
 	@$(RSCRIPT) $(R_OPTS) $<
 
-.PHONY: clean
+.PHONY: clean clean-fm clean-sf
 
 # remove intermediate files
 clean:
-	rm -f tmp*.bz2 *.Rdata .Rout
+	rm -f tmp*.bz2 .Rout
+
+clean-fm:
+	rm -f ../cache/FLOSSmole/*.RData
+
+clean-sf:
+	rm -f ../cache/SourceForge/*.RData
