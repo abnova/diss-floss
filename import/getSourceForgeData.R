@@ -251,17 +251,9 @@ getSourceForgeData <- function (row, config) { # dataFrame
     return (invisible())
   }
   
-  # Construct SRDA login and query URLs
-  loginURL <- paste(SRDA_HOST_URL, SRDA_LOGIN_URL, SRDA_LOGIN_REQ,
-                    collapse="", sep="")
+  # Construct SRDA query URL
   queryURL <- paste(SRDA_HOST_URL, SRDA_QUERY_URL, collapse="", sep="")
   
-  # Log into the system
-  success <- srdaLogin(loginURL, SRDA_USER, SRDA_PASS)
-  if (!success) error("Login failed!")
-  
-  #try(srdaLogin(loginURL, getOption("SRDA_USER"), getOption("SRDA_PASS")))
-
   # Convert (tokenize) SQL request into parts
   rq <- srdaConvertRequest(request)
   
@@ -345,6 +337,19 @@ if (DEBUG) {
 if (!file.exists(RDATA_DIR)) {
   dir.create(RDATA_DIR, recursive = TRUE, showWarnings = FALSE)
 }
+
+message("Authenticating with SRDA ...\n")
+
+# Construct SRDA login URL
+loginURL <- paste(SRDA_HOST_URL, SRDA_LOGIN_URL, SRDA_LOGIN_REQ,
+                  collapse="", sep="")
+
+# Log into the system
+success <- srdaLogin(loginURL, SRDA_USER, SRDA_PASS)
+if (!success) error("Authentication failed!")
+
+#try(srdaLogin(loginURL, getOption("SRDA_USER"), getOption("SRDA_PASS")))
+
 
 message("Retrieving SourceForge data ...\n")
 
