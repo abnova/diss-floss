@@ -175,6 +175,11 @@ getFLOSSmoleData <- function(repos) {
 
 message("\n=== FLOSSmole data collection ===\n")
 
+# Create cache directory, if it doesn't exist
+if (!file.exists(RDATA_DIR)) {
+  dir.create(RDATA_DIR, recursive = TRUE, showWarnings = FALSE)
+}
+
 message("Retrieving FLOSSmole data ...\n")
 
 allData <- getFLOSSmoleData(repos)

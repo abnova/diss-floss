@@ -341,6 +341,11 @@ if (DEBUG) {
   message(msg, "\n")
 } 
 
+# Create cache directory, if it doesn't exist
+if (!file.exists(RDATA_DIR)) {
+  dir.create(RDATA_DIR, recursive = TRUE, showWarnings = FALSE)
+}
+
 message("Retrieving SourceForge data ...\n")
 
 # Collect data, iterating through the request queue
