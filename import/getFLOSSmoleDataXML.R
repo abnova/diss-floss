@@ -141,11 +141,6 @@ importRepoFiles <- function(repos, row) {
   # get data by iterating through list
   # of full URLs of the current repository files
   data <- lapply(seq_along(links[[1]]), getData)
-  
-  if (DATA_LOOKUP) {
-    # save lookup data frame to a separate RData file
-    save(lookup, file = LOOKUP_FILE)
-  }
 }
 
 
