@@ -7,11 +7,9 @@
 
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(XML))) install.packages('XML')
-if (!suppressMessages(require(digest))) install.packages('digest')
 
 #library(RCurl)
 #library(XML)
-#library(digest)
 
 warnings(file = "./FLOSSmole.warn.log")
 source("../utils/debug.R")
@@ -94,7 +92,6 @@ importRepoFiles <- function(repos, row) {
     url <- links[[1]][i]
     
     # calculate URL's digest and generate corresponding RData file name
-    #fileDigest <- digest(url, algo="md5", serialize=F)
     fileDigest <- base64(url)
     rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
     
