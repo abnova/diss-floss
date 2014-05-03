@@ -39,14 +39,6 @@ BZIP_EXT  <- ".txt\\.bz2"
 RDATA_EXT <- ".RData"
 RDATA_DIR <- "../cache/FLOSSmole" #TODO: consider passing this via CL args
 
-lookup <- data.frame(digest = "", url = "", stringsAsFactors = FALSE)
-
-DATA_LOOKUP <- FALSE
-LOOKUP_FILE <- "DataLookup"
-
-DATA_ATTRIB <- TRUE
-ATTRIB_NAME <- "DataSource"
-
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 
@@ -102,7 +94,8 @@ importRepoFiles <- function(repos, row) {
     url <- links[[1]][i]
     
     # calculate URL's digest and generate corresponding RData file name
-    fileDigest <- digest(url, algo="md5", serialize=F)
+    #fileDigest <- digest(url, algo="md5", serialize=F)
+    fileDigest <- base64(url)
     rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
     
     # check if the archive file has already been processed
@@ -112,37 +105,29 @@ importRepoFiles <- function(repos, row) {
       return()
     }
     
+    # extract table name from URL so that corresponding data object
+    # (data frame) will later be saved under that name via save()
+    splitURL <- strsplit(url, "/|-")
+    tableNameYear <-  splitURL[[1]][length(splitURL[[1]])-1]
+    tableName <- substr(tableNameYear, 1, nchar(tableNameYear)-4)
+    table <- as.name(tableName)
+    
     # current method
     if (TRUE) { # via local file
       
       file <- tempfile(pattern = "tmp", tmpdir = ".", fileext = ".bz2")    
       download.file(url, destfile = file, mode = "w")
       data <- bzfile(file, open = "r")
-      try(fileData <- read.table(data, header = TRUE, fill = TRUE,
-                                 sep = "\t", quote = "",
-                                 stringsAsFactors = TRUE),
+      try(assign(tableName, read.table(data, header = TRUE, fill = TRUE,
+                                       sep = "\t", quote = "",
+                                       stringsAsFactors = TRUE)),
           silent = FALSE)
       
-      if (DATA_ATTRIB) {
-
-        # set URL as DF's attribute to be stored as metadata
-        # for future lookups when restoring data from R objects
-        attr(fileData, ATTRIB_NAME) <- url
-        
-      } else if (DATA_LOOKUP) {
-        
-        # for convinience we use full file name instead of digest
-        rbind(lookup, rdataFile, url)
-        
-      } else {
-        warning("Data objects attribute or lookup method is undefined!")
-      }
-      
       # save current data frame to RData file
-      save(fileData, file = rdataFile)
+      do.call(save, list(table, file = rdataFile))
       
       # clean up
-      rm(fileData)
+      rm(table)
       close(data)
       unlink(file, force = TRUE)
     }
