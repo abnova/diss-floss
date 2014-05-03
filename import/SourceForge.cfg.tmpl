@@ -4,6 +4,7 @@
    "_schema":"sf0314",
    "data":[
       {
+         "ID":"1"
          "indicatorName":"test1",
          "indicatorDescription":"Test Indicator 1",
          "indicatorType":"numeric",
@@ -11,6 +12,7 @@
          "requestSQL":"SELECT * FROM sf0305.users WHERE user_id < 100"
       },
       {
+         "ID":"2"
          "indicatorName":"test2",
          "indicatorDescription":"Test Indicator 2",
          "indicatorType":"numeric",
@@ -20,6 +22,7 @@
                        WHERE a.user_id = b.submitted_by AND b.artifact_id = 304727"
       },
       {
+         "ID":"3"
          "indicatorName":"totalProjects",
          "indicatorDescription":"Total number of unique projects",
          "indicatorType":"numeric",
@@ -27,6 +30,7 @@
          "requestSQL":"SELECT COUNT(DISTINCT group_id) FROM ${schema}.user_group"
       },
       {
+         "ID":"4"
          "indicatorName":"totalDevs",
          "indicatorDescription":"Total number of developers per project",
          "indicatorType":"numeric",

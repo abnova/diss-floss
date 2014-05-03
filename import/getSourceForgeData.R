@@ -11,7 +11,6 @@
 # in a function or, at least, do it via vector.
 
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
-if (!suppressMessages(require(digest))) install.packages('digest')
 if (!suppressMessages(require(jsonlite)))
   install.packages("jsonlite", repos="http://cran.r-project.org")
 if (!suppressMessages(require(stringr))) install.packages('stringr')
@@ -23,7 +22,6 @@ if (!suppressMessages(require(stringr))) install.packages('stringr')
 
 # library() calls are not needed as require() load packages, too
 #library(RCurl)
-#library(digest)
 #library(jsonlite)
 #library(stringr)
 
@@ -234,13 +232,12 @@ generateConfig <- function(configTemplate, configFile) {
 
 getSourceForgeData <- function (row, config) { # dataFrame
   
-  # $data
-  # Extract SQL request from the function's argument
-  #request <- dataFrame[row, "requestSQL"]
+  # Extract request's ID and SQL query from the function's argument
+  dataID <- config$data[row, "ID"]
   request <- config$data[row, "requestSQL"]
   
   # calculate request's digest and generate corresponding RData file name
-  fileDigest <- digest(request, algo="md5", serialize=F)
+  fileDigest <- base64(request)
   rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
   
   # check if the archive file has already been processed
@@ -265,11 +262,17 @@ getSourceForgeData <- function (row, config) { # dataFrame
                              DATA_SEP, ADD_SQL)
   if (!success) error("Data request failed!")
   
-  data <- srdaGetData()
-  #if (DEBUG) print(data)
+  # construct data name from dataID (see config. file), so that
+  # corresponding data object (usually, data frame) will later
+  # be saved under that name via save()
+  dataName <- paste("data", dataID, sep = ".")
+  data <- as.name(dataName)
+  
+  assign(dataName, srdaGetData())
   
   # save current data frame to RData file
   save(data, file = rdataFile)
+  # alternatively, use do.call() as in "getFLOSSmoleDataXML.R"
   
   # clean up
   rm(data)
