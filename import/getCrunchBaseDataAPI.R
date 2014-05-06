@@ -64,7 +64,7 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
   url <- paste(url, "&page=", page, collapse="", sep="")
   
   # Retrieve data
-  startupData <- getURL(url)
+  startupData <- getURL(url, followlocation = TRUE)
   
   # Convert JSON data to data frame
   startups <- jsonlite::fromJSON(startupData, simplifyVector = FALSE)
