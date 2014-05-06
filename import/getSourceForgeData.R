@@ -47,6 +47,10 @@ SRDA_QUERY_URL <- "/cgi-bin/form.pl"
 # SRDA URL that Query Form sends POST requests to
 SRDA_QRESULT_URL <- "/qresult/blekh/blekh.txt"
 
+RESULTS_URL <- paste0(SRDA_HOST_URL, SRDA_QRESULT_URL)
+
+POLL_TIME <- 5 # polling timeout in seconds
+
 # Parameters for result's format
 DATA_SEP <- ":" # data separator
 ADD_SQL  <- "0" # add SQL to file
@@ -140,6 +144,12 @@ srdaConvertRequest <- function (request) {
 #' srdaRequestData(1)
 
 srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
+
+  # check and save 'last modified' date and time of the results file
+  # before submitting data request, to compare with the same after one
+  # for simple polling of results file in srdaGetData() function
+  beforeDate <- url.exists(RESULTS_URL, .header=TRUE)["Last-Modified"]
+  beforeDate <<-  strptime(beforeDate, "%a, %d %b %Y %X", tz="GMT")
   
   params <- list('uitems' = select,
                  'utables' = from,
@@ -174,10 +184,23 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
 
 srdaGetData <- function() { #srdaGetResult() might be a better name
   
-  resultsURL <- paste(SRDA_HOST_URL, SRDA_QRESULT_URL,
-                      collapse="", sep="")
+  # simple polling of the results file
+  repeat {
+    if (DEBUG) message("Waiting for results ...", appendLF = FALSE)
+    afterDate <- url.exists(RESULTS_URL, .header=TRUE)["Last-Modified"]
+    afterDate <-  strptime(afterDate, "%a, %d %b %Y %X", tz="GMT")
+    delta <- difftime(afterDate, beforeDate, units = "secs")
+    if (as.numeric(delta) != 0) { # file modified, results are ready
+      if (DEBUG) message(" Ready!")
+      break
+    }
+    else {
+      if (DEBUG) message(".", )
+      Sys.sleep(POLL_TIME) # no results yet, wait and check again
+    }
+  }
   
-  results <- readLines(resultsURL)
+  results <- readLines(RESULTS_URL)
   results <- lapply(results, function(x) gsub(".$", "", x))
   #if (DEBUG) print(results)
   
@@ -276,6 +299,8 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   # clean up
   rm(data)
+  
+  message("")
 }
 
 
