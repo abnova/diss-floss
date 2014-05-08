@@ -52,7 +52,7 @@ RESULTS_URL <- paste0(SRDA_HOST_URL, SRDA_QRESULT_URL)
 POLL_TIME <- 5 # polling timeout in seconds
 
 # Parameters for result's format
-DATA_SEP <- ":" # data separator
+DATA_SEP <- "#" # data separator
 ADD_SQL  <- "0" # add SQL to file
 
 REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), CHR(13),' ')"
@@ -149,7 +149,7 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
   # before submitting data request, to compare with the same after one
   # for simple polling of results file in srdaGetData() function
   beforeDate <- url.exists(RESULTS_URL, .header=TRUE)["Last-Modified"]
-  beforeDate <<-  strptime(beforeDate, "%a, %d %b %Y %X", tz="GMT")
+  beforeDate <<- strptime(beforeDate, "%a, %d %b %Y %X", tz="GMT")
   
   params <- list('uitems' = select,
                  'utables' = from,
@@ -194,17 +194,18 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
       if (DEBUG) message(" Ready!")
       break
     }
-    else {
+    else { # no results yet, wait the timeout and check again
       if (DEBUG) message(".", )
-      Sys.sleep(POLL_TIME) # no results yet, wait and check again
+      Sys.sleep(POLL_TIME)
     }
   }
   
   results <- readLines(RESULTS_URL)
   results <- lapply(results, function(x) gsub(".$", "", x))
   #if (DEBUG) print(results)
-  
-  data <- read.table(textConnection(unlist(results)), header = FALSE,
+
+  data <- read.table(textConnection(unlist(results)),
+                     header = FALSE, #fill = TRUE,
                      sep = DATA_SEP, quote = "\"",
                      colClasses = "character", row.names = NULL)
   #if (DEBUG) print("==========")
