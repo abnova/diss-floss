@@ -36,6 +36,14 @@
          "indicatorType":"numeric",
          "resultType":"data.frame",
          "requestSQL":"SELECT COUNT(*) FROM ${schema}.user_group WHERE group_id = 78745"
+      },
+      {
+         "ID":"5"
+         "indicatorName":"AllProjects",
+         "indicatorDescription":"Information about all projects",
+         "indicatorType":"string",
+         "resultType":"data.frame",
+         "requestSQL":"SELECT * FROM ${schema}.groups WHERE group_id < 1000000"
       }
    ]
 }
