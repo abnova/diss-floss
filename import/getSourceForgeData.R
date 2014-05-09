@@ -60,6 +60,9 @@ REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), C
 RDATA_EXT <- ".RData"
 RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
 
+# Data source prefix (to construct data object names)
+dsPrefix <- ""
+
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 cookiesFile <- "cookies.txt"
@@ -290,10 +293,10 @@ getSourceForgeData <- function (row, config) { # dataFrame
                              DATA_SEP, ADD_SQL)
   if (!success) error("Data request failed!")
   
-  # construct data name from dataID (see config. file), so that
-  # corresponding data object (usually, data frame) will later
-  # be saved under that name via save()
-  dataName <- paste("data", dataID, sep = ".")
+  # construct name from data source prefix and data ID (see config. file),
+  # so that corresponding data object (usually, data frame) will be saved
+  # later under that name via save()
+  dataName <- paste(dsPrefix, "data", dataID, sep = ".")
   
   assign(dataName, srdaGetData())
   data <- as.name(dataName)
@@ -360,7 +363,10 @@ if (DEBUG) {
   
   msg <- paste("Total number of requests to submit:", nrow(config$data))
   message(msg, "\n")
-} 
+}
+
+# Save data source prefix in a global variable
+dsPrefix <<- config["_prefix"]
 
 # Create cache directory, if it doesn't exist
 if (!file.exists(RDATA_DIR)) {
