@@ -204,15 +204,16 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   results <- readLines(RESULTS_URL)
   numLines <- length(results)
   results <- lapply(results, function(x) gsub(".$", "", x))
-  #if (DEBUG) print(results)
+  #if (DEBUG) print(head(results))
   
   data <- read.table(textConnection(unlist(results)),
                      header = FALSE, fill = TRUE,
                      sep = DATA_SEP, quote = "\"",
                      colClasses = "character", row.names = NULL,
-                     nrows = numLines)
+                     nrows = numLines, comment.char = "")
   #if (DEBUG) print("==========")
-  #if (DEBUG) print(data)
+  #if (DEBUG) print(head(data))
+  
   return (data)
 }
 
@@ -298,7 +299,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
   data <- as.name(dataName)
   
   # save current data frame to RData file
-  save(data, file = rdataFile)
+  save(list = dataName, file = rdataFile)
   # alternatively, use do.call() as in "getFLOSSmoleDataXML.R"
   
   # clean up
