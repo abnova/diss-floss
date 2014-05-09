@@ -183,31 +183,34 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
 #' srdaGetData(1)
 
 srdaGetData <- function() { #srdaGetResult() might be a better name
-  
+ 
+  if (DEBUG) message("Waiting for results ...", appendLF = FALSE)
+
   # simple polling of the results file
   repeat {
-    if (DEBUG) message("Waiting for results ...", appendLF = FALSE)
     afterDate <- url.exists(RESULTS_URL, .header=TRUE)["Last-Modified"]
     afterDate <-  strptime(afterDate, "%a, %d %b %Y %X", tz="GMT")
     delta <- difftime(afterDate, beforeDate, units = "secs")
     if (as.numeric(delta) != 0) { # file modified, results are ready
-      if (DEBUG) message(" Ready!")
+      if (DEBUG) message(" Ready!\n")
       break
     }
     else { # no results yet, wait the timeout and check again
-      if (DEBUG) message(".", )
+      if (DEBUG) message(".", appendLF = FALSE)
       Sys.sleep(POLL_TIME)
     }
   }
   
   results <- readLines(RESULTS_URL)
+  numLines <- length(results)
   results <- lapply(results, function(x) gsub(".$", "", x))
   #if (DEBUG) print(results)
-
+  
   data <- read.table(textConnection(unlist(results)),
-                     header = FALSE, #fill = TRUE,
+                     header = FALSE, fill = TRUE,
                      sep = DATA_SEP, quote = "\"",
-                     colClasses = "character", row.names = NULL)
+                     colClasses = "character", row.names = NULL,
+                     nrows = numLines)
   #if (DEBUG) print("==========")
   #if (DEBUG) print(data)
   return (data)
@@ -290,9 +293,9 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # corresponding data object (usually, data frame) will later
   # be saved under that name via save()
   dataName <- paste("data", dataID, sep = ".")
-  data <- as.name(dataName)
   
   assign(dataName, srdaGetData())
+  data <- as.name(dataName)
   
   # save current data frame to RData file
   save(data, file = rdataFile)
@@ -300,8 +303,6 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   # clean up
   rm(data)
-  
-  message("")
 }
 
 
@@ -333,20 +334,18 @@ updateNeeded <- function () {
 }
 
 
-# Generate configuration file, if needed
+message("\n=== SRDA data collection ===\n")
 
+# Generate configuration file, if needed
 if (updateNeeded()) {
   
-  message("\nParsing configuration template file ...\n")
+  message("Parsing configuration template file ...\n")
   
   # Variables in JSON-based config. template file are as follows:
   # ${elem} - refers to the 'elem' JSON element in the file
   # %{val} - refers to the value of the argument passed by caller
-  
   generateConfig(SRDA_TEMPLATE, SRDA_CONFIG)
 }
-
-message("\n=== SRDA data collection ===\n")
 
 message("Reading configuration file ...\n")
 
@@ -378,7 +377,6 @@ success <- srdaLogin(loginURL, SRDA_USER, SRDA_PASS)
 if (!success) error("Authentication failed!")
 
 #try(srdaLogin(loginURL, getOption("SRDA_USER"), getOption("SRDA_PASS")))
-
 
 message("Retrieving SourceForge data ...\n")
 
