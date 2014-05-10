@@ -6,11 +6,11 @@
    "data":[
       {
          "ID":"1",
-         "indicatorName":"test1",
-         "indicatorDescription":"Test Indicator 1",
-         "indicatorType":"numeric",
-         "resultType":"numeric",
-         "requestSQL":"SELECT * FROM sf0305.users WHERE user_id < 100"
+         "indicatorName":"devLinks",
+         "indicatorDescription":"Links to source code repositories",
+         "indicatorType":"character",
+         "resultType":"data.frame",
+         "requestSQL":"SELECT * FROM ${schema}.external_tool_links"
       },
       {
          "ID":"2",
@@ -44,7 +44,7 @@
          "indicatorDescription":"Information about all projects",
          "indicatorType":"string",
          "resultType":"data.frame",
-         "requestSQL":"SELECT * FROM ${schema}.groups WHERE group_id < 100000"
+         "requestSQL":"SELECT * FROM ${schema}.groups WHERE group_id < 1000"
       }
    ]
 }

@@ -204,16 +204,29 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
     }
   }
   
-  results <- readLines(RESULTS_URL)
+  # Since some results contain fields with embedded newlines,
+  # direct use of read.table() parses data incorrectly.
+  
+  # Thus, first we have to replace the problem combination
+  # of characters (\0xD\0xA - \r\n) with single space (' ')
+  fileLen <- url.exists(RESULTS_URL, .header=TRUE)["Content-Length"]
+  results <- readChar(RESULTS_URL, nchars = fileLen, TRUE)
+  results <- gsub("\\r\\n", " ", results)  
+  
+  # Then we read intermediate results as text lines, count lines
+  # and then delete last character on each line (extra separator)
+  results <- readLines(textConnection(unlist(results)))
   numLines <- length(results)
   results <- lapply(results, function(x) gsub(".$", "", x))
   #if (DEBUG) print(head(results))
   
+  # Then we can parse the intermediate results as usual
   data <- read.table(textConnection(unlist(results)),
                      header = FALSE, fill = TRUE,
-                     sep = DATA_SEP, quote = "\"",
+                     sep = DATA_SEP, quote = "",
                      colClasses = "character", row.names = NULL,
-                     nrows = numLines, comment.char = "")
+                     nrows = numLines, comment.char = "",
+                     strip.white = TRUE)
   #if (DEBUG) print("==========")
   #if (DEBUG) print(head(data))
   
