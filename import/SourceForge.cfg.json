@@ -14,16 +14,22 @@
       },
       {
          "ID":"2",
-         "indicatorName":"test2",
-         "indicatorDescription":"Test Indicator 2",
-         "indicatorType":"numeric",
-         "resultType":"numeric",
-         "requestSQL":"SELECT * 
-                       FROM sf1104.users a, sf1104.artifact b 
-                       WHERE a.user_id = b.submitted_by AND b.artifact_id = 304727"
+         "indicatorName":"prjLicense",
+         "indicatorDescription":"Project's license",
+         "indicatorType":"character",
+         "resultType":"data.frame",
+         "requestSQL":"SELECT license FROM sf0314.groups WHERE group_id < 10000"
       },
       {
          "ID":"3",
+         "indicatorName":"devSupport",
+         "indicatorDescription":"Existense of unrestricted dev. support",
+         "indicatorType":"character",
+         "resultType":"data.frame",
+         "requestSQL":"SELECT * FROM sf0314.groups WHERE group_id < 10000"
+      },
+      {
+         "ID":"4",
          "indicatorName":"totalProjects",
          "indicatorDescription":"Total number of unique projects",
          "indicatorType":"numeric",
@@ -31,7 +37,7 @@
          "requestSQL":"SELECT COUNT(DISTINCT group_id) FROM sf0314.user_group"
       },
       {
-         "ID":"4",
+         "ID":"5",
          "indicatorName":"totalDevs",
          "indicatorDescription":"Total number of developers per project",
          "indicatorType":"numeric",
@@ -39,12 +45,12 @@
          "requestSQL":"SELECT COUNT(*) FROM sf0314.user_group WHERE group_id = 78745"
       },
       {
-         "ID":"5",
+         "ID":"6",
          "indicatorName":"AllProjects",
          "indicatorDescription":"Information about all projects",
          "indicatorType":"string",
          "resultType":"data.frame",
-         "requestSQL":"SELECT * FROM sf0314.groups WHERE group_id < 1000"
+         "requestSQL":"SELECT * FROM sf0314.groups WHERE group_id < 10000"
       }
    ]
 }
