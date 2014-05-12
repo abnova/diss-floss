@@ -221,9 +221,9 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   # (now in a data frame) to the original state (post-processing).
   # Note, that the following substitution code works only for
   # the specific data separator ':'. More universal code is TBD.
-  results <- gsub(": ", "!@#", results)
-  results <- gsub("([[:alpha:]][^.:])::([[:alpha:]][^:]|[:blank:])",
-                  "\\1@@\\2", results)
+  rx <- "([[:alpha:]][^.:]|[[:blank:]])::([[:alpha:]][^:]|[[:blank:]])"
+  results <- gsub(rx, "\\1@@\\2", results)
+  results <- gsub(": ", "!@#", results) # should be after the ::-gsub
   results <- gsub("http://", "http//", results)
   
   # Since some results contain fields with embedded newlines,
