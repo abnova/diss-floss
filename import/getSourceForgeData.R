@@ -204,25 +204,38 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
       Sys.sleep(POLL_TIME)
     }
   }
+
+  # Some pre-processing is needed to correctly parse results
   
-  # Since some results contain fields with embedded newlines,
-  # direct use of read.table() parses data incorrectly.
-  
-  # Thus, first we have to replace the problem combination
-  # of characters (\0xD\0xA - \r\n) with single space (' ')
+  # First, read file as a stream of characters, so that later we can
+  # replace the CR/LF characters pair with a single space character
+  # to prevent incorrect parsing of fields with embedded newline
+  # by the read.table() function.
   fileLen <- url.exists(RESULTS_URL, .header=TRUE)["Content-Length"]
   results <- readChar(RESULTS_URL, nchars = fileLen, TRUE)
-  results <- gsub("\\r\\n", " ", results)
   
   # Then we need to replace all occurences of ": " with "!@#",
   # "X::Y" with "X@@Y", and "http://" with "http//", since we have to
   # use semicolon as a field separator, to prevent incorrect parsing
   # of the data. After the processing, we have to return data
   # (now in a data frame) to the original state (post-processing).
+  # Note, that the following substitution code works only for
+  # the specific data separator ':'. More universal code is TBD.
   results <- gsub(": ", "!@#", results)
-  results <- gsub("([[:alpha:]][^:])::([[:alpha:]][^:]|[:blank:])",
+  results <- gsub("([[:alpha:]][^.:])::([[:alpha:]][^:]|[:blank:])",
                   "\\1@@\\2", results)
   results <- gsub("http://", "http//", results)
+  
+  # Since some results contain fields with embedded newlines,
+  # direct use of read.table() parses data incorrectly.
+  
+  # Then, we have to replace the problematic pair of characters
+  # (\0xD\0xA - CR/LF - \r\n) with a single space character (' ').
+  # It's important that the next line is executed after the data
+  # separator-related (':') substitutions, otherwise results with
+  # newlines right after data separator will be parsed incorrectly
+  # (":\r\n" => ": " => "!@#" => loss of one data field).
+  results <- gsub("\\r\\n", " ", results)
   
   # Then we read intermediate results as text lines, count lines
   # and then delete last character on each line (extra separator)
