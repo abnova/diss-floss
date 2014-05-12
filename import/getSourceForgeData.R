@@ -25,8 +25,9 @@ if (!suppressMessages(require(stringr))) install.packages('stringr')
 #library(jsonlite)
 #library(stringr)
 
-source("../utils/debug.R")
-source("../utils/string.R")
+source("../utils/utils.R")
+#source("../utils/debug.R")
+#source("../utils/string.R")
 
 skipped <<- 0 # counter for # of times the script skipped processing
 
@@ -52,7 +53,7 @@ RESULTS_URL <- paste0(SRDA_HOST_URL, SRDA_QRESULT_URL)
 POLL_TIME <- 5 # polling timeout in seconds
 
 # Parameters for result's format
-DATA_SEP <- "#" # data separator
+DATA_SEP <- ":" # data separator
 ADD_SQL  <- "0" # add SQL to file
 
 REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), CHR(13),' ')"
@@ -211,7 +212,15 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   # of characters (\0xD\0xA - \r\n) with single space (' ')
   fileLen <- url.exists(RESULTS_URL, .header=TRUE)["Content-Length"]
   results <- readChar(RESULTS_URL, nchars = fileLen, TRUE)
-  results <- gsub("\\r\\n", " ", results)  
+  results <- gsub("\\r\\n", " ", results)
+  
+  # Then we need to replace all occurences of ": " with "!@#"
+  # and "http://" with "http//", since we have to use semicolon
+  # as a field separator, in order to prevent incorrect parsing
+  # of the data. After the processing, we have to return data
+  # (now in a data frame) to the original state (post-processing).
+  results <- gsub(": ", "!@#", results)
+  results <- gsub("http://", "http//", results)
   
   # Then we read intermediate results as text lines, count lines
   # and then delete last character on each line (extra separator)
@@ -227,6 +236,11 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
                      colClasses = "character", row.names = NULL,
                      nrows = numLines, comment.char = "",
                      strip.white = TRUE)
+  
+  # Now we can safely do post-processing, recovering original data
+  replace_all(data, "!@#", ": ")
+  replace_all(data, "http//", "http://")
+  
   #if (DEBUG) print("==========")
   #if (DEBUG) print(head(data))
   
@@ -276,8 +290,8 @@ generateConfig <- function(configTemplate, configFile) {
 
 getSourceForgeData <- function (row, config) { # dataFrame
   
-  # Extract request's ID and SQL query from the function's argument
-  dataID <- config$data[row, "ID"]
+  # Extract indicator's name & SQL query from the function's argument
+  indicator <- config$data[row, "indicatorName"]
   request <- config$data[row, "requestSQL"]
   
   # calculate request's digest and generate corresponding RData file name
@@ -309,7 +323,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # construct name from data source prefix and data ID (see config. file),
   # so that corresponding data object (usually, data frame) will be saved
   # later under that name via save()
-  dataName <- paste(dsPrefix, "data", dataID, sep = ".")
+  dataName <- paste(dsPrefix, "data", indicator, sep = ".")
   
   assign(dataName, srdaGetData())
   data <- as.name(dataName)
