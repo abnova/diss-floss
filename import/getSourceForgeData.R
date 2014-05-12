@@ -225,6 +225,7 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   results <- gsub(rx, "\\1@@\\2", results)
   results <- gsub(": ", "!@#", results) # should be after the ::-gsub
   results <- gsub("http://", "http//", results)
+  results <- gsub("mailto:", "mailto@", results)
   
   # Since some results contain fields with embedded newlines,
   # direct use of read.table() parses data incorrectly.
@@ -235,7 +236,11 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   # separator-related (':') substitutions, otherwise results with
   # newlines right after data separator will be parsed incorrectly
   # (":\r\n" => ": " => "!@#" => loss of one data field).
+  results <- gsub("-\\r\\n", "-", results) # order is important here
   results <- gsub("\\r\\n", " ", results)
+
+  # fix for improperly formatted result data (AniSa, project 7606)
+  results <- gsub("\\n:gpl:962356288", ":gpl:962356288", results)
   
   # Then we read intermediate results as text lines, count lines
   # and then delete last character on each line (extra separator)
@@ -253,9 +258,10 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
                      strip.white = TRUE)
   
   # Now we can safely do post-processing, recovering original data
-  replace_all(data, "!@#", ": ")
-  replace_all(data, "@@", "::")
-  replace_all(data, "http//", "http://")
+  replace_all(data, fixed("!@#"), ": ")
+  replace_all(data, fixed("@@"), "::")
+  replace_all(data, fixed("http//"), "http://")
+  replace_all(data, fixed("mailto@"), "mailto:")
   
   #if (DEBUG) print("==========")
   #if (DEBUG) print(head(data))
