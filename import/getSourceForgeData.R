@@ -258,10 +258,10 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
                      strip.white = TRUE)
   
   # Now we can safely do post-processing, recovering original data
-  replace_all(data, fixed("!@#"), ": ")
-  replace_all(data, fixed("@@"), "::")
-  replace_all(data, fixed("http//"), "http://")
-  replace_all(data, fixed("mailto@"), "mailto:")
+  data <- replace_all(data, fixed("!@#"), ": ")
+  data <- replace_all(data, fixed("@@"), "::")
+  data <- replace_all(data, fixed("http//"), "http://")
+  data <- replace_all(data, fixed("mailto@"), "mailto:")
   
   #if (DEBUG) print("==========")
   #if (DEBUG) print(head(data))
