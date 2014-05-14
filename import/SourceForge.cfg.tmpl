@@ -23,10 +23,7 @@
          "indicatorDescription":"Existense of unrestricted dev. support",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "requestSQL":"
-SELECT group_id, preferred_support_type, preferred_support_resource 
-FROM ${schema}.groups 
-WHERE preferred_support_type = 6 AND group_id < 10000"
+         "requestSQL":"SELECT * FROM ${schema}.groups WHERE group_id < 10000"
       },
       {
          "indicatorName":"totalProjects",
