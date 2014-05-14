@@ -9,14 +9,19 @@
          "indicatorDescription":"Links to source code repositories",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "requestSQL":"SELECT * FROM ${schema}.external_tool_links"
+         "requestSQL":"
+SELECT group_id, enabled, url_primary, instructions_public
+FROM ${schema}.external_tool_links"
       },
       {
          "indicatorName":"prjLicense",
          "indicatorDescription":"Project's license",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "requestSQL":"SELECT license FROM ${schema}.groups WHERE group_id < 10000"
+         "requestSQL":"
+SELECT group_id, license
+FROM ${schema}.groups
+WHERE group_id < 10000"
       },
       {
          "indicatorName":"devSupport",
@@ -25,11 +30,42 @@
          "resultType":"data.frame",
          "requestSQL":"
 SELECT group_id, preferred_support_type, preferred_support_resource
-FROM sf0314.groups
+FROM ${schema}.groups
 WHERE preferred_support_type = 6 AND group_id < 10000"
       },
       {
-         "indicatorName":"totalProjects",
+         "indicatorName":"pubRoadmap",
+         "indicatorDescription":"Public availability of project roadmap",
+         "indicatorType":"character",
+         "resultType":"data.frame",
+         "requestSQL":"
+SELECT group_id, use_wiki
+FROM ${schema}.groups
+WHERE group_id < 10000"
+      },
+      {
+         "indicatorName":"dmProcess",
+         "indicatorDescription":"Transparency of decision making",
+         "indicatorType":"character",
+         "resultType":"data.frame",
+         "requestSQL":"
+SELECT group_id, use_wiki, use_forum
+FROM ${schema}.groups
+WHERE group_id < 10000"
+      },
+      {
+         "indicatorName":"contribProcess",
+         "indicatorDescription":"Transparency of contributions and acceptance process",
+         "indicatorType":"character",
+         "resultType":"data.frame",
+         "requestSQL":"
+SELECT g.group_id, g.use_wiki, agl.is_public, agl.submit_instructions, agl.browse_instructions
+FROM ${schema}.groups g, ${schema}.artifact_group_list agl
+WHERE g.group_id = agl.group_id
+AND g.group_id < 10000"
+      },
+      {
+         "indicatorName":"=== totalProjects ===",
          "indicatorDescription":"Total number of unique projects",
          "indicatorType":"numeric",
          "resultType":"numeric",
