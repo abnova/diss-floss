@@ -320,7 +320,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
   request <- config$data[row, "requestSQL"]
   
   # calculate request's digest and generate corresponding RData file name
-  fileDigest <- base64(request)
+  fileDigest <- base64(indicator)
   rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
   
   # check if the archive file has already been processed
