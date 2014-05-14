@@ -65,7 +65,21 @@ WHERE g.group_id = agl.group_id
 AND g.group_id < 10000"
       },
       {
-         "indicatorName":"=== totalProjects ===",
+         "indicatorName":"contribPeople",
+         "indicatorDescription":"Transparency of contributors to source code",
+         "indicatorType":"character",
+         "resultType":"data.frame",
+         "requestSQL":"
+SELECT g.group_id, u.user_id
+FROM sf0314.groups g, sf0314.users u, sf0314.project_history ph, sf0314.project_task pt, sf0314.project_group_list pgl
+WHERE ph.project_task_id = pt.project_task_id
+AND pt.group_project_id = pgl.group_project_id
+AND g.group_id = pgl.group_id
+AND ph.mod_by = u.user_id
+AND g.group_id < 10000"
+      },
+      {
+         "indicatorName":"totalProjects",
          "indicatorDescription":"Total number of unique projects",
          "indicatorType":"numeric",
          "resultType":"numeric",
