@@ -215,7 +215,8 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   results <- readChar(RESULTS_URL, nchars = fileLen, TRUE)
   
   # Then we need to replace all occurences of ": " with "!@#",
-  # "X::Y" with "X@@Y", and "http://" with "http//", since we have to
+  # "X::Y" with "X@@Y", and "http://" with "http//", as well as
+  # "https://" with "https//" (secure HTTP), since we have to
   # use semicolon as a field separator, to prevent incorrect parsing
   # of the data. After the processing, we have to return data
   # (now in a data frame) to the original state (post-processing).
@@ -225,6 +226,7 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   results <- gsub(rx, "\\1@@\\2", results)
   results <- gsub(": ", "!@#", results) # should be after the ::-gsub
   results <- gsub("http://", "http//", results)
+  results <- gsub("https://", "https//", results)
   results <- gsub("mailto:", "mailto@", results)
   
   # Since some results contain fields with embedded newlines,
@@ -261,6 +263,7 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   data <- replace_all(data, fixed("!@#"), ": ")
   data <- replace_all(data, fixed("@@"), "::")
   data <- replace_all(data, fixed("http//"), "http://")
+  data <- replace_all(data, fixed("https//"), "https://")
   data <- replace_all(data, fixed("mailto@"), "mailto:")
   
   #if (DEBUG) print("==========")
