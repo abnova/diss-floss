@@ -212,6 +212,10 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   # to prevent incorrect parsing of fields with embedded newline
   # by the read.table() function.
   fileLen <- url.exists(RESULTS_URL, .header=TRUE)["Content-Length"]
+  if (is.na(fileLen)) {
+    if (DEBUG) message("Empty result for request, nothing to process!")
+    return (invisible())
+  }
   results <- readChar(RESULTS_URL, nchars = fileLen, TRUE)
   
   # Then we need to replace all occurences of ": " with "!@#",
