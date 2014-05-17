@@ -75,7 +75,7 @@ invisible(
              cookiefile = cookiesFile, cookiejar = cookiesFile,
              ssl.verifyhost = FALSE, ssl.verifypeer = FALSE,
              followlocation = TRUE, verbose = FALSE)
-  )
+)
 
 
 #' srdaLogin()
@@ -92,7 +92,7 @@ invisible(
 #' getDataPaginated(1)
 
 srdaLogin <- function (loginURL, username, password) {
-
+  
   params <- list('wpName' = username, 'wpPassword' = password,
                  'wpRemember' = "1")
   
@@ -148,7 +148,7 @@ srdaConvertRequest <- function (request) {
 #' srdaRequestData(1)
 
 srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
-
+  
   # check and save 'last modified' date and time of the results file
   # before submitting data request, to compare with the same after one
   # for simple polling of results file in srdaGetData() function
@@ -187,9 +187,9 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
 #' srdaGetData(1)
 
 srdaGetData <- function() { #srdaGetResult() might be a better name
- 
+  
   if (DEBUG) message("Waiting for results ...", appendLF = FALSE)
-
+  
   # simple polling of the results file
   repeat {
     afterDate <- url.exists(RESULTS_URL, .header=TRUE)["Last-Modified"]
@@ -204,7 +204,7 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
       Sys.sleep(POLL_TIME)
     }
   }
-
+  
   # Some pre-processing is needed to correctly parse results
   
   # First, read file as a stream of characters, so that later we can
@@ -213,7 +213,7 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   # by the read.table() function.
   fileLen <- url.exists(RESULTS_URL, .header=TRUE)["Content-Length"]
   if (is.na(fileLen)) {
-    if (DEBUG) message("Empty result for request, nothing to process!")
+    if (DEBUG) message("Empty result for request, nothing to process!\n")
     return (invisible())
   }
   results <- readChar(RESULTS_URL, nchars = fileLen, TRUE)
@@ -244,7 +244,7 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
   # (":\r\n" => ": " => "!@#" => loss of one data field).
   results <- gsub("-\\r\\n", "-", results) # order is important here
   results <- gsub("\\r\\n", " ", results)
-
+  
   # fix for improperly formatted result data (AniSa, project 7606)
   results <- gsub("\\n:gpl:962356288", ":gpl:962356288", results)
   
@@ -330,9 +330,14 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # check if the archive file has already been processed
   if (DEBUG) {message("Processing request \"", request, "\" ...")}
   if (file.exists(rdataFile)) {
-    skipped <<- skipped + 1
-    if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
-    return (invisible())
+    # now check if request's SQL query hasn't been modified
+    data <- load(rdataFile)
+    if (identical(base64(request), attr(data, "SQL"))) {
+      skipped <<- skipped + 1
+      if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
+      return (invisible())
+    }
+    rm(data)
   }
   
   # Construct SRDA query URL
@@ -356,6 +361,10 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   assign(dataName, srdaGetData())
   data <- as.name(dataName)
+  
+  # save hash of the request's SQL query as data object's attribute,
+  # so that we can detect when configuration contains modified query
+  attr(data, "SQL") <- base64(request)
   
   # save current data frame to RData file
   save(list = dataName, file = rdataFile)
