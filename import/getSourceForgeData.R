@@ -61,6 +61,7 @@ REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), C
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
 RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
+ATTR <- "SQL"
 
 # Data source prefix (to construct data object names)
 dsPrefix <- ""
@@ -324,10 +325,14 @@ getSourceForgeData <- function (row, config) { # dataFrame
   indicator <- config$data[row, "indicatorName"]
   request <- config$data[row, "requestSQL"]
   
+  # construct name from data source prefix and data ID (see config. file),
+  # so that corresponding data object (usually, data frame) will be saved
+  # later under that name via save() and/or read into via readRDS()
+  dataName <- paste(dsPrefix, "data", indicator, sep = ".")
+  
   # calculate request's indicator digest and generate corresponding
-  # RData file name; also calculate request's SQL query   digest
+  # RData file name; also calculate request's SQL query digest
   fileDigest <- base64(indicator)
-  #rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
   rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDS_EXT, sep = "")
   requestDigest <- base64(request)
   
@@ -335,17 +340,28 @@ getSourceForgeData <- function (row, config) { # dataFrame
   if (DEBUG) {message("Processing request \"", request, "\" ...")}
   if (file.exists(rdataFile)) {
     # now check if request's SQL query hasn't been modified
-    #data <- load(rdataFile)
-    data <- readRDS(rdataFile)
-    requestAttrib <- attr(data, "SQL", exact = TRUE)
-    if (DEBUG) print(toString(requestDigest))
-    if (DEBUG) print(toString(requestAttrib))
-    if (identical(requestDigest, requestAttrib)) { #all.equal
+    assign(dataName, readRDS(rdataFile))
+    if (DEBUG) {
+      #message("\nRetrieved object '", dataName, "', containing:\n")
+      #message(str(get(dataName)))
+    }
+    requestAttrib <- attr(get(dataName), ATTR, exact = TRUE)
+    if (is.null(requestAttrib)) {
+      if (DEBUG)
+        message("Object '", dataName, "' doesn't have attribute \"",
+                ATTR, "\"\n")
+    }
+    else {
+      #if (DEBUG) message(toString(requestDigest))
+      #if (DEBUG) message(toString(requestAttrib))
+    }
+    if (identical(requestDigest, requestAttrib)) {
       skipped <<- skipped + 1
-      if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
+      if (DEBUG)
+        message("Processing skipped: RDS cache file is up-to-date.\n")
       return (invisible())
     }
-    rm(data)
+    #rm(data)
   }
   
   # Construct SRDA query URL
@@ -362,21 +378,14 @@ getSourceForgeData <- function (row, config) { # dataFrame
                              DATA_SEP, ADD_SQL)
   if (!success) error("Data request failed!")
   
-  # construct name from data source prefix and data ID (see config. file),
-  # so that corresponding data object (usually, data frame) will be saved
-  # later under that name via save()
-  dataName <- paste(dsPrefix, "data", indicator, sep = ".")
-  
   assign(dataName, srdaGetData())
-  data <- as.name(dataName)
+  data <- get(dataName)
   
   # save hash of the request's SQL query as data object's attribute,
   # so that we can detect when configuration contains modified query
   attr(data, "SQL") <- base64(request)
-  if (DEBUG) print(data)
-  if (DEBUG) print(attr(data, "SQL"))
   
-  # save current data frame to RData file
+  # save current data frame to RDS file
   #save(list = dataName, file = rdataFile)
   saveRDS(data, rdataFile)
   # alternatively, use do.call() as in "getFLOSSmoleDataXML.R"
