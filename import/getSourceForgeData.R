@@ -59,6 +59,7 @@ ADD_SQL  <- "0" # add SQL to file
 REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), CHR(13),' ')"
 
 RDATA_EXT <- ".RData"
+RDS_EXT <- ".rds"
 RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
 
 # Data source prefix (to construct data object names)
@@ -323,16 +324,23 @@ getSourceForgeData <- function (row, config) { # dataFrame
   indicator <- config$data[row, "indicatorName"]
   request <- config$data[row, "requestSQL"]
   
-  # calculate request's digest and generate corresponding RData file name
+  # calculate request's indicator digest and generate corresponding
+  # RData file name; also calculate request's SQL query   digest
   fileDigest <- base64(indicator)
-  rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
+  #rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
+  rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDS_EXT, sep = "")
+  requestDigest <- base64(request)
   
   # check if the archive file has already been processed
   if (DEBUG) {message("Processing request \"", request, "\" ...")}
   if (file.exists(rdataFile)) {
     # now check if request's SQL query hasn't been modified
-    data <- load(rdataFile)
-    if (identical(base64(request), attr(data, "SQL"))) {
+    #data <- load(rdataFile)
+    data <- readRDS(rdataFile)
+    requestAttrib <- attr(data, "SQL", exact = TRUE)
+    if (DEBUG) print(toString(requestDigest))
+    if (DEBUG) print(toString(requestAttrib))
+    if (identical(requestDigest, requestAttrib)) { #all.equal
       skipped <<- skipped + 1
       if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
       return (invisible())
@@ -365,10 +373,14 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # save hash of the request's SQL query as data object's attribute,
   # so that we can detect when configuration contains modified query
   attr(data, "SQL") <- base64(request)
+  if (DEBUG) print(data)
+  if (DEBUG) print(attr(data, "SQL"))
   
   # save current data frame to RData file
-  save(list = dataName, file = rdataFile)
+  #save(list = dataName, file = rdataFile)
+  saveRDS(data, rdataFile)
   # alternatively, use do.call() as in "getFLOSSmoleDataXML.R"
+  #do.call(save, list(table, file = rdataFile))
   
   # clean up
   rm(data)

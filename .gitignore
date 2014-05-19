@@ -1,10 +1,9 @@
 .Rproj.user
 .Rhistory
-
 *.RData
 *.Rdata
+*.rds
 *.Rout
-
 *.bz2
 cookies.txt
 runtime/*
