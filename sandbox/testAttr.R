@@ -20,12 +20,11 @@ message("\nProcessing request \"", request, "\" ...\n")
 # read back the object with the attribute
 if (file.exists(rdataFile)) {
   # now check if request's SQL query hasn't been modified
-  #data <- readRDS(rdataFile)
   assign(dataName, readRDS(rdataFile))
   message("Retrieved object '", dataName, "', containing:\n")
   message(str(get(dataName)))
   
-  requestAttrib <- attr(data, ATTR, exact = TRUE)
+  requestAttrib <- attr(get(dataName), ATTR, exact = TRUE)
   if (is.null(requestAttrib)) {
     message("Object '", dataName, "' doesn't have attribute \"",
             ATTR, "\"\n")
@@ -40,7 +39,6 @@ if (file.exists(rdataFile)) {
       return
     }
   }
-  rm(data)
 }
 
 if (save) {
@@ -48,20 +46,18 @@ if (save) {
           request, "\" as R data object ...\n")
   
   assign(dataName, getData())
-  print(dataName)
-  #data <- as.name(dataName)
-  #data <- eval(parse(text=dataName))
+  cat(str(dataName))
   data <- get(dataName)
-  print(data)
-  #names(data) <- dataName
-  print(str(data))
-  #eval(substitute(assign(dataName, getData()),
-  #                list(data <- as.name(dataName))))
+  # alternative to using get(), but more cumbersome:
+  # data <- eval(parse(text=dataName))
   
   # save hash of the request's SQL query as data object's attribute,
   # so that we can detect when configuration contains modified query
   attr(data, ATTR) <- base64(request)
   
+  cat(str(data))
+
   # save current data frame to RDS file
   saveRDS(data, rdataFile)
+  print("")
 }
