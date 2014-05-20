@@ -46,7 +46,7 @@ if (save) {
           request, "\" as R data object ...\n")
   
   assign(dataName, getData())
-  cat(str(dataName))
+  message(str(dataName))
   data <- get(dataName)
   # alternative to using get(), but more cumbersome:
   # data <- eval(parse(text=dataName))
@@ -55,9 +55,8 @@ if (save) {
   # so that we can detect when configuration contains modified query
   attr(data, ATTR) <- base64(request)
   
-  cat(str(data))
+  message(str(data))
 
   # save current data frame to RDS file
   saveRDS(data, rdataFile)
-  print("")
 }
