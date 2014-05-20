@@ -361,7 +361,6 @@ getSourceForgeData <- function (row, config) { # dataFrame
         message("Processing skipped: RDS cache file is up-to-date.\n")
       return (invisible())
     }
-    #rm(data)
   }
   
   # Construct SRDA query URL
@@ -380,7 +379,9 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   assign(dataName, srdaGetData())
   data <- get(dataName)
-  
+  # alternative to using get(), but more cumbersome:
+  # data <- eval(parse(text=dataName))
+    
   # save hash of the request's SQL query as data object's attribute,
   # so that we can detect when configuration contains modified query
   attr(data, "SQL") <- base64(request)
