@@ -9,6 +9,7 @@
          "indicatorDescription":"Links to source code repositories",
          "indicatorType":"character",
          "resultType":"data.frame",
+         "resultNames":"Project ID, Enabled, Repo URL, Repo Instructions",
          "requestSQL":"
 SELECT group_id, enabled, url_primary, instructions_public
 FROM sf0314.external_tool_links"

@@ -386,6 +386,13 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # so that we can detect when configuration contains modified query
   attr(data, "SQL") <- base64(request)
   
+  # specify names for the current data object per configuration
+  dataNames <- config$data[row, "resultNames"]
+  dataNames <- strsplit(dataNames, split = ",")
+  lapply(dataNames, str_trim)
+  names(data) <- unlist(dataNames)
+  print(names(data))
+  
   # save current data frame to RDS file
   #save(list = dataName, file = rdataFile)
   saveRDS(data, rdataFile)
