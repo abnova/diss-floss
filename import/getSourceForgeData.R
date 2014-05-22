@@ -61,7 +61,6 @@ REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), C
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
 RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
-ATTR <- "SQL"
 
 # Data source prefix (to construct data object names)
 dsPrefix <- ""
@@ -319,11 +318,46 @@ generateConfig <- function(configTemplate, configFile) {
 #'         getAngelListData(1, 59)
 #'         getAngelListData('Market', 'FLOSS')
 
+cfgElementsChanged <- function (rdataFile,
+                                dataName, ATTRS, configInfo) {
+
+  changed <- FALSE
+  
+  assign(dataName, readRDS(rdataFile))
+  if (DEBUG) {
+    #message("\nRetrieved object '", dataName, "', containing:\n")
+    #message(str(get(dataName)))
+  }
+  
+  for (attrib in ATTRS) {
+    objectAttrib <- attr(get(dataName), attrib, exact = TRUE)
+    if (is.null(objectAttrib)) {
+      if (DEBUG)
+        message("Object '", dataName, "' doesn't have attribute \"",
+                ATTR, "\"\n")
+    }
+    else {
+      configAttrib <- configInfo[[attrib]]
+      #if (DEBUG) message("configAttrib = ", toString(configAttrib))
+      #if (DEBUG) message("objectAttrib = ", toString(objectAttrib))
+    }
+    if (!identical(configAttrib, objectAttrib)) {
+      changed <- TRUE
+      break
+    }
+  }
+  
+  return (changed)
+}
+
+
 getSourceForgeData <- function (row, config) { # dataFrame
   
-  # Extract indicator's name & SQL query from the function's argument
+  # Extract indicator's name, SQL query and result's variable names
+  # from the function's argument
   indicator <- config$data[row, "indicatorName"]
   request <- config$data[row, "requestSQL"]
+  varNames <- config$data[row, "resultNames"]
   
   # construct name from data source prefix and data ID (see config. file),
   # so that corresponding data object (usually, data frame) will be saved
@@ -332,30 +366,21 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   # calculate request's indicator digest and generate corresponding
   # RData file name; also calculate request's SQL query digest
+  # as well as digests for indicator name and data object names
   fileDigest <- base64(indicator)
   rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDS_EXT, sep = "")
-  requestDigest <- base64(request)
+  
+  # construct configuration-based attribute info for verification
+  ATTRS <- c("indicatorName", "resultNames", "SQL")
+  configAttrs <- list(indicator, varNames, request)
+  configInfo <- lapply(configAttrs, base64)
+  names(configInfo) <- ATTRS
   
   # check if the archive file has already been processed
   if (DEBUG) {message("Processing request \"", request, "\" ...")}
   if (file.exists(rdataFile)) {
-    # now check if request's SQL query hasn't been modified
-    assign(dataName, readRDS(rdataFile))
-    if (DEBUG) {
-      #message("\nRetrieved object '", dataName, "', containing:\n")
-      #message(str(get(dataName)))
-    }
-    requestAttrib <- attr(get(dataName), ATTR, exact = TRUE)
-    if (is.null(requestAttrib)) {
-      if (DEBUG)
-        message("Object '", dataName, "' doesn't have attribute \"",
-                ATTR, "\"\n")
-    }
-    else {
-      #if (DEBUG) message(toString(requestDigest))
-      #if (DEBUG) message(toString(requestAttrib))
-    }
-    if (identical(requestDigest, requestAttrib)) {
+    # now check if any indicator's attributes have been modified
+    if (!cfgElementsChanged(rdataFile, dataName, ATTRS, configInfo)) {
       skipped <<- skipped + 1
       if (DEBUG)
         message("Processing skipped: RDS cache file is up-to-date.\n")
@@ -386,11 +411,14 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # so that we can detect when configuration contains modified query
   attr(data, "SQL") <- base64(request)
   
+  # set other attributes for the data object
+  attr(data, "indicatorName") <- base64(indicator)
+  attr(data, "resultNames") <- base64(varNames)
+  
   # specify names for the current data object per configuration
-  dataNames <- config$data[row, "resultNames"]
-  dataNames <- strsplit(dataNames, split = ",")
-  dataNames <- lapply(dataNames, str_trim)
-  names(data) <- unlist(dataNames)
+  varNames <- strsplit(varNames, split = ",")
+  varNames <- lapply(varNames, str_trim)
+  names(data) <- unlist(varNames)
   
   # save current data frame to RDS file
   #save(list = dataName, file = rdataFile)
@@ -448,13 +476,15 @@ message("Reading configuration file ...\n")
 
 config <- jsonlite::fromJSON(SRDA_CONFIG)
 
+numRequests <- nrow(config$data)
+
 if (DEBUG) {
   msg <- paste("Data ", config["_action"],
                " from ", config["_source"],
                ", using schema \"", config["_schema"], "\".", sep = "")
   message(msg)
   
-  msg <- paste("Total number of requests to submit:", nrow(config$data))
+  msg <- paste("Total number of requests to submit:", numRequests)
   message(msg, "\n")
 }
 
@@ -481,10 +511,14 @@ if (!success) error("Authentication failed!")
 message("Retrieving SourceForge data ...\n")
 
 # Collect data, iterating through the request queue
-allData <- lapply(seq(nrow(config$data)),
+allData <- lapply(seq(numRequests),
                   function(row) getSourceForgeData(row, config))
 
 if (skipped == 0) message("") # add new line
+if (DEBUG)
+  message("Data elements/requests statistics - processed: ",
+          numRequests - skipped, ", skipped: ", skipped, ".\n")
+
 message("SourceForge data collection completed successfully.\n")
 
 # clean up, with a side effect of writing cookie file to disk
