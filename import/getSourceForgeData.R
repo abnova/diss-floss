@@ -66,6 +66,7 @@ RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
 dsPrefix <- ""
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
+DEBUG2 <- FALSE
 
 cookiesFile <- "cookies.txt"
 
@@ -189,7 +190,7 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
 
 srdaGetData <- function() { #srdaGetResult() might be a better name
   
-  if (DEBUG) message("Waiting for results ...", appendLF = FALSE)
+  if (DEBUG2) message("Waiting for results ...", appendLF = FALSE)
   
   # simple polling of the results file
   repeat {
@@ -197,11 +198,11 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
     afterDate <-  strptime(afterDate, "%a, %d %b %Y %X", tz="GMT")
     delta <- difftime(afterDate, beforeDate, units = "secs")
     if (as.numeric(delta) != 0) { # file modified, results are ready
-      if (DEBUG) message(" Ready!\n")
+      if (DEBUG2) message(" Ready!\n")
       break
     }
     else { # no results yet, wait the timeout and check again
-      if (DEBUG) message(".", appendLF = FALSE)
+      if (DEBUG2) message(".", appendLF = FALSE)
       Sys.sleep(POLL_TIME)
     }
   }
@@ -377,12 +378,18 @@ getSourceForgeData <- function (row, config) { # dataFrame
   names(configInfo) <- ATTRS
   
   # check if the archive file has already been processed
-  if (DEBUG) {message("Processing request \"", request, "\" ...")}
+  if (DEBUG) {
+    message("Collecting data for \'", indicator, "\' ... ",
+            appendLF = FALSE)
+  }
+  if (DEBUG2) {message("Processing request \"", request, "\" ...")}
   if (file.exists(rdataFile)) {
     # now check if any indicator's attributes have been modified
     if (!cfgElementsChanged(rdataFile, dataName, ATTRS, configInfo)) {
       skipped <<- skipped + 1
       if (DEBUG)
+        message("Skipped.")
+      if (DEBUG2)
         message("Processing skipped: RDS cache file is up-to-date.\n")
       return (invisible())
     }
@@ -425,6 +432,8 @@ getSourceForgeData <- function (row, config) { # dataFrame
   saveRDS(data, rdataFile)
   # alternatively, use do.call() as in "getFLOSSmoleDataXML.R"
   #do.call(save, list(table, file = rdataFile))
+  
+  if (DEBUG) message("Done.")
   
   # clean up
   rm(data)
