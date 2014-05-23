@@ -14,12 +14,12 @@ transformResult <- function (indicator, handler) {
   if (file.exists(rdataFile)) {
     data <- readRDS(rdataFile)
     result <- do.call(handler, list(indicator, data))
+    saveRDS(result, rdataFile)
+    rm(result)
   }
   else {
     error("RDS file for \'", indicator, "\' not found!")
   }
-  
-  return (result)
 }
 
 
@@ -27,7 +27,17 @@ transformResult <- function (indicator, handler) {
 
 getProjectAge <- function (indicator, data) {
   
-  print(head(data))
+  # delete target column if exists
+  if ("Project Age" %in% names(data))
+    data[,c("Project Age")] <- list(NULL)
+  
+  transformColumn <- as.numeric(data[["Registration Time"]])
+  regTime <- as.POSIXct(transformColumn, origin="1970-01-01")
+  prjAge <- difftime(Sys.Date(), as.Date(regTime), units = "weeks")
+  result <- cbind(data, round(prjAge))
+  names(result)[3] <- "Project Age"
+  print(head(result))
+  return (result)
 }
 
 

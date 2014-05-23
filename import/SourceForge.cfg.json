@@ -96,6 +96,7 @@ GROUP BY fp.group_id"
          "indicatorDescription":"Project age",
          "indicatorType":"character",
          "resultType":"data.frame",
+         "resultNames":"Project ID, Registration Time",
          "requestSQL":"
 SELECT group_id, register_time
 FROM sf0314.groups
