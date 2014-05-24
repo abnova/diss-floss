@@ -4,6 +4,8 @@ if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 RDATA_DIR <- "../cache/SourceForge"
 RDS_EXT <- ".rds"
 
+DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
+
 
 ##### GENERIC TRANSFORMATION FUNCTION #####
 
@@ -18,26 +20,53 @@ transformResult <- function (indicator, handler) {
     rm(result)
   }
   else {
-    error("RDS file for \'", indicator, "\' not found!")
+    error("RDS file for \'", indicator, "\' not found! Run 'make' first.")
   }
 }
+
+
+## Preserve object's special attributes:
+## use a class with a "as.data.frame" and "[" method
+
+#as.data.frame.avector <- as.data.frame.vector
+
+#`[.avector` <- function (x, i, ...) {
+#  r <- NextMethod("[")
+#  mostattributes(r) <- attributes(x)
+#  return (r)
+#}
 
 
 ##### HANDLER FUNCTION DEFINITIONS #####
 
 getProjectAge <- function (indicator, data) {
+
+  # do not process, if target column already exists
+  if ("Project Age" %in% names(data)) {
+    if (DEBUG) message("\nNot processing - ",
+                       "Transformation already performed!\n")
+    return (invisible())
+  }
   
-  # delete target column if exists
-  if ("Project Age" %in% names(data))
-    data[,c("Project Age")] <- list(NULL)
-  
-  transformColumn <- as.numeric(data[["Registration Time"]])
+  # save object's attributes
+  ##attrs <- attributes(data)
+
+  transformColumn <- as.numeric(unlist(data["Registration Time"]))
   regTime <- as.POSIXct(transformColumn, origin="1970-01-01")
   prjAge <- difftime(Sys.Date(), as.Date(regTime), units = "weeks")
-  result <- cbind(data, round(prjAge))
-  names(result)[3] <- "Project Age"
-  print(head(result))
-  return (result)
+  data[["Project Age"]] <- as.numeric(round(prjAge)) / 4 # in months
+  #result <- cbind(data, as.numeric(round(prjAge)))
+  #names(result)[3] <- "Project Age"
+  
+  # now we can delete the source column 
+  if ("Registration Time" %in% names(data))
+    data[,c("Registration Time")] <- list(NULL)
+  
+  if (DEBUG) print(summary(data))
+  
+  ##attributes(data) <- attrs
+  
+  return (data)
 }
 
 
