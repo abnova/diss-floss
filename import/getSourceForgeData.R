@@ -393,6 +393,10 @@ getSourceForgeData <- function (row, config) { # dataFrame
         message("Processing skipped: RDS cache file is up-to-date.\n")
       return (invisible())
     }
+    else {
+      # change is detected, delete file and continue with processing
+      unlink(rdataFile)
+    }
   }
   
   # Construct SRDA query URL
