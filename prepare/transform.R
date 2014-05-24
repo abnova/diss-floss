@@ -43,9 +43,7 @@ getProjectAge <- function (indicator, data) {
 
   # do not process, if target column already exists
   if ("Project Age" %in% names(data)) {
-    if (DEBUG) message("\nNot processing - ",
-                       "Transformation already performed!\n")
-    return (invisible())
+    stop("\nNot processing - Transformation already performed!\n")
   }
   
   # save object's attributes
