@@ -1,3 +1,4 @@
+if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 
 
@@ -5,8 +6,6 @@ CACHE_DIR <- "../cache"
 RDS_EXT <- ".rds"
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
-
-#data <- readRDS("../cache/SourceForge/cHJqQWdl.rds")
 
 
 ##### EDA CATEGORIES #####
@@ -25,8 +24,9 @@ uniDescriptiveEDA <- function (df, var, colName, extraFun) {
 
 uniVisualEDA <- function (df, var, colName, extraFun) {
   
-  if (is.numeric(df[[colName]]))
+  if (is.numeric(df[[colName]])) {
     plotHistogram(df, colName)
+  }
 }
 
 
@@ -74,7 +74,13 @@ plotHistogram <- function (df, colName) {
     ggtitle(label="Projects distribution across their age")
   
   g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1)
-  print(g)
+
+  if (.Platform$GUI == "RStudio")
+    print(g)
+  else {
+    ggsave(file="test.svg", plot=g)
+    ggsave(file="test.pdf", plot=g)
+  }
   
   g <- g + geom_histogram(aes(y = ..density..), binwidth = 1) +
     geom_density()
@@ -91,7 +97,7 @@ sfColumnNames <- c("Project Age", "Project License")
 sfExtraFun <- list("projectAge", "projectLicense")
 
 # sequentially call all previously defined transformation functions
-lapply(seq_along(indicators),
+lapply(seq_along(sfIndicators),
        function(i) {
          indicatorEDA("SourceForge", sfIndicators[[i]],
                       sfColumnNames[[i]], sfExtraFun[[i]])
