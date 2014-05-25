@@ -335,7 +335,7 @@ cfgElementsChanged <- function (rdataFile,
     if (is.null(objectAttrib)) {
       if (DEBUG)
         message("Object '", dataName, "' doesn't have attribute \"",
-                ATTR, "\"\n")
+                attrib, "\"\n")
     }
     else {
       configAttrib <- configInfo[[attrib]]

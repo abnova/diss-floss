@@ -1,7 +1,7 @@
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 
 
-RDATA_DIR <- "../cache/SourceForge"
+CACHE_DIR <- "../cache"
 RDS_EXT <- ".rds"
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
@@ -9,10 +9,11 @@ DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 ##### GENERIC TRANSFORMATION FUNCTION #####
 
-transformResult <- function (indicator, handler) {
+transformResult <- function (dataSource, indicator, handler) {
   
   fileDigest <- base64(indicator)
-  rdataFile <- paste0(RDATA_DIR, "/", fileDigest, RDS_EXT)
+  rdataFile <- paste0(CACHE_DIR, "/", dataSource, "/",
+                      fileDigest, RDS_EXT)
   if (file.exists(rdataFile)) {
     data <- readRDS(rdataFile)
     result <- do.call(handler, list(indicator, data))
@@ -39,11 +40,12 @@ transformResult <- function (indicator, handler) {
 
 ##### HANDLER FUNCTION DEFINITIONS #####
 
-getProjectAge <- function (indicator, data) {
+projectAge <- function (indicator, data) {
 
   # do not process, if target column already exists
   if ("Project Age" %in% names(data)) {
-    stop("\nNot processing - Transformation already performed!\n")
+    #stop("\nNot processing - Transformation already performed!\n")
+    return (invisible())
   }
   
   # save object's attributes
@@ -68,13 +70,29 @@ getProjectAge <- function (indicator, data) {
 }
 
 
+projectLicense <- function (indicator, data) {
+  
+  # save object's attributes
+  ##attrs <- attributes(data)
+
+  data[["Project License"]] <- as.factor(data[["Project License"]])
+  if (DEBUG) print(summary(data))
+  
+  ##attributes(data) <- attrs
+  
+  return (data)
+}
+
+
 ##### MAIN #####
 
 # construct list of indicators & corresponding transform. functions
-indicators <- c("prjAge")
-transforms <- list(getProjectAge)
-
+indicators <- c("prjAge", "prjLicense")
+transforms <- list(projectAge, projectLicense)
 
 # sequentially call all previously defined transformation functions
 lapply(seq_along(indicators),
-       function(i) {transformResult(indicators[[i]], transforms[[i]])})
+       function(i) {
+         transformResult("SourceForge",
+                         indicators[[i]], transforms[[i]])
+         })

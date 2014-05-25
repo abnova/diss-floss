@@ -19,10 +19,11 @@ FROM ${schema}.external_tool_links"
          "indicatorDescription":"Project's license",
          "indicatorType":"character",
          "resultType":"data.frame",
+         "resultNames":"Project ID, Project License",
          "requestSQL":"
 SELECT group_id, license
 FROM ${schema}.groups
-WHERE group_id < 100"
+WHERE group_id < 100000"
       },
       {
          "indicatorName":"devSupport",
