@@ -44,12 +44,13 @@ projectAge <- function (indicator, data) {
 
   # do not process, if target column already exists
   if ("Project Age" %in% names(data)) {
-    #stop("\nNot processing - Transformation already performed!\n")
+    message("\nProject Age: ", appendLF = FALSE)
+    message("Not processing - Transformation already performed!\n")
     return (invisible())
   }
   
   # save object's attributes
-  ##attrs <- attributes(data)
+  #attrs <- attributes(data)
 
   transformColumn <- as.numeric(unlist(data["Registration Time"]))
   regTime <- as.POSIXct(transformColumn, origin="1970-01-01")
@@ -63,8 +64,7 @@ projectAge <- function (indicator, data) {
     data[,c("Registration Time")] <- list(NULL)
   
   if (DEBUG) print(summary(data))
-  
-  ##attributes(data) <- attrs
+  #attributes(data) <- attrs
   
   return (data)
 }
@@ -72,13 +72,26 @@ projectAge <- function (indicator, data) {
 
 projectLicense <- function (indicator, data) {
   
-  # save object's attributes
-  ##attrs <- attributes(data)
-
-  data[["Project License"]] <- as.factor(data[["Project License"]])
-  if (DEBUG) print(summary(data))
+  # do not process, if target column already exists
+  if (is.factor(data[["Project License"]])) {
+    message("\nProject License: ", appendLF = FALSE)
+    message("Not processing - Transformation already performed!\n")
+    return (invisible())
+  }
   
-  ##attributes(data) <- attrs
+  # save object's attributes
+  #attrs <- attributes(data)
+
+  #data[["Project License"]] <- as.factor(data[["Project License"]])
+  data[["Project License"]] <- 
+    factor(data[["Project License"]],
+           levels = c('gpl', 'lgpl', 'bsd', 'other',
+                      'artistic', 'public', '(Other)'),
+           labels = c('GPL', 'LGPL', 'BSD', 'Other',
+                      'Artistic', 'Public', 'Unknown'))
+
+  if (DEBUG) print(summary(data))
+  #attributes(data) <- attrs
   
   return (data)
 }
