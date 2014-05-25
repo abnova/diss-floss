@@ -1,8 +1,9 @@
 # Major variable definitions
 
-#RSCRIPT=Rscript
-RSCRIPT=R CMD BATCH
-R_OPTS=--no-save --no-restore --verbose
+RSCRIPT=Rscript
+#RSCRIPT=R CMD BATCH
+R_OPTS=--no-restore --verbose
+R_OPTS_PROD=--no-save --no-restore --silent
 #R_OUT=> outputFile.Rout 2>&1
 
 # --no-save --no-restore --verbose myRfile.R > outputFile.Rout 2>&1
@@ -10,22 +11,31 @@ R_OPTS=--no-save --no-restore --verbose
 
 # Targets and rules 
 
-analysis:
+analysis: eda \
+          efa \
+          cfa \
+          sem
 
-#importFLOSSmole: getFLOSSmoleDataXML.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+eda: eda.R
+	@$(RSCRIPT) $(R_OPTS) $<
 
-#importSourceForge: getSourceForgeData.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+efa: efa.R
+	@$(RSCRIPT) $(R_OPTS) $<
 
-#importAngelList: getAngelListData.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+cfa: cfa.R
+	@$(RSCRIPT) $(R_OPTS) $<
 
-#importCrunchBase: getCrunchBaseDataAPI.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+sem: sem.R
+	@$(RSCRIPT) $(R_OPTS) $<
 
-.PHONY: clean
+.PHONY: clean clean-svg clean-pdf
 
 # remove intermediate files
 clean:
-	rm -f tmp*.bz2 *.Rdata
+	rm -f *.svg *.pdf .Rout
+
+clean-svg:
+	rm -f *.svg
+
+clean-pdf:
+	rm -f *.pdf
