@@ -8,7 +8,7 @@
 # 2. http://cran.r-project.org/doc/FAQ/R-FAQ.html#Why-do-lattice_002ftrellis-graphics-not-work_003f)
 #
 
-qplot <- function (x, y = NULL, z = NULL, ...) {
+myQplot <- function (x, y = NULL, z = NULL, ...) {
   p <- ggplot2::qplot (x = x, y = y, z = z, ...)
   print (p)
 }
