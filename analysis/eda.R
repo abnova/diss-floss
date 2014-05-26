@@ -1,4 +1,5 @@
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
+if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 
 
@@ -42,7 +43,8 @@ multiVisualEDA <- function (df, var, colName, extraFun) {
 }
 
 
-indicatorEDA <- function (dataSource, indicator, colName, extraFun) {
+performEDA <- function (dataSource, analysis,
+                        indicator, colName, extraFun) {
 
   fileDigest <- base64(indicator)
   rdataFile <- paste0(CACHE_DIR, "/", dataSource, "/",
@@ -55,11 +57,20 @@ indicatorEDA <- function (dataSource, indicator, colName, extraFun) {
           "Run 'make' first.")
   }
   
-  uniDescriptiveEDA(data, indicator, colName, extraFun)
-  uniVisualEDA(data, indicator, colName, extraFun)
-  
-  multiDescriptiveEDA(data, indicator, colName, extraFun)
-  multiVisualEDA(data, indicator, colName, extraFun)
+  if (identical(analysis, "univariate")) {
+    
+    uniDescriptiveEDA(data, indicator, colName, extraFun)
+    uniVisualEDA(data, indicator, colName, extraFun)
+    
+  } else if (identical(analysis, "multivariate")) {
+    
+    multiDescriptiveEDA(data, indicator, colName, extraFun)
+    multiVisualEDA(data, indicator, colName, extraFun)
+    
+  } else {
+    error("Unknown type of EDA analysis - ",
+          "accepted values are 'univariate' and 'multivariate'")
+  }
   
   rm(data)
 }
@@ -81,17 +92,18 @@ plotHistogram <- function (df, colName) {
 
   if (.Platform$GUI == "RStudio")
     print(g)
-  else {
-    ggsave(file="test.svg", plot=g)
-    ggsave(file="test.pdf", plot=g)
-  }
-  
-  #g <- g + geom_histogram(aes(y = ..density..), binwidth = 1) +
-  #  #geom_density()
-  #  geom_freqpoly(binwidth = 1)
-  #print(g)
 
-  #dev.off()
+  edaFile <- lapply(strsplit(colName, " "), str_trim)
+  print(edaFile)
+  edaFile <- lapply(edaFile, paste0)
+  print(edaFile)
+  edaFile <- paste0("./", edaFile, ".svg")
+  print(edaFile)
+  ggsave(file=edaFile, plot=g)
+  
+  dev.off()
+  
+  return (g)
 }
 
 
@@ -104,23 +116,37 @@ plotBarGraph <- function (df, colName) {
   g <- ggplot(data=df, aes(x=var, fill=var)) +
     geom_bar(stat="bin")
   print(g)
+  
+  return (g)
 }
 
 
 ##### EDA MAIN #####
 
 
-# construct list of indicators & corresponding transform. functions
+# construct list of indicators & corresponding extra functions
 sfIndicators <- c("prjAge", "prjLicense")
 sfColumnNames <- c("Project Age", "Project License")
 sfExtraFun <- list("projectAge", "projectLicense")
 
-# sequentially call all previously defined transformation functions
-lapply(seq_along(sfIndicators),
-       function(i) {
-         indicatorEDA("SourceForge", sfIndicators[[i]],
-                      sfColumnNames[[i]], sfExtraFun[[i]])
-       })
+# sequentially call EDA functions for all indicators in data source
+uniPlots <- lapply(seq_along(sfIndicators), function(i) {
+  performEDA("SourceForge", analysis="univariate",
+             sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
+  })
+
+pdf("./eda-univar.pdf")
+silent <- lapply(uniPlots, print)
+
+multiPlots <- lapply(seq_along(sfIndicators), function(i) {
+  performEDA("SourceForge", analysis="multivariate",
+             sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
+})
+
+pdf("./eda-multivar.pdf")
+silent <- lapply(multiPlots, print)
+
+dev.off()
 
 
 ##### "EXTRA" (CUSTOMIZATION) FUNCTIONS #####
