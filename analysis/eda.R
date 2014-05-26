@@ -70,13 +70,13 @@ performEDA <- function (dataSource, analysis,
   
   if (identical(analysis, "univariate")) {
     
-    p <- uniDescriptiveEDA(data, indicator, colName, extraFun)
-    p <- uniVisualEDA(data, indicator, colName, extraFun)
+    uniDescriptiveEDA(data, indicator, colName, extraFun)
+    plot <- uniVisualEDA(data, indicator, colName, extraFun)
     
   } else if (identical(analysis, "multivariate")) {
     
-    p <- multiDescriptiveEDA(data, indicator, colName, extraFun)
-    p <- multiVisualEDA(data, indicator, colName, extraFun)
+    multiDescriptiveEDA(data, indicator, colName, extraFun)
+    plot <- multiVisualEDA(data, indicator, colName, extraFun)
     
   } else {
     error("Unknown type of EDA analysis - ",
@@ -84,6 +84,8 @@ performEDA <- function (dataSource, analysis,
   }
   
   rm(data)
+  
+  return (plot)
 }
 
 
@@ -101,14 +103,15 @@ plotHistogram <- function (df, colName) {
   
   g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1)
 
+  #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
-  ggsave(file=edaFile, plot=g)
+  invisible(ggsave(file=edaFile, plot=g))
   
-  if (.Platform$GUI == "RStudio")
-    print(g)
+  #if (.Platform$GUI == "RStudio")
+  #  print(g)
   
-  dev.off()
+  #dev.off()
   
   return (g)
 }
@@ -123,14 +126,15 @@ plotBarGraph <- function (df, colName) {
   g <- ggplot(data=df, aes(x=var, fill=var)) +
     geom_bar(stat="bin")
   
+  #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
-  ggsave(file=edaFile, plot=g)
+  invisible(ggsave(file=edaFile, plot=g))
   
-  if (.Platform$GUI == "RStudio")
-    print(g)
+  #if (.Platform$GUI == "RStudio")
+  #  print(g)
   
-  dev.off()
+  #dev.off()
   
   return (g)
 }
@@ -150,6 +154,8 @@ uniPlots <- lapply(seq_along(sfIndicators), function(i) {
              sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
   })
 
+print(uniPlots)
+
 edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-univar.pdf")
 pdf(edaFilePDF)
 silent <- lapply(uniPlots, print)
@@ -159,7 +165,7 @@ dev.off()
 multiPlots <- lapply(seq_along(sfIndicators), function(i) {
   performEDA("SourceForge", analysis="multivariate",
              sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
-})
+  })
 
 edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-multivar.pdf")
 pdf(edaFilePDF)
