@@ -17,8 +17,10 @@ uniDescriptiveEDA <- function (df, var, colName, extraFun) {
   #env <- new.env()
   #do.call(extraFun, list(df, var), envir = env)
   
-  if (is.factor(data))
+  if (is.factor(data)) {
     print(summary(data))
+    plotBarGraph(df, colName)
+  }
 }
 
 
@@ -65,10 +67,12 @@ indicatorEDA <- function (dataSource, indicator, colName, extraFun) {
 
 ##### VISUAL EDA #####
 
+
+# Plot distribution of a continuous variable "colName"
 plotHistogram <- function (df, colName) {
 
   g <- qplot(df[[colName]], data = df, binwidth = 1) +
-    #scale_size_area("Number of projects") + 
+    scale_size_area("Projects") + 
     scale_x_continuous("Project Age (in months)") +
     scale_y_continuous("Number of projects") +
     ggtitle(label="Projects distribution across their age")
@@ -82,8 +86,23 @@ plotHistogram <- function (df, colName) {
     ggsave(file="test.pdf", plot=g)
   }
   
-  g <- g + geom_histogram(aes(y = ..density..), binwidth = 1) +
-    geom_density()
+  #g <- g + geom_histogram(aes(y = ..density..), binwidth = 1) +
+  #  #geom_density()
+  #  geom_freqpoly(binwidth = 1)
+  #print(g)
+
+  #dev.off()
+}
+
+
+# Plot distribution of a categorical variable "colName"
+plotBarGraph <- function (df, colName) {
+  
+  df <- df
+  df$var <- factor(df[[colName]])
+  
+  g <- ggplot(data=df, aes(x=var, fill=var)) +
+    geom_bar(stat="bin")
   print(g)
 }
 
