@@ -10,6 +10,8 @@ EDA_RESULTS_DIR <- "../results/eda"
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
+allPlots <- list()
+
 
 ##### EDA CATEGORIES #####
 
@@ -17,7 +19,13 @@ uniDescriptiveEDA <- function (df, var, colName, extraFun) {
   
   data <- df[[colName]]
   
+  if (is.numeric(data)) {
+    message("\nDecriptive statistics for '", colName, "':\n")
+    print(summary(data))
+  }
+  
   if (is.factor(data)) {
+    message("\nDecriptive statistics for '", colName, "':\n")
     print(summary(data))
   }
 }
@@ -32,18 +40,26 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
   
   if (is.numeric(data)) {
     plot <- plotHistogram(df, colName)
+    allPlots <- c(allPlots, plot)
   }
   
   if (is.factor(data)) {
     plot <- plotBarGraph(df, colName)
+    allPlots <- c(allPlots, plot)
   }
-
-  return (plot)
+  
+  if (is.numeric(data)) {
+    plot <- ggQQplot(data)
+    allPlots <- c(allPlots, plot)
+  }
+  
+  return (allPlots)
 }
 
 
-multiDescriptiveEDA <- function (df, var, colName, extraFun) {
+multiDescriptiveEDA <- function (df, var, colNames, extraFun) {
   
+  message("\nDecriptive statistics for '", colNames, "':\n")
 }
 
 
@@ -71,12 +87,16 @@ performEDA <- function (dataSource, analysis,
   if (identical(analysis, "univariate")) {
     
     uniDescriptiveEDA(data, indicator, colName, extraFun)
-    plot <- uniVisualEDA(data, indicator, colName, extraFun)
+    plots <- uniVisualEDA(data, indicator, colName, extraFun)
+    allPlots <- c(allPlots, plots)
     
   } else if (identical(analysis, "multivariate")) {
-    
-    multiDescriptiveEDA(data, indicator, colName, extraFun)
-    plot <- multiVisualEDA(data, indicator, colName, extraFun)
+   
+    colNames <- names(data)
+    colNames <- colNames[-1] # delete Project ID
+    #multiDescriptiveEDA(data, indicator, colNames, extraFun)
+    plots <- multiVisualEDA(data, indicator, colNames, extraFun)
+    allPlots <- c(allPlots, plots)
     
   } else {
     error("Unknown type of EDA analysis - ",
@@ -85,7 +105,7 @@ performEDA <- function (dataSource, analysis,
   
   rm(data)
   
-  return (plot)
+  return (allPlots)
 }
 
 
@@ -103,16 +123,13 @@ plotHistogram <- function (df, colName) {
   
   g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1)
 
+  if (.Platform$GUI == "RStudio") print(g)
+  
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
-  invisible(ggsave(file=edaFile, plot=g))
-  
-  #if (.Platform$GUI == "RStudio")
-  #  print(g)
-  
-  #dev.off()
-  
+  suppressMessages(ggsave(file=edaFile, plot=g))
+
   return (g)
 }
 
@@ -126,19 +143,34 @@ plotBarGraph <- function (df, colName) {
   g <- ggplot(data=df, aes(x=var, fill=var)) +
     geom_bar(stat="bin")
   
+  if (.Platform$GUI == "RStudio") print(g)
+
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
-  invisible(ggsave(file=edaFile, plot=g))
-  
-  #if (.Platform$GUI == "RStudio")
-  #  print(g)
-  
-  #dev.off()
+  suppressMessages(ggsave(file=edaFile, plot=g))
   
   return (g)
 }
 
+
+ggQQplot <- function (vec) # argument: vector of numbers
+{
+  # following four lines from base R's qqline()
+  y <- quantile(vec[!is.na(vec)], c(0.25, 0.75))
+  x <- qnorm(c(0.25, 0.75))
+  slope <- diff(y)/diff(x)
+  int <- y[1L] - slope * x[1L]
+  
+  d <- data.frame(resids = vec)
+  
+  g <- ggplot(d, aes(sample = resids)) +
+    stat_qq() + geom_abline(slope = slope, intercept = int)
+  
+  if (.Platform$GUI == "RStudio") print(g)
+
+  return (g)
+}
 
 ##### EDA MAIN #####
 
@@ -148,30 +180,37 @@ sfIndicators <- c("prjAge", "prjLicense")
 sfColumnNames <- c("Project Age", "Project License")
 sfExtraFun <- list("projectAge", "projectLicense")
 
+#browser()
+
 # sequentially call EDA functions for all indicators in data source
 uniPlots <- lapply(seq_along(sfIndicators), function(i) {
   performEDA("SourceForge", analysis="univariate",
              sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
   })
 
-print(uniPlots)
-
 edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-univar.pdf")
 pdf(edaFilePDF)
-silent <- lapply(uniPlots, print)
+#silent <- lapply(uniPlots, print)
 
 dev.off()
 
-multiPlots <- lapply(seq_along(sfIndicators), function(i) {
+
+# construct list of indicators & corresponding extra functions
+sfMultiIndicators <- c("prjAge", "prjLicense")
+sfMultiColumnNames <- c("Project Age", "Project License")
+sfMultiExtraFun <- list("projectAge", "projectLicense")
+
+multiPlots <- lapply(seq_along(sfMultiIndicators), function(i) {
   performEDA("SourceForge", analysis="multivariate",
-             sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
+             sfMultiIndicators[[i]], sfMultiColumnNames[[i]],
+             sfMultiExtraFun[[i]])
   })
 
-edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-multivar.pdf")
-pdf(edaFilePDF)
-silent <- lapply(multiPlots, print)
+#edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-multivar.pdf")
+#pdf(edaFilePDF)
+#silent <- lapply(multiPlots, print)
 
-dev.off()
+#dev.off()
 
 
 ##### "EXTRA" (CUSTOMIZATION) FUNCTIONS #####
@@ -180,30 +219,3 @@ dev.off()
 projectAge <- function (df, var) {}
 
 projectLicense <- function (df, var) {}
-
-
-##### MISC #####
-
-if (FALSE) {
-  
-  g <- qplot(data[["Project Age"]], data = data, binwidth = 1) +
-    #scale_size_area("Number of projects") + 
-    scale_x_continuous("Project Age (in months)") +
-    scale_y_continuous("Number of projects") +
-    ggtitle(label="Projects distribution across their age")
-  
-  g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1)
-  print(g)
-  
-  g <- g + geom_histogram(aes(y = ..density..), binwidth = 1) +
-    geom_density()
-  print(g)
-}
-
-#g <- qplot(data[["Project Age"]], data = data,
-#           geom = "histogram", binwidth = 1)
-
-#g <- g + geom_histogram(aes(y = ..count..), binwidth = 1)
-
-#g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1) +
-#  scale_fill_gradient("Count", low = "green", high = "red")
