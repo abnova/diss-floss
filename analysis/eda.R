@@ -49,7 +49,7 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
   }
   
   if (is.numeric(data)) {
-    plot <- ggQQplot(data)
+    plot <- ggQQplot(data, colName)
     allPlots <- c(allPlots, plot)
   }
   
@@ -116,10 +116,10 @@ performEDA <- function (dataSource, analysis,
 plotHistogram <- function (df, colName) {
 
   g <- qplot(df[[colName]], data = df, binwidth = 1) +
-    scale_size_area("Projects") + 
+    scale_fill_continuous("Number of\nprojects") + 
     scale_x_continuous("Project Age (in months)") +
     scale_y_continuous("Number of projects") +
-    ggtitle(label="Projects distribution across their age")
+    ggtitle(label="Projects distribution across age range")
   
   g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1)
 
@@ -141,7 +141,11 @@ plotBarGraph <- function (df, colName) {
   df$var <- factor(df[[colName]])
   
   g <- ggplot(data=df, aes(x=var, fill=var)) +
-    geom_bar(stat="bin")
+    geom_bar(stat="bin") +
+    scale_fill_discrete("License") + 
+    xlab(colName) +
+    ylab("Number of projects") +
+    ggtitle(label="Projects distribution across licenses range")
   
   if (.Platform$GUI == "RStudio") print(g)
 
@@ -154,8 +158,11 @@ plotBarGraph <- function (df, colName) {
 }
 
 
-ggQQplot <- function (vec) # argument: vector of numbers
+ggQQplot <- function (vec, varName) # argument: vector of numbers
 {
+  
+  title <- paste0("Q-Q plot for '", varName, "'")
+  
   # following four lines from base R's qqline()
   y <- quantile(vec[!is.na(vec)], c(0.25, 0.75))
   x <- qnorm(c(0.25, 0.75))
@@ -165,8 +172,11 @@ ggQQplot <- function (vec) # argument: vector of numbers
   d <- data.frame(resids = vec)
   
   g <- ggplot(d, aes(sample = resids)) +
-    stat_qq() + geom_abline(slope = slope, intercept = int)
-  
+    stat_qq() + geom_abline(slope = slope, intercept = int) +
+    scale_x_continuous("Theoretical Quantiles") +
+    scale_y_continuous("Sample Quantiles") +
+    ggtitle(label=title)
+
   if (.Platform$GUI == "RStudio") print(g)
 
   return (g)
