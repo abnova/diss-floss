@@ -108,11 +108,12 @@ WHERE 1=1 LIMIT 100000"
          "indicatorDescription":"Development team size",
          "indicatorType":"character",
          "resultType":"data.frame",
+         "resultNames":"Project ID, Development Team Size",
          "requestSQL":"
 SELECT group_id, COUNT(user_id)
 FROM ${schema}.user_group
 WHERE grantcvs = 1
-AND group_id < 100
+AND group_id < 100000
 GROUP BY group_id"
       },
       {

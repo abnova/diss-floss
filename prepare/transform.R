@@ -40,6 +40,9 @@ transformResult <- function (dataSource, indicator, handler) {
 
 ##### HANDLER FUNCTION DEFINITIONS #####
 
+#dataTypeTransform <- function (indicator, data) {}
+
+
 projectAge <- function (indicator, data) {
 
   # do not process, if target column already exists
@@ -97,11 +100,37 @@ projectLicense <- function (indicator, data) {
 }
 
 
+devTeamSize <- function (indicator, data) {
+  
+  # save object's attributes
+  #attrs <- attributes(data)
+  
+  var <- data[["Development Team Size"]]
+  
+  # convert data type from 'character' to 'numeric' 
+  if (!is.numeric(var)) {
+    data[["Development Team Size"]] <- as.numeric(var)
+  }
+  
+  if (DEBUG) print(summary(data))
+  #attributes(data) <- attrs
+  
+  return (data)
+}
+
+
 ##### MAIN #####
 
 # construct list of indicators & corresponding transform. functions
-indicators <- c("prjAge", "prjLicense")
-transforms <- list(projectAge, projectLicense)
+indicators <- c("prjAge", "prjLicense", "devTeamSize")
+transforms <- list(projectAge, projectLicense, devTeamSize)
+
+# transform result data types as specified in configuration 
+#lapply(seq_along(indicators),
+#       function(i) {
+#         transformResult("SourceForge",
+#                         indicators[[i]], dataTypeTransform)
+#       })
 
 # sequentially call all previously defined transformation functions
 lapply(seq_along(indicators),
