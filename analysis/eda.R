@@ -117,7 +117,7 @@ plotHistogram <- function (df, colName) {
 
   g <- qplot(df[[colName]], data = df, binwidth = 1) +
     scale_fill_continuous("Number of\nprojects") + 
-    scale_x_continuous("Project Age (in months)") +
+    scale_x_continuous("Project Age (months)") +
     scale_y_continuous("Number of projects") +
     ggtitle(label="Projects distribution across age range")
   
@@ -130,6 +130,32 @@ plotHistogram <- function (df, colName) {
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
   suppressMessages(ggsave(file=edaFile, plot=g))
 
+  return (g)
+}
+
+
+# Plot distribution of a continuous variable "colName" by category
+plotDensity <- function (df, colName, categoryName) {
+  
+  df <- df
+  df$var <- df[[colName]]
+  df$category <- factor(df[[categoryName]])
+  
+  ggplot(df, aes(var, ..density.., colour = category)) +
+    scale_fill_continuous("Number of\nprojects") + 
+    scale_x_continuous("Project Age (months)") +
+    scale_y_continuous("Number of projects") +
+    ggtitle(label="Projects distribution across age range (by license)")
+  
+  g <- g + geom_freqpoly(binwidth = 1)
+  
+  if (.Platform$GUI == "RStudio") print(g)
+  
+  #TODO: consider moving to main
+  edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
+  edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
+  suppressMessages(ggsave(file=edaFile, plot=g))
+  
   return (g)
 }
 
