@@ -11,31 +11,44 @@ R_OPTS_PROD=--no-save --no-restore --silent
 
 # Targets and rules 
 
-collection: importFLOSSmole \
-            importSourceForge \
-            importAngelList \
-            importCrunchBase
+collection: fm \
+            sf \
+            al \
+            cb
 
-importFLOSSmole: getFLOSSmoleDataXML.R
+fm: fm.done
+sf: sf.done
+al: al.done
+cb: cb.done
+
+fm.done: getFLOSSmoleDataXML.R
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-importSourceForge: getSourceForgeData.R
+sf.done: getSourceForgeData.R SourceForge.cfg.tmpl
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-importAngelList: getAngelListData.R
+al.done: getAngelListData.R
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-importCrunchBase: getCrunchBaseDataAPI.R
+cb.done: getCrunchBaseDataAPI.R
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-.PHONY: clean clean-fm clean-sf
+.PHONY: fm sf al cb clean clean-fm clean-sf
 
 # remove intermediate files
 clean:
 	rm -f tmp*.bz2 .Rout
 
 clean-fm:
+	rm -f fm.done
 	rm -f ../cache/FLOSSmole/*.RData
+	rm -f ../cache/FLOSSmole/*.rds
 
 clean-sf:
+	rm -f sf.done
 	rm -f ../cache/SourceForge/*.RData
+	rm -f ../cache/SourceForge/*.rds

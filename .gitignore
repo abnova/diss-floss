@@ -4,6 +4,6 @@
 *.Rdata
 *.rds
 *.Rout
+*.done
 *.bz2
 cookies.txt
-runtime/*

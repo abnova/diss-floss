@@ -11,24 +11,37 @@ R_OPTS_PROD=--no-save --no-restore --silent
 
 # Targets and rules 
 
-analysis: eda \
+PREP_DIR=../prepare
+
+analysis: prepare \
+          eda \
           efa \
           cfa \
           sem
 
-eda: eda.R
-	@$(RSCRIPT) $(R_OPTS) $<
+prepare: $(PREP_DIR)/transform.done
+eda: eda.done
+efa: efa.done
+cfa: cfa.done
+sem: sem.done
 
-efa: efa.R
+eda.done: eda.R prepare
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-cfa: cfa.R
+efa.done: efa.R eda
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-sem: sem.R
+cfa.done: cfa.R efa
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-.PHONY: clean clean-svg clean-pdf
+sem.done: sem.R cfa
+	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
+
+.PHONY: eda efa cfa sem clean clean-svg clean-pdf
 
 # remove intermediate files
 clean:

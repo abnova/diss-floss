@@ -10,24 +10,37 @@ R_OPTS=--no-save --no-restore --verbose
 
 # Targets and rules 
 
-prepare: sample \
-         merge \
+IMPORT_DIR=../import
+
+prepare: import \
+         transform \
          cleanup \
-         transform
+         merge \
+         sample
 
-sample: sample.R
-	$(RSCRIPT) $(R_OPTS) $<
+import: $(IMPORT_DIR)/sf.done
+transform: transform.done
+cleanup: cleanup.done
+merge: merge.done
+sample: sample.done
 
-merge: merge.R
-	$(RSCRIPT) $(R_OPTS) $<
+transform.done: transform.R import
+	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-cleanup: cleanup.R
-	$(RSCRIPT) $(R_OPTS) $<
+cleanup.done: cleanup.R transform
+	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-transform: transform.R
-	$(RSCRIPT) $(R_OPTS) $<
+merge.done: merge.R cleanup
+	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
 
-.PHONY: clean
+sample.done: sample.R merge
+	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
+
+.PHONY: import transform cleanup merge sample clean
 
 # remove intermediate files
 clean:
