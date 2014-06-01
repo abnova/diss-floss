@@ -83,7 +83,7 @@ performEDA <- function (dataSource, analysis,
     data <- readRDS(rdataFile)
   }
   else {
-    error("RDS file for \'", indicator, "\' not found! ",
+    stop("RDS file for \'", indicator, "\' not found! ",
           "Run 'make' first.")
   }
   
@@ -118,7 +118,7 @@ performEDA <- function (dataSource, analysis,
 # Plot distribution of a continuous variable "colName"
 plotHistogram <- function (df, colName) {
   
-  title <- paste("Projects distribution across", colName, " range")
+  title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
   
   if (identical(colName, "Project Age"))

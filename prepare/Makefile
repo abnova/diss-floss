@@ -10,7 +10,8 @@ R_OPTS=--no-save --no-restore --verbose
 
 # Targets and rules 
 
-IMPORT_DIR=../import
+IMPORT_DIR = ../import
+IMPORT_DONE = $(IMPORT_DIR)/sf.done
 
 prepare: import \
          transform \
@@ -18,25 +19,28 @@ prepare: import \
          merge \
          sample
 
-import: $(IMPORT_DIR)/sf.done
+import: import.done
 transform: transform.done
 cleanup: cleanup.done
 merge: merge.done
 sample: sample.done
 
-transform.done: transform.R import
+import.done: $(IMPORT_DONE)
+	@cd $(IMPORT_DIR) && $(MAKE)
+
+transform.done: transform.R import.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
-cleanup.done: cleanup.R transform
+cleanup.done: cleanup.R transform.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
-merge.done: merge.R cleanup
+merge.done: merge.R cleanup.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
-sample.done: sample.R merge
+sample.done: sample.R merge.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
