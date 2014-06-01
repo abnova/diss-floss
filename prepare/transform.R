@@ -4,7 +4,8 @@ if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 CACHE_DIR <- "../cache"
 RDS_EXT <- ".rds"
 
-DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
+DEBUG <- TRUE  # TODO: retrieve debug flag via CL arguments
+DEBUG2 <- TRUE # output more detailed debug information
 
 
 ##### GENERIC TRANSFORMATION FUNCTION #####
@@ -16,7 +17,15 @@ transformResult <- function (dataSource, indicator, handler) {
                       fileDigest, RDS_EXT)
   if (file.exists(rdataFile)) {
     data <- readRDS(rdataFile)
-    result <- do.call(handler, list(indicator, data))
+    
+    # Preserve user-defined attributes for data frame's columns
+    # via defining new class 'avector' (see code below)). Also,
+    # preserve attributes (comments) for the data frame itself.
+    data2 <- data.frame(lapply(data, function(x) 
+      { structure(x, class = c("avector", class(x))) } ))
+    mostattributes(data2) <- attributes(data)
+    
+    result <- do.call(handler, list(indicator, data2))
     saveRDS(result, rdataFile)
     rm(result)
   }
@@ -29,13 +38,14 @@ transformResult <- function (dataSource, indicator, handler) {
 ## Preserve object's special attributes:
 ## use a class with a "as.data.frame" and "[" method
 
-#as.data.frame.avector <- as.data.frame.vector
+as.data.frame.avector <- as.data.frame.vector
 
-#`[.avector` <- function (x, i, ...) {
-#  r <- NextMethod("[")
-#  mostattributes(r) <- attributes(x)
-#  return (r)
-#}
+`[.avector` <- function (x, i, ...) {
+  r <- NextMethod("[")
+  #mostattributes(r) <- attributes(x)
+  attributes(r) <- attr
+  return (r)
+}
 
 
 ##### HANDLER FUNCTION DEFINITIONS #####
@@ -47,27 +57,31 @@ projectAge <- function (indicator, data) {
 
   # do not process, if target column already exists
   if ("Project Age" %in% names(data)) {
-    message("\nProject Age: ", appendLF = FALSE)
+    message("Project Age: ", appendLF = FALSE)
     message("Not processing - Transformation already performed!\n")
     return (invisible())
   }
   
-  # save object's attributes
-  #attrs <- attributes(data)
-
+  # the next line doesn't keep attributes:
   transformColumn <- as.numeric(unlist(data["Registration Time"]))
+  
+  # but the following line does:
+  #mode(data[["Registration Time"]]) <- 'numeric'
+  #storage.mode(unlist(data["Registration Time"])) <- 'numeric'
+  #transformColumn <- data[["Registration Time"]]
+  
   regTime <- as.POSIXct(transformColumn, origin="1970-01-01")
   prjAge <- difftime(Sys.Date(), as.Date(regTime), units = "weeks")
   data[["Project Age"]] <- as.numeric(round(prjAge)) / 4 # in months
   #result <- cbind(data, as.numeric(round(prjAge)))
   #names(result)[3] <- "Project Age"
   
-  # now we can delete the source column 
+  # now we can delete the source column
   if ("Registration Time" %in% names(data))
-    data[,c("Registration Time")] <- list(NULL)
-  
-  if (DEBUG) print(summary(data))
-  #attributes(data) <- attrs
+    data <- data[setdiff(names(data), "Registration Time")]  
+    #data[,c("Registration Time")] <- list(NULL)
+
+    if (DEBUG2) {print(summary(data)); print("")}
   
   return (data)
 }
@@ -75,17 +89,13 @@ projectAge <- function (indicator, data) {
 
 projectLicense <- function (indicator, data) {
   
-  # do not process, if target column already exists
+  # do not process, if target column (type) already exists
   if (is.factor(data[["Project License"]])) {
-    message("\nProject License: ", appendLF = FALSE)
+    message("Project License: ", appendLF = FALSE)
     message("Not processing - Transformation already performed!\n")
     return (invisible())
   }
   
-  # save object's attributes
-  #attrs <- attributes(data)
-
-  #data[["Project License"]] <- as.factor(data[["Project License"]])
   data[["Project License"]] <- 
     factor(data[["Project License"]],
            levels = c('gpl', 'lgpl', 'bsd', 'other',
@@ -93,17 +103,13 @@ projectLicense <- function (indicator, data) {
            labels = c('GPL', 'LGPL', 'BSD', 'Other',
                       'Artistic', 'Public', 'Unknown'))
 
-  if (DEBUG) print(summary(data))
-  #attributes(data) <- attrs
+  if (DEBUG2) {print(summary(data)); print("")}
   
   return (data)
 }
 
 
 devTeamSize <- function (indicator, data) {
-  
-  # save object's attributes
-  #attrs <- attributes(data)
   
   var <- data[["Development Team Size"]]
   
@@ -112,8 +118,7 @@ devTeamSize <- function (indicator, data) {
     data[["Development Team Size"]] <- as.numeric(var)
   }
   
-  if (DEBUG) print(summary(data))
-  #attributes(data) <- attrs
+  if (DEBUG2) {print(summary(data)); print("")}
   
   return (data)
 }
