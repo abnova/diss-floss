@@ -23,10 +23,11 @@ transformResult <- function (dataSource, indicator, handler) {
     # preserve attributes (comments) for the data frame itself.
     data2 <- data.frame(lapply(data, function(x) 
       { structure(x, class = c("avector", class(x))) } ))
-    mostattributes(data2) <- attributes(data)
+    #mostattributes(data2) <- attributes(data)
+    attributes(data2) <- attributes(data)
     
     result <- do.call(handler, list(indicator, data2))
-    saveRDS(result, rdataFile)
+    if (!is.null(result)) saveRDS(result, rdataFile)
     rm(result)
   }
   else {
@@ -40,10 +41,11 @@ transformResult <- function (dataSource, indicator, handler) {
 
 as.data.frame.avector <- as.data.frame.vector
 
-`[.avector` <- function (x, i, ...) {
+`[.avector` <- function (x, ...) {
+  #attr <- attributes(x)
   r <- NextMethod("[")
-  #mostattributes(r) <- attributes(x)
-  attributes(r) <- attr
+  mostattributes(r) <- attributes(x)
+  #attributes(r) <- attr
   return (r)
 }
 
@@ -81,7 +83,7 @@ projectAge <- function (indicator, data) {
     data <- data[setdiff(names(data), "Registration Time")]  
     #data[,c("Registration Time")] <- list(NULL)
 
-    if (DEBUG2) {print(summary(data)); print("")}
+    if (DEBUG2) {print(summary(data)); message("")}
   
   return (data)
 }
@@ -103,7 +105,7 @@ projectLicense <- function (indicator, data) {
            labels = c('GPL', 'LGPL', 'BSD', 'Other',
                       'Artistic', 'Public', 'Unknown'))
 
-  if (DEBUG2) {print(summary(data)); print("")}
+  if (DEBUG2) {print(summary(data)); message("")}
   
   return (data)
 }
@@ -113,12 +115,17 @@ devTeamSize <- function (indicator, data) {
   
   var <- data[["Development Team Size"]]
   
-  # convert data type from 'character' to 'numeric' 
-  if (!is.numeric(var)) {
-    data[["Development Team Size"]] <- as.numeric(var)
+  # do not process, if target column (type) already exists
+  if (is.numeric(var)) {
+    message("Development Team Size: ", appendLF = FALSE)
+    message("Not processing - Transformation already performed!\n")
+    return (invisible())
   }
   
-  if (DEBUG2) {print(summary(data)); print("")}
+  # convert data type from 'character' to 'numeric'
+  data[["Development Team Size"]] <- as.numeric(var)
+  
+  if (DEBUG2) {print(summary(data)); message("")}
   
   return (data)
 }
@@ -138,8 +145,8 @@ transforms <- list(projectAge, projectLicense, devTeamSize)
 #       })
 
 # sequentially call all previously defined transformation functions
-lapply(seq_along(indicators),
-       function(i) {
-         transformResult("SourceForge",
-                         indicators[[i]], transforms[[i]])
-         })
+silent <- lapply(seq_along(indicators),
+                 function(i) {
+                   transformResult("SourceForge",
+                                   indicators[[i]], transforms[[i]])
+                   })
