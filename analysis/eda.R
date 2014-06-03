@@ -1,6 +1,7 @@
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
+if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
 
 
 CACHE_DIR <- "../cache"
@@ -40,23 +41,25 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
   
   if (is.numeric(data)) {
     plot <- plotHistogram(df, colName)
-    allPlots <- c(allPlots, plot)
+    allPlots[[length(allPlots)+1]] <<- plot
+    #allPlots <<- c(allPlots, list(plot))
   }
   
   if (is.factor(data)) {
     plot <- plotBarGraph(df, colName)
-    allPlots <- c(allPlots, plot)
-
+    allPlots[[length(allPlots)+1]] <<- plot
+    #allPlots <<- c(allPlots, list(plot))
+    
     #plot <- plotDensity(df, colName)
-    #allPlots <- c(allPlots, plot)
+    #allPlots[[length(allPlots)+1]] <<- plot
+    #allPlots <<- c(allPlots, list(plot))
   }
   
   if (is.numeric(data)) {
     plot <- ggQQplot(data, colName)
-    allPlots <- c(allPlots, plot)
+    allPlots[[length(allPlots)+1]] <<- plot
+    #allPlots <<- c(allPlots, list(plot))
   }
-  
-  return (allPlots)
 }
 
 
@@ -68,8 +71,6 @@ multiDescriptiveEDA <- function (df, var, colNames, extraFun) {
 
 multiVisualEDA <- function (df, var, colName, extraFun) {
   
-  plot <- NULL
-  return (plot)
 }
 
 
@@ -90,16 +91,14 @@ performEDA <- function (dataSource, analysis,
   if (identical(analysis, "univariate")) {
     
     uniDescriptiveEDA(data, indicator, colName, extraFun)
-    plots <- uniVisualEDA(data, indicator, colName, extraFun)
-    allPlots <- c(allPlots, plots)
+    uniVisualEDA(data, indicator, colName, extraFun)
     
   } else if (identical(analysis, "multivariate")) {
    
     colNames <- names(data)
     colNames <- colNames[-1] # delete Project ID
     #multiDescriptiveEDA(data, indicator, colNames, extraFun)
-    plots <- multiVisualEDA(data, indicator, colNames, extraFun)
-    allPlots <- c(allPlots, plots)
+    multiVisualEDA(data, indicator, colNames, extraFun)
     
   } else {
     error("Unknown type of EDA analysis - ",
@@ -107,8 +106,6 @@ performEDA <- function (dataSource, analysis,
   }
   
   rm(data)
-  
-  return (allPlots)
 }
 
 
@@ -132,7 +129,7 @@ plotHistogram <- function (df, colName) {
   
   g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1)
 
-  if (.Platform$GUI == "RStudio") print(g)
+  if (.Platform$GUI == "RStudio") {print(g); dev.off()}
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -169,8 +166,8 @@ plotDensity <- function (df, colName) {
   
 #  g <- g + geom_freqpoly(binwidth = 1)
   
-  if (.Platform$GUI == "RStudio") print(g)
-  
+  if (.Platform$GUI == "RStudio") {print(g); dev.off()}
+
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
@@ -195,8 +192,8 @@ plotBarGraph <- function (df, colName) {
     ylab("Number of projects") +
     ggtitle(label=title)
   
-  if (.Platform$GUI == "RStudio") print(g)
-
+  if (.Platform$GUI == "RStudio") {print(g); dev.off()}
+  
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
@@ -225,34 +222,36 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
     scale_y_continuous("Sample Quantiles") +
     ggtitle(label=title)
 
-  if (.Platform$GUI == "RStudio") print(g)
-
+  if (.Platform$GUI == "RStudio") {print(g); dev.off()}
+  
   return (g)
 }
 
 ##### EDA MAIN #####
 
 
-# construct list of indicators & corresponding extra functions
-sfIndicators <- c("prjAge", "prjLicense", "devTeamSize")
-sfColumnNames <- c("Project Age", "Project License",
-                        "Development Team Size")
-sfExtraFun <- list("projectAge", "projectLicense", "devTeamSize")
+message("\n===== Univariate Exploratory Data Analysis (EDA) =====")
 
-#browser()
+# construct list of indicators & corresponding extra functions
+sfIndicators <- c("prjAge", "devTeamSize", "prjLicense")
+sfColumnNames <- c("Project Age", "Development Team Size",
+                   "Project License")
+sfExtraFun <- list("projectAge", "devTeamSize", "projectLicense")
 
 # sequentially call EDA functions for all indicators in data source
-uniPlots <- lapply(seq_along(sfIndicators), function(i) {
+silent <- lapply(seq_along(sfIndicators), function(i) {
   performEDA("SourceForge", analysis="univariate",
              sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
   })
 
+#dev.off() # to display graphics in RStudio plot window
+
 edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-univar.pdf")
-pdf(edaFilePDF)
-#silent <- lapply(uniPlots, print)
+mg <- do.call(marrangeGrob, c(allPlots, list(nrow=2, ncol = 1)));
+suppressMessages(ggsave(filename=edaFilePDF, mg, width=11, height=8.5))
 
-dev.off()
-
+message("\n===== EDA completed, results can be found ",
+        "in directory \"", EDA_RESULTS_DIR, "\" =====\n")
 
 # construct list of indicators & corresponding extra functions
 sfMultiIndicators <- c("prjAge", "prjLicense")
@@ -268,7 +267,6 @@ multiPlots <- lapply(seq_along(sfMultiIndicators), function(i) {
 #edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-multivar.pdf")
 #pdf(edaFilePDF)
 #silent <- lapply(multiPlots, print)
-
 #dev.off()
 
 
