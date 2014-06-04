@@ -41,24 +41,20 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
   
   if (is.numeric(data)) {
     plot <- plotHistogram(df, colName)
-    allPlots[[length(allPlots)+1]] <<- plot
-    #allPlots <<- c(allPlots, list(plot))
+    allPlots <<- c(allPlots, list(plot))
   }
   
   if (is.factor(data)) {
     plot <- plotBarGraph(df, colName)
-    allPlots[[length(allPlots)+1]] <<- plot
-    #allPlots <<- c(allPlots, list(plot))
+    allPlots <<- c(allPlots, list(plot))
     
     #plot <- plotDensity(df, colName)
-    #allPlots[[length(allPlots)+1]] <<- plot
     #allPlots <<- c(allPlots, list(plot))
   }
   
   if (is.numeric(data)) {
     plot <- ggQQplot(data, colName)
-    allPlots[[length(allPlots)+1]] <<- plot
-    #allPlots <<- c(allPlots, list(plot))
+    allPlots <<- c(allPlots, list(plot))
   }
 }
 
@@ -230,7 +226,7 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
 ##### EDA MAIN #####
 
 
-message("\n===== Univariate Exploratory Data Analysis (EDA) =====")
+message("\n===== Starting Exploratory Data Analysis (EDA)...")
 
 # construct list of indicators & corresponding extra functions
 sfIndicators <- c("prjAge", "devTeamSize", "prjLicense")
@@ -248,10 +244,10 @@ silent <- lapply(seq_along(sfIndicators), function(i) {
 
 edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-univar.pdf")
 mg <- do.call(marrangeGrob, c(allPlots, list(nrow=2, ncol = 1)));
-suppressMessages(ggsave(filename=edaFilePDF, mg, width=11, height=8.5))
+suppressMessages(ggsave(filename=edaFilePDF, mg, width=8.5, height=11))
 
 message("\n===== EDA completed, results can be found ",
-        "in directory \"", EDA_RESULTS_DIR, "\" =====\n")
+        "in directory \"", EDA_RESULTS_DIR, "\"\n")
 
 # construct list of indicators & corresponding extra functions
 sfMultiIndicators <- c("prjAge", "prjLicense")

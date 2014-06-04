@@ -64,14 +64,7 @@ projectAge <- function (indicator, data) {
     return (invisible())
   }
   
-  # the next line doesn't keep attributes:
   transformColumn <- as.numeric(unlist(data["Registration Time"]))
-  
-  # but the following line does:
-  #mode(data[["Registration Time"]]) <- 'numeric'
-  #storage.mode(unlist(data["Registration Time"])) <- 'numeric'
-  #transformColumn <- data[["Registration Time"]]
-  
   regTime <- as.POSIXct(transformColumn, origin="1970-01-01")
   prjAge <- difftime(Sys.Date(), as.Date(regTime), units = "weeks")
   data[["Project Age"]] <- as.numeric(round(prjAge)) / 4 # in months
@@ -81,9 +74,8 @@ projectAge <- function (indicator, data) {
   # now we can delete the source column
   if ("Registration Time" %in% names(data))
     data <- data[setdiff(names(data), "Registration Time")]  
-    #data[,c("Registration Time")] <- list(NULL)
 
-    if (DEBUG2) {print(summary(data)); message("")}
+  if (DEBUG2) {print(summary(data)); message("")}
   
   return (data)
 }
@@ -101,9 +93,9 @@ projectLicense <- function (indicator, data) {
   data[["Project License"]] <- 
     factor(data[["Project License"]],
            levels = c('gpl', 'lgpl', 'bsd', 'other',
-                      'artistic', 'public', '(Other)'),
+                      'artistic', 'public'),
            labels = c('GPL', 'LGPL', 'BSD', 'Other',
-                      'Artistic', 'Public', 'Unknown'))
+                      'Artistic', 'Public'))
 
   if (DEBUG2) {print(summary(data)); message("")}
   
