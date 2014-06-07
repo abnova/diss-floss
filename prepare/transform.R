@@ -84,19 +84,37 @@ projectAge <- function (indicator, data) {
 projectLicense <- function (indicator, data) {
   
   # do not process, if target column (type) already exists
-  if (is.factor(data[["Project License"]])) {
+  if (is.factor(data[["Project License"]]) &&
+        is.factor(data[["License Restrictiveness"]])) {
     message("Project License: ", appendLF = FALSE)
     message("Not processing - Transformation already performed!\n")
     return (invisible())
   }
   
-  data[["Project License"]] <- 
-    factor(data[["Project License"]],
-           levels = c('gpl', 'lgpl', 'bsd', 'other',
-                      'artistic', 'public'),
-           labels = c('GPL', 'LGPL', 'BSD', 'Other',
-                      'Artistic', 'Public'))
-
+  classification <- 
+    c(lgpl='Restrictive', bsd='Permissive', gpl='Highly Restrictive',
+      website='Unknown', zlib='Permissive', public='Permissive',
+      other='Unknown', ibmcpl='Restrictive', rpl='Restrictive',
+      mpl11='Restrictive', mit='Permissive', afl='Permissive',
+      python='Permissive', mpl='Restrictive', apache='Permissive',
+      osl='Permissive', w3c='Permissive', iosl='Permissive',
+      artistic='Permissive', apsl='Restrictive', ibm='Restrictive',
+      plan9='Restrictive', php='Restrictive', qpl='Restrictive',
+      psfl='Permissive', ncsa='Permissive', rscpl='Restrictive',
+      sunpublic='Restrictive', zope='Permissive', eiffel='Restrictive',
+      nethack='Restrictive', sissl='Permissive', none='Unknown',
+      opengroup='Permissive', sleepycat='Restrictive', nokia='Restrictive',
+      attribut='Restrictive', xnet='Permissive', eiffel2='Restrictive',
+      wxwindows='Restrictive', motosoto='Restrictive', vovida='Permissive',
+      jabber='Restrictive', cvw='Restrictive', historical='Unknown',
+      nausite='Permissive', real='Restrictive')
+  
+  myLevels <- names(classification)
+  data[["Project License"]] <- factor(data[["Project License"]])
+  
+  data[["License Restrictiveness"]] <- 
+    as.factor(classification[as.character(data[["Project License"]])])
+  
   if (DEBUG2) {print(summary(data)); message("")}
   
   return (data)
