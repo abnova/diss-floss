@@ -68,8 +68,6 @@ projectAge <- function (indicator, data) {
   regTime <- as.POSIXct(transformColumn, origin="1970-01-01")
   prjAge <- difftime(Sys.Date(), as.Date(regTime), units = "weeks")
   data[["Project Age"]] <- as.numeric(round(prjAge)) / 4 # in months
-  #result <- cbind(data, as.numeric(round(prjAge)))
-  #names(result)[3] <- "Project Age"
   
   # now we can delete the source column
   if ("Registration Time" %in% names(data))
@@ -109,7 +107,6 @@ projectLicense <- function (indicator, data) {
       jabber='Restrictive', cvw='Restrictive', historical='Unknown',
       nausite='Permissive', real='Restrictive')
   
-  myLevels <- names(classification)
   data[["Project License"]] <- factor(data[["Project License"]])
   
   data[["License Restrictiveness"]] <- 
@@ -117,6 +114,32 @@ projectLicense <- function (indicator, data) {
   
   if (DEBUG2) {print(summary(data)); message("")}
   
+  return (data)
+}
+
+
+prjMaturity <- function (indicator, data) {
+  
+  # do not process, if target column (type) already exists
+  if (is.factor(data[["Project Maturity"]])) {
+    message("Project Maturity: ", appendLF = FALSE)
+    message("Not processing - Transformation already performed!\n")
+    return (invisible())
+  }
+  
+  var <- data[["Latest Release"]]
+  
+  rx <- "^([^[:digit:]]*)([[:digit:]]+)(\\.|-)+(.*)$"
+  major <- gsub(rx, "\\2", var)
+  # suppress "NAs introduced by coercion" warnings
+  major <- suppressWarnings(as.numeric(major))
+
+  data[["Project Maturity"]] <- 
+    cut(major, breaks = c(0, 1, 2, Inf), include.lowest = TRUE,
+        right = FALSE, labels=c("Alpha/Beta", "Stable", "Mature"))
+  
+  if (DEBUG2) {print(summary(data)); message("")}
+
   return (data)
 }
 
@@ -144,8 +167,10 @@ devTeamSize <- function (indicator, data) {
 ##### MAIN #####
 
 # construct list of indicators & corresponding transform. functions
-indicators <- c("prjAge", "prjLicense", "devTeamSize")
-transforms <- list(projectAge, projectLicense, devTeamSize)
+indicators <- c("prjAge", "prjLicense", "devTeamSize",
+                "prjMaturity")
+transforms <- list(projectAge, projectLicense, devTeamSize,
+                   prjMaturity)
 
 # transform result data types as specified in configuration 
 #lapply(seq_along(indicators),

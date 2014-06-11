@@ -85,6 +85,7 @@ AND g.group_id < 100"
          "indicatorDescription":"Project maturity",
          "indicatorType":"character",
          "resultType":"data.frame",
+         "resultNames":"Project ID, Latest Release",
          "requestSQL":"
 SELECT fp.group_id, MAX(fr.name)
 FROM sf0314.frs_package fp, sf0314.frs_release fr, sf0314.frs_status fs
