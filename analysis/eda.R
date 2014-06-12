@@ -229,10 +229,12 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
 message("\n===== Starting Exploratory Data Analysis (EDA)...")
 
 # construct list of indicators & corresponding extra functions
-sfIndicators <- c("prjAge", "devTeamSize", "prjLicense")
+sfIndicators <- c("prjAge", "devTeamSize",
+                  "prjLicense", "prjMaturity")
 sfColumnNames <- c("Project Age", "Development Team Size",
-                   "Project License")
-sfExtraFun <- list("projectAge", "devTeamSize", "projectLicense")
+                   "Project License", "Project Maturity")
+sfExtraFun <- list("projectAge", "devTeamSize",
+                   "projectLicense", "projectMaturity")
 
 # sequentially call EDA functions for all indicators in data source
 silent <- lapply(seq_along(sfIndicators), function(i) {
@@ -274,3 +276,5 @@ projectAge <- function (df, var) {}
 projectLicense <- function (df, var) {}
 
 devTeamSize <- function (df, var) {}
+
+projectMaturity <- function (df, var) {}
