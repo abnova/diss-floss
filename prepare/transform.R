@@ -1,5 +1,6 @@
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 
+library(RCurl)
 
 CACHE_DIR <- "../cache"
 RDS_EXT <- ".rds"

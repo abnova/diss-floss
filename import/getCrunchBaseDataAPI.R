@@ -15,9 +15,9 @@ if (!suppressMessages(require(jsonlite)))
   install.packages("jsonlite", repos="http://cran.r-project.org")
 if (!suppressMessages(require(plyr))) install.packages('plyr')
 
-#library(RCurl)
-#library(jsonlite)
-#library(plyr)
+library(RCurl)
+library(jsonlite)
+library(plyr)
 
 source("../utils/debug.R")
 

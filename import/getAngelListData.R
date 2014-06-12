@@ -9,8 +9,8 @@ if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(jsonlite)))
   install.packages("jsonlite", repos="http://cran.r-project.org")
 
-#library(RCurl)
-#library(jsonlite)
+library(RCurl)
+library(jsonlite)
 
 source("../utils/debug.R")
 

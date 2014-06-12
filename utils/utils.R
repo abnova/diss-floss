@@ -1,5 +1,6 @@
 if (!suppressMessages(require(stringr))) install.packages('stringr')
-#library(stringr)
+
+library(stringr)
 
 replace_all <- function(df, pattern, replacement) {
   char <- vapply(df, function(x) is.factor(x) || is.character(x),

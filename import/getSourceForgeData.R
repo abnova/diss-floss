@@ -20,10 +20,11 @@ if (!suppressMessages(require(stringr))) install.packages('stringr')
 #suppressPackageStartupMessages(library(RCurl))
 #invisible(capture.output(library(RCurl, quietly=TRUE)))
 
-# library() calls are not needed as require() load packages, too
-#library(RCurl)
-#library(jsonlite)
-#library(stringr)
+# library() calls are still needed in case of a system, lacking
+# these packages, as require() load only installed packages
+library(RCurl)
+library(jsonlite)
+library(stringr)
 
 source("../utils/utils.R")
 #source("../utils/debug.R")

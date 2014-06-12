@@ -3,6 +3,10 @@ if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
 
+library(RCurl)
+library(stringr)
+library(ggplot2)
+library(gridExtra)
 
 CACHE_DIR <- "../cache"
 RDS_EXT <- ".rds"

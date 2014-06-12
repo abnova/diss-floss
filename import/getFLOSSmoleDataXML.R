@@ -8,8 +8,8 @@
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(XML))) install.packages('XML')
 
-#library(RCurl)
-#library(XML)
+library(RCurl)
+library(XML)
 
 warnings(file = "./FLOSSmole.warn.log")
 source("../utils/debug.R")
