@@ -8,6 +8,8 @@ library(stringr)
 library(ggplot2)
 library(gridExtra)
 
+source("../utils/factors.R")
+
 CACHE_DIR <- "../cache"
 RDS_EXT <- ".rds"
 
@@ -180,8 +182,13 @@ plotDensity <- function (df, colName) {
 # Plot distribution of a categorical variable "colName"
 plotBarGraph <- function (df, colName) {
   
+  SHOW_LEVELS <- 10
   df <- df
   df$var <- factor(df[[colName]])
+  
+  # sort factor levels by the frequency of levels
+  df$var <- reorder(df$var, df$var, function(x) -length(x))
+  df$var <- topFactors(df$var, SHOW_LEVELS, o="The Rest")
   
   title <- paste("Projects distribution across", colName, "range")
   
