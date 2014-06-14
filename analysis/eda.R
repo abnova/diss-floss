@@ -9,6 +9,7 @@ library(ggplot2)
 library(gridExtra)
 
 source("../utils/factors.R")
+source("../utils/qq.R")
 
 CACHE_DIR <- "../cache"
 RDS_EXT <- ".rds"
@@ -224,7 +225,9 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
   d <- data.frame(resids = vec)
   
   g <- ggplot(d, aes(sample = resids)) +
-    stat_qq() + geom_abline(slope = slope, intercept = int) +
+    stat_qq() +
+    #stat_function(fun=qq, args = list(x0 = sample, y0 = vec)) +
+    geom_abline(slope = slope, intercept = int) +
     scale_x_continuous("Theoretical Quantiles") +
     scale_y_continuous("Sample Quantiles") +
     ggtitle(label=title)
