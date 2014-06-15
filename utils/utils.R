@@ -1,28 +1,9 @@
-if (!suppressMessages(require(stringr))) install.packages('stringr')
+# return value of an attribute of an object stored in a file
 
-library(stringr)
-
-replace_all <- function(df, pattern, replacement) {
-  char <- vapply(df, function(x) is.factor(x) || is.character(x),
-                 logical(1))
-  df[char] <- lapply(df[char], str_replace_all, pattern, replacement)
-  return (df)
+getAttr <- function (attr, obj, file) 
+{
+  x <- load(file, envir = environment())
+  attrs <- attributes(obj)
+  return (list(file=x, y=y))
 }
 
-#replace_all(iris, "setosa", "barbosa")
-#replace_all(iris, fixed("setosa"), "barbosa")
-
-replace_all_df <- function(df, pattern, replacement) {
-  char <- vapply(df, function(x) is.factor(x) || is.character(x),
-                 logical(1))
-  df[char] <-
-    lapply(df[char], function(x) 
-      do.call("gsub", list(pattern, replacement, x, fixed = TRUE)))
-  return (df)
-}
-
-#encoded  <- c('!@#', '@@', 'http//', 'mailto@')
-#original <- c(': ',  '::', 'http://', 'mailto:')
-
-#for (i in length(encoded))
-#data <- replace_all_df(data, encoded[i], original[i])

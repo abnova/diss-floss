@@ -26,9 +26,9 @@ library(RCurl)
 library(jsonlite)
 library(stringr)
 
-source("../utils/utils.R")
+source("../utils/string.R")
+#source("../utils/utils.R")
 #source("../utils/debug.R")
-#source("../utils/string.R")
 
 skipped <<- 0 # counter for # of times the script skipped processing
 
