@@ -136,6 +136,7 @@ plotHistogram <- function (df, colName) {
     scale_fill_continuous("Number of\nprojects") + 
     scale_x_continuous(xLabel) +
     #scale_y_continuous("Number of projects") +
+    #scale_x_log10(xLabel) +
     scale_y_log10("Number of projects") +
     ggtitle(label=title)
   
@@ -144,6 +145,10 @@ plotHistogram <- function (df, colName) {
   
   # Overlay with transparent density plot
   #g <- g + geom_density(alpha=.2, fill="#FF6666")
+  
+  # Ignore NA values for mean
+  g <- g + geom_vline(aes(xintercept=mean(var, na.rm=T)),
+                      color="red", size=1)
   
   if (.Platform$GUI == "RStudio") {print(g); dev.off()}
   
@@ -254,6 +259,11 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
     ggtitle(label=title)
 
   if (.Platform$GUI == "RStudio") {print(g); dev.off()}
+  
+  #TODO: consider moving to main
+  edaFile <- str_replace_all(string=varName, pattern=" ", repl="")
+  edaFile <- paste0(EDA_RESULTS_DIR, "/", "QQ-", edaFile, ".svg")
+  suppressMessages(ggsave(file=edaFile, plot=g))
   
   return (g)
 }
