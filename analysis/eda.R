@@ -1,3 +1,6 @@
+# Start with a clean environment
+rm(list = ls(all.names = TRUE))
+
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
@@ -54,15 +57,17 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
   if (is.factor(data)) {
     plot <- plotBarGraph(df, colName)
     allPlots <<- c(allPlots, list(plot))
-    
-    #plot <- plotDensity(df, colName)
-    #allPlots <<- c(allPlots, list(plot))
   }
   
   if (is.numeric(data)) {
     plot <- ggQQplot(data, colName)
     allPlots <<- c(allPlots, list(plot))
   }
+  
+  #if (TBD CONDITION) {
+  #  plot <- plotDensity(df, colName)
+  #  allPlots <<- c(allPlots, list(plot))
+  #}
 }
 
 
@@ -118,20 +123,28 @@ performEDA <- function (dataSource, analysis,
 # Plot distribution of a continuous variable "colName"
 plotHistogram <- function (df, colName) {
   
+  df <- df
+  df$var <- df[[colName]]
+  
   title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
   
   if (identical(colName, "Project Age"))
     xLabel <- paste(colName, "(months)")
   
-  g <- qplot(df[[colName]], data = df, binwidth = 1) +
+  g <- ggplot(data = df, aes(x=var)) +
     scale_fill_continuous("Number of\nprojects") + 
     scale_x_continuous(xLabel) +
-    scale_y_continuous("Number of projects") +
+    #scale_y_continuous("Number of projects") +
+    scale_y_log10("Number of projects") +
     ggtitle(label=title)
   
-  g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1)
-
+  g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1,
+                          position = "identity")
+  
+  # Overlay with transparent density plot
+  #g <- g + geom_density(alpha=.2, fill="#FF6666")
+  
   if (.Platform$GUI == "RStudio") {print(g); dev.off()}
   
   #TODO: consider moving to main
@@ -194,7 +207,7 @@ plotBarGraph <- function (df, colName) {
   title <- paste("Projects distribution across", colName, "range")
   
   g <- ggplot(data=df, aes(x=var, fill=var)) +
-    geom_bar(stat="bin") +
+    geom_bar(stat="bin", position="identity") +
     scale_fill_discrete(colName) + 
     xlab(colName) +
     ylab("Number of projects") +
@@ -225,8 +238,16 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
   d <- data.frame(resids = vec)
   
   g <- ggplot(d, aes(sample = resids)) +
+    
+    # Normal distribution function by default
     stat_qq() +
+    
+    # Gamma distribution function
+    #stat_qq(distribution = qgamma, dparams=list(shape=1)) +
+    
+    # Adaptive QQ plotting fuction
     #stat_function(fun=qq, args = list(x0 = sample, y0 = vec)) +
+    
     geom_abline(slope = slope, intercept = int) +
     scale_x_continuous("Theoretical Quantiles") +
     scale_y_continuous("Sample Quantiles") +
