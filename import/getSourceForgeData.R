@@ -59,6 +59,8 @@ ADD_SQL  <- "0" # add SQL to file
 
 REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), CHR(13),' ')"
 
+RQ_SIZE <- 10000
+
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
 RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
@@ -322,7 +324,7 @@ generateConfig <- function(configTemplate, configFile) {
 
 cfgElementsChanged <- function (rdataFile,
                                 dataName, ATTRS, configInfo) {
-
+  
   changed <- FALSE
   
   assign(dataName, readRDS(rdataFile))
@@ -355,6 +357,8 @@ cfgElementsChanged <- function (rdataFile,
 
 getSourceForgeData <- function (row, config) { # dataFrame
   
+  dfList <- list()
+  
   # Extract indicator's name, SQL query and result's variable names
   # from the function's argument
   indicator <- config$data[row, "indicatorName"]
@@ -384,6 +388,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
             appendLF = FALSE)
   }
   if (DEBUG2) {message("Processing request \"", request, "\" ...")}
+  
   if (file.exists(rdataFile)) {
     # now check if any indicator's attributes have been modified
     if (!cfgElementsChanged(rdataFile, dataName, ATTRS, configInfo)) {
@@ -409,28 +414,53 @@ getSourceForgeData <- function (row, config) { # dataFrame
   REPLACE_CLAUSE <- "" #temp
   rq$select <- paste(rq$select, REPLACE_CLAUSE, collapse="", sep=" ")
   
-  # Submit data request
-  success <- srdaRequestData(queryURL, rq$select, rq$from, rq$where,
+  # First, retrieve total number of rows for the request
+  success <- srdaRequestData(queryURL, "COUNT(*)", rq$from, rq$where,
                              DATA_SEP, ADD_SQL)
   if (!success) error("Data request failed!")
   
   assign(dataName, srdaGetData())
   data <- get(dataName)
-  # alternative to using get(), but more cumbersome:
-  # data <- eval(parse(text=dataName))
+  numRequests <- as.numeric(data) %/% RQ_SIZE + 1
+  
+  # Now, we can request & retrieve data via SQL pagination
+  for (i in 1:numRequests) {
     
-  # save hash of the request's SQL query as data object's attribute,
-  # so that we can detect when configuration contains modified query
-  attr(data, "SQL") <- base64(request)
+    # setup SQL pagination
+    if (rq$where == '') rq$where <- '1=1'
+    rq$where <- paste(rq$where,
+                      'LIMIT', RQ_SIZE, 'OFFSET', RQ_SIZE*(i-1))
+    
+    # Submit data request
+    success <- srdaRequestData(queryURL, rq$select, rq$from, rq$where,
+                               DATA_SEP, ADD_SQL)
+    if (!success) error("Data request failed!")
+    
+    assign(dataName, srdaGetData())
+    data <- get(dataName)
+    # alternative to using get(), but more cumbersome:
+    # data <- eval(parse(text=dataName))
+    
+    # save hash of the request's SQL query as data object's attribute,
+    # so that we can detect when configuration contains modified query
+    attr(data, "SQL") <- base64(request)
+    
+    # set other attributes for the data object
+    attr(data, "indicatorName") <- base64(indicator)
+    attr(data, "resultNames") <- base64(varNames)
+    
+    # specify names for the current data object per configuration
+    varNames <- strsplit(varNames, split = ",")
+    varNames <- lapply(varNames, str_trim)
+    names(data) <- unlist(varNames)
+    
+    # add current data frame to the list
+    dfList <- c(dfList, data)
+    if (DEBUG) message("*", appendLF = FALSE)
+  }
   
-  # set other attributes for the data object
-  attr(data, "indicatorName") <- base64(indicator)
-  attr(data, "resultNames") <- base64(varNames)
-  
-  # specify names for the current data object per configuration
-  varNames <- strsplit(varNames, split = ",")
-  varNames <- lapply(varNames, str_trim)
-  names(data) <- unlist(varNames)
+  # merge all the result pages' data frames
+  data <- do.call("rbind", dfList)
   
   # save current data frame to RDS file
   #save(list = dataName, file = rdataFile)

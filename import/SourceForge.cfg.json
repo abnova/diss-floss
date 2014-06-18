@@ -22,8 +22,7 @@ FROM sf0514.external_tool_links"
          "resultNames":"Project ID, Project License",
          "requestSQL":"
 SELECT group_id, license
-FROM sf0514.groups
-WHERE group_id < 100000"
+FROM sf0514.groups"
       },
       {
          "indicatorName":"devSupport",
