@@ -191,9 +191,15 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
 #' @examples
 #' srdaGetData(1)
 
-srdaGetData <- function() { #srdaGetResult() might be a better name
+#srdaGetResult() might be a better name
+
+srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
   
-  if (DEBUG2) message("Waiting for results ...", appendLF = FALSE)
+  debug2saved <- DEBUG2
+  
+  if (NUM_ROWS_RQ) DEBUG2 <<- FALSE
+  
+  if (DEBUG2) message("Waiting for results ... ", appendLF = FALSE)
   
   # simple polling of the results file
   repeat {
@@ -205,10 +211,15 @@ srdaGetData <- function() { #srdaGetResult() might be a better name
       break
     }
     else { # no results yet, wait the timeout and check again
-      if (DEBUG2) message(".", appendLF = FALSE)
+      if (DEBUG2) {
+        message(">", appendLF = FALSE)
+        flush.console()
+      }
       Sys.sleep(POLL_TIME)
     }
   }
+  
+  DEBUG2 <<- debug2saved
   
   # Some pre-processing is needed to correctly parse results
   
@@ -419,7 +430,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
                              DATA_SEP, ADD_SQL)
   if (!success) error("Data request failed!")
   
-  assign(dataName, srdaGetData())
+  assign(dataName, srdaGetData(TRUE))
   data <- get(dataName)
   numRequests <- as.numeric(data) %/% RQ_SIZE + 1
   
