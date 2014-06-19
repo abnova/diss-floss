@@ -32,7 +32,7 @@ FROM sf0514.groups"
          "requestSQL":"
 SELECT group_id, preferred_support_type, preferred_support_resource
 FROM sf0514.groups
-WHERE preferred_support_type = 6 AND group_id < 1000"
+WHERE preferred_support_type = 6"
       },
       {
          "indicatorName":"pubRoadmap",
@@ -41,8 +41,7 @@ WHERE preferred_support_type = 6 AND group_id < 1000"
          "resultType":"data.frame",
          "requestSQL":"
 SELECT group_id, use_wiki
-FROM sf0514.groups
-WHERE group_id < 1000"
+FROM sf0514.groups"
       },
       {
          "indicatorName":"dmProcess",
@@ -51,8 +50,7 @@ WHERE group_id < 1000"
          "resultType":"data.frame",
          "requestSQL":"
 SELECT group_id, use_wiki, use_forum
-FROM sf0514.groups
-WHERE group_id < 1000"
+FROM sf0514.groups"
       },
       {
          "indicatorName":"contribProcess",
@@ -62,8 +60,7 @@ WHERE group_id < 1000"
          "requestSQL":"
 SELECT g.group_id, g.use_wiki, agl.is_public, agl.submit_instructions, agl.browse_instructions
 FROM sf0514.groups g, sf0514.artifact_group_list agl
-WHERE g.group_id = agl.group_id
-AND g.group_id < 1000"
+WHERE g.group_id = agl.group_id"
       },
       {
          "indicatorName":"contribPeople",
@@ -76,8 +73,7 @@ FROM sf0514.groups g, sf0514.users u, sf0514.project_history ph, sf0514.project_
 WHERE ph.project_task_id = pt.project_task_id
 AND pt.group_project_id = pgl.group_project_id
 AND g.group_id = pgl.group_id
-AND ph.mod_by = u.user_id
-AND g.group_id < 1000"
+AND ph.mod_by = u.user_id"
       },
       {
          "indicatorName":"prjMaturity",
@@ -89,7 +85,6 @@ AND g.group_id < 1000"
 SELECT fp.group_id, MAX(fr.name)
 FROM sf0514.frs_package fp, sf0514.frs_release fr, sf0514.frs_status fs
 WHERE fp.package_id = fr.package_id
-AND fp.group_id < 1000
 GROUP BY fp.group_id"
       },
       {
@@ -112,7 +107,6 @@ FROM sf0514.groups"
 SELECT group_id, COUNT(user_id)
 FROM sf0514.user_group
 WHERE grantcvs = 1
-AND group_id < 1000
 GROUP BY group_id"
       },
       {
@@ -134,7 +128,7 @@ GROUP BY group_id"
          "indicatorDescription":"Information about all projects",
          "indicatorType":"string",
          "resultType":"data.frame",
-         "requestSQL":"SELECT * FROM sf0514.groups WHERE group_id < 1000"
+         "requestSQL":"SELECT * FROM sf0514.groups"
       }
    ]
 }

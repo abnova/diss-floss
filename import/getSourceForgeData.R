@@ -51,7 +51,7 @@ SRDA_QRESULT_URL <- "/qresult/blekh/blekh.txt"
 
 RESULTS_URL <- paste0(SRDA_HOST_URL, SRDA_QRESULT_URL)
 
-POLL_TIME <- 5 # polling timeout in seconds
+POLL_TIME <- 1 # polling timeout in seconds
 
 # Parameters for result's format
 DATA_SEP <- ":" # data separator
