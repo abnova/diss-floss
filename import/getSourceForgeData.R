@@ -59,7 +59,7 @@ ADD_SQL  <- "0" # add SQL to file
 
 REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), CHR(13),' ')"
 
-RQ_SIZE <- 10000
+RQ_SIZE <- 100000
 
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
@@ -159,6 +159,8 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
   # for simple polling of results file in srdaGetData() function
   beforeDate <- url.exists(RESULTS_URL, .header=TRUE)["Last-Modified"]
   beforeDate <<- strptime(beforeDate, "%a, %d %b %Y %X", tz="GMT")
+
+  #if (DEBUG2) {print(select); print(from); print(where)}
   
   params <- list('uitems' = select,
                  'utables' = from,
@@ -269,7 +271,7 @@ srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
   results <- readLines(textConnection(unlist(results)))
   numLines <- length(results)
   results <- lapply(results, function(x) gsub(".$", "", x))
-  #if (DEBUG) print(head(results))
+  #if (DEBUG2) print(head(results))
   
   # Then we can parse the intermediate results as usual
   data <- read.table(textConnection(unlist(results)),
@@ -286,8 +288,8 @@ srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
   data <- replace_all(data, fixed("https//"), "https://")
   data <- replace_all(data, fixed("mailto@"), "mailto:")
   
-  #if (DEBUG) print("==========")
-  #if (DEBUG) print(head(data))
+  #if (DEBUG2) print("==========")
+  #if (DEBUG2) print(head(data))
   
   return (data)
 }
@@ -424,26 +426,40 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   REPLACE_CLAUSE <- "" #temp
   rq$select <- paste(rq$select, REPLACE_CLAUSE, collapse="", sep=" ")
+
+  if (rq$where == '')
+    where <- ''
+  else
+    where <- paste("WHERE", rq$where)
   
   # First, retrieve total number of rows for the request
-  success <- srdaRequestData(queryURL, "COUNT(*)", rq$from, rq$where,
-                             DATA_SEP, ADD_SQL)
+  # (we use subselect here as some queries use aggregate functions)
+  success <- 
+    srdaRequestData(queryURL, "COUNT(*)",
+                    paste("(", "SELECT", rq$select,
+                          "FROM", rq$from,
+                          where, ")", "AS MyAlias"),
+                    "", DATA_SEP, ADD_SQL)
   if (!success) error("Data request failed!")
   
   assign(dataName, srdaGetData(TRUE))
   data <- get(dataName)
   numRequests <- as.numeric(data) %/% RQ_SIZE + 1
   
+  if (DEBUG) message("Page: ", appendLF = FALSE)
+
   # Now, we can request & retrieve data via SQL pagination
   for (i in 1:numRequests) {
     
-    # setup SQL pagination
-    if (rq$where == '') rq$where <- '1=1'
-    rq$where <- paste(rq$where,
-                      'LIMIT', RQ_SIZE, 'OFFSET', RQ_SIZE*(i-1))
+    where <- rq$where
     
+    # Setup SQL pagination
+    if (where == '') where <- '1=1'
+    where <- paste(where,
+                   'LIMIT', RQ_SIZE, 'OFFSET', RQ_SIZE*(i-1))
+
     # Submit data request
-    success <- srdaRequestData(queryURL, rq$select, rq$from, rq$where,
+    success <- srdaRequestData(queryURL, rq$select, rq$from, where,
                                DATA_SEP, ADD_SQL)
     if (!success) error("Data request failed!")
     
@@ -461,13 +477,13 @@ getSourceForgeData <- function (row, config) { # dataFrame
     attr(data, "resultNames") <- base64(varNames)
     
     # specify names for the current data object per configuration
-    varNames <- strsplit(varNames, split = ",")
-    varNames <- lapply(varNames, str_trim)
-    names(data) <- unlist(varNames)
+    varNamesModif <- strsplit(varNames, split = ",")
+    varNamesModif <- lapply(varNamesModif, str_trim)
+    names(data) <- unlist(varNamesModif)
     
     # add current data frame to the list
-    dfList <- c(dfList, data)
-    if (DEBUG) message("*", appendLF = FALSE)
+    dfList <- c(dfList, list(data))
+    if (DEBUG) message(i, " ", appendLF = FALSE)
   }
   
   # merge all the result pages' data frames
@@ -479,10 +495,11 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # alternatively, use do.call() as in "getFLOSSmoleDataXML.R"
   #do.call(save, list(table, file = rdataFile))
   
-  if (DEBUG) message("Done.")
+  if (DEBUG) message("=> Done.")
   
   # clean up
   rm(data)
+  gc()
 }
 
 

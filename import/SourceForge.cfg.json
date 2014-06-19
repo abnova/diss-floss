@@ -100,8 +100,7 @@ GROUP BY fp.group_id"
          "resultNames":"Project ID, Registration Time",
          "requestSQL":"
 SELECT group_id, register_time
-FROM sf0514.groups
-WHERE 1=1 LIMIT 1000"
+FROM sf0514.groups"
       },
       {
          "indicatorName":"devTeamSize",
