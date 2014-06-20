@@ -51,7 +51,7 @@ SRDA_QRESULT_URL <- "/qresult/blekh/blekh.txt"
 
 RESULTS_URL <- paste0(SRDA_HOST_URL, SRDA_QRESULT_URL)
 
-POLL_TIME <- 1 # polling timeout in seconds
+POLL_TIME <- 2 # polling timeout in seconds
 
 # Parameters for result's format
 DATA_SEP <- ":" # data separator
@@ -59,7 +59,7 @@ ADD_SQL  <- "0" # add SQL to file
 
 REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), CHR(13),' ')"
 
-RQ_SIZE <- 100000
+RQ_SIZE <- 50000
 
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
@@ -482,12 +482,13 @@ getSourceForgeData <- function (row, config) { # dataFrame
     names(data) <- unlist(varNamesModif)
     
     # add current data frame to the list
-    dfList <- c(dfList, list(data))
+    dfList[[i]] <- data
+    #dfList <- c(dfList, list(data))
     if (DEBUG) message(i, " ", appendLF = FALSE)
   }
   
   # merge all the result pages' data frames
-  data <- do.call("rbind", dfList)
+  data <- do.call(rbind, dfList)
   
   # save current data frame to RDS file
   #save(list = dataName, file = rdataFile)
