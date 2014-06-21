@@ -3,6 +3,7 @@ if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 library(RCurl)
 
 CACHE_DIR <- "../cache"
+TRANSFORM_DIR <- "../data/transform"
 RDS_EXT <- ".rds"
 
 DEBUG <- TRUE  # TODO: retrieve debug flag via CL arguments
@@ -14,10 +15,13 @@ DEBUG2 <- TRUE # output more detailed debug information
 transformResult <- function (dataSource, indicator, handler) {
   
   fileDigest <- base64(indicator)
-  rdataFile <- paste0(CACHE_DIR, "/", dataSource, "/",
+  cacheFile <- paste0(CACHE_DIR, "/", dataSource, "/",
                       fileDigest, RDS_EXT)
-  if (file.exists(rdataFile)) {
-    data <- readRDS(rdataFile)
+  transformFile <- paste0(TRANSFORM_DIR, "/", dataSource, "/",
+                      fileDigest, RDS_EXT)
+  
+  if (file.exists(cacheFile)) {
+    data <- readRDS(cacheFile)
     
     # Preserve user-defined attributes for data frame's columns
     # via defining new class 'avector' (see code below)). Also,
@@ -28,7 +32,7 @@ transformResult <- function (dataSource, indicator, handler) {
     attributes(data2) <- attributes(data)
     
     result <- do.call(handler, list(indicator, data2))
-    if (!is.null(result)) saveRDS(result, rdataFile)
+    if (!is.null(result)) saveRDS(result, transformFile)
     rm(result)
   }
   else {
