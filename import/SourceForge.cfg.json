@@ -53,16 +53,6 @@ SELECT group_id, use_wiki, use_forum
 FROM sf0514.groups"
       },
       {
-         "indicatorName":"contribProcess",
-         "indicatorDescription":"Transparency of contributions and acceptance process",
-         "indicatorType":"character",
-         "resultType":"data.frame",
-         "requestSQL":"
-SELECT g.group_id, g.use_wiki, agl.is_public, agl.submit_instructions, agl.browse_instructions
-FROM sf0514.groups g, sf0514.artifact_group_list agl
-WHERE g.group_id = agl.group_id"
-      },
-      {
          "indicatorName":"contribPeople",
          "indicatorDescription":"Transparency of contributors to source code",
          "indicatorType":"character",
@@ -108,27 +98,6 @@ SELECT group_id, COUNT(user_id)
 FROM sf0514.user_group
 WHERE grantcvs = 1
 GROUP BY group_id"
-      },
-      {
-         "indicatorName":"totalProjects",
-         "indicatorDescription":"Total number of unique projects",
-         "indicatorType":"numeric",
-         "resultType":"numeric",
-         "requestSQL":"SELECT COUNT(DISTINCT group_id) FROM sf0514.user_group"
-      },
-      {
-         "indicatorName":"totalDevs",
-         "indicatorDescription":"Total number of developers per project",
-         "indicatorType":"numeric",
-         "resultType":"data.frame",
-         "requestSQL":"SELECT COUNT(*) FROM sf0514.user_group WHERE group_id = 19"
-      },
-      {
-         "indicatorName":"AllProjects",
-         "indicatorDescription":"Information about all projects",
-         "indicatorType":"string",
-         "resultType":"data.frame",
-         "requestSQL":"SELECT * FROM sf0514.groups"
       }
    ]
 }
