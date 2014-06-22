@@ -19,7 +19,7 @@ transformResult <- function (dataSource, indicator, handler) {
                       fileDigest, RDS_EXT)
   transformFile <- paste0(TRANSFORM_DIR, "/", dataSource, "/",
                       fileDigest, RDS_EXT)
-  
+
   if (file.exists(cacheFile)) {
     data <- readRDS(cacheFile)
     
@@ -176,6 +176,7 @@ indicators <- c("prjAge", "prjLicense", "devTeamSize",
                 "prjMaturity")
 transforms <- list(projectAge, projectLicense, devTeamSize,
                    prjMaturity)
+dataSource <- "SourceForge"
 
 # transform result data types as specified in configuration 
 #lapply(seq_along(indicators),
@@ -184,9 +185,13 @@ transforms <- list(projectAge, projectLicense, devTeamSize,
 #                         indicators[[i]], dataTypeTransform)
 #       })
 
+transformDir <- paste0(TRANSFORM_DIR, "/", dataSource)
+if (!file.exists(transformDir))
+  dir.create(transformDir, recursive = TRUE)
+
 # sequentially call all previously defined transformation functions
 silent <- lapply(seq_along(indicators),
                  function(i) {
-                   transformResult("SourceForge",
+                   transformResult(dataSource,
                                    indicators[[i]], transforms[[i]])
                    })
