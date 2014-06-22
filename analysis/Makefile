@@ -11,7 +11,8 @@ R_OPTS_PROD=--no-save --no-restore --silent
 
 # Targets and rules 
 
-PREP_DIR=../prepare
+PREP_DIR = ../prepare
+PREP_DONE = $(PREP_DIR)/transform.done
 
 analysis: prepare \
           eda \
@@ -19,11 +20,15 @@ analysis: prepare \
           cfa \
           sem
 
-prepare: $(PREP_DIR)/transform.done
+prepare: prepare.done
 eda: eda.done
 efa: efa.done
 cfa: cfa.done
 sem: sem.done
+
+prepare.done: $(PREP_DONE)
+	@cd $(PREP_DIR) && $(MAKE) transform
+	@touch $@
 
 eda.done: eda.R prepare
 	@$(RSCRIPT) $(R_OPTS) $<

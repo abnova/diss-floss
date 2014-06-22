@@ -27,6 +27,7 @@ sample: sample.done
 
 import.done: $(IMPORT_DONE)
 	@cd $(IMPORT_DIR) && $(MAKE)
+	@touch $@
 
 transform.done: transform.R import.done
 	@$(RSCRIPT) $(R_OPTS) $<
