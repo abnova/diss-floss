@@ -301,8 +301,9 @@ srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
 generateConfig <- function(configTemplate, configFile) {
   
   suppressPackageStartupMessages(suppressWarnings(library(tcltk)))
-  if (!suppressMessages(require(gsubfn))) install.packages('gsubfn')
-  #library(gsubfn)
+  if (!suppressMessages(require(gsubfn)))
+    install.packages('gsubfn', repos="http://cran.r-project.org")
+  library(gsubfn)
   
   regexKeyValue <- '"_([^"]*)":"([^"]*)"'
   regexVariable <- "[$]{([[:alpha:]][[:alnum:].]*)}"
