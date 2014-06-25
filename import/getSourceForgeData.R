@@ -433,30 +433,45 @@ getSourceForgeData <- function (row, config) { # dataFrame
   else
     where <- paste("WHERE", rq$where)
   
+  # First, retrieve total number of rows for the request
+  # (we use subselect here as some queries use aggregate functions)
+  success <- 
+    srdaRequestData(queryURL, "COUNT(*)",
+                    paste("(", "SELECT", rq$select,
+                          "FROM", rq$from,
+                          where, ")", "AS MyAlias"),
+                    "", DATA_SEP, ADD_SQL)
+  if (!success) error("Data request failed!")
+  
+  assign(dataName, srdaGetData(TRUE))
+  data <- get(dataName)
+  
+  # local function (consider moving to larger scope)
+  numPages <- function (lines, linesPerPage) {
+    numPages <- as.numeric(lines) %/% linesPerPage
+    if (as.numeric(lines) %% linesPerPage > 0)
+      numPages <- numPages + 1
+    return (numPages)
+  }
+  
+  # Determine number of requests, based on the whole result
+  numRequests <- numPages(data, RQ_SIZE)
+
   # Determine whether we have a configuration limit
   # for the result size and handle the request accordingly
   resultSize <- config$data[row, "resultSize"]
+  resultSizeNum <- suppressWarnings(as.numeric(resultSize))
   
-  if (is.numeric(resultSize)) {
-    numRequests <- as.numeric(resultSize) %/% RQ_SIZE + 1
+  # is.finite() is needed since is.numeric(NA) is TRUE (per R docs)
+  if (is.numeric(resultSizeNum) && is.finite(resultSizeNum)) {
+    numRequestsCfg <- numPages(resultSize, RQ_SIZE)
+    # make sure we don't request more data than there exist
+    if (numRequests > numRequestsCfg)
+      numRequests <- numRequestsCfg
   }
   else {
     if (resultSize != "all")
       warning("Result size incorrectly specified, assuming <all>!")
-    
-    # First, retrieve total number of rows for the request
-    # (we use subselect here as some queries use aggregate functions)
-    success <- 
-      srdaRequestData(queryURL, "COUNT(*)",
-                      paste("(", "SELECT", rq$select,
-                            "FROM", rq$from,
-                            where, ")", "AS MyAlias"),
-                      "", DATA_SEP, ADD_SQL)
-    if (!success) error("Data request failed!")
-    
-    assign(dataName, srdaGetData(TRUE))
-    data <- get(dataName)
-    numRequests <- as.numeric(data) %/% RQ_SIZE + 1
   }
   
   if (DEBUG) message("Page: ", appendLF = FALSE)
@@ -496,7 +511,6 @@ getSourceForgeData <- function (row, config) { # dataFrame
     
     # add current data frame to the list
     dfList[[i]] <- data
-    #dfList <- c(dfList, list(data))
     if (DEBUG) message(i, " ", appendLF = FALSE)
   }
   
@@ -504,10 +518,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
   data <- do.call(rbind, dfList)
   
   # save current data frame to RDS file
-  #save(list = dataName, file = rdataFile)
   saveRDS(data, rdataFile)
-  # alternatively, use do.call() as in "getFLOSSmoleDataXML.R"
-  #do.call(save, list(table, file = rdataFile))
   
   if (DEBUG) message("=> Done.")
   
