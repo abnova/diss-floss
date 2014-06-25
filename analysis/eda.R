@@ -14,7 +14,7 @@ library(gridExtra)
 source("../utils/factors.R")
 source("../utils/qq.R")
 
-CACHE_DIR <- "../cache"
+TRANSFORM_DIR <- "../data/transform"
 RDS_EXT <- ".rds"
 
 EDA_RESULTS_DIR <- "../results/eda"
@@ -86,7 +86,7 @@ performEDA <- function (dataSource, analysis,
                         indicator, colName, extraFun) {
 
   fileDigest <- base64(indicator)
-  rdataFile <- paste0(CACHE_DIR, "/", dataSource, "/",
+  rdataFile <- paste0(TRANSFORM_DIR, "/", dataSource, "/",
                       fileDigest, RDS_EXT)
   if (file.exists(rdataFile)) {
     data <- readRDS(rdataFile)
@@ -295,6 +295,8 @@ suppressMessages(ggsave(filename=edaFilePDF, mg, width=8.5, height=11))
 
 message("\n===== EDA completed, results can be found ",
         "in directory \"", EDA_RESULTS_DIR, "\"\n")
+
+stop()
 
 # construct list of indicators & corresponding extra functions
 sfMultiIndicators <- c("prjAge", "prjLicense")
