@@ -432,19 +432,31 @@ getSourceForgeData <- function (row, config) { # dataFrame
   else
     where <- paste("WHERE", rq$where)
   
-  # First, retrieve total number of rows for the request
-  # (we use subselect here as some queries use aggregate functions)
-  success <- 
-    srdaRequestData(queryURL, "COUNT(*)",
-                    paste("(", "SELECT", rq$select,
-                          "FROM", rq$from,
-                          where, ")", "AS MyAlias"),
-                    "", DATA_SEP, ADD_SQL)
-  if (!success) error("Data request failed!")
+  # Determine whether we have a configuration limit
+  # for the result size and handle the request accordingly
+  resultSize <- config$data[row, "resultSize"]
   
-  assign(dataName, srdaGetData(TRUE))
-  data <- get(dataName)
-  numRequests <- as.numeric(data) %/% RQ_SIZE + 1
+  if (is.numeric(resultSize)) {
+    numRequests <- as.numeric(resultSize) %/% RQ_SIZE + 1
+  }
+  else {
+    if (resultSize != "all")
+      warning("Result size incorrectly specified, assuming <all>!")
+    
+    # First, retrieve total number of rows for the request
+    # (we use subselect here as some queries use aggregate functions)
+    success <- 
+      srdaRequestData(queryURL, "COUNT(*)",
+                      paste("(", "SELECT", rq$select,
+                            "FROM", rq$from,
+                            where, ")", "AS MyAlias"),
+                      "", DATA_SEP, ADD_SQL)
+    if (!success) error("Data request failed!")
+    
+    assign(dataName, srdaGetData(TRUE))
+    data <- get(dataName)
+    numRequests <- as.numeric(data) %/% RQ_SIZE + 1
+  }
   
   if (DEBUG) message("Page: ", appendLF = FALSE)
 
