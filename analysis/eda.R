@@ -155,7 +155,7 @@ plotHistogram <- function (df, colName) {
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
-  suppressMessages(ggsave(file=edaFile, plot=g))
+  suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
 
   return (g)
 }
@@ -192,7 +192,7 @@ plotDensity <- function (df, colName) {
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
-  suppressMessages(ggsave(file=edaFile, plot=g))
+  suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
   
   return (g)
 }
@@ -223,7 +223,7 @@ plotBarGraph <- function (df, colName) {
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
-  suppressMessages(ggsave(file=edaFile, plot=g))
+  suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
   
   return (g)
 }
@@ -263,7 +263,7 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=varName, pattern=" ", repl="")
   edaFile <- paste0(EDA_RESULTS_DIR, "/", "QQ-", edaFile, ".svg")
-  suppressMessages(ggsave(file=edaFile, plot=g))
+  suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
   
   return (g)
 }
