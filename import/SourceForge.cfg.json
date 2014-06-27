@@ -107,6 +107,28 @@ SELECT group_id, COUNT(user_id)
 FROM sf0514.user_group
 WHERE grantcvs = 1
 GROUP BY group_id"
+      },
+      {
+         "indicatorName":"userCommunitySize",
+         "indicatorDescription":"User community size",
+         "indicatorType":"character",
+         "resultType":"data.frame",
+         "resultSize":"100000",
+         "resultNames":"Project ID, User Community Size",
+         "requestSQL":"
+SELECT group_id, downloads
+FROM sf0514.stats_project_all"
+      },
+      {
+         "indicatorName":"softwareType",
+         "indicatorDescription":"Software type",
+         "indicatorType":"character",
+         "resultType":"data.frame",
+         "resultSize":"100000",
+         "resultNames":"ID, Software Type",
+         "requestSQL":"
+SELECT trove_cat_id, description
+FROM sf0514.trove_frontpage"
       }
    ]
 }
