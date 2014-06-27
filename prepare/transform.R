@@ -62,13 +62,9 @@ as.data.frame.avector <- as.data.frame.vector
 
 projectAge <- function (indicator, data) {
 
-  # do not process, if target column already exists
-  if ("Project Age" %in% names(data)) {
-    message("Project Age: ", appendLF = FALSE)
-    message("Not processing - Transformation already performed!\n")
-    return (invisible())
-  }
-  
+  if (DEBUG) message("Transforming '", indicator, "' ...",
+                     appendLF = FALSE)
+
   transformColumn <- as.numeric(unlist(data["Registration Time"]))
   regTime <- as.POSIXct(transformColumn, origin="1970-01-01")
   prjAge <- difftime(Sys.Date(), as.Date(regTime), units = "weeks")
@@ -78,7 +74,8 @@ projectAge <- function (indicator, data) {
   if ("Registration Time" %in% names(data))
     data <- data[setdiff(names(data), "Registration Time")]  
 
-  if (DEBUG2) {print(summary(data)); message("")}
+  if (DEBUG) message(" Done.")
+  if (DEBUG2) {message(""); print(summary(data)); message("")}
   
   return (data)
 }
@@ -86,13 +83,8 @@ projectAge <- function (indicator, data) {
 
 projectLicense <- function (indicator, data) {
   
-  # do not process, if target column (type) already exists
-  if (is.factor(data[["Project License"]]) &&
-        is.factor(data[["License Restrictiveness"]])) {
-    message("Project License: ", appendLF = FALSE)
-    message("Not processing - Transformation already performed!\n")
-    return (invisible())
-  }
+  if (DEBUG) message("Transforming '", indicator, "' ...",
+                     appendLF = FALSE)
   
   classification <- 
     c(lgpl='Restrictive', bsd='Permissive', gpl='Highly Restrictive',
@@ -116,8 +108,9 @@ projectLicense <- function (indicator, data) {
   
   data[["License Restrictiveness"]] <- 
     as.factor(classification[as.character(data[["Project License"]])])
-  
-  if (DEBUG2) {print(summary(data)); message("")}
+
+  if (DEBUG) message(" Done.")
+  if (DEBUG2) {message(""); print(summary(data)); message("")}
   
   return (data)
 }
@@ -125,12 +118,8 @@ projectLicense <- function (indicator, data) {
 
 prjMaturity <- function (indicator, data) {
   
-  # do not process, if target column (type) already exists
-  if (is.factor(data[["Project Maturity"]])) {
-    message("Project Maturity: ", appendLF = FALSE)
-    message("Not processing - Transformation already performed!\n")
-    return (invisible())
-  }
+  if (DEBUG) message("Transforming '", indicator, "' ...",
+                     appendLF = FALSE)
   
   var <- data[["Latest Release"]]
   
@@ -142,28 +131,26 @@ prjMaturity <- function (indicator, data) {
   data[["Project Maturity"]] <- 
     cut(major, breaks = c(0, 1, 2, Inf), include.lowest = TRUE,
         right = FALSE, labels=c("Alpha/Beta", "Stable", "Mature"))
-  
-  if (DEBUG2) {print(summary(data)); message("")}
 
+  if (DEBUG) message(" Done.")
+  if (DEBUG2) {message(""); print(summary(data)); message("")}
+  
   return (data)
 }
 
 
 devTeamSize <- function (indicator, data) {
   
+  if (DEBUG) message("Transforming '", indicator, "' ...",
+                     appendLF = FALSE)
+
   var <- data[["Development Team Size"]]
-  
-  # do not process, if target column (type) already exists
-  if (is.numeric(var)) {
-    message("Development Team Size: ", appendLF = FALSE)
-    message("Not processing - Transformation already performed!\n")
-    return (invisible())
-  }
   
   # convert data type from 'character' to 'numeric'
   data[["Development Team Size"]] <- as.numeric(var)
-  
-  if (DEBUG2) {print(summary(data)); message("")}
+
+  if (DEBUG) message(" Done.")
+  if (DEBUG2) {message(""); print(summary(data)); message("")}
   
   return (data)
 }
@@ -177,6 +164,9 @@ indicators <- c("prjAge", "prjLicense", "devTeamSize",
 transforms <- list(projectAge, projectLicense, devTeamSize,
                    prjMaturity)
 dataSource <- "SourceForge"
+
+if (DEBUG) message("===== ", dataSource,
+                   " Data Transformation started ...\n")
 
 # transform result data types as specified in configuration 
 #lapply(seq_along(indicators),
@@ -195,3 +185,7 @@ silent <- lapply(seq_along(indicators),
                    transformResult(dataSource,
                                    indicators[[i]], transforms[[i]])
                    })
+
+if (!DEBUG2) message("")
+if (DEBUG) message("===== ", dataSource,
+                   " Data Transformation sucessfully completed.\n")
