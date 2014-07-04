@@ -15,10 +15,9 @@ DEBUG2 <- TRUE # output more detailed debug information
 transformResult <- function (dataSource, indicator, handler) {
   
   fileDigest <- base64(indicator)
-  cacheFile <- paste0(CACHE_DIR, "/", dataSource, "/",
-                      fileDigest, RDS_EXT)
-  transformFile <- paste0(TRANSFORM_DIR, "/", dataSource, "/",
-                      fileDigest, RDS_EXT)
+  fileName <- paste0(fileDigest, RDS_EXT)
+  cacheFile <- file.path(CACHE_DIR, dataSource, fileName)
+  transformFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
 
   if (file.exists(cacheFile)) {
     data <- readRDS(cacheFile)
@@ -175,7 +174,7 @@ if (DEBUG) message("===== ", dataSource,
 #                         indicators[[i]], dataTypeTransform)
 #       })
 
-transformDir <- paste0(TRANSFORM_DIR, "/", dataSource)
+transformDir <- file.path(TRANSFORM_DIR, dataSource)
 if (!file.exists(transformDir))
   dir.create(transformDir, recursive = TRUE)
 

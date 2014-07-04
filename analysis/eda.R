@@ -86,8 +86,8 @@ performEDA <- function (dataSource, analysis,
                         indicator, colName, extraFun) {
 
   fileDigest <- base64(indicator)
-  rdataFile <- paste0(TRANSFORM_DIR, "/", dataSource, "/",
-                      fileDigest, RDS_EXT)
+  fileName <- paste0(fileDigest, RDS_EXT)
+  rdataFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
   if (file.exists(rdataFile)) {
     data <- readRDS(rdataFile)
   }
@@ -154,7 +154,7 @@ plotHistogram <- function (df, colName) {
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
-  edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
+  edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
   suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
 
   return (g)
@@ -191,7 +191,7 @@ plotDensity <- function (df, colName) {
 
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
-  edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
+  edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
   suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
   
   return (g)
@@ -222,7 +222,7 @@ plotBarGraph <- function (df, colName) {
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
-  edaFile <- paste0(EDA_RESULTS_DIR, "/", edaFile, ".svg")
+  edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
   suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
   
   return (g)
@@ -262,7 +262,7 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=varName, pattern=" ", repl="")
-  edaFile <- paste0(EDA_RESULTS_DIR, "/", "QQ-", edaFile, ".svg")
+  edaFile <- file.path(EDA_RESULTS_DIR, paste0("QQ-", edaFile, ".svg"))
   suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
   
   return (g)
@@ -289,7 +289,7 @@ silent <- lapply(seq_along(sfIndicators), function(i) {
 
 #dev.off() # to display graphics in RStudio plot window
 
-edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-univar.pdf")
+edaFilePDF <- file.path(EDA_RESULTS_DIR, "eda-univar.pdf")
 mg <- do.call(marrangeGrob, c(allPlots, list(nrow=2, ncol = 1)));
 suppressMessages(ggsave(filename=edaFilePDF, mg, width=8.5, height=11))
 
@@ -309,7 +309,7 @@ multiPlots <- lapply(seq_along(sfMultiIndicators), function(i) {
              sfMultiExtraFun[[i]])
   })
 
-#edaFilePDF <- paste0(EDA_RESULTS_DIR, "/", "eda-multivar.pdf")
+#edaFilePDF <- file.path(EDA_RESULTS_DIR, "eda-multivar.pdf")
 #pdf(edaFilePDF)
 #silent <- lapply(multiPlots, print)
 #dev.off()

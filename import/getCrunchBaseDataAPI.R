@@ -57,11 +57,11 @@ DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 getCBDataPaginated <- function (query, field, page, progress, useProgress) {
   
   # Construct CB API request (this search is for companies only!)
-  url <- paste(CB_API_SEARCH_URL, "?query=", query, collapse="", sep="")
-  url <- paste(url, "&entity=company", "", collapse="", sep="")
-  url <- paste(url, "&field=", field, collapse="", sep="")
-  url <- paste(url, "&api_key=", CB_API_KEY, collapse="", sep="")
-  url <- paste(url, "&page=", page, collapse="", sep="")
+  url <- paste0(CB_API_SEARCH_URL, "?query=", query)
+  url <- paste0(url, "&entity=company")
+  url <- paste0(url, "&field=", field)
+  url <- paste0(url, "&api_key=", CB_API_KEY)
+  url <- paste0(url, "&page=", page)
   
   # Retrieve data
   startupData <- getURL(url, followlocation = TRUE)
@@ -173,8 +173,7 @@ message("\n=== CrunchBase data collection ===\n")
 field <- "overview"
 query <- "drone" # "wearable"
 
-debugInfo <- paste(" for request ['", field, "' = \"", query, "\"]",
-                   sep = "")
+debugInfo <- paste0(" for request ['", field, "' = \"", query, "\"]")
 
 message("Retrieving CrunchBase data",
         ifelse(DEBUG, debugInfo, ""), "...\n")

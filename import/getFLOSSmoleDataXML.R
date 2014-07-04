@@ -46,11 +46,10 @@ importRepoFiles <- function(repos, row) {
           ifelse(DEBUG, "\n", ""))
   
   # construct URL for current FLOSS repository in FLOSSmole
-  url <- paste(FLOSSMOLE_REPO_BASE, "/",
-               repos$code[row], "/",
-               repos$year[row], "/",
-               repos$year[row], "-", repos$month[row],
-               collapse="", sep="")
+  url <- paste0(FLOSSMOLE_REPO_BASE, "/",
+                repos$code[row], "/",
+                repos$year[row], "/",
+                repos$year[row], "-", repos$month[row])
 
   htmlPage = rawToChar(getBinaryURL(url, followlocation = TRUE))
 
@@ -93,7 +92,8 @@ importRepoFiles <- function(repos, row) {
     
     # calculate URL's digest and generate corresponding RData file name
     fileDigest <- base64(url)
-    rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDATA_EXT, sep = "")
+    fileName <- paste0(fileDigest, RDATA_EXT)
+    rdataFile <- file.path(RDATA_DIR, fileName)
     
     # check if the archive file has already been processed
     if (DEBUG) {message("Checking file \"", url, "\"...")}

@@ -62,7 +62,7 @@ getNumPages <- function () {
 getDataPaginated <- function (page) {
   
   # construct full URL for paginated API request
-  url <- paste(API_ENDPOINT_URL, "?page=", page, collapse="", sep="")
+  url <- paste0(API_ENDPOINT_URL, "?page=", page)
   
   # retrieve API reply (JSON data)
   startupData <- getURL(url)

@@ -388,7 +388,8 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # RData file name; also calculate request's SQL query digest
   # as well as digests for indicator name and data object names
   fileDigest <- base64(indicator)
-  rdataFile <- paste(RDATA_DIR, "/", fileDigest, RDS_EXT, sep = "")
+  fileName <- paste0(fileDigest, RDS_EXT)
+  rdataFile <- file.path(RDATA_DIR, fileName)
   
   # construct configuration-based attribute info for verification
   ATTRS <- c("indicatorName", "resultNames", "SQL")
@@ -420,13 +421,13 @@ getSourceForgeData <- function (row, config) { # dataFrame
   }
   
   # Construct SRDA query URL
-  queryURL <- paste(SRDA_HOST_URL, SRDA_QUERY_URL, collapse="", sep="")
+  queryURL <- paste0(SRDA_HOST_URL, SRDA_QUERY_URL)
   
   # Convert (tokenize) SQL request into parts
   rq <- srdaConvertRequest(request)
   
   REPLACE_CLAUSE <- "" #temp
-  rq$select <- paste(rq$select, REPLACE_CLAUSE, collapse="", sep=" ")
+  rq$select <- paste(rq$select, REPLACE_CLAUSE)
 
   if (rq$where == '')
     where <- ''
@@ -576,9 +577,9 @@ config <- jsonlite::fromJSON(SRDA_CONFIG)
 numRequests <- nrow(config$data)
 
 if (DEBUG) {
-  msg <- paste("Data ", config["_action"],
-               " from ", config["_source"],
-               ", using schema \"", config["_schema"], "\".", sep = "")
+  msg <- paste0("Data ", config["_action"],
+                " from ", config["_source"],
+                ", using schema \"", config["_schema"], "\".")
   message(msg)
   
   msg <- paste("Total number of requests to submit:", numRequests)
@@ -596,8 +597,7 @@ if (!file.exists(RDATA_DIR)) {
 message("Authenticating with SRDA ...\n")
 
 # Construct SRDA login URL
-loginURL <- paste(SRDA_HOST_URL, SRDA_LOGIN_URL, SRDA_LOGIN_REQ,
-                  collapse="", sep="")
+loginURL <- paste0(SRDA_HOST_URL, SRDA_LOGIN_URL, SRDA_LOGIN_REQ)
 
 # Log into the system
 success <- srdaLogin(loginURL, SRDA_USER, SRDA_PASS)
