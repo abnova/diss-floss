@@ -19,8 +19,8 @@ FLOSSMOLE_REPO_BASE <- "http://flossdata.syr.edu/data"
 
 # Create a lookup table to construct correct paths to files
 REPO_CODE  <- c("fc",   "fsf",  "gc",   "gh",   "lpd",  "sv",   "tig")
-REPO_YEAR  <- c("2014", "2013", "2013", "2013", "2013", "2014", "2014")
-REPO_MONTH <- c("Mar",  "Sep",  "Sep",  "Sep",  "Sep",  "Mar",  "Mar")
+REPO_YEAR  <- c("2014", "2012", "2012", "2013", "2012", "2014", "2014")
+REPO_MONTH <- c("Mar",  "Nov",  "Nov",  "Feb",  "Sep",  "Mar",  "Mar")
 REPO_NAME  <- c("FreeCode",
                 "Free Software Foundation",
                 "Google Code",
