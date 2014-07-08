@@ -7,7 +7,7 @@ TRANSFORM_DIR <- "../data/transform"
 RDS_EXT <- ".rds"
 
 DEBUG <- TRUE  # TODO: retrieve debug flag via CL arguments
-DEBUG2 <- TRUE # output more detailed debug information
+DEBUG2 <- FALSE # output more detailed debug information
 
 
 ##### GENERIC TRANSFORMATION FUNCTION #####
@@ -158,33 +158,41 @@ devTeamSize <- function (indicator, data) {
 ##### MAIN #####
 
 # construct list of indicators & corresponding transform. functions
-indicators <- c("prjAge", "prjLicense", "devTeamSize",
-                "prjMaturity")
-transforms <- list(projectAge, projectLicense, devTeamSize,
-                   prjMaturity)
-dataSource <- "SourceForge"
+indicators <- c(); transforms <- list()
 
-if (DEBUG) message("===== ", dataSource,
-                   " Data Transformation started ...\n")
+indicators[["SourceForge"]] <- c("prjAge", "prjLicense",
+                                 "devTeamSize", "prjMaturity")
 
-# transform result data types as specified in configuration 
-#lapply(seq_along(indicators),
-#       function(i) {
-#         transformResult("SourceForge",
-#                         indicators[[i]], dataTypeTransform)
-#       })
+transforms[["SourceForge"]] <- list(projectAge, projectLicense,
+                                    devTeamSize, prjMaturity)
 
-transformDir <- file.path(TRANSFORM_DIR, dataSource)
-if (!file.exists(transformDir))
-  dir.create(transformDir, recursive = TRUE)
+indicators[["FLOSSmole"]] <- c()
 
-# sequentially call all previously defined transformation functions
-silent <- lapply(seq_along(indicators),
-                 function(i) {
-                   transformResult(dataSource,
-                                   indicators[[i]], transforms[[i]])
+transforms[["FLOSSmole"]] <- list()
+
+dataSourcesList <- c("SourceForge", "FLOSSmole")
+
+if (DEBUG) message("===== Data Transformation started\n")
+
+for (dataSource in dataSourcesList) {
+  
+  if (DEBUG) message("Transforming ", dataSource, " data:\n")
+  
+  # TBD here - transform result data types as specified in config.
+  
+  transformDir <- file.path(TRANSFORM_DIR, dataSource)
+  if (!file.exists(transformDir))
+    dir.create(transformDir, recursive = TRUE)
+  
+  # sequentially call all previously defined transformation functions
+  silent <- lapply(seq_along(indicators[[dataSource]]),
+                   function(i) {
+                     transformResult(dataSource,
+                                     indicators[[dataSource]][[i]],
+                                     transforms[[dataSource]][[i]])
                    })
+  
+  if (!DEBUG2) message("")
+}
 
-if (!DEBUG2) message("")
-if (DEBUG) message("===== ", dataSource,
-                   " Data Transformation sucessfully completed.\n")
+if (DEBUG) message("===== Data Transformation sucessfully completed.\n")
