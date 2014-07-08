@@ -117,7 +117,7 @@ importRepoFiles <- function(repos, row) {
       data <- bzfile(file, open = "r")
       try(assign(tableName, read.table(data, header = TRUE, fill = TRUE,
                                        sep = "\t", quote = "",
-                                       stringsAsFactors = TRUE)),
+                                       stringsAsFactors = FALSE)),
           silent = FALSE)
       
       # save current data frame to RData file
