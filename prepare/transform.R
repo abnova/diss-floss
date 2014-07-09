@@ -12,12 +12,21 @@ DEBUG2 <- TRUE # output more detailed debug information
 
 ##### GENERIC TRANSFORMATION FUNCTION #####
 
-transformResult <- function (dataSource, indicator, handler) {
+transformResult <- function (dataSource, indicator, handler = NULL) {
   
   fileDigest <- base64(indicator)
   fileName <- paste0(fileDigest, RDS_EXT)
   cacheFile <- file.path(CACHE_DIR, dataSource, fileName)
   transformFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
+  
+  if (is.null(handler)) {
+    if (DEBUG) message("Copying data for '", indicator, "' ...",
+                       appendLF = FALSE)
+    copyCommand <- paste("cp", cacheFile, transformFile)
+    try(system(copyCommand))
+    if (DEBUG) message(" Done.")
+    return()
+  }
 
   if (file.exists(cacheFile)) {
     data <- readRDS(cacheFile)
@@ -161,10 +170,16 @@ devTeamSize <- function (indicator, data) {
 indicators <- c(); transforms <- list()
 
 indicators[["SourceForge"]] <- c("prjAge", "prjLicense",
-                                 "devTeamSize", "prjMaturity")
+                                 "devTeamSize", "prjMaturity",
+                                 "devLinks", "devSupport",
+                                 "pubRoadmap", "dmProcess",
+                                 "contribPeople", "userCommunitySize",
+                                 "softwareType")
 
 transforms[["SourceForge"]] <- list(projectAge, projectLicense,
-                                    devTeamSize, prjMaturity)
+                                    devTeamSize, prjMaturity,
+                                    NULL, NULL, NULL, NULL,
+                                    NULL, NULL, NULL)
 
 indicators[["FLOSSmole"]] <- c()
 
@@ -191,8 +206,7 @@ for (dataSource in dataSourcesList) {
                                      indicators[[dataSource]][[i]],
                                      transforms[[dataSource]][[i]])
                    })
-  
-  if (!DEBUG2) message("")
+  message("")
 }
 
 if (DEBUG) message("===== Data Transformation sucessfully completed.\n")
