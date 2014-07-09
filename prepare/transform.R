@@ -7,7 +7,7 @@ TRANSFORM_DIR <- "../data/transform"
 RDS_EXT <- ".rds"
 
 DEBUG <- TRUE  # TODO: retrieve debug flag via CL arguments
-DEBUG2 <- FALSE # output more detailed debug information
+DEBUG2 <- TRUE # output more detailed debug information
 
 
 ##### GENERIC TRANSFORMATION FUNCTION #####
