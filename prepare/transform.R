@@ -20,7 +20,7 @@ transformResult <- function (dataSource, indicator, handler = NULL) {
   transformFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
   
   if (is.null(handler)) {
-    if (DEBUG) message("Copying data for '", indicator, "' ...",
+    if (DEBUG) message("Copying data '", indicator, "' ...",
                        appendLF = FALSE)
     copyCommand <- paste("cp", cacheFile, transformFile)
     try(system(copyCommand))
@@ -68,7 +68,7 @@ as.data.frame.avector <- as.data.frame.vector
 #dataTypeTransform <- function (indicator, data) {}
 
 
-projectAge <- function (indicator, data) {
+sfProjectAge <- function (indicator, data) {
 
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
@@ -89,7 +89,7 @@ projectAge <- function (indicator, data) {
 }
 
 
-projectLicense <- function (indicator, data) {
+sfProjectLicense <- function (indicator, data) {
   
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
@@ -124,7 +124,7 @@ projectLicense <- function (indicator, data) {
 }
 
 
-prjMaturity <- function (indicator, data) {
+sfPrjMaturity <- function (indicator, data) {
   
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
@@ -147,7 +147,7 @@ prjMaturity <- function (indicator, data) {
 }
 
 
-devTeamSize <- function (indicator, data) {
+sfDevTeamSize <- function (indicator, data) {
   
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
@@ -176,8 +176,8 @@ indicators[["SourceForge"]] <- c("prjAge", "prjLicense",
                                  "contribPeople", "userCommunitySize",
                                  "softwareType")
 
-transforms[["SourceForge"]] <- list(projectAge, projectLicense,
-                                    devTeamSize, prjMaturity,
+transforms[["SourceForge"]] <- list(sfProjectAge, sfProjectLicense,
+                                    sfDevTeamSize, sfPrjMaturity,
                                     NULL, NULL, NULL, NULL,
                                     NULL, NULL, NULL)
 
