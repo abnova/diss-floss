@@ -35,6 +35,7 @@ repos <- data.frame(code = REPO_CODE, year = REPO_YEAR,
 
 BZIP_EXT  <- ".txt\\.bz2"
 RDATA_EXT <- ".RData"
+RDS_EXT <- ".rds"
 RDATA_DIR <- "../cache/FLOSSmole" #TODO: consider passing this via CL args
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
@@ -92,7 +93,7 @@ importRepoFiles <- function(repos, row) {
     
     # calculate URL's digest and generate corresponding RData file name
     fileDigest <- base64(url)
-    fileName <- paste0(fileDigest, RDATA_EXT)
+    fileName <- paste0(fileDigest, RDS_EXT)
     rdataFile <- file.path(RDATA_DIR, fileName)
     
     # check if the archive file has already been processed
@@ -120,8 +121,8 @@ importRepoFiles <- function(repos, row) {
                                        stringsAsFactors = FALSE)),
           silent = FALSE)
       
-      # save current data frame to RData file
-      do.call(save, list(table, file = rdataFile))
+      # save current data frame to RDS file
+      saveRDS(table, rdataFile)
       
       # clean up
       rm(table)
