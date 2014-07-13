@@ -12,14 +12,6 @@ if (!suppressMessages(require(jsonlite)))
 library(RCurl)
 library(jsonlite)
 
-source("../utils/debug.R")
-
-# AngelList APIs endpoint URL for FLOSS startups
-# ('Market' tag = '1', 'FLOSS' tag = '59')
-API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
-
-DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
-
 # Use Jeroen Ooms' "simplify" approach by default:
 # jsonlite::fromJSON(..., simplifyVector=FALSE),
 # then do.call(c, ...) & jsonlite:::simplify()
@@ -28,8 +20,19 @@ JO <- TRUE
 
 if (JO) {
   if (!suppressMessages(require(plyr))) install.packages('plyr')
-  #library(plyr)
+  library(plyr)
 }
+
+source("../utils/debug.R")
+
+# AngelList APIs endpoint URL for FLOSS startups
+# ('Market' tag = '1', 'FLOSS' tag = '59')
+API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
+
+RDS_EXT <- ".rds"
+RDATA_DIR <- "../cache/AngelList" #TODO: consider passing this via CL args
+
+DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 
 getNumPages <- function () {
@@ -151,13 +154,22 @@ getAngelListData <- function () {
 
 message("\n=== AngelList data collection ===\n")
 
+# Create cache directory, if it doesn't exist
+if (!file.exists(RDATA_DIR)) {
+  dir.create(RDATA_DIR, recursive = TRUE, showWarnings = FALSE)
+}
+
 message("Retrieving AngelList data...\n")
 
-allData <- getAngelListData()
+alFlossStartups <- getAngelListData()
 #if (DEBUG) str(allData, vec.len=12, list.len=5)
 #if (DEBUG) View(allData)
 
-#allStartups <- data.frame(allData)
-#if (DEBUG) str(allStartups, vec.len=12)
+# generate corresponding RDS file name from result data frame name
+fileName <- paste0(deparse(substitute(alFlossStartups)), RDS_EXT)
+rdataFile <- file.path(RDATA_DIR, fileName)
+
+# save FLOSS startups data frame to RDS file
+saveRDS(alFlossStartups, rdataFile)
 
 message("\nAngelList data collection completed successfully.\n")
