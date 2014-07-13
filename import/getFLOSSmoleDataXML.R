@@ -91,24 +91,23 @@ importRepoFiles <- function(repos, row) {
 
     url <- links[[1]][i]
     
-    # calculate URL's digest and generate corresponding RData file name
-    fileDigest <- base64(url)
-    fileName <- paste0(fileDigest, RDS_EXT)
-    rdataFile <- file.path(RDATA_DIR, fileName)
-    
-    # check if the archive file has already been processed
-    if (DEBUG) {message("Checking file \"", url, "\"...")}
-    if (file.exists(rdataFile)) {
-      if (DEBUG) {message("Processing skipped: .Rdata file found.\n")}
-      return()
-    }
-    
     # extract table name from URL so that corresponding data object
     # (data frame) will later be saved under that name via save()
     splitURL <- strsplit(url, "/|-")
     tableNameYear <-  splitURL[[1]][length(splitURL[[1]])-1]
     tableName <- substr(tableNameYear, 1, nchar(tableNameYear)-4)
     table <- as.name(tableName)
+    
+    # generate corresponding RDS file name from FLOSSmole table name
+    fileName <- paste0(tableName, RDS_EXT)
+    rdataFile <- file.path(RDATA_DIR, fileName)
+    
+    # check if the archive file has already been processed
+    if (DEBUG) {message("Checking file \"", url, "\"...")}
+    if (file.exists(rdataFile)) {
+      if (DEBUG) {message("Processing skipped: RDS file found.\n")}
+      return()
+    }
     
     # current method
     if (TRUE) { # via local file
@@ -120,6 +119,10 @@ importRepoFiles <- function(repos, row) {
                                        sep = "\t", quote = "",
                                        stringsAsFactors = FALSE)),
           silent = FALSE)
+      
+      # save hash of the indicator's URL as data object's attribute,
+      # so that we can restore and use the URL later, when needed
+      attr(data, "URL") <- base64(url)
       
       # save current data frame to RDS file
       saveRDS(table, rdataFile)
