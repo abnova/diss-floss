@@ -30,6 +30,9 @@ CB_FLOSS_DATA <- "http://api.angel.co/1/tags/59/startups"
 
 CB_API_SEARCH_URL <- "http://api.crunchbase.com/v/1/search.js"
 
+RDS_EXT <- ".rds"
+RDATA_DIR <- "../cache/CrunchBase" #TODO: consider passing this via CL args
+
 # GLOBAL Indicator of JSON response's first page
 firstPage <<- TRUE
 
@@ -150,16 +153,8 @@ getCBDataAPI <- function (query, field) {
                     silent = TRUE))
   
   reply <- do.call(c, reply)
-  startups <- jsonlite:::simplify(reply)
+  startups <- jsonlite:::simplify(reply, simplifyDataFrame = TRUE)
 
-  # save current data frame to RData file
-  #TODO: Think about feasibility of caching non-archival data,
-  # such as AngelList and CrunchBase
-  #save(startups, file = rdataFile)
-  
-  # clean up
-  #rm(startups)
-  
   close(progress)
   #if (DEBUG) print(head(reply))
   
@@ -171,14 +166,30 @@ getCBDataAPI <- function (query, field) {
 message("\n=== CrunchBase data collection ===\n")
 
 field <- "overview"
-query <- "drone" # "wearable"
+#query <- "drone" # "wearable"
+query <- "open source"
 
 debugInfo <- paste0(" for request ['", field, "' = \"", query, "\"]")
+
+# Create cache directory, if it doesn't exist
+if (!file.exists(RDATA_DIR)) {
+  dir.create(RDATA_DIR, recursive = TRUE, showWarnings = FALSE)
+}
 
 message("Retrieving CrunchBase data",
         ifelse(DEBUG, debugInfo, ""), "...\n")
 
 #getCBDataAPI("open+source", "overview")
-allData <- getCBDataAPI(query, field)
+cbFlossStartups <- getCBDataAPI(query, field)
+
+# generate corresponding RDS file name from result data frame name
+fileName <- paste0(deparse(substitute(cbFlossStartups)), RDS_EXT)
+rdataFile <- file.path(RDATA_DIR, fileName)
+
+# save FLOSS startups data frame to RDS file
+saveRDS(cbFlossStartups, rdataFile)
+
+# clean up
+rm(cbFlossStartups)
 
 message("\nCrunchBase data collection completed successfully.\n")
