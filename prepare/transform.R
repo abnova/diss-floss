@@ -14,8 +14,7 @@ DEBUG2 <- TRUE # output more detailed debug information
 
 transformResult <- function (dataSource, indicator, handler = NULL) {
   
-  fileDigest <- base64(indicator)
-  fileName <- paste0(fileDigest, RDS_EXT)
+  fileName <- paste0(indicator, RDS_EXT)
   cacheFile <- file.path(CACHE_DIR, dataSource, fileName)
   transformFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
   
