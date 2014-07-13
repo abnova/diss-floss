@@ -385,10 +385,9 @@ getSourceForgeData <- function (row, config) { # dataFrame
   dataName <- paste(dsPrefix, "data", indicator, sep = ".")
   
   # calculate request's indicator digest and generate corresponding
-  # RData file name; also calculate request's SQL query digest
+  # RDS file name; also calculate request's SQL query digest
   # as well as digests for indicator name and data object names
-  fileDigest <- base64(indicator)
-  fileName <- paste0(fileDigest, RDS_EXT)
+  fileName <- paste0(indicator, RDS_EXT)
   rdataFile <- file.path(RDATA_DIR, fileName)
   
   # construct configuration-based attribute info for verification
