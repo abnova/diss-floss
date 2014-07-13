@@ -384,9 +384,9 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # later under that name via save() and/or read into via readRDS()
   dataName <- paste(dsPrefix, "data", indicator, sep = ".")
   
-  # calculate request's indicator digest and generate corresponding
-  # RDS file name; also calculate request's SQL query digest
-  # as well as digests for indicator name and data object names
+  # generate corresponding RDS file name;
+  # calculate request's SQL query digest as well as
+  # digests for indicator name and data object names
   fileName <- paste0(indicator, RDS_EXT)
   rdataFile <- file.path(RDATA_DIR, fileName)
   
