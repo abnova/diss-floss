@@ -37,18 +37,23 @@ cb.done: getCrunchBaseDataAPI.R
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
-.PHONY: fm sf al cb clean clean-fm clean-sf
+.PHONY: fm sf al cb clean clean-fm clean-sf clean-al clean-cb
 
 # remove intermediate files
 clean:
 	rm -f tmp*.bz2 .Rout
 
+clean-all:
+	rm -rf *.done ../cache
+
 clean-fm:
-	rm -f fm.done
-	rm -f ../cache/FLOSSmole/*.RData
-	rm -f ../cache/FLOSSmole/*.rds
+	rm -f fm.done ../cache/FLOSSmole/*.rds
 
 clean-sf:
-	rm -f sf.done
-	rm -f ../cache/SourceForge/*.RData
-	rm -f ../cache/SourceForge/*.rds
+	rm -f sf.done ../cache/SourceForge/*.rds
+
+clean-al:
+	rm -f al.done ../cache/AngelList/*.rds
+
+clean-cb:
+	rm -f cb.done ../cache/CrunchBase/*.rds

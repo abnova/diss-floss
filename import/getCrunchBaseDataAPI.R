@@ -71,6 +71,7 @@ getCBDataPaginated <- function (query, field, page, progress, useProgress) {
   
   # Convert JSON data to data frame
   startups <- jsonlite::fromJSON(startupData, simplifyVector = FALSE)
+  #startups <- jsonlite::fromJSON(startupData)
   
   # Calculate number of pages in the response; do it only once
   if (firstPage == TRUE) {
