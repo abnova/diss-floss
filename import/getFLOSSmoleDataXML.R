@@ -96,7 +96,6 @@ importRepoFiles <- function(repos, row) {
     splitURL <- strsplit(url, "/|-")
     tableNameYear <-  splitURL[[1]][length(splitURL[[1]])-1]
     tableName <- substr(tableNameYear, 1, nchar(tableNameYear)-4)
-    table <- as.name(tableName)
     
     # generate corresponding RDS file name from FLOSSmole table name
     fileName <- paste0(tableName, RDS_EXT)
@@ -125,6 +124,7 @@ importRepoFiles <- function(repos, row) {
       attr(data, "URL") <- base64(url)
       
       # save current data frame to RDS file
+      table <- get(tableName)
       saveRDS(table, rdataFile)
       
       # clean up
