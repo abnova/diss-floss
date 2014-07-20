@@ -22,6 +22,7 @@ analysis: prepare \
 
 prepare: prepare.done
 eda: eda.done
+eda-knitr: eda-knitr.done
 efa: efa.done
 cfa: cfa.done
 sem: sem.done
@@ -32,6 +33,10 @@ prepare.done: $(PREP_DONE)
 
 eda.done: eda.R prepare
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
+
+eda-knitr.done: eda-knitr.R eda-knitr.Rmd prepare
+	@$(RSCRIPT) -e 'library("knitr"); knit("eda-knitr.Rmd")'
 	@touch $@
 
 efa.done: efa.R eda
