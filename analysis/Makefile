@@ -35,8 +35,8 @@ eda.done: eda.R prepare
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
-eda-knitr.done: eda-knitr.R eda-knitr.Rmd prepare
-	@$(RSCRIPT) -e 'library("knitr"); knit("eda-knitr.Rmd")'
+eda-knitr.done: eda-knitr.R eda-report.Rmd prepare
+	@$(RSCRIPT) -e 'library("knitr"); knit("eda-report.Rmd")'
 	@touch $@
 
 efa.done: efa.R eda
