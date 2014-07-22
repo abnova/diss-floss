@@ -26,7 +26,7 @@ opts_chunk$set(
 echoChunks <- FALSE
 warningChunks<- FALSE
 options(width=120)  # so the output is 50% wider than the default
-read_chunk("eda.R") # the file to which knitr calls for the chunks
+read_chunk("eda-knitr.R") # the file to which knitr calls for the chunks
 ```
 
 ```{r Prepare, echo=F, message=FALSE, results='hide'}
