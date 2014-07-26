@@ -8,8 +8,8 @@ library(deducorrect)
 ### DATA CLEANING IN 7 STATEMENTS
 
 ### read data and rules
-dat <- read.csv2("mydata.csv", comment.char = "#")
-E <- editfile("edits.txt")
+dat <- read.csv2("test-cleanup-mydata.csv", comment.char = "#")
+E <- editfile("test-cleanup-edits.txt")
 
 ### deductive correction
 dat1 <- correctTypos(E, dat)
@@ -21,3 +21,6 @@ el <- localizeErrors(E, dat3$corrected)
 
 ### deductive imputation
 dat4 <- deduImpute(E, dat3$corrected, adapt = el$adapt)
+message(dat4$corrected)
+message(dat4$status)
+message(dat4$corrections)
