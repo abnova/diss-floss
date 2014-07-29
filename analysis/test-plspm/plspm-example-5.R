@@ -147,15 +147,16 @@ print(edu_pls2$outer_model)
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 library(ggplot2)
 # barchart of loadings
-ggplot(data = edu_pls2$outer_model,
-       aes(x = name, y = loading, fill = block)) +
-  geom_bar(stat = identity, position = dodge) +
+g <- ggplot(data = edu_pls2$outer_model,
+            aes(x = name, y = loading, fill = block)) +
+  geom_bar(stat = 'identity', position = 'dodge') +
   # threshold line (to peek acceptable loadings above 0.7)
-  geom_hline(yintercept = 0.7, color = gray50) +
+  geom_hline(yintercept = 0.7, color = 'gray50') +
   # add title
   ggtitle("Barchart of Loadings") +
   # rotate x-axis names
   theme(axis.text.x = element_text(angle = 90))
+print(g)
 
 # 5.5. PLS-PM Round 3
 
