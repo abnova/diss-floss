@@ -1,0 +1,106 @@
+\documentclass{article}
+% Declare some greek characters commonly used in statistics:
+\usepackage[utf8]{inputenc}
+\DeclareUnicodeCharacter{03BC}{\mu}
+\DeclareUnicodeCharacter{03C3}{\sigma}
+% add more here
+\usepackage{color}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{calc}
+\usetikzlibrary{positioning}
+\pagestyle{empty}
+\begin{document}
+% To adjust the figure, I recommend http://gummi.midnightcoding.org/
+\pgfdeclarelayer{nodes}
+\pgfdeclarelayer{edges}
+\pgfsetlayers{main,edges,nodes}
+\begin{tikzpicture}[scale=1,
+    latent/.style={ellipse, minimum height=50pt, minimum width=50pt, preaction={fill=black,opacity=.3, transform canvas={xshift=2pt,yshift=-2pt}}, draw, fill=white},
+    manifest/.style={rectangle, minimum height=50pt, minimum width=50pt, preaction={fill=black,opacity=.3, transform canvas={xshift=2pt,yshift=-2pt}}, draw, fill=white},
+    mean/.style={isosceles triangle, shape border rotate=90,
+    isosceles triangle stretches,shape border uses incircle,
+    isosceles triangle apex angle=60, minimum height=50pt, minimum width=50pt, preaction={fill=black,opacity=.3, transform canvas={xshift=2pt,yshift=-2pt}}, draw, fill=white},
+    defvar/.style={rectangle, sloped, fill=black, pos=.75},
+    thick, >=latex]
+\begin{pgfonlayer}{nodes}
+  \node[latent] (GOV) at (442pt, -174pt) {$GOV$};
+  \node[latent] (SPON) at (450pt, -477pt) {$SPON$};
+  \node[latent,minimum height=51pt] (FS) at (580pt, -315pt) {$FS$};
+  \node[latent] (G1) at (288pt, -80pt) {$G1$};
+  \node[latent] (G2) at (289pt, -169pt) {$G2$};
+  \node[latent] (G3) at (288pt, -249pt) {$G3$};
+  \node[latent] (OS1) at (289pt, -389pt) {$OS1$};
+  \node[latent] (OS2) at (291pt, -474pt) {$OS2$};
+  \node[latent] (OS3) at (294pt, -566pt) {$OS3$};
+  \node[latent] (FS1) at (718pt, -90pt) {$FS1$};
+  \node[latent] (FS2) at (718pt, -193pt) {$FS2$};
+  \node[latent] (FS3) at (721pt, -316pt) {$FS3$};
+  \node[latent] (FS4) at (722pt, -432pt) {$FS4$};
+  \node[latent] (FS5) at (724pt, -541pt) {$FS5$};
+  \node[manifest] (g1) at (112pt, -80pt) {$g1$};
+  \node[manifest] (g2) at (112pt, -169pt) {$g2$};
+  \node[manifest] (g3) at (110pt, -249pt) {$g3$};
+  \node[manifest] (os1) at (112pt, -388pt) {$os1$};
+  \node[manifest] (os2) at (112pt, -474pt) {$os2$};
+  \node[manifest] (os3) at (112pt, -566pt) {$os3$};
+  \node[manifest] (fs1) at (897pt, -86pt) {$fs1$};
+  \node[manifest] (fs2) at (897pt, -189pt) {$fs2$};
+  \node[manifest] (fs3) at (897pt, -316pt) {$fs3$};
+  \node[manifest] (fs4) at (898pt, -432pt) {$fs4$};
+  \node[manifest] (fs5) at (900pt, -542pt) {$fs5$};
+\end{pgfonlayer}
+\begin{pgfonlayer}{edges}
+  \draw [<->] (GOV.110) .. controls +(110:3mm) and +(180:5mm) .. ($(GOV.90) + (0,15pt)$) node[fill=white,above] {$VAR_GOV = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (GOV.70);
+  \draw [<->] (SPON.290) .. controls +(290:3mm) and +(360:5mm) .. ($(SPON.270) + (0,-15pt)$) node[fill=white,below] {$VAR_SPON = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (SPON.250);
+  \draw [<->] (FS.110) .. controls +(110:3mm) and +(180:5mm) .. ($(FS.90) + (0,15pt)$) node[fill=white,above] {$VAR_FS = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (FS.70);
+  \draw [<->] (G1.110) .. controls +(110:3mm) and +(180:5mm) .. ($(G1.90) + (0,15pt)$) node[fill=white,above] {$VAR_G1 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (G1.70);
+  \draw [<->] (G2.110) .. controls +(110:3mm) and +(180:5mm) .. ($(G2.90) + (0,15pt)$) node[fill=white,above] {$VAR_G2 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (G2.70);
+  \draw [<->] (G3.290) .. controls +(290:3mm) and +(360:5mm) .. ($(G3.270) + (0,-15pt)$) node[fill=white,below] {$VAR_G3 = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (G3.250);
+  \draw [<->] (OS1.110) .. controls +(110:3mm) and +(180:5mm) .. ($(OS1.90) + (0,15pt)$) node[fill=white,above] {$VAR_OS1 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (OS1.70);
+  \draw [<->] (OS2.290) .. controls +(290:3mm) and +(360:5mm) .. ($(OS2.270) + (0,-15pt)$) node[fill=white,below] {$VAR_OS2 = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (OS2.250);
+  \draw [<->] (OS3.290) .. controls +(290:3mm) and +(360:5mm) .. ($(OS3.270) + (0,-15pt)$) node[fill=white,below] {$VAR_OS3 = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (OS3.250);
+  \draw [<->] (FS1.110) .. controls +(110:3mm) and +(180:5mm) .. ($(FS1.90) + (0,15pt)$) node[fill=white,above] {$VAR_FS1 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (FS1.70);
+  \draw [<->] (FS2.110) .. controls +(110:3mm) and +(180:5mm) .. ($(FS2.90) + (0,15pt)$) node[fill=white,above] {$VAR_FS2 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (FS2.70);
+  \draw [<->] (FS3.290) .. controls +(290:3mm) and +(360:5mm) .. ($(FS3.270) + (0,-15pt)$) node[fill=white,below] {$VAR_FS3 = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (FS3.250);
+  \draw [<->] (FS4.290) .. controls +(290:3mm) and +(360:5mm) .. ($(FS4.270) + (0,-15pt)$) node[fill=white,below] {$VAR_FS4 = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (FS4.250);
+  \draw [<->] (FS5.290) .. controls +(290:3mm) and +(360:5mm) .. ($(FS5.270) + (0,-15pt)$) node[fill=white,below] {$VAR_FS5 = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (FS5.250);
+  \draw [<->] (g1.110) .. controls +(110:3mm) and +(180:5mm) .. ($(g1.90) + (0,15pt)$) node[fill=white,above] {$VAR_g1 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (g1.70);
+  \draw [->] (G1) to   (GOV);
+  \draw [->] (G2) to   (GOV);
+  \draw [->] (G3) to   (GOV);
+  \draw [->] (OS1) to   (SPON);
+  \draw [->] (OS2) to   (SPON);
+  \draw [->] (OS3) to   (SPON);
+  \draw [->] (GOV) to   (FS);
+  \draw [->] (SPON) to   (FS);
+  \draw [->] (FS1) to   (FS);
+  \draw [->] (FS2) to   (FS);
+  \draw [->] (FS3) to   (FS);
+  \draw [->] (FS4) to   (FS);
+  \draw [->] (FS5) to   (FS);
+  \draw [<->] (g2.110) .. controls +(110:3mm) and +(180:5mm) .. ($(g2.90) + (0,15pt)$) node[fill=white,above] {$VAR_g2 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (g2.70);
+  \draw [<->] (g3.110) .. controls +(110:3mm) and +(180:5mm) .. ($(g3.90) + (0,15pt)$) node[fill=white,above] {$VAR_g3 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (g3.70);
+  \draw [<->] (os1.110) .. controls +(110:3mm) and +(180:5mm) .. ($(os1.90) + (0,15pt)$) node[fill=white,above] {$VAR_os1 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (os1.70);
+  \draw [<->] (os2.110) .. controls +(110:3mm) and +(180:5mm) .. ($(os2.90) + (0,15pt)$) node[fill=white,above] {$VAR_os2 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (os2.70);
+  \draw [<->] (os3.110) .. controls +(110:3mm) and +(180:5mm) .. ($(os3.90) + (0,15pt)$) node[fill=white,above] {$VAR_os3 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (os3.70);
+  \draw [<->] (fs1.110) .. controls +(110:3mm) and +(180:5mm) .. ($(fs1.90) + (0,15pt)$) node[fill=white,above] {$VAR_fs1 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (fs1.70);
+  \draw [<->] (fs2.110) .. controls +(110:3mm) and +(180:5mm) .. ($(fs2.90) + (0,15pt)$) node[fill=white,above] {$VAR_fs2 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (fs2.70);
+  \draw [<->] (fs3.110) .. controls +(110:3mm) and +(180:5mm) .. ($(fs3.90) + (0,15pt)$) node[fill=white,above] {$VAR_fs3 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (fs3.70);
+  \draw [<->] (fs4.110) .. controls +(110:3mm) and +(180:5mm) .. ($(fs4.90) + (0,15pt)$) node[fill=white,above] {$VAR_fs4 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (fs4.70);
+  \draw [<->] (fs5.290) .. controls +(290:3mm) and +(360:5mm) .. ($(fs5.270) + (0,-15pt)$) node[fill=white,below] {$VAR_fs5 = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (fs5.250);
+  \draw [->] (G1) to   (g1);
+  \draw [->] (G2) to   (g2);
+  \draw [->] (G3) to   (g3);
+  \draw [->] (OS1) to   (os1);
+  \draw [->] (OS2) to   (os2);
+  \draw [->] (OS3) to   (os3);
+  \draw [->] (FS1) to   (fs1);
+  \draw [->] (FS2) to   (fs2);
+  \draw [->] (FS3) to   (fs3);
+  \draw [->] (FS4) to   (fs4);
+  \draw [->] (FS5) to   (fs5);
+\end{pgfonlayer}
+\end{tikzpicture}
+\end{document}
