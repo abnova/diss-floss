@@ -1,0 +1,38 @@
+\documentclass{article}
+% Declare some greek characters commonly used in statistics:
+\usepackage[utf8]{inputenc}
+\DeclareUnicodeCharacter{03BC}{\mu}
+\DeclareUnicodeCharacter{03C3}{\sigma}
+% add more here
+\usepackage{color}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{calc}
+\usetikzlibrary{positioning}
+\pagestyle{empty}
+\begin{document}
+% To adjust the figure, I recommend http://gummi.midnightcoding.org/
+\pgfdeclarelayer{nodes}
+\pgfdeclarelayer{edges}
+\pgfsetlayers{main,edges,nodes}
+\begin{tikzpicture}[scale=1,
+    latent/.style={ellipse, minimum height=50pt, minimum width=50pt, preaction={fill=black,opacity=.3, transform canvas={xshift=2pt,yshift=-2pt}}, draw, fill=white},
+    manifest/.style={rectangle, minimum height=50pt, minimum width=50pt, preaction={fill=black,opacity=.3, transform canvas={xshift=2pt,yshift=-2pt}}, draw, fill=white},
+    mean/.style={isosceles triangle, shape border rotate=90,
+    isosceles triangle stretches,shape border uses incircle,
+    isosceles triangle apex angle=60, minimum height=50pt, minimum width=50pt, preaction={fill=black,opacity=.3, transform canvas={xshift=2pt,yshift=-2pt}}, draw, fill=white},
+    defvar/.style={rectangle, sloped, fill=black, pos=.75},
+    thick, >=latex]
+\begin{pgfonlayer}{nodes}
+  \node[latent,minimum height=83pt,minimum width=132pt] (x1) at (474pt, -174pt) {$x1$};
+  \node[latent,minimum height=83pt,minimum width=132pt] (x1-1) at (478pt, -410pt) {$x1'$};
+  \node[latent,minimum height=83pt,minimum width=132pt] (x1-2) at (821pt, -255pt) {$x1'$};
+\end{pgfonlayer}
+\begin{pgfonlayer}{edges}
+  \draw [<->] (x1.110) .. controls +(110:3mm) and +(180:5mm) .. ($(x1.90) + (0,15pt)$) node[fill=white,above] {$VAR_x1 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (x1.70);
+  \draw [->] (x1) to   (x1-2);
+  \draw [->] (x1-1) to   (x1-2);
+\end{pgfonlayer}
+\end{tikzpicture}
+\end{document}
