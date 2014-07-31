@@ -1,0 +1,66 @@
+\documentclass{article}
+% Declare some greek characters commonly used in statistics:
+\usepackage[utf8]{inputenc}
+\DeclareUnicodeCharacter{03BC}{\mu}
+\DeclareUnicodeCharacter{03C3}{\sigma}
+% add more here
+\usepackage{color}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{calc}
+\usetikzlibrary{positioning}
+\pagestyle{empty}
+\begin{document}
+% To adjust the figure, I recommend http://gummi.midnightcoding.org/
+\pgfdeclarelayer{nodes}
+\pgfdeclarelayer{edges}
+\pgfsetlayers{main,edges,nodes}
+\begin{tikzpicture}[scale=1,
+    latent/.style={ellipse, minimum height=50pt, minimum width=50pt, preaction={fill=black,opacity=.3, transform canvas={xshift=2pt,yshift=-2pt}}, draw, fill=white},
+    manifest/.style={rectangle, minimum height=50pt, minimum width=50pt, preaction={fill=black,opacity=.3, transform canvas={xshift=2pt,yshift=-2pt}}, draw, fill=white},
+    mean/.style={isosceles triangle, shape border rotate=90,
+    isosceles triangle stretches,shape border uses incircle,
+    isosceles triangle apex angle=60, minimum height=50pt, minimum width=50pt, preaction={fill=black,opacity=.3, transform canvas={xshift=2pt,yshift=-2pt}}, draw, fill=white},
+    defvar/.style={rectangle, sloped, fill=black, pos=.75},
+    thick, >=latex]
+\begin{pgfonlayer}{nodes}
+\definecolor{bg-0}{rgb}{0.18823529411764706,0.3764705882352941,0.5019607843137255}
+\definecolor{bg-1}{rgb}{0.7529411764705882,0.8156862745098039,0.8156862745098039}
+  \node[latent,fill=bg-0] (GOV) at (686pt, -313pt) {$GOV$};
+  \node[manifest,minimum width=79pt,fill=bg-1] (osicomp) at (370pt, -203pt) {$osi.comp$};
+  \node[manifest,minimum width=80pt,fill=bg-1] (restrict) at (371pt, -308pt) {$restrict$};
+  \node[manifest,minimum width=83pt,fill=bg-1] (volcont) at (371pt, -408pt) {$vol.contrib$};
+\end{pgfonlayer}
+\begin{pgfonlayer}{edges}
+\begin{pgfscope}
+  \pgfsetlinewidth{0.6666666666666666pt}
+  \draw [<->] (GOV.290) .. controls +(290:3mm) and +(360:5mm) .. ($(GOV.270) + (0,-15pt)$) node[fill=white,below] {$VAR_GOV = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (GOV.250);
+\end{pgfscope}
+\begin{pgfscope}
+  \pgfsetlinewidth{0.6666666666666666pt}
+  \draw [<->] (osicomp.110) .. controls +(110:3mm) and +(180:5mm) .. ($(osicomp.90) + (0,15pt)$) node[fill=white,above] {$VAR_g1 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (osicomp.70);
+\end{pgfscope}
+\begin{pgfscope}
+  \pgfsetlinewidth{0.6666666666666666pt}
+  \draw [<->] (restrict.110) .. controls +(110:3mm) and +(180:5mm) .. ($(restrict.90) + (0,15pt)$) node[fill=white,above] {$VAR_g2 = 1.0$}  .. controls +(180:-5mm) and +(70:3mm) .. (restrict.70);
+\end{pgfscope}
+\begin{pgfscope}
+  \pgfsetlinewidth{0.6666666666666666pt}
+  \draw [<->] (volcont.290) .. controls +(290:3mm) and +(360:5mm) .. ($(volcont.270) + (0,-15pt)$) node[fill=white,below] {$VAR_g3 = 1.0$}  .. controls +(360:-5mm) and +(250:3mm) .. (volcont.250);
+\end{pgfscope}
+\begin{pgfscope}
+  \pgfsetlinewidth{0.6666666666666666pt}
+  \draw [->] (GOV) to   (osicomp);
+\end{pgfscope}
+\begin{pgfscope}
+  \pgfsetlinewidth{0.6666666666666666pt}
+  \draw [->] (GOV) to   (restrict);
+\end{pgfscope}
+\begin{pgfscope}
+  \pgfsetlinewidth{0.6666666666666666pt}
+  \draw [->] (GOV) to   (volcont);
+\end{pgfscope}
+\end{pgfonlayer}
+\end{tikzpicture}
+\end{document}
