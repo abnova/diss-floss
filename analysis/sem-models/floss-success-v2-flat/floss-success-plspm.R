@@ -1,140 +1,161 @@
-# Adapted example from the Chapter 4 "Interpreting PLS-PM Results"
-
 if (!suppressMessages(require(plspm))) install.packages('plspm')
 library(plspm)
 
-#data(flossData)
+
+dataLoad <- function (dataFile) {
+  
+  if (file.exists(dataFile)) {
+    data <- readRDS(dataFile)
+  }
+  else {
+    error("Data file \'", dataFile, "\' not found! Run 'make' first.")
+  }
+  
+  return (data)
+}
+
+
+##data(flossData)
+dataFile <- "~/diss-floss/data/transform/SourceForge/prjMaturity.rds"
+flossData <- dataLoad(dataFile)
 
 # rows of the path matrix
-Governance <- c(0, 0, 0)
+Governance  <- c(0, 0, 0)
 Sponsorship <- c(0, 0, 0)
-Success <- c(1, 1, 0)
+Success     <- c(1, 1, 0)
 
 # inner model matrix
-success_path <- rbind(Governance, Sponsorship, Success)
+successPath <- rbind(Governance, Sponsorship, Success)
 
 # add column names
-colnames(success_path) <- rownames(success_path)
+colnames(successPath) <- rownames(successPath)
 
 # blocks of indicators (outer model)
-success_blocks <- list(1:4, 5:8, 9:12)
+successBlocks <- list(1:4, 5:8, 9:12)
 
 # vector of modes (reflective)
-success_modes <- rep("A", 3)
+successModes <- rep("A", 3)
 
 # run plspm analysis
-foot_pls <- plspm(flossData,
-                  success_path, success_blocks,
-                  modes = success_modes)
+successPLS <- plspm(flossData,
+                    successPath, successBlocks,
+                    modes = successModes)
 
 # 4.2. Handling PLS-PM Results
 
 # what's in foot_pls?
-print(foot_pls)
+print(successPLS)
 
 # summarized results
-print(summary(foot_pls))
+print(summary(successPLS))
 
 # 4.3. Measurement Model Assessment: Reflective Indicators
 
 # plotting loadings
-gLoadings <- plot(foot_pls, what = "loadings")
+gLoadings <- plot(successPLS, what = "loadings")
 print(gLoadings)
 
 # outer model results (in a matrix way, unlike tabular in summary())
-print(foot_pls$outer_model)
+print(successPLS$outer_model)
 
 # Defense outer model results
-print(subset(foot_pls$outer_model, block == "Defense"))
+print(subset(successPLS$outer_model, block == "Defense"))
 
 # plotting weights
-gWeights <- plot(foot_pls, what = "weights")
+gWeights <- plot(successPLS, what = "weights")
 print(gWeights)
 
 # add two more columns NGCH and NGCA
-spainfoot$NGCH = -1 * spainfoot$GCH
-spainfoot$NGCA = -1 * spainfoot$GCA
+#spainfoot$NGCH = -1 * spainfoot$GCH
+#spainfoot$NGCA = -1 * spainfoot$GCA
 
 # check column names
-print(names(spainfoot))
+print(names(flossData))
 
 # new list of blocks (with column positions of variables)
-new_blocks_pos <- list(1:4, c(15,16,7,8), 9:12)
+newBlocksPos <- list(1:4, c(15,16,7,8), 9:12)
 
 # new list of blocks (with names of variables)
-new_blocks_str <- list(
+newBlocksStr <- list(
   c("GSH", "GSA", "SSH", "SSA"),
   c("NGCH", "NGCA", "CSH", "CSA"),
   c("WMH", "WMA", "LWR", "LRWL"))
 
 # re-apply plspm
-foot_pls <- plspm(spainfoot, foot_path, new_blocks_str,
-                  modes = foot_modes)
+#successPLS <- plspm(flossData,
+#                    successPath, newBlocksStr,
+#                    modes = successModes)
 
 # plot loadings
-gLoadings2 <- plot(foot_pls, "loadings")
+gLoadings2 <- plot(successPLS, "loadings")
 print(gLoadings2)
 
 # unidimensionality - better results
-print(foot_pls$unidim)
+print(successPLS$unidim)
 
 # loadings and communalities
-print(foot_pls$outer_model)
+print(successPLS$outer_model)
 
 # cross-loadings
-print(foot_pls$crossloadings)
+print(successPLS$crossloadings)
 
 # load ggplot2 and reshape
 library(ggplot2)
 library(reshape)
 
 # reshape crossloadings data.frame for ggplot
-xloads = melt(foot_pls$crossloadings, id.vars = c("name", "block"),
+xloads = melt(successPLS$crossloadings, id.vars = c("name", "block"),
               variable_name = "LV")
 
 # bar-charts of crossloadings by block
 ggplot(data = xloads,
        aes(x = name, y = value, fill = block)) +
+  
   # add horizontal reference lines
   geom_hline(yintercept = 0, color = "gray75") +
   geom_hline(yintercept = 0.5, color = "gray70", linetype = 2) +
+
   # indicate the use of car-charts
-  geom_bar(stat = 
-             identity
-           , position = 
-             dodge
-  ) +
+  geom_bar(stat = 'identity', position = 'dodge') +
+
   # panel display (i.e. faceting)
   facet_wrap(block ~ LV) +
+
   # tweaking some grahical elements
   theme(axis.text.x = element_text(angle = 90),
         line = element_blank(),
         plot.title = element_text(size = 12)) +
+
   # add title
   ggtitle("Crossloadings")
 
+
 # 4.4. Measurement Model Assessment: Formative Indicators
+
 
 # 4.5. Structural Model Assessment
 
 # inner model
-print(foot_pls$inner_model)
+print(successPLS$inner_model)
 
 # inner model summary
-print(foot_pls$inner_summary)
+print(successPLS$inner_summary)
 
 # select R2
-print(foot_pls$inner_summary[, "R2", drop = FALSE])
+print(successPLS$inner_summary[, "R2", drop = FALSE])
 
 # GoF index
-print(foot_pls$gof)
+print(successPLS$gof)
 
 # 4.6. Validation
 
 # running bootstrap validation (200 samples)
-foot_val = plspm(spainfoot, foot_path, new_blocks_str,
-                 modes = foot_modes,
-                 boot.val = TRUE, br = 200)
+successVal <- plspm(flossData, successPath, newBlocksStr,
+                    modes = successModes,
+                    boot.val = TRUE, br = 200)
+
 
 # bootstrap results
-print(foot_val$boot)
+print(successVal$boot)
+
+
