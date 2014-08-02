@@ -24,13 +24,16 @@ successData <- dataLoad(dataFile)
 
 flossData <- merge(prjData, successData)
 
+# convert License Restrictiveness' factor levels to integers
+flossData[,3] <- as.integer(flossData[,3])
+
+# convert User Community Size from character to integer
+flossData[,4] <- as.integer(flossData[,4])
+
 # remove NAs
 #flossData <- flossData[complete.cases(flossData[,3]),]
 rowsNA <- apply(flossData, 1, function(x) {any(is.na(x))})
 flossData <- flossData[!rowsNA,]
-
-# comvert factor levels to integers
-flossData[,3] <- as.integer(flossData[,3])
 
 # rows of the path matrix
 Governance  <- c(0, 0) # 0, 0, 0
