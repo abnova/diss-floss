@@ -24,8 +24,13 @@ successData <- dataLoad(dataFile)
 
 flossData <- merge(prjData, successData)
 
-flossData <- flossData[complete.cases(flossData[,3]),]
-flossData[,3] <- as.numeric(levels(flossData[,3]))[flossData[,3]]
+# remove NAs
+#flossData <- flossData[complete.cases(flossData[,3]),]
+rowsNA <- apply(flossData, 1, function(x) {any(is.na(x))})
+flossData <- flossData[!rowsNA,]
+
+# comvert factor levels to integers
+flossData[,3] <- as.integer(flossData[,3])
 
 # rows of the path matrix
 Governance  <- c(0, 0) # 0, 0, 0
