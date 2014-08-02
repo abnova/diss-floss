@@ -16,25 +16,33 @@ dataLoad <- function (dataFile) {
 
 
 ##data(flossData)
-dataFile <- "~/diss-floss/data/transform/SourceForge/prjMaturity.rds"
-flossData <- dataLoad(dataFile)
+dataFile <- "~/diss-floss/data/transform/SourceForge/prjLicense.rds"
+prjData <- dataLoad(dataFile)
+
+dataFile <- "~/diss-floss/data/transform/SourceForge/userCommunitySize.rds"
+successData <- dataLoad(dataFile)
+
+flossData <- merge(prjData, successData)
+
+flossData <- flossData[complete.cases(flossData[,3]),]
+flossData[,3] <- as.numeric(levels(flossData[,3]))[flossData[,3]]
 
 # rows of the path matrix
-Governance  <- c(0, 0, 0)
-Sponsorship <- c(0, 0, 0)
-Success     <- c(1, 1, 0)
+Governance  <- c(0, 0) # 0, 0, 0
+#Sponsorship <- c(0, 0, 0)
+Success     <- c(1, 0) # 1, 1, 0
 
 # inner model matrix
-successPath <- rbind(Governance, Sponsorship, Success)
+successPath <- rbind(Governance, Success) # Sponsorship, 
 
 # add column names
 colnames(successPath) <- rownames(successPath)
 
 # blocks of indicators (outer model)
-successBlocks <- list(1:4, 5:8, 9:12)
+successBlocks <- list(2:3, 4) # 5:8, 9:12
 
 # vector of modes (reflective)
-successModes <- rep("A", 3)
+successModes <- rep("A", 2) # 3
 
 # run plspm analysis
 successPLS <- plspm(flossData,
