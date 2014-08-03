@@ -12,8 +12,8 @@ loadData <- function (dataFile) {
   if (file.exists(dataFile)) {
     data <- readRDS(dataFile)
   }
-  else {
-    error("Data file \'", dataFile, "\' not found! Run 'make' first.")
+  else { # error() undefined - replaced for stop() for now
+    stop("Data file \'", dataFile, "\' not found! Run 'make' first.")
   }
   return (data)
 }
@@ -21,13 +21,18 @@ loadData <- function (dataFile) {
 
 loadDataSets <- function (dataDir) {
 
-  dataFiles <- dir(dataDir, pattern='\\.rds$', full.names = TRUE)
-  dataSets <- lapply(dataFiles,
-                     function(i) {
-                       dataset <- strsplit(dataFiles[i], "\\.")
-                       assign(dataset, loadData(dataFiles[i]))
-                       return (get(dataset))
-                     })
+  dataSets <- list()
+  
+  dataFiles <- dir(dataDir, pattern='\\.rds$')
+  #dataSets <- lapply(dataFiles,
+  silent <- lapply(dataFiles,
+                   function(i) {
+                     nameSplit <- strsplit(dataFiles[i], "\\.")
+                     dataset <- nameSplit[[1]][1]
+                     assign(dataset, loadData(dataFiles[i]))
+                     #return (get(dataset))
+                     dataSets[i] <- get(dataset)
+                   })
   return (dataSets)
 }
 
@@ -35,14 +40,15 @@ loadDataSets <- function (dataDir) {
 # set up a list for datasets
 #dataSets <- list()
 
-flossData <- data.frame()
-
 # load the datasets of transformed data
 dataSets <- loadDataSets(SRDA_DIR)
 
+flossData <- data.frame(dataSets[1])
+
 # merge all loaded datasets by common column ("Project ID")
-silent <- lapply(seq_along(dataSets),
+silent <- lapply(seq_len(length(dataSets) - 1),
                  function(i) {merge(flossData, dataSets[i],
+                                    by = "Project ID"
                                     all.y = TRUE)})
 #flossData <- Reduce(function(...) merge(..., all=T), dataSets)
 
