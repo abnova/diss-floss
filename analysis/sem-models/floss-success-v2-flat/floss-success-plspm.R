@@ -21,7 +21,7 @@ loadData <- function (dataFile) {
 
 loadDataSets <- function (dataDir) {
 
-  dataFiles <- dir(dataDir, pattern='\\.rds$')
+  dataFiles <- dir(dataDir, pattern='\\.rds$', full.names = TRUE)
   dataSets <- lapply(dataFiles,
                      function(i) {
                        dataset <- strsplit(dataFiles[i], "\\.")
@@ -42,7 +42,9 @@ dataSets <- loadDataSets(SRDA_DIR)
 
 # merge all loaded datasets by common column ("Project ID")
 silent <- lapply(seq_along(dataSets),
-                 function(i) {merge(flossData, dataSets[i])})
+                 function(i) {merge(flossData, dataSets[i],
+                                    all.y = TRUE)})
+#flossData <- Reduce(function(...) merge(..., all=T), dataSets)
 
 # Additional Transformations (see TODO above)
 
