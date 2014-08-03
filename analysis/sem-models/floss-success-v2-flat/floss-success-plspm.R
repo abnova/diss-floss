@@ -1,8 +1,13 @@
+#TODO: move additional transformations to "transform.R"
+
 if (!suppressMessages(require(plspm))) install.packages('plspm')
 library(plspm)
 
 
-dataLoad <- function (dataFile) {
+SRDA_DIR <- "~/diss-floss/data/transform/SourceForge"
+
+
+loadData <- function (dataFile) {
   
   if (file.exists(dataFile)) {
     data <- readRDS(dataFile)
@@ -10,25 +15,47 @@ dataLoad <- function (dataFile) {
   else {
     error("Data file \'", dataFile, "\' not found! Run 'make' first.")
   }
-  
   return (data)
 }
 
 
-##data(flossData)
-dataFile <- "~/diss-floss/data/transform/SourceForge/prjLicense.rds"
-prjData <- dataLoad(dataFile)
+loadDataSets <- function (dataDir) {
 
-dataFile <- "~/diss-floss/data/transform/SourceForge/userCommunitySize.rds"
-successData <- dataLoad(dataFile)
+  dataFiles <- dir(dataDir, pattern='\\.rds$')
+  dataSets <- lapply(dataFiles,
+                     function(i) {
+                       dataset <- strsplit(dataFiles[i], "\\.")
+                       assign(dataset, loadData(dataFiles[i]))
+                       return (get(dataset))
+                     })
+  return (dataSets)
+}
 
-flossData <- merge(prjData, successData)
+
+# set up a list for datasets
+#dataSets <- list()
+
+flossData <- data.frame()
+
+# load the datasets of transformed data
+dataSets <- loadDataSets(SRDA_DIR)
+
+# merge all loaded datasets by common column ("Project ID")
+silent <- lapply(seq_along(dataSets),
+                 function(i) {merge(flossData, dataSets[i])})
+
+# Additional Transformations (see TODO above)
+
+# convert presence of Repo URL to integer
+flossData[["Repo URL"]] <- as.integer(flossData[["Repo URL"]] == "")
 
 # convert License Restrictiveness' factor levels to integers
-flossData[,3] <- as.integer(flossData[,3])
+#flossData[["License Restrictiveness"]] <- 
+#  as.integer(flossData[["License Restrictiveness"]])
 
 # convert User Community Size from character to integer
-flossData[,4] <- as.integer(flossData[,4])
+flossData[["User Community Size"]] <- 
+  as.integer(flossData[["User Community Size"]])
 
 # remove NAs
 #flossData <- flossData[complete.cases(flossData[,3]),]
@@ -47,7 +74,12 @@ successPath <- rbind(Governance, Success) # Sponsorship,
 colnames(successPath) <- rownames(successPath)
 
 # blocks of indicators (outer model)
-successBlocks <- list(2:3, 4) # 5:8, 9:12
+#successBlocks <- list(2:3, 4) # 5:8, 9:12
+
+# new list of blocks (with names of variables)
+successBlocks <- list(
+  c("Repo URL", "Project License", "License Restrictiveness"),
+  c("User Community Size"))
 
 # vector of modes (reflective)
 successModes <- rep("A", 2) # 3
