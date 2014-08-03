@@ -24,38 +24,38 @@ loadDataSets <- function (dataDir) {
   dataSets <- list()
   
   dataFiles <- dir(dataDir, pattern='\\.rds$')
-  #dataSets <- lapply(dataFiles,
-  silent <- lapply(dataFiles,
+  dataSets <- lapply(seq_along(dataFiles),
                    function(i) {
                      nameSplit <- strsplit(dataFiles[i], "\\.")
                      dataset <- nameSplit[[1]][1]
-                     assign(dataset, loadData(dataFiles[i]))
-                     #return (get(dataset))
-                     dataSets[i] <- get(dataset)
+                     assign(dataset,
+                            loadData(file.path(dataDir, dataFiles[i])))
+                     return (get(dataset))
                    })
   return (dataSets)
 }
 
 
-# set up a list for datasets
-#dataSets <- list()
-
 # load the datasets of transformed data
 dataSets <- loadDataSets(SRDA_DIR)
 
-flossData <- data.frame(dataSets[1])
+#flossData <- data.frame(dataSets[1])
 
 # merge all loaded datasets by common column ("Project ID")
-silent <- lapply(seq_len(length(dataSets) - 1),
-                 function(i) {merge(flossData, dataSets[i],
-                                    by = "Project ID"
-                                    all.y = TRUE)})
+#silent <- lapply(seq(2, length(dataSets) - 1),
+#                 function(i) {merge(flossData, dataSets[i],
+#                                    by = "Project ID",
+#                                    all.y = TRUE)})
+
 #flossData <- Reduce(function(...) merge(..., all=T), dataSets)
+flossData <- Reduce(function(...) 
+  merge(..., by.x = "row.names", by.y = "Project ID", all = TRUE),
+  dataSets)
 
 # Additional Transformations (see TODO above)
 
 # convert presence of Repo URL to integer
-flossData[["Repo URL"]] <- as.integer(flossData[["Repo URL"]] == "")
+flossData[["Repo URL"]] <- as.integer(flossData[["Repo URL"]] != "")
 
 # convert License Restrictiveness' factor levels to integers
 #flossData[["License Restrictiveness"]] <- 
