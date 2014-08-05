@@ -39,18 +39,27 @@ loadDataSets <- function (dataDir) {
 # load the datasets of transformed data
 dataSets <- loadDataSets(SRDA_DIR)
 
-#flossData <- data.frame(dataSets[1])
+# Merging Option 1
+
+#flossData <- data.frame(dataSets[[1]][1])
 
 # merge all loaded datasets by common column ("Project ID")
 #silent <- lapply(seq(2, length(dataSets) - 1),
-#                 function(i) {merge(flossData, dataSets[i],
+#                 function(i) {merge(flossData, dataSets[[1]][i],
 #                                    by = "Project ID",
-#                                    all.y = TRUE)})
+#                                    all = TRUE)})
 
-#flossData <- Reduce(function(...) merge(..., all=T), dataSets)
-flossData <- Reduce(function(...) 
-  merge(..., by.x = "row.names", by.y = "Project ID", all = TRUE),
-  dataSets)
+# Merging Option 2
+
+#flossData <- Reduce(function(...) 
+#  merge(..., by.x = "row.names", by.y = "Project ID", all = TRUE),
+#  dataSets)
+
+# Merging Option 3
+
+if (!suppressMessages(require(reshape))) install.packages('reshape')
+library(reshape)
+flossData <- reshape::merge_all(dataSets)
 
 # Additional Transformations (see TODO above)
 
