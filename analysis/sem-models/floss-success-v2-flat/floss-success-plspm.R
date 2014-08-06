@@ -41,13 +41,20 @@ dataSets <- loadDataSets(SRDA_DIR)
 
 # Merging Option 1
 
-flossData <- data.frame(dataSets[[1]][1])
+pids <- which(sapply(dataSets,
+                     FUN=function(x) {'Project ID' %in% names(x)}))
+
+#flossData <- data.frame(dataSets[[1]][1])
+flossData <- data.frame(dataSets[[1]][pids[1]])
 
 # merge all loaded datasets by common column ("Project ID")
-silent <- lapply(seq(2, length(dataSets) - 1),
-                 function(i) {merge(flossData, dataSets[[1]][i],
-                                    by = "Project ID",
-                                    all = TRUE)})
+#silent <- lapply(seq(2, length(dataSets)),
+#                 function(i) {merge(flossData, dataSets[[1]][i],
+#                                    by = "Project ID",
+#                                    all = TRUE)})
+for (id in pids[2:length(pids)]) {
+  merge(flossData, dataSets[[1]][id], by = "Project ID", all = TRUE)
+}
 
 # Merging Option 2
 
