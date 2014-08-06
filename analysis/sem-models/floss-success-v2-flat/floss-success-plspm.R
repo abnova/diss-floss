@@ -6,6 +6,15 @@ library(plspm)
 
 SRDA_DIR <- "~/diss-floss/data/transform/SourceForge"
 
+# To enable desired merge option, uncomment corresponding line
+
+MERGE_OPTION <- "lapply_merge"
+#MERGE_OPTION <- "reduce_merge"
+#MERGE_OPTION <- "reshape"
+#MERGE_OPTION <- "plyr"
+#MERGE_OPTION <- "dplyr"
+#MERGE_OPTION <- "data.table"
+
 
 loadData <- function (dataFile) {
   
@@ -39,53 +48,66 @@ loadDataSets <- function (dataDir) {
 # load the datasets of transformed data
 dataSets <- loadDataSets(SRDA_DIR)
 
-# Merging Option 1
 
-flossData <- data.frame(dataSets[[1]][1])
+if (MERGE_OPTION == "lapply_merge") { # Option 1
+  
+  flossData <- data.frame(dataSets[[1]][1])
+  
+  # merge all loaded datasets by common column ("Project ID")
+  silent <- lapply(seq(2, length(dataSets)),
+                   function(i) {merge(flossData, dataSets[[1]][i],
+                                      by = "Project ID",
+                                      all = TRUE)})
+}
 
-# merge all loaded datasets by common column ("Project ID")
-silent <- lapply(seq(2, length(dataSets) - 1),
-                 function(i) {merge(flossData, dataSets[[1]][i],
-                                    by = "Project ID",
-                                    all = TRUE)})
 
-# Merging Option 2
+if (MERGE_OPTION == "reduce_merge") { # Option 2
+  
+  flossData <- Reduce(function(...) 
+    merge(..., by.x = "row.names", by.y = "Project ID", all = TRUE),
+    dataSets)
+}
 
-#flossData <- Reduce(function(...) 
-#  merge(..., by.x = "row.names", by.y = "Project ID", all = TRUE),
-#  dataSets)
 
-# Merging Option 3
+if (MERGE_OPTION == "reshape") { # Option 3
+  
+  if (!suppressMessages(require(reshape))) install.packages('reshape')
+  library(reshape)
+  flossData <- reshape::merge_all(dataSets)
+}
 
-#if (!suppressMessages(require(reshape))) install.packages('reshape')
-#library(reshape)
-#flossData <- reshape::merge_all(dataSets)
 
-# Merging Option 4
+if (MERGE_OPTION == "plyr") { # Option 4
+  
+  if (!suppressMessages(require(plyr))) install.packages('plyr')
+  library(plyr)
+  flossData <- plyr::join_all(dataSets)
+}
 
-#if (!suppressMessages(require(plyr))) install.packages('plyr')
-#library(plyr)
-#flossData <- plyr::join_all(dataSets)
 
-# Merging Option 5
+if (MERGE_OPTION == "dplyr") { # Option 5
+  
+  if (!suppressMessages(require(dplyr))) install.packages('dplyr')
+  library(dplyr)
+  
+  flossData <- dataSets[[1]][1]
+  flossData <- lapply(dataSets[[1]][-1],
+                      function(x) {dplyr::left_join(x, flossData)})
+}
 
-#if (!suppressMessages(require(dplyr))) install.packages('dplyr')
-#library(dplyr)
 
-#flossData <- data.frame("Project ID" = NA)
-#flossData <- lapply(dataSets,
-#                    function(x) {dplyr::left_join(x, flossData)})
+if (MERGE_OPTION == "data.table") { # Option 6
+  
+  if (!suppressMessages(require(data.table))) 
+    install.packages('data.table')
+  library(data.table)
+  
+  dt1 <- data.table(df1,  key="Project ID") 
+  dt2 <- data.table(df2, key="Project ID")
+  
+  joined.dt1.dt.2 <- dt1[dt2]
+}
 
-# Merging Option 6
-
-#if (!suppressMessages(require(data.table))) 
-#  install.packages('data.table')
-#library(data.table)
-
-#dt1<-data.table(df1,  key="Project ID") 
-#dt2<-data.table(df2, key="Project ID")
-
-#joined.dt1.dt.2<-dt1[dt2]
 
 # Additional Transformations (see TODO above)
 
