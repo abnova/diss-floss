@@ -67,6 +67,26 @@ silent <- lapply(seq(2, length(dataSets) - 1),
 #library(plyr)
 #flossData <- plyr::join_all(dataSets)
 
+# Merging Option 5
+
+#if (!suppressMessages(require(dplyr))) install.packages('dplyr')
+#library(dplyr)
+
+#flossData <- data.frame("Project ID" = NA)
+#flossData <- lapply(dataSets,
+#                    function(x) {dplyr::left_join(x, flossData)})
+
+# Merging Option 6
+
+#if (!suppressMessages(require(data.table))) 
+#  install.packages('data.table')
+#library(data.table)
+
+#dt1<-data.table(df1,  key="Project ID") 
+#dt2<-data.table(df2, key="Project ID")
+
+#joined.dt1.dt.2<-dt1[dt2]
+
 # Additional Transformations (see TODO above)
 
 # convert presence of Repo URL to integer
