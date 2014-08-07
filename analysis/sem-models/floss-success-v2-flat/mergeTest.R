@@ -10,12 +10,12 @@ testFiles <- unzip(tmpFile, exdir = tmpDir)
 # To enable desired merge option, uncomment corresponding line
 
 #MERGE_OPTION <- "lapply_merge"
-MERGE_OPTION <- "lapply_merge2" # advice by Alexey G.
+#MERGE_OPTION <- "lapply_merge2" # advice by Alexey G.
 #MERGE_OPTION <- "reduce_merge"
 #MERGE_OPTION <- "reshape"
 #MERGE_OPTION <- "plyr"
 #MERGE_OPTION <- "dplyr"
-#MERGE_OPTION <- "data.table"
+MERGE_OPTION <- "data.table"
 
 
 loadData <- function (dataFile) {
@@ -118,10 +118,12 @@ if (MERGE_OPTION == "data.table") { # Option 6
     install.packages('data.table')
   library(data.table)
   
-  dt1 <- data.table(df1,  key="Project ID") 
-  dt2 <- data.table(df2, key="Project ID")
+  flossData <- data.table(dataSets[[1]])
   
-  joined.dt1.dt.2 <- dt1[dt2]
+  for (id in 2:length(dataSets)) {
+    flossData <- merge(flossData, data.table(dataSets[[id]]),
+                       by='Project ID') # , all = TRUE
+  }
 }
 
 
