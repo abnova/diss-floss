@@ -12,10 +12,12 @@ testFiles <- unzip(tmpFile, exdir = tmpDir)
 #MERGE_OPTION <- "lapply_merge"
 #MERGE_OPTION <- "lapply_merge2" # advice by Alexey G.
 #MERGE_OPTION <- "reduce_merge"
+#MERGE_OPTION <- "reduce_merge2"
 #MERGE_OPTION <- "reshape"
 #MERGE_OPTION <- "plyr"
 #MERGE_OPTION <- "dplyr"
 MERGE_OPTION <- "data.table"
+#MERGE_OPTION <- "data.table2"
 
 
 loadData <- function (dataFile) {
@@ -83,6 +85,27 @@ if (MERGE_OPTION == "reduce_merge") { # Option 2
     merge(..., by.x = "row.names", by.y = "Project ID", all = TRUE),
     dataSets)
 }
+  
+
+# http://r.789695.n4.nabble.com/merge-multiple-data-frames-tt4331089.html#a4333772
+if (MERGE_OPTION == "reduce_merge2") { # Option 2
+    
+    mergeAll <- function(..., by = "Project ID", all = TRUE) {
+    dotArgs <- list(...)
+    dotNames <- lapply(dotArgs, names)
+    repNames <- Reduce(intersect, dotNames)
+    repNames <- repNames[repNames != by]
+    for(i in seq_along(dotArgs)){
+      wn <- which( (names(dotArgs[[i]]) %in% repNames) &
+                     (names(dotArgs[[i]]) != by))
+      names(dotArgs[[i]])[wn] <- paste(names(dotArgs[[i]])[wn],
+                                       names(dotArgs)[[i]], sep = ".")
+    }
+    Reduce(function(x, y) merge(x, y, by = by, all = all), dotArgs)
+  }
+  
+  flossData <- mergeAll(dataSets)
+}
 
 
 if (MERGE_OPTION == "reshape") { # Option 3
@@ -126,6 +149,17 @@ if (MERGE_OPTION == "data.table") { # Option 6
   }
 }
 
+
+# http://stackoverflow.com/a/17458887/2872891
+if (MERGE_OPTION == "data.table2") { # Option 6
+  
+  if (!suppressMessages(require(data.table))) 
+    install.packages('data.table')
+  library(data.table)
+  
+  DT <- data.table(dataSets[[1]], key="Project ID")
+  flossData <- lapply(dataSets[[1]][-1], function(x) DT[.(x)])
+}
 
 # Additional Transformations (see TODO above)
 
