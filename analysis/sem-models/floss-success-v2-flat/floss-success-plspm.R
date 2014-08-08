@@ -8,12 +8,15 @@ SRDA_DIR <- "~/diss-floss/data/transform/SourceForge"
 
 # To enable desired merge option, uncomment corresponding line
 
-MERGE_OPTION <- "lapply_merge"
+#MERGE_OPTION <- "lapply_merge"
+#MERGE_OPTION <- "lapply_merge2" # advice by Alexey G.
 #MERGE_OPTION <- "reduce_merge"
+#MERGE_OPTION <- "reduce_merge2"
 #MERGE_OPTION <- "reshape"
 #MERGE_OPTION <- "plyr"
 #MERGE_OPTION <- "dplyr"
-#MERGE_OPTION <- "data.table"
+MERGE_OPTION <- "data.table"
+#MERGE_OPTION <- "data.table2"
 
 
 loadData <- function (dataFile) {
@@ -61,11 +64,46 @@ if (MERGE_OPTION == "lapply_merge") { # Option 1
 }
 
 
+if (MERGE_OPTION == "lapply_merge2") { # Option 1
+  
+  pids <- which(sapply(dataSets,
+                       FUN=function(x) {'Project ID' %in% names(x)}))
+  
+  flossData <- dataSets[[pids[1]]]
+  
+  for (id in pids[2:length(pids)]) {
+    flossData <- merge(flossData, dataSets[[id]],
+                       by='Project ID', all = TRUE)
+  }
+}
+
+
 if (MERGE_OPTION == "reduce_merge") { # Option 2
   
   flossData <- Reduce(function(...) 
     merge(..., by.x = "row.names", by.y = "Project ID", all = TRUE),
     dataSets)
+}
+
+
+# http://r.789695.n4.nabble.com/merge-multiple-data-frames-tt4331089.html#a4333772
+if (MERGE_OPTION == "reduce_merge2") { # Option 2
+  
+  mergeAll <- function(..., by = "Project ID", all = TRUE) {
+    dotArgs <- list(...)
+    dotNames <- lapply(dotArgs, names)
+    repNames <- Reduce(intersect, dotNames)
+    repNames <- repNames[repNames != by]
+    for(i in seq_along(dotArgs)){
+      wn <- which( (names(dotArgs[[i]]) %in% repNames) &
+                     (names(dotArgs[[i]]) != by))
+      names(dotArgs[[i]])[wn] <- paste(names(dotArgs[[i]])[wn],
+                                       names(dotArgs)[[i]], sep = ".")
+    }
+    Reduce(function(x, y) merge(x, y, by = by, all = all), dotArgs)
+  }
+  
+  flossData <- mergeAll(dataSets)
 }
 
 
@@ -102,10 +140,24 @@ if (MERGE_OPTION == "data.table") { # Option 6
     install.packages('data.table')
   library(data.table)
   
-  dt1 <- data.table(df1,  key="Project ID") 
-  dt2 <- data.table(df2, key="Project ID")
+  flossData <- data.table(dataSets[[1]], key="Project ID")
   
-  joined.dt1.dt.2 <- dt1[dt2]
+  for (id in 2:length(dataSets)) {
+    flossData <- merge(flossData, data.table(dataSets[[id]]),
+                       by='Project ID') # , all = TRUE
+  }
+}
+
+
+# http://stackoverflow.com/a/17458887/2872891
+if (MERGE_OPTION == "data.table2") { # Option 6
+  
+  if (!suppressMessages(require(data.table))) 
+    install.packages('data.table')
+  library(data.table)
+  
+  DT <- data.table(dataSets[[1]], key="Project ID")
+  flossData <- lapply(dataSets[[1]][-1], function(x) DT[.(x)])
 }
 
 
