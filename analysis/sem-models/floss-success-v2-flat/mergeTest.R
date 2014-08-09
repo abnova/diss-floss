@@ -14,9 +14,9 @@ testFiles <- unzip(tmpFile, exdir = tmpDir)
 #MERGE_OPTION <- "reduce_merge"
 #MERGE_OPTION <- "reduce_merge2"
 #MERGE_OPTION <- "reshape"
-MERGE_OPTION <- "plyr"
+#MERGE_OPTION <- "plyr"
 #MERGE_OPTION <- "dplyr"
-#MERGE_OPTION <- "data.table"
+MERGE_OPTION <- "data.table"
 #MERGE_OPTION <- "data.table2"
 
 
@@ -125,7 +125,7 @@ if (MERGE_OPTION == "plyr") { # Option 4
   for (i in seq.int(2, length(dataSets), 1)) {
     flossData <- plyr::join(flossData, dataSets[[i]],
                             by = 'Project ID',
-                            match = 'first', type = 'left')
+                            type = 'left', match = 'first')
   }
 }
 
@@ -151,8 +151,7 @@ if (MERGE_OPTION == "data.table") { # Option 6
   
   for (id in 2:length(dataSets)) {
     flossData <- merge(flossData, data.table(dataSets[[id]]),
-                       by='Project ID', all.x = TRUE, all.y = FALSE,
-                       allow.cartesian = TRUE)
+                       by='Project ID') # , all = TRUE
   }
 }
 
