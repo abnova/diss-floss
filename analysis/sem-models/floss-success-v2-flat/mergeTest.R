@@ -14,9 +14,9 @@ testFiles <- unzip(tmpFile, exdir = tmpDir)
 #MERGE_OPTION <- "reduce_merge"
 #MERGE_OPTION <- "reduce_merge2"
 #MERGE_OPTION <- "reshape"
-#MERGE_OPTION <- "plyr"
+MERGE_OPTION <- "plyr"
 #MERGE_OPTION <- "dplyr"
-MERGE_OPTION <- "data.table"
+#MERGE_OPTION <- "data.table"
 #MERGE_OPTION <- "data.table2"
 
 
