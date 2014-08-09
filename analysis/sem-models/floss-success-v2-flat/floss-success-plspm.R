@@ -13,9 +13,9 @@ SRDA_DIR <- "~/diss-floss/data/transform/SourceForge"
 #MERGE_OPTION <- "reduce_merge"
 #MERGE_OPTION <- "reduce_merge2"
 #MERGE_OPTION <- "reshape"
-#MERGE_OPTION <- "plyr"
+MERGE_OPTION <- "plyr"
 #MERGE_OPTION <- "dplyr"
-MERGE_OPTION <- "data.table"
+#MERGE_OPTION <- "data.table"
 #MERGE_OPTION <- "data.table2"
 
 
@@ -32,18 +32,18 @@ loadData <- function (dataFile) {
 
 
 loadDataSets <- function (dataDir) {
-
+  
   dataSets <- list()
   
   dataFiles <- dir(dataDir, pattern='\\.rds$')
   dataSets <- lapply(seq_along(dataFiles),
-                   function(i) {
-                     nameSplit <- strsplit(dataFiles[i], "\\.")
-                     dataset <- nameSplit[[1]][1]
-                     assign(dataset,
-                            loadData(file.path(dataDir, dataFiles[i])))
-                     return (get(dataset))
-                   })
+                     function(i) {
+                       nameSplit <- strsplit(dataFiles[i], "\\.")
+                       dataset <- nameSplit[[1]][1]
+                       assign(dataset,
+                              loadData(file.path(dataDir, dataFiles[i])))
+                       return (get(dataset))
+                     })
   return (dataSets)
 }
 
@@ -119,7 +119,13 @@ if (MERGE_OPTION == "plyr") { # Option 4
   
   if (!suppressMessages(require(plyr))) install.packages('plyr')
   library(plyr)
-  flossData <- plyr::join_all(dataSets)
+  
+  flossData <- dataSets[[1]]
+  for (i in seq.int(2, length(dataSets), 1)) {
+    flossData <- plyr::join(flossData, dataSets[[i]],
+                            by = 'Project ID',
+                            type = 'left', match = 'first')
+  }
 }
 
 
