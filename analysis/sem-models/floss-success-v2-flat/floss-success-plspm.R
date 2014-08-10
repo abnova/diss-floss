@@ -172,18 +172,18 @@ if (MERGE_OPTION == "data.table2") { # Option 6
 # convert presence of Repo URL to integer
 flossData[["Repo URL"]] <- as.integer(flossData[["Repo URL"]] != "")
 
-# convert License Restrictiveness' factor levels to integers
-#flossData[["License Restrictiveness"]] <- 
-#  as.integer(flossData[["License Restrictiveness"]])
+## convert License Restrictiveness' factor levels to integers
+##flossData[["License Restrictiveness"]] <- 
+##  as.integer(flossData[["License Restrictiveness"]])
 
 # convert User Community Size from character to integer
 flossData[["User Community Size"]] <- 
   as.integer(flossData[["User Community Size"]])
 
 # remove NAs
-#flossData <- flossData[complete.cases(flossData[,3]),]
-rowsNA <- apply(flossData, 1, function(x) {any(is.na(x))})
-flossData <- flossData[!rowsNA,]
+##flossData <- flossData[complete.cases(flossData[,3]),]
+#rowsNA <- apply(flossData, 1, function(x) {any(is.na(x))})
+#flossData <- flossData[!rowsNA,]
 
 # rows of the path matrix
 Governance  <- c(0, 0) # 0, 0, 0
