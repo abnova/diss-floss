@@ -182,7 +182,7 @@ flossData[["User Community Size"]] <-
 
 # remove NAs
 #flossData <- flossData[complete.cases(flossData[,3]),]
-rowsNA <- apply(flossData, 1, function(x) {any(is.na(x))})
-flossData <- flossData[!rowsNA,]
+#rowsNA <- apply(flossData, 1, function(x) {any(is.na(x))})
+#flossData <- flossData[!rowsNA,]
 
 print(str(flossData))
