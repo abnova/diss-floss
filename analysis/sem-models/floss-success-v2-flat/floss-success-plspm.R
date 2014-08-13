@@ -207,6 +207,12 @@ successBlocks <- list(
 # vector of modes (reflective)
 successModes <- rep("A", 2) # 3
 
+# TODO: move merge code to "merge.R" module in "prepare" directory
+# keep only the necessary columns, dropping the rest
+keepCols <- c("Repo URL", "Project License",
+              "License Restrictiveness", "User Community Size")
+flossData <- flossData[, keepCols, drop = FALSE]
+
 # run plspm analysis
 successPLS <- plspm(flossData,
                     successPath, successBlocks,
