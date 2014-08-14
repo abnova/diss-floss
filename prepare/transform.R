@@ -66,6 +66,24 @@ as.data.frame.avector <- as.data.frame.vector
 
 #dataTypeTransform <- function (indicator, data) {}
 
+sfDevLinks <- function (indicator, data) {
+  
+  if (DEBUG) message("Transforming '", indicator, "' ...",
+                     appendLF = FALSE)
+  
+  # convert presence of Repo URL to integer
+  data[["Repo URL"]] <- as.integer(data[["Repo URL"]] != "")
+  
+  # TODO: this needs to be handled somewhere,
+  # as 'Amelia' cannot process this column
+  #data <- data[, !names(data) %in% c("Repo URL")]
+  
+  if (DEBUG) message(" Done.")
+  if (DEBUG2) {message(""); print(summary(data)); message("")}
+  
+  return (data)
+}
+
 
 sfProjectAge <- function (indicator, data) {
 
@@ -116,6 +134,11 @@ sfProjectLicense <- function (indicator, data) {
   data[["License Restrictiveness"]] <- 
     as.factor(classification[as.character(data[["Project License"]])])
 
+  # needed for missing data handling (multiple imputation / 'Amelia')
+  data[["Project License"]] <- as.integer(data[["Project License"]])
+  data[["License Restrictiveness"]] <- 
+    as.integer(data[["License Restrictiveness"]])
+  
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   
@@ -150,12 +173,28 @@ sfDevTeamSize <- function (indicator, data) {
   
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
-
+  
   var <- data[["Development Team Size"]]
   
   # convert data type from 'character' to 'numeric'
   data[["Development Team Size"]] <- as.numeric(var)
+  
+  if (DEBUG) message(" Done.")
+  if (DEBUG2) {message(""); print(summary(data)); message("")}
+  
+  return (data)
+}
 
+
+sfUserCommunitySize <- function (indicator, data) {
+  
+  if (DEBUG) message("Transforming '", indicator, "' ...",
+                     appendLF = FALSE)
+
+  # convert User Community Size from character to integer
+  data[["User Community Size"]] <- 
+    as.integer(data[["User Community Size"]])
+  
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   
@@ -168,17 +207,29 @@ sfDevTeamSize <- function (indicator, data) {
 # construct list of indicators & corresponding transform. functions
 indicators <- c(); transforms <- list()
 
-indicators[["SourceForge"]] <- c("prjAge", "prjLicense",
-                                 "devTeamSize", "prjMaturity",
-                                 "devLinks", "devSupport",
-                                 "pubRoadmap", "dmProcess",
-                                 "contribPeople", "userCommunitySize",
+indicators[["SourceForge"]] <- c("prjAge",
+                                 "prjLicense",
+                                 "prjMaturity",
+                                 "devLinks",
+                                 "devTeamSize",
+                                 "userCommunitySize",
+                                 "devSupport",
+                                 "pubRoadmap",
+                                 "dmProcess",
+                                 "contribPeople",
                                  "softwareType")
 
-transforms[["SourceForge"]] <- list(sfProjectAge, sfProjectLicense,
-                                    sfDevTeamSize, sfPrjMaturity,
-                                    NULL, NULL, NULL, NULL,
-                                    NULL, NULL, NULL)
+transforms[["SourceForge"]] <- list(sfProjectAge,
+                                    sfProjectLicense,
+                                    sfPrjMaturity,
+                                    sfDevLinks,
+                                    sfDevTeamSize,
+                                    sfUserCommunitySize,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL)
 
 indicators[["FLOSSmole"]] <- c()
 

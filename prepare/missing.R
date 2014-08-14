@@ -7,17 +7,9 @@
 if (!suppressMessages(require(Amelia))) install.packages('Amelia')
 library(Amelia)
 
-# convert factors to numeric (TODO: move to transform?)
+# perform multiple imputation with 'Amelia'
 
-flossData[["Project License"]] <- 
-  as.integer(flossData[["Project License"]])
-
-flossData[["License Restrictiveness"]] <- 
-  as.integer(flossData[["License Restrictiveness"]])
-
-# perform multiple imputations with 'Amelia'
-
-a.out <- amelia(flossData[, !names(flossData) %in% c("Repo URL")])
+a.out <- amelia(flossData)
 str(a.out)
 
 # TODO: analyze results?
