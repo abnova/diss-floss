@@ -5,6 +5,9 @@ if (!suppressMessages(require(psych))) install.packages('psych')
 library(psych)
 
 # load data
+source("../prepare/merge.R")
+
+print(class(flossData))
 
 # determine number of factors to extract
 
