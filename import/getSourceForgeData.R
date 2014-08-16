@@ -236,20 +236,30 @@ srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
   }
   results <- readChar(RESULTS_URL, nchars = fileLen, TRUE)
   
-  # Then we need to replace all occurences of ": " with "!@#",
-  # "X::Y" with "X@@Y", and "http://" with "http//", as well as
-  # "https://" with "https//" (secure HTTP), since we have to
-  # use semicolon as a field separator, to prevent incorrect parsing
-  # of the data. After the processing, we have to return data
+  # Then we need to replace all occurences of
+  #
+  # ": "       with "!@#"
+  # "X::Y"     with "X@@Y"
+  # "http://"  with "http//"
+  # "https://" with "https//"
+  # "mailto:"  with "mailto@"
+  # "svn://"   with "svn//",
+  #
+  # since we have to use semicolon as a field separator,
+  # to prevent incorrect parsing of the data.
+  #
+  # After the processing, we have to return data
   # (now in a data frame) to the original state (post-processing).
   # Note, that the following substitution code works only for
   # the specific data separator ':'. More universal code is TBD.
+  
   rx <- "([[:alpha:]][^.:]|[[:blank:]])::([[:alpha:]][^:]|[[:blank:]])"
   results <- gsub(rx, "\\1@@\\2", results)
   results <- gsub(": ", "!@#", results) # should be after the ::-gsub
   results <- gsub("http://", "http//", results)
   results <- gsub("https://", "https//", results)
   results <- gsub("mailto:", "mailto@", results)
+  results <- gsub("svn://", "svn//", results)
   
   # Since some results contain fields with embedded newlines,
   # direct use of read.table() parses data incorrectly.
@@ -287,6 +297,7 @@ srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
   data <- replace_all(data, fixed("http//"), "http://")
   data <- replace_all(data, fixed("https//"), "https://")
   data <- replace_all(data, fixed("mailto@"), "mailto:")
+  data <- replace_all(data, fixed("svn//"), "svn://")
   
   #if (DEBUG2) print("==========")
   #if (DEBUG2) print(head(data))
