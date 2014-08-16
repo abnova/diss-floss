@@ -1,3 +1,6 @@
+# Start session with a clean R environment
+rm(list = ls(all.names = TRUE))
+
 # Module responsible for merging already transformed data
 # into a single data frame for further analysis
 

@@ -1,3 +1,6 @@
+# Start session with a clean R environment
+rm(list = ls(all.names = TRUE))
+
 # This module will handle missing values in data by using
 # multiple imputation, implemented in Amelia II software.
 

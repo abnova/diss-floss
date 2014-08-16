@@ -1,3 +1,6 @@
+# Start session with a clean R environment
+rm(list = ls(all.names = TRUE))
+
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 
 library(RCurl)
