@@ -202,6 +202,27 @@ sfUserCommunitySize <- function (indicator, data) {
 }
 
 
+sfDevSupport <- function (indicator, data) {
+  
+  if (DEBUG) message("Transforming '", indicator, "' ...",
+                     appendLF = FALSE)
+  
+  # convert data type from character to integer
+  # suppress "NAs introduced by coercion" warnings
+  data[["Preferred Support Type"]] <- 
+    suppressWarnings(as.integer(data[["Preferred Support Type"]]))
+  
+  # recode Preferred Support Type: 6 to 1, other (1) to 0
+  data[["Preferred Support Type"]] <- 
+    ifelse(data[["Preferred Support Type"]] == 6, 1, 0)
+  
+  if (DEBUG) message(" Done.")
+  if (DEBUG2) {message(""); print(summary(data)); message("")}
+  
+  return (data)
+}
+
+
 ##### MAIN #####
 
 # construct list of indicators & corresponding transform. functions
@@ -225,7 +246,7 @@ transforms[["SourceForge"]] <- list(sfProjectAge,
                                     sfDevLinks,
                                     sfDevTeamSize,
                                     sfUserCommunitySize,
-                                    NULL,
+                                    sfDevSupport,
                                     NULL,
                                     NULL,
                                     NULL,
