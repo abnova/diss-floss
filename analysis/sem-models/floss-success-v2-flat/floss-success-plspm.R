@@ -1,8 +1,12 @@
-#TODO: move additional transformations to "transform.R"
+# Start session with a clean R environment
+rm(list = ls(all.names = TRUE))
 
 if (!suppressMessages(require(plspm))) install.packages('plspm')
 library(plspm)
 
+
+# load data
+source("~/diss-floss/prepare/merge.R")
 
 # rows of the path matrix
 Governance  <- c(0, 0) # 0, 0, 0
