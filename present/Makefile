@@ -1,31 +1,19 @@
 # Major variable definitions
 
-#RSCRIPT=Rscript
-RSCRIPT=R CMD BATCH
-R_OPTS=--no-save --no-restore --verbose
-#R_OUT=> outputFile.Rout 2>&1
-
-# --no-save --no-restore --verbose myRfile.R > outputFile.Rout 2>&1
-
+TEX2PDF = texi2pdf --clean
+#TEXT2PDF_OPTS = --clean
 
 # Targets and rules 
 
-presentation:
+presentation: beamer
 
-#importFLOSSmole: getFLOSSmoleDataXML.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+beamer: beamer-progressbar
 
-#importSourceForge: getSourceForgeData.R
-#	$(RSCRIPT) $(R_OPTS) < $<
-
-#importAngelList: getAngelListData.R
-#	$(RSCRIPT) $(R_OPTS) < $<
-
-#importCrunchBase: getCrunchBaseDataAPI.R
-#	$(RSCRIPT) $(R_OPTS) < $<
+beamer-progressbar: slides-test1.tex
+	$(TEX2PDF) $<
 
 .PHONY: clean
 
-# remove intermediate files
+# remove generated files
 clean:
-	rm -f tmp*.bz2 *.Rdata
+	rm -f *.pdf *.aux *.nav *.log *.out *.snm *.toc
