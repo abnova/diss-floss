@@ -28,12 +28,15 @@ library(mvnmle)
 library(methods)
 library(Amelia)
 
+DEBUG <- FALSE
+
+message("\n===== HANDLING MISSING VALUES: MI and FIML =====")
+
 # ===== PREPARATION =====
 
 # load data
-message("Loading data...\n")
+message("\nLoading data...\n")
 source("~/diss-floss/prepare/merge.R")
-message("\n")
 
 # use only (numeric) columns of our interest;
 # this is a recommended (preferred) alternative
@@ -50,11 +53,11 @@ flossData[["Repo URL"]] <- NULL
 
 # First, determine the missingness patterns
 # (amount of missingness across observations and variables)
-message("Analyzing missingness patterns...\n")
+message("\nAnalyzing missingness patterns ...\n")
 mice::md.pattern(flossData)
-message("\n")
 
-message("Testing data for being MCAR...\n")
+# add trailing '\n' when code below is enabled
+message("\nTesting data for being MCAR ... Currently disabled.")
 
 # currently disabled due to producing the following error:
 # "Error: cannot allocate vector of size 4.3 Gb"
@@ -64,14 +67,22 @@ message("Testing data for being MCAR...\n")
 # currently also disabled due to producing the following error:
 # "Error in solve.default(cov) : 'a' is 0-diml"
 #mcar.little <- BaylorEdPsych::LittleMCAR(flossData)
+
+# try removing all incomplete cases to prevent error below
+#mcar.little <- 
+#  BaylorEdPsych::LittleMCAR(flossData[complete.cases(flossData),])
+
 #print(mcar.little[c("chi.square", "df", "p.value")])
-message("\n")
+#message("\n")
 
 
 # ===== HANDLE MISSING VALUES =====
 
+message("\nPerforming Multiple Imputation (MI) ...", appendLF = FALSE)
+
 # perform multiple imputation with 'Amelia'
-a.out <- amelia(flossData)
-str(a.out)
+a.out <- amelia(flossData, p2s = 0)
+message(" Results: ", a.out$message, "\n")
+#if (DEBUG) str(a.out) #TODO: why fails?
 
 # TODO: analyze results?
