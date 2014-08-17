@@ -165,6 +165,9 @@ sfPrjMaturity <- function (indicator, data) {
     cut(major, breaks = c(0, 1, 2, Inf), include.lowest = TRUE,
         right = FALSE, labels=c("Alpha/Beta", "Stable", "Mature"))
 
+  # needed for missing data handling (multiple imputation / 'Amelia')
+  data[["Project Maturity"]] <- as.integer(data[["Project Maturity"]])
+
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   
