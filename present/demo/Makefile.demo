@@ -1,7 +1,7 @@
 SLIDES  := demo-slides
 HANDOUT := demo-handout
 
-all: slides handout
+all: slides handout clean
 
 release: all clean
 
@@ -9,7 +9,7 @@ archive: all clean
 	git archive --format=tar --prefix=beamer-progressbar/ HEAD | bzip2 > ../beamer-progressbar.tbz
 
 clean:
-	@rm *aux *bbl *toc *snm *log *nav *blg *out
+	@rm -f *aux *bbl *toc *snm *log *nav *blg *out
 
 slides: $(SLIDES).tex
 	@pdflatex $(SLIDES)
