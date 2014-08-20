@@ -180,6 +180,8 @@ dataSets <- loadDataSets(SRDA_DIR)
 # merge loaded datasets
 flossData <- mergeDataSets(dataSets) # method "plyr" is default
 
+# verify the data frame structure
 str(flossData)
 
-describe(flossData)
+# suppress "NAs introduced by coercion" warnings
+suppressWarnings(describe(flossData))

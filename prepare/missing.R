@@ -53,11 +53,11 @@ flossData[["Repo URL"]] <- NULL
 
 # First, determine the missingness patterns
 # (amount of missingness across observations and variables)
-message("\nAnalyzing missingness patterns ...\n")
+message("\nAnalyzing missingness patterns...\n")
 mice::md.pattern(flossData)
 
 # add trailing '\n' when code below is enabled
-message("\nTesting data for being MCAR ... Currently disabled.")
+message("\nTesting data for being MCAR... Currently disabled.")
 
 # currently disabled due to producing the following error:
 # "Error: cannot allocate vector of size 4.3 Gb"
@@ -78,11 +78,23 @@ message("\nTesting data for being MCAR ... Currently disabled.")
 
 # ===== HANDLE MISSING VALUES =====
 
-message("\nPerforming Multiple Imputation (MI) ...", appendLF = FALSE)
+message("\nPerforming Multiple Imputation (MI)...", appendLF = FALSE)
 
 # perform multiple imputation with 'Amelia'
 a.out <- amelia(flossData, p2s = 0)
-message(" Results: ", a.out$message, "\n")
+
 #if (DEBUG) str(a.out) #TODO: why fails?
+
+# display results of the MI and data summary
+message("Completed.\n")
+message("MI Results:")
+summary(a.out)
+
+# output data summary before and after MI (latest MI iteration)
+message("Data before MI:\n")
+summary(flossData)
+
+message("\nData after MI:\n")
+summary(a.out$imputations$imp5)
 
 # TODO: analyze results?
