@@ -1,8 +1,11 @@
+# Module responsible for merging already transformed data
+# into a single data frame for further analysis
+
 # Start session with a clean R environment
 rm(list = ls(all.names = TRUE))
 
-# Module responsible for merging already transformed data
-# into a single data frame for further analysis
+if (!suppressMessages(require(psych))) install.packages('psych')
+library(psych)
 
 SRDA_DIR <- "~/diss-floss/data/transform/SourceForge"
 
@@ -178,3 +181,5 @@ dataSets <- loadDataSets(SRDA_DIR)
 flossData <- mergeDataSets(dataSets) # method "plyr" is default
 
 str(flossData)
+
+describe(flossData)
