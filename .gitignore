@@ -7,3 +7,6 @@
 *.done
 *.bz2
 cookies.txt
+*.log
+*.md
+*.html
