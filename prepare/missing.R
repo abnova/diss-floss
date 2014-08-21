@@ -97,4 +97,7 @@ summary(flossData)
 message("\nData after MI:\n")
 summary(a.out$imputations$imp5)
 
+# suppress "NAs introduced by coercion" warnings
+suppressWarnings(describe(flossData))
+
 # TODO: analyze results?

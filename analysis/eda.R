@@ -5,11 +5,13 @@ if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
+if (!suppressMessages(require(psych))) install.packages('psych')
 
 library(RCurl)
 library(stringr)
 library(ggplot2)
 library(gridExtra)
+library(psych)
 
 source("../utils/factors.R")
 source("../utils/qq.R")
@@ -74,6 +76,9 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
 multiDescriptiveEDA <- function (df, var, colNames, extraFun) {
   
   message("\nDecriptive statistics for '", colNames, "':\n")
+  
+  # suppress "NAs introduced by coercion" warnings
+  suppressWarnings(describe(flossData))
 }
 
 
@@ -105,7 +110,7 @@ performEDA <- function (dataSource, analysis,
    
     colNames <- names(data)
     colNames <- colNames[-1] # delete Project ID
-    #multiDescriptiveEDA(data, indicator, colNames, extraFun)
+    multiDescriptiveEDA(data, indicator, colNames, extraFun)
     multiVisualEDA(data, indicator, colNames, extraFun)
     
   } else {
