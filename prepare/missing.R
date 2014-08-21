@@ -54,7 +54,7 @@ flossData[["Repo URL"]] <- NULL
 # First, determine the missingness patterns
 # (amount of missingness across observations and variables)
 message("\nAnalyzing missingness patterns...\n")
-mice::md.pattern(flossData)
+print(mice::md.pattern(flossData))
 
 # add trailing '\n' when code below is enabled
 message("\nTesting data for being MCAR... Currently disabled.")
@@ -88,14 +88,17 @@ a.out <- amelia(flossData, p2s = 0)
 # display results of the MI and data summary
 message("Completed.\n")
 message("MI Results:")
+message("===========")
 summary(a.out)
 
 # output data summary before and after MI (latest MI iteration)
-message("Data before MI:\n")
-summary(flossData)
+message("Data before MI:")
+message("===============\n")
+print(summary(flossData))
 
-message("\nData after MI:\n")
-summary(a.out$imputations$imp5)
+message("\nData after MI:")
+message("================\n")
+print(summary(a.out$imputations$imp5))
 
 # suppress "NAs introduced by coercion" warnings
 suppressWarnings(describe(flossData))
