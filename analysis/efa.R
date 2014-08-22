@@ -18,7 +18,7 @@ source("~/diss-floss/prepare/missing.R")
 message("\n\n===== PERFORMING EXPLORATORY FACTOR ANALYSIS (EFA) =====")
 
 # determine number of factors to extract
-message("\n*** Determining number of factors to extract...\n")
+message("\n\n*** Determining number of factors to extract...\n")
 
 # parallel analysis
 message("\nParallel analysis:")
@@ -62,3 +62,14 @@ message("Currently disabled.\n")
 #                      rotation = "cfQ",
 #                      control = list(rotate = list(kappa = 0)))
 #print(quartimin, cutoff = 0.001)
+
+message("\n\nFA, using Schmid-Leiman transformation:")
+message("=======================================\n")
+
+schmid(flossData, nfactors = 2)
+
+message("\n\nFA with 'bi-factor' rotation:")
+message("=============================\n")
+
+fa(flossData, nfactors = 3, fm="pa",
+   rotate = "bifactor", max.iter = 500)

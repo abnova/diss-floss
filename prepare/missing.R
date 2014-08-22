@@ -97,7 +97,7 @@ message("===============\n")
 print(summary(flossData))
 
 message("\nData after MI:")
-message("================\n")
+message("==============\n")
 print(summary(a.out$imputations$imp5))
 
 # suppress "NAs introduced by coercion" warnings
