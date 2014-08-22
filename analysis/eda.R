@@ -6,12 +6,15 @@ if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
 if (!suppressMessages(require(psych))) install.packages('psych')
+if (!suppressMessages(require(fitdistrplus))) 
+  install.packages('fitdistrplus')
 
 library(RCurl)
 library(stringr)
 library(ggplot2)
 library(gridExtra)
 library(psych)
+library(fitdistrplus)
 
 source("../utils/factors.R")
 source("../utils/qq.R")
@@ -32,12 +35,7 @@ uniDescriptiveEDA <- function (df, var, colName, extraFun) {
   
   data <- df[[colName]]
   
-  if (is.numeric(data)) {
-    message("\nDecriptive statistics for '", colName, "':\n")
-    print(summary(data))
-  }
-  
-  if (is.factor(data)) {
+  if (is.numeric(data) || is.factor(data)) {
     message("\nDecriptive statistics for '", colName, "':\n")
     print(summary(data))
   }
@@ -73,6 +71,43 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
 }
 
 
+fitDistribution <- function (df, var, colName, extraFun) {
+  
+  data <- df[[colName]]
+  
+  message("\nFitting distribution for '", colName, "':\n")
+
+  if (FALSE) {
+    dataDist <- fitdist(data, "gamma")
+    dataBoot <- bootdist(dataDist, niter=51) #default niter=1001
+    print(dataBoot)
+    plot(dataBoot)
+    print(summary(dataBoot))
+    print(quantile(dataBoot))
+    message("")
+  }
+  
+  if (is.numeric(data) || is.factor(data)) {
+    fitgmme <- fitdist(data, "gamma", method="mme")
+    print(summary(fitgmme))
+    message("")
+  }
+  
+  if (is.numeric(data) || is.factor(data)) {
+    fitg <- fitdist(data, "gamma")
+    print(summary(fitg))
+    plot(fitg)
+    plot(fitg, demp = TRUE)
+    plot(fitg, histo = FALSE, demp = TRUE)
+    cdfcomp(fitg, addlegend=FALSE)
+    denscomp(fitg, addlegend=FALSE)
+    ppcomp(fitg, addlegend=FALSE)
+    qqcomp(fitg, addlegend=FALSE)
+    message("")
+  }
+}
+
+
 multiDescriptiveEDA <- function (df, var, colNames, extraFun) {
   
   message("\nDecriptive statistics for '", colNames, "':\n")
@@ -104,6 +139,7 @@ performEDA <- function (dataSource, analysis,
     
     uniDescriptiveEDA(data, indicator, colName, extraFun)
     uniVisualEDA(data, indicator, colName, extraFun)
+    fitDistribution(data, indicator, colName, extraFun)
     
   } else if (identical(analysis, "multivariate")) {
    
@@ -300,7 +336,7 @@ suppressMessages(ggsave(filename=edaFilePDF, mg, width=8.5, height=11))
 message("\n===== EDA completed, results can be found ",
         "in directory \"", EDA_RESULTS_DIR, "\"\n")
 
-stop()
+stop('OK! Intentionally stopped to prevent code from running.')
 
 # construct list of indicators & corresponding extra functions
 sfMultiIndicators <- c("prjAge", "prjLicense")
