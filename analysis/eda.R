@@ -90,8 +90,7 @@ multiVisualEDA <- function (df, var, colName, extraFun) {
 performEDA <- function (dataSource, analysis,
                         indicator, colName, extraFun) {
 
-  fileDigest <- base64(indicator)
-  fileName <- paste0(fileDigest, RDS_EXT)
+  fileName <- paste0(indicator, RDS_EXT)
   rdataFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
   if (file.exists(rdataFile)) {
     data <- readRDS(rdataFile)
