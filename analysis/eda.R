@@ -19,7 +19,7 @@ library(fitdistrplus)
 source("../utils/factors.R")
 source("../utils/qq.R")
 
-TRANSFORM_DIR <- "../data/transform"
+TRANSFORM_DIR <- "../data/transformed"
 RDS_EXT <- ".rds"
 
 EDA_RESULTS_DIR <- "../results/eda"

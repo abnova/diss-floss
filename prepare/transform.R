@@ -6,7 +6,7 @@ if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 library(RCurl)
 
 CACHE_DIR <- "../cache"
-TRANSFORM_DIR <- "../data/transform"
+TRANSFORM_DIR <- "../data/transformed"
 RDS_EXT <- ".rds"
 
 DEBUG <- TRUE  # TODO: retrieve debug flag via CL arguments

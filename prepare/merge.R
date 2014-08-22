@@ -7,7 +7,7 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(psych))) install.packages('psych')
 library(psych)
 
-SRDA_DIR <- "~/diss-floss/data/transform/SourceForge"
+SRDA_DIR <- "~/diss-floss/data/transformed/SourceForge"
 
 
 loadData <- function (dataFile) {
