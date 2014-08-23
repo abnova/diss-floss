@@ -14,6 +14,7 @@ if (!suppressMessages(require(BaylorEdPsych)))
 if (!suppressMessages(require(mvnmle))) install.packages('mvnmle')
 if (!suppressMessages(require(methods))) install.packages('methods')
 if (!suppressMessages(require(Amelia))) install.packages('Amelia')
+if (!suppressMessages(require(psych))) install.packages('psych')
 
 # 'mice' is needed for determining missingness patterns
 # 'MissMech' is needed for testing data for being MCAR
@@ -21,12 +22,23 @@ if (!suppressMessages(require(Amelia))) install.packages('Amelia')
 # 'mvnmle' is needed as it is used by 'BaylorEdPsych'
 # 'methods' is needed for 'Amelia' to alleviate the following error:
 # "Error in match.fun(FUN) : object 'is' not found"
+# 'psych' is needed for describe()
 library(mice)
 library(MissMech)
 library(BaylorEdPsych)
 library(mvnmle)
 library(methods)
 library(Amelia)
+library(psych)
+
+source("../utils/data.R")
+
+# Initially file was copied manually from "merged/SourceForge".
+# Implementing automatic data merging across all data sources
+# should take care of this step (TODO).
+MERGED_DIR <- "~/diss-floss/data/merged"
+MERGED_FILE <- "flossData" # default
+RDS_EXT <- ".rds"
 
 DEBUG <- FALSE
 
@@ -34,9 +46,12 @@ message("\n===== HANDLING MISSING VALUES: MI and FIML =====")
 
 # ===== PREPARATION =====
 
+fileName <- paste0(MERGED_FILE, RDS_EXT)
+mergedFile <- file.path(MERGED_DIR, fileName)
+
 # load data
-message("\nLoading data...\n")
-source("~/diss-floss/prepare/merge.R")
+message("\nLoading data...")
+flossData <- loadData(mergedFile)
 
 # use only (numeric) columns of our interest;
 # this is a recommended (preferred) alternative
@@ -101,6 +116,10 @@ message("==============\n")
 print(summary(a.out$imputations$imp5))
 
 # suppress "NAs introduced by coercion" warnings
+message("\nMore detailed summary statistics:")
+message("=================================\n")
 suppressWarnings(describe(flossData))
 
 # TODO: analyze results?
+
+message("")
