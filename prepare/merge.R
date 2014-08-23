@@ -7,7 +7,10 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(psych))) install.packages('psych')
 library(psych)
 
-SRDA_DIR <- "~/diss-floss/data/transformed/SourceForge"
+
+TRANDFORMED_DIR <- "~/diss-floss/data/transformed"
+MERGED_DIR      <- "~/diss-floss/data/merged"
+RDS_EXT <- ".rds"
 
 
 loadData <- function (dataFile) {
@@ -174,14 +177,31 @@ mergeDataSets <- function (datasets, method = "plyr") {
 }
 
 
-# load datasets of transformed data
-dataSets <- loadDataSets(SRDA_DIR)
+mergeData <- function (dataSource, fileName = "merged") {
+  
+  transformedDir <- file.path(TRANDFORMED_DIR, dataSource)
+  mergedDir <- file.path(MERGED_DIR, dataSource)
+  if (!file.exists(mergedDir))
+    dir.create(mergedDir, recursive = TRUE)
 
-# merge loaded datasets
-flossData <- mergeDataSets(dataSets) # method "plyr" is default
+  fileName <- paste0(fileName, RDS_EXT)
+  mergedFile <- file.path(mergedDir, fileName)
+  
+  # load datasets of transformed data
+  dataSets <- loadDataSets(transformedDir)
+  
+  # merge loaded datasets
+  flossData <- mergeDataSets(dataSets) # method "plyr" is default
+  
+  # verify the data frame structure
+  str(flossData)
+  
+  # suppress "NAs introduced by coercion" warnings
+  suppressWarnings(describe(flossData))
+  
+  # save merged data in a separate directory
+  saveRDS(flossData, mergedFile)
+}
 
-# verify the data frame structure
-str(flossData)
 
-# suppress "NAs introduced by coercion" warnings
-suppressWarnings(describe(flossData))
+mergeData("SourceForge")
