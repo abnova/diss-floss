@@ -18,9 +18,14 @@ library(fitdistrplus)
 
 source("../utils/factors.R")
 source("../utils/qq.R")
+source("../utils/data.R")
 
-TRANSFORM_DIR <- "../data/transformed"
+READY4EDA_DIR  <- "~/diss-floss/data/ready4eda"
+READY4EDA_FILE <- "flossData" # default
 RDS_EXT <- ".rds"
+
+# temporary, until implementing EDA for single data file
+TRANSFORM_DIR <- "../data/transformed"
 
 EDA_RESULTS_DIR <- "../results/eda"
 
@@ -312,6 +317,13 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
 
 
 message("\n===== Starting Exploratory Data Analysis (EDA)...")
+
+fileName <- paste0(READY4EDA_FILE, RDS_EXT)
+ready4edaFile <- file.path(READY4EDA_DIR, fileName)
+
+# load data
+message("\nLoading data...")
+flossData <- loadData(ready4edaFile)
 
 # construct list of indicators & corresponding extra functions
 sfIndicators <- c("prjAge", "devTeamSize",
