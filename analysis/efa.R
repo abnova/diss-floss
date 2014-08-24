@@ -85,7 +85,7 @@ screePlot <- plot(numericPA, percentiles = 0.99,
                   groupLabel = "")
 screePlot <- screePlot + theme(aspect.ratio = 1)
 
-if (.Platform$GUI == "RStudio") {print(screePlot); dev.off()}
+if (.Platform$GUI == "RStudio") {print(screePlot)}
 
 screePlotFile <- file.path(EFA_RESULTS_DIR,
                            paste0(SCREE_PLOT_FILE, GRAPHICS_EXT))

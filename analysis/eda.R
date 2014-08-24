@@ -86,7 +86,7 @@ fitDistribution <- function (df, var, colName, extraFun) {
     dataDist <- fitdist(data, "gamma")
     dataBoot <- bootdist(dataDist, niter=51) #default niter=1001
     print(dataBoot)
-    plot(dataBoot)
+    #plot(dataBoot)
     print(summary(dataBoot))
     print(quantile(dataBoot))
     message("")
@@ -99,16 +99,16 @@ fitDistribution <- function (df, var, colName, extraFun) {
   }
   
   if (is.numeric(data) || is.factor(data)) {
-    fitg <- fitdist(data, "gamma")
-    print(summary(fitg))
-    plot(fitg)
-    plot(fitg, demp = TRUE)
-    plot(fitg, histo = FALSE, demp = TRUE)
-    cdfcomp(fitg, addlegend=FALSE)
-    denscomp(fitg, addlegend=FALSE)
-    ppcomp(fitg, addlegend=FALSE)
-    qqcomp(fitg, addlegend=FALSE)
-    message("")
+    ##fitg <- fitdist(data, "gamma")
+    ##print(summary(fitg))
+    #plot(fitg)
+    #plot(fitg, demp = TRUE)
+    #plot(fitg, histo = FALSE, demp = TRUE)
+    ##cdfcomp(fitg, addlegend=FALSE)
+    ##denscomp(fitg, addlegend=FALSE)
+    ##ppcomp(fitg, addlegend=FALSE)
+    ##qqcomp(fitg, addlegend=FALSE)
+    ##message("")
   }
 }
 
@@ -195,7 +195,7 @@ plotHistogram <- function (df, colName) {
   g <- g + geom_vline(aes(xintercept=mean(var, na.rm=T)),
                       color="red", size=1)
   
-  if (.Platform$GUI == "RStudio") {print(g); dev.off()}
+  if (.Platform$GUI == "RStudio") {print(g)}
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -232,7 +232,7 @@ plotDensity <- function (df, colName) {
   
 #  g <- g + geom_freqpoly(binwidth = 1)
   
-  if (.Platform$GUI == "RStudio") {print(g); dev.off()}
+  if (.Platform$GUI == "RStudio") {print(g)}
 
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -263,7 +263,7 @@ plotBarGraph <- function (df, colName) {
     ylab("Number of projects") +
     ggtitle(label=title)
   
-  if (.Platform$GUI == "RStudio") {print(g); dev.off()}
+  if (.Platform$GUI == "RStudio") {print(g)}
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -303,7 +303,7 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
     scale_y_continuous("Sample Quantiles") +
     ggtitle(label=title)
 
-  if (.Platform$GUI == "RStudio") {print(g); dev.off()}
+  if (.Platform$GUI == "RStudio") {print(g)}
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=varName, pattern=" ", repl="")
@@ -339,7 +339,6 @@ silent <- lapply(seq_along(sfIndicators), function(i) {
              sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
   })
 
-#dev.off() # to display graphics in RStudio plot window
 
 edaFilePDF <- file.path(EDA_RESULTS_DIR, "eda-univar.pdf")
 mg <- do.call(marrangeGrob, c(allPlots, list(nrow=2, ncol = 1)));
@@ -364,7 +363,6 @@ multiPlots <- lapply(seq_along(sfMultiIndicators), function(i) {
 #edaFilePDF <- file.path(EDA_RESULTS_DIR, "eda-multivar.pdf")
 #pdf(edaFilePDF)
 #silent <- lapply(multiPlots, print)
-#dev.off()
 
 
 ##### "EXTRA" (CUSTOMIZATION) FUNCTIONS #####
