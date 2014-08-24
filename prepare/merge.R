@@ -172,7 +172,7 @@ mergeData <- function (dataSource, fileName = "merged") {
   # suppress "NAs introduced by coercion" warnings
   suppressWarnings(describe(flossData))
   
-  # save merged data in a separate directory
+  # save merged data to a separate directory
   saveRDS(flossData, mergedFile)
 }
 

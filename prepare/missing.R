@@ -40,6 +40,9 @@ MERGED_DIR <- "~/diss-floss/data/merged"
 MERGED_FILE <- "flossData" # default
 RDS_EXT <- ".rds"
 
+IMPUTED_DIR <- "~/diss-floss/data/imputed"
+IMPUTED_FILE <- "flossData" # default
+
 DEBUG <- FALSE
 
 message("\n===== HANDLING MISSING VALUES: MI and FIML =====")
@@ -111,6 +114,11 @@ message("Data before MI:")
 message("===============\n")
 print(summary(flossData))
 
+# suppress "NAs introduced by coercion" warnings
+message("\nMore detailed summary statistics:")
+message("=================================\n")
+suppressWarnings(describe(flossData))
+
 message("\nData after MI:")
 message("==============\n")
 print(summary(a.out$imputations$imp5))
@@ -118,7 +126,19 @@ print(summary(a.out$imputations$imp5))
 # suppress "NAs introduced by coercion" warnings
 message("\nMore detailed summary statistics:")
 message("=================================\n")
-suppressWarnings(describe(flossData))
+suppressWarnings(describe(a.out$imputations$imp5))
+
+message("\nSaving imputed data... ", appendLF = FALSE)
+
+if (!file.exists(IMPUTED_DIR))
+  dir.create(IMPUTED_DIR, recursive = TRUE)
+
+# save imputed data to a separate directory
+fileName <- paste0(IMPUTED_FILE, RDS_EXT)
+imputedFile <- file.path(IMPUTED_DIR, fileName)
+saveRDS(a.out$imputations$imp5, imputedFile)
+
+message("Done.")
 
 # TODO: analyze results?
 
