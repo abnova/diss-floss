@@ -29,11 +29,13 @@ columns4analysis <- c("Development Team Size",
                       "Project License",
                       "License Restrictiveness",
                       "Project Maturity",
-                      "Software Type",
+                      #"Software Type",
                       "User Community Size")
 
 cols4analysisNew <- c("team.size", "prj.age", "license", "restrict",
-                      "maturity", "soft.type", "commsize")
+                      "maturity",
+                      #"soft.type",
+                      "commsize")
 
 # delete the rest of the columns
 flossData[, setdiff(names(flossData), columns4analysis)] <- list(NULL)
@@ -42,9 +44,11 @@ flossData[, setdiff(names(flossData), columns4analysis)] <- list(NULL)
 names(flossData)[sapply(colnames(flossData),
                         grep, names(flossData))] <- cols4analysisNew
 
+
 my.model.1 <- '
 commsize =~ a*license + b*restrict
 '
+
 
 my.model.2 <- '
 
@@ -62,9 +66,87 @@ restrict ~~ restrict
 license  ~~ restrict
 '
 
-mcarFIML.fit <- sem(my.model.2, data=flossData, missing="fiml")
 
-message("\nAnalysis results:\n")
-summary(mcarFIML.fit, rsquare=TRUE, standardized=TRUE)
+my.model.3 <- '
+
+# regression
+commsize ~ a1*team.size + a2*prj.age + a3*license +
+           a4*restrict + a5*maturity
+# + a6*soft.type
+
+# variances
+team.size ~~ team.size
+prj.age   ~~ prj.age
+license   ~~ license
+restrict  ~~ restrict
+maturity  ~~ maturity
+#soft.type ~~ soft.type
+
+# covariances/correlations (diag "+ soft.type" temp deleted)
+team.size ~~ prj.age  + license  + restrict + maturity
+prj.age   ~~ license  + restrict + maturity
+license   ~~ restrict + maturity
+restrict  ~~ maturity
+#maturity  ~~ soft.type
+'
+
+if (FALSE) {
+  
+  mcarFIML.fit <- sem(my.model.3, data=flossData, missing="fiml",
+                      fixed.x = FALSE)
+  
+  message("\nModel 3 - Analysis results 1:\n")
+  summary(mcarFIML.fit, rsquare=TRUE, standardized=TRUE)
+  
+  message("\nModel 3 - Analysis results 2:\n")
+  summary(mcarFIML.fit, fit.measures=TRUE, rsquare=TRUE, standardize=TRUE)
+  
+  # Wald test
+  lavTestWald(mcarFIML.fit,
+              constraints ='a1 == 0
+                            a2 == 0
+                            a3 == 0
+                            a4 == 0
+                            a5 == 0')
+}
+
+
+my.model.4 <- '
+
+# regression
+commsize  ~ 1
+team.size ~ 1
+prj.age   ~ 1
+license   ~ 1
+restrict  ~ 1
+maturity  ~ 1
+#soft.type ~ 1
+
+# variances
+team.size ~~ team.size
+prj.age   ~~ prj.age
+license   ~~ license
+restrict  ~~ restrict
+maturity  ~~ maturity
+#soft.type ~~ soft.type
+
+# covariances/correlations (diag "+ soft.type" temp deleted)
+team.size ~~ prj.age  + license  + restrict + maturity
+prj.age   ~~ license  + restrict + maturity
+license   ~~ restrict + maturity
+restrict  ~~ maturity
+#maturity  ~~ soft.type
+'
+
+mcarFIML.fit <- sem(my.model.4, data=flossData, missing="fiml")
+# alternatively, clear model's "means" section & use "meanstructure=TRUE"
+
+message("\nModel 4 - Analysis results:\n")
+summary(mcarFIML.fit, fit.measures=TRUE, standardize=TRUE)
+# may add "rsquare=TRUE" in the future
+
+# Missing data patterns and covariance coverage
+inspect(mcarFIML.fit, 'patterns') 
+inspect(mcarFIML.fit, 'coverage')
 
 message("")
