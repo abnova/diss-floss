@@ -9,7 +9,7 @@ presentation: beamer
 
 beamer: beamer-progressbar
 
-beamer-progressbar: slides-test1.tex
+beamer-progressbar: slides-test2-logo.tex
 	$(TEX2PDF) $<
 
 .PHONY: clean
