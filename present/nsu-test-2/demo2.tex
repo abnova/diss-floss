@@ -1,0 +1,1110 @@
+\documentclass[9pt,english]{beamer}  
+ 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{colortbl}
+\usepackage{bibunits}
+\usepackage{marvosym}
+
+\input{macros}
+
+\makeatletter
+\def\pgfsincos#1{%
+  \pgfmathparse{#1}%
+  \pgfmathcos@{#1}\pgf@y=\pgfmathresult pt%
+  \pgfmathsin@{#1}\pgf@x=\pgfmathresult pt%
+}
+\makeatother
+
+\newcommand{\fup}[1]{\raisebox{0.5em}{\scriptsize #1}}
+
+%\usetheme{steamer}
+\usetheme{progressbar}
+\progressbaroptions{headline=none,frametitle=picture-subsection,titlepage=picture,imagename=images/LogoNSU3.jpg}
+\setbeamerfont{title}{size=\small,series=\bfseries,parent=structure}
+
+\usetikzlibrary{shapes.misc,shapes.geometric,shapes.callouts}
+
+%\setbeamercolor{custombox}{bg=steamer@blue!20!structure.bg,fg=structure.fg}
+
+\usepackage{mytitlepage}
+
+
+\author{\parbox{0.7\textwidth}{Aleksandr Blekh\\[0.1cm]
+    {Nova Southeastern University}\\
+     Graduate School of Computer and Information Sciences}}
+
+
+\date{Defence of a dissertation submitted in partial fulfillment of the requirements\\
+      for the degree of Doctor of Philosophy in Information Systems\\
+      Fort Lauderdale, FL, USA\\
+      November 20, 2014}
+      
+\title{Governance and Organizational Sponsorship\\
+       as Success Factors in\\
+       Free/Libre and Open Source Software Development:\\
+       An Empirical Investigation\\
+       using Structural Equation Modeling}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\section{The problem}
+
+\begin{frame}{Fair division of indivisible goods}
+  \begin{overlayarea}{\textwidth}{0.5\textheight}
+    We have:
+    \begin{itemize}
+    \item<2-> a finite set of \emph{objects} $\Objets = \{1,\dots,\maxObjets\}$
+    \item<3-> a finite set of \emph{agents} $\Agents =
+      \{1,\dots,\maxAgents\}$
+    \item<4-> \emph{Additive preferences}: \parbox[t]{0.5\textwidth}{$\to$ $w_{\ag}(\ob)$ is the
+      weight of object $\ob$ for agent $\ag$\only<5->{\\$\to$
+        $u_{\ag}(\mathcal{X}) = \sum_{\ob \in \mathcal{X}}
+        w_{\ag}(\ob)$}.}
+    \end{itemize}
+    
+    \only<6->{We want:}
+    \begin{itemize}
+    \item<7-> a \emph{complete allocation} $\Shares: \Agents \to
+      2^{\Objets}$...
+    \item<8-> ...which takes into account the agents' preferences
+      (\emph{fair allocation}).
+    \end{itemize}
+
+    \only<9>{In this work, we consider five \emph{fairness} criteria.}
+  \end{overlayarea}
+  
+  \vfill
+
+  \begin{overlayarea}{\textwidth}{0.2\textheight}
+    \only<2>{
+      \parbox{0.45\textwidth}{        
+        \begin{tabular}{cccc}
+          \phantom{agent 007} & \tikz\node[fill=structure.fg!20!bg,circle]{1}; & \tikz\node[fill=structure.fg!20!bg,circle]{2}; & \tikz\node[fill=structure.fg!20!bg,circle]{3};\\
+        \end{tabular}      
+      }
+    }
+    \only<3>{
+      \parbox{0.45\textwidth}{
+        \begin{tabular}{cccc}
+          \phantom{agent 007} & \tikz\node[fill=structure.fg!20!bg,circle]{1}; & \tikz\node[fill=structure.fg!20!bg,circle]{2}; & \tikz\node[fill=structure.fg!20!bg,circle]{3};\\
+          agent $1$ & & & \\
+          agent $2$ & & & \\
+        \end{tabular}      
+      }
+    }
+    \only<4->{
+      \parbox{0.45\textwidth}{
+        \begin{tabular}{c|c|c|c}
+          \phantom{agent 007} & \tikz\node[fill=structure.fg!20!bg,circle]{1}; & \tikz\node[fill=structure.fg!20!bg,circle]{2}; & \tikz\node[fill=structure.fg!20!bg,circle]{3};\\\hline
+          agent $1$ & {\only<7,8,9>{\cellcolor{structure.fg!90!bg}\color{bg}}5} & 4 & {2}\\\hline
+          agent $2$ & {4} & {\only<5,7,8,9>{\cellcolor{structure.fg!90!bg}\color{bg}}1} & {\only<5,7,8,9>{\cellcolor{structure.fg!90!bg}\color{bg}}6}\\
+        \end{tabular}      
+      }
+    }
+    \only<5>{
+      \hfill\parbox{0.45\textwidth}{
+        $u_2(\{2, 3\}) = 1 + 6 = 7$
+      }
+    }
+    \only<7->{
+      \hfill\parbox{0.45\textwidth}{
+        $\Shares = \langle \{1\},\{2, 3\} \rangle$
+        \begin{itemize}
+        \item $u_1(\Shares) = 5$
+        \item $u_2(\Shares) = 7$
+        \end{itemize}
+      }
+    }
+  \end{overlayarea}
+\end{frame}
+
+
+% \begin{frame}{Fair division of indivisible goods}
+%   Fair division of indivisible goods\dots
+
+%   \vfill
+
+%   We have:
+%   \begin{itemize}
+%   \item a finite set of \emph{objects} $\Objets = \{1,\dots,\maxObjets\}$
+%   \item a finite set of \emph{agents} $\Agents = \{1,\dots,\maxAgents\}$
+%     having some \emph{preferences} on the set of objects they may
+%     receive
+%   \end{itemize}
+
+%   \vfill\pause
+
+%   We want:
+%   \begin{itemize}
+%   \item an allocation $\Shares:\Agents \to 2^{\Objets}$
+%   \item such that $\share_i \cap \share_j = \emptyset$ if $i \neq j$
+%     (preemption),
+%   \item $\bigcup_{\ag \in \Agents} \share_i = \Objets$ (no
+%     free-disposal),
+%   \item and which takes into account the agents' preferences
+%   \end{itemize}
+
+%   \vfill\pause
+
+%   Plenty of real-world applications: course allocation, operation of
+%   Earth observing satellites, \dots
+% \end{frame}
+
+% \begin{frame}{Centralized allocation}
+%   \begin{bibunit}[apalike]
+%     A classical way to solve the problem:
+    
+%     \begin{itemize}
+%     \item Ask each agent $\ag$ to give a score (weight, utility\dots) $w_\ag(\ob)$
+%       to each object $\ob$
+%     \item Consider all the agents have \emph{additive} preferences\\
+%       \ \hfill $\to$ $u_\ag(\share) = \sum_{\ob \in \share} w_\ag(\ob)$
+%     \item Find an allocation $\Shares$ that satisfies a given \emph{fairness criterion},\\
+%       \ \hfill \textit{e.g.} $u_\ag(\share_\ag) \geq
+%       u_\ag(\share_\agp)$ for all agents $\ag, \agp$ -- envy-freeness\\
+%       \ \hfill \cite{Lipton04}.
+%     \end{itemize}
+
+%     \begin{beamercolorbox}[wd=\textwidth,sep=1ex]{custombox}%
+%       \putbib[partage-aamas]
+%     \end{beamercolorbox}
+%   \end{bibunit}
+% \end{frame}
+
+% \begin{frame}{Example}
+%   \textbf{Example:} 3 objects $\{1, 2, 3\}$, 2 agents $\{1, 2\}$.
+
+%   \vfill\pause
+  
+%   \emph{Preferences:}
+
+%   \ 
+
+%   \begin{tabular}{|c|c|c|c|}
+%     \hline
+%     & $1$ & $2$ & $3$\\\hline
+%     agent $1$ & {\only<3->{\cellcolor{structure.fg!90!bg}\color{bg}}5} & {\only<4>{\cellcolor{structure.fg!90!bg}\color{bg}}4} & {2}\\\hline
+%     agent $2$ & {4} & {\only<3>{\cellcolor{structure.fg!90!bg}\color{bg}}1} & {\only<3->{\cellcolor{structure.fg!90!bg}\color{bg}}6}\\\hline
+%   \end{tabular}
+  
+%   \vfill
+  
+%   \begin{overlayarea}{\textwidth}{2cm}
+%     \only<3->{\emph{Envy-freeness:}}
+    
+%     \only<3->{$\Shares = \langle \{1\},\{2, 3\} \rangle$ is \emph{not} envy-free (agent $1$ envies agent $2$)\\}
+%     \only<4->{$\Shares' = \langle \{1, 2\},\{3\} \rangle$ is envy-free.}
+%   \end{overlayarea}
+% \end{frame}
+
+% \begin{frame}{Fairness properties}
+%   Choose a \emph{fairness property}, and find an allocation that
+%   satisfies it\dots
+
+%   \pause\vfill
+
+%   \textbf{Problems:}
+%   \begin{enumerate}
+%   \item such an allocation does not always exist\\
+%     \ \hfill $\to$ \textit{e.g.} 2 agents, 1 object: no envy-free
+%     allocation exists
+%   \item many such allocations can exist
+%   \end{enumerate}
+  
+%   \pause\vfill
+
+%   \textbf{Idea:} consider several fairness properties, and try to
+%   satisfy the strongest one.
+
+%   In this work we consider five such properties.
+% \end{frame}
+
+\section{Five fairness criteria}
+
+% \begin{frame}{Outline}
+%   \tableofcontents[current]
+% \end{frame}
+
+
+\begin{frame}{Envy-freeness}
+  \begin{bibunit}[apalike]
+    \begin{block}{Envy-freeness}
+      An allocation $\Shares$ is \emph{envy-free} if no agent envies
+      another one.
+    \end{block}
+    
+    \pause\vfill
+
+    \textbf{Example:} 3 objects $\{1, 2, 3\}$, 2 agents $\{1, 2\}$.
+    
+    \vfill\pause
+    
+    \emph{Preferences:}
+    
+    \ 
+    
+    \begin{tabular}{|c|c|c|c|}
+      \hline
+      & $1$ & $2$ & $3$\\\hline
+      agent $1$ & {\only<4->{\cellcolor{structure.fg!90!bg}\color{bg}}5} & {\only<5>{\cellcolor{structure.fg!90!bg}\color{bg}}4} & {2}\\\hline
+      agent $2$ & {4} & {\only<4>{\cellcolor{structure.fg!90!bg}\color{bg}}1} & {\only<4->{\cellcolor{structure.fg!90!bg}\color{bg}}6}\\\hline
+    \end{tabular}
+    
+    \vfill
+    
+    \begin{overlayarea}{\textwidth}{2cm}
+      \only<4->{\emph{Envy-freeness:}}
+      
+      \only<4->{$\Shares = \langle \{1\},\{2, 3\} \rangle$ is \emph{not} envy-free (agent $1$ envies agent $2$)\\}
+      \only<5->{$\Shares' = \langle \{1, 2\},\{3\} \rangle$ is envy-free.}
+    \end{overlayarea}
+  \end{bibunit}
+\end{frame}
+
+\begin{frame}{Envy-freeness}
+  \begin{bibunit}[apalike]
+    \begin{block}{Envy-freeness}
+      An allocation $\Shares$ is \emph{envy-free} if no agent envies
+      another one.
+    \end{block}
+    
+    \textbf{Known facts:}
+    \begin{itemize}
+    \item An envy-free allocation may not exist.
+    \item Deciding whether an allocation is envy-free is easy
+      (quadratic time).
+    \item Deciding whether an instance (agents, objects, preferences)
+      has an envy-free allocation is hard -- \textbf{NP}-complete
+      \cite{Lipton04}.
+    \end{itemize}
+
+    \vfill
+
+    \begin{beamercolorbox}[wd=\textwidth,sep=1ex]{custombox}%
+      \putbib[partage-aamas]
+    \end{beamercolorbox}
+    
+    % \pause\vfill
+
+    % \begin{center}
+    %   \begin{tikzpicture}\usebeamercolor{structure}\small
+    %     \draw[thick, fg, ->, >=latex] (0, 0) -- (0.8\textwidth, 0);
+    %     \draw[fg] (0, 0) node[anchor=north] {\footnotesize weaker};
+    %     \draw[fg] (0.8\textwidth, 0) node[anchor=north] {\footnotesize stronger};
+        
+    %     \draw[fg, thick] (0.55\textwidth, -0.5ex) -- (0.55\textwidth, 0.5ex) node[above, draw=fg, fill=fg!30!bg, rounded corners] {\bf envy-freeness};
+    %   \end{tikzpicture}
+    % \end{center}
+  \end{bibunit}
+\end{frame}
+
+\begin{frame}{Proportional fair share}
+  \begin{bibunit}[apalike]
+    \textbf{Proportional fair share (PFS):}
+    \begin{itemize}
+    \item Initially defined by \cite{Steinhaus48} for continuous fair
+      division (\textit{cake-cutting})
+    \item \textbf{Idea:} each agent is ``entitled'' to at least the
+      n\fup{th} of the entire resource
+    \end{itemize}
+    \vfill
+
+    \begin{beamercolorbox}[wd=\textwidth,sep=1ex]{custombox}%
+      \putbib[partage-aamas]
+    \end{beamercolorbox}
+    
+    \pause\vfill
+  
+    \begin{block}{Proportional fair share}
+      The \emph{proportional fair share} of an agent $\ag$ is equal
+      to:
+      \[
+      \uPFS_\ag \Def \frac{u_i(\Objets)}{\maxAgents} = \sum_{\ob \in \Objets} \frac{w_i(\ob)}{\maxAgents}
+      \]
+
+      An allocation $\Shares$ satisfies \emph{(proportional) fair
+        share} if every agent gets at least her fair share.
+    \end{block}
+  \end{bibunit}
+\end{frame}  
+
+\begin{frame}{Proportional fair share: facts}
+  \textbf{Easy or known facts:}
+  \begin{itemize}
+  \item Deciding whether an allocation satisfies proportional fair
+    share (PFS) is easy (linear time).
+  \item For a given instance, there may be no allocation satisfying
+    PFS\\
+    \ \hfill $\to$ \textit{e.g.} 2 agents, 1 object
+  \item This is not true for cake-cutting (divisible resource)\\
+    \ \hfill$\to$ Dubins-Spanier
+  \end{itemize}
+
+  \pause\vfill
+
+  \textbf{New (?) facts:}
+  \begin{itemize}
+  \item Deciding whether an instance has an allocation satisfying PFS
+    is hard even for 2 agents -- \textbf{NP}-complete
+    [\textsc{Partition}].
+  \item $\Shares$ is envy-free $\Rightarrow$ $\Shares$ satisfies
+    PFS$^{\text{1}}$.
+  \end{itemize}
+  {\scriptsize $^{\text{1}}$ Actually already noticed at least in an
+    unpublished paper by Endriss, Maudet \textit{et al.}}
+
+  \pause\vfill
+  
+  \begin{center}
+    \begin{tikzpicture}\usebeamercolor{structure}\small
+      \draw[thick, fg, ->, >=latex] (0, 0) -- (0.8\textwidth, 0);
+      \draw[fg] (0, 0) node[anchor=north] {\footnotesize weaker};
+      \draw[fg] (0.8\textwidth, 0) node[anchor=north] {\footnotesize stronger};
+      
+      \draw[fg, thick] (0.55\textwidth, -0.5ex) -- (0.55\textwidth, 0.5ex) node[above] {\bf envy-freeness};
+      \draw[fg, thick] (0.25\textwidth, -0.5ex) -- (0.25\textwidth, 0.5ex) node[above] {\bf proportional fair share};
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Max-min fair share}
+  PFS is nice, but sometimes too demanding for indivisible goods\\
+  \ \hfill $\to$ \textit{e.g.} 2 agents, 1 object
+
+  \pause\vfill
+
+  \begin{bibunit}[apalike]
+    \textbf{Max-min fair share (MFS):}
+    \begin{itemize}
+    \item Introduced recently \cite{Budish11}; not so much studied so
+      far.
+    \item \textbf{Idea:} in the \emph{cake-cutting} case, PFS = the
+      best share an agent can hopefully get for sure in a \textit{``I
+        cut, you choose (I choose last)''} game.
+    \item Same game for indivisible goods $\to$ MFS.
+    \end{itemize}
+    
+    \vfill
+    
+    \begin{beamercolorbox}[wd=\textwidth,sep=1ex]{custombox}%
+      \putbib[partage-aamas]
+    \end{beamercolorbox}    
+  \end{bibunit}
+\end{frame}
+
+\begin{frame}{Max-min fair share}
+  \textbf{Idea:} in the \emph{cake-cutting} case, PFS = the
+  best share an agent can hopefully get for sure in a \textit{``I
+    cut, you choose (I choose last)''} game.
+
+  \begin{block}{Max-min fair share}
+    The \emph{max-min fair share} of an agent $\ag$ is equal to:
+    \[
+    \uMFS_\ag  \Def \max_{\Shares} \min_{\agp \in \Agents } u_\ag(\share_{\agp})
+    \]
+    
+    An allocation $\Shares$ satisfies \emph{max-min fair share}
+    (MFS) if every agent gets at least her max-min fair share.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Max-min fair share: examples}
+  \textbf{Example:} 3 objects $\{1, 2, 3\}$, 2 agents $\{1, 2\}$.
+
+  \vfill
+  
+  \emph{Preferences:}
+
+  \ 
+
+  \begin{tabular}{|c|c|c|c|c}
+    \cline{1-4}
+    & $1$ & $2$ & $3$ & \\\cline{1-4}
+    agent $1$ & {\only<4>{\color{fg!30!bg}}5} & {\only<3>{\color{fg!30!bg}}4} & {\only<3>{\color{fg!30!bg}}2} & \only<2->{$\to \uMFS_1 = 5$ (with cut $\langle \{1\}, \{2, 3\}\rangle$)}\\\cline{1-4}
+    agent $2$ & {\only<3>{\color{fg!30!bg}}4} & {\only<4>{\color{fg!30!bg}}1} & {\only<4>{\color{fg!30!bg}}6} & \only<2->{$\to \uMFS_2 = 5$ (with cut $\langle \{1, 2\}, \{3\}\rangle$)} \\\cline{1-4}
+  \end{tabular}
+
+  \vfill
+
+  \begin{overlayarea}{\textwidth}{2cm}
+    \only<3->{\emph{MFS evaluation:}}
+  
+    \only<3->{$\Shares =  \langle \{1\},\{2, 3\} \rangle \to u_1(\share_1) = 5 \geq 5$; $u_2(\share_2) = 7 \geq 5$ $\Rightarrow$ MFS satisfied\\}
+    \only<4->{$\Shares'' =  \langle \{2, 3\},\{1\} \rangle \to u_1(\share''_1) = 6 \geq 5$; $u_2(\share''_2) = 4 {\ \color{red} < 5}$ $\Rightarrow$ MFS not satisfied}
+  \end{overlayarea}
+
+  \vfill
+
+  \only<5->{\hrule}
+
+  \vfill
+
+  \begin{overlayarea}{\textwidth}{2cm}
+    \only<5->{
+      \textbf{Example:} 2 agents, 1 object.
+    }
+    \only<6>{\\
+      \ \hfill $\uMFS_1 = \uMFS_2 = 0$ $\to$ every allocation satisfies
+      MFS!\\
+      Not very satisfactory, but can we do much better?
+    }
+  \end{overlayarea}
+\end{frame}
+
+\begin{frame}{Max-min fair share: properties}
+  \textbf{Facts:}
+  \begin{itemize}
+  \item Computing $\uMFS_\ag$ for a given agent is hard $\to$
+    \textbf{NP}-complete [\textsc{Partition}]
+  \item Hence, deciding whether an allocation satisfies MFS is also
+    hard.
+  \item $\Shares$ satisfies PFS $\Rightarrow$ $\Shares$ satisfies MFS.
+  \end{itemize}
+
+  \pause\vfill
+  
+  \begin{center}
+    \begin{tikzpicture}\usebeamercolor{structure}\small
+      \draw[thick, fg, ->, >=latex] (0, 0) -- (0.8\textwidth, 0);
+      \draw[fg] (0, 0) node[anchor=north] {\footnotesize weaker};
+      \draw[fg] (0.8\textwidth, 0) node[anchor=north] {\footnotesize stronger};
+      
+      \draw[fg, thick] (0.55\textwidth, -0.5ex) -- (0.55\textwidth, 0.5ex) node[above] {\bf envy-freeness};
+      \draw[fg, thick] (0.25\textwidth, -0.5ex) -- (0.25\textwidth, 0.5ex) node[above] {\bf proportional fair share};
+      \draw[fg, thick] (0.1\textwidth, -0.5ex) -- (0.1\textwidth, 0.5ex) node (MFS) {};
+      \draw[fg, <-, >=latex] (MFS) -- ++(0, 1.5em) node[above, draw=fg, fill=fg!30!bg, rounded corners] {\bf max-min fair share};
+    \end{tikzpicture}
+  \end{center}
+
+  % \textbf{Intuition:}
+  % \begin{itemize}
+  % \item the situation where all agents have the same preferences is
+  %   the \emph{worst} possible situation
+  % \item in that situation, an allocation satisfying MFS exists (see
+  %   definition)
+  % \item all other situation makes every agent better off.
+  % \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Max-min fair share: conjecture}
+  \begin{alertblock}{Conjecture}
+    \tikz[remember picture]\node (conj) {};\!\!\!For each instance there is at least one allocation satisfying
+    max-min fair share.
+  \end{alertblock}
+
+  \pause\vfill
+
+  \begin{itemize}
+  \item Proved for \textbf{special cases} (2 agents, matching,\dots),
+    even \emph{very general ones} (scoring functions\dots)
+  \item No counterexample found on \emph{thousands} of \textbf{random}
+    instances.
+  \end{itemize}
+
+  \pause\vfill
+
+  \begin{bibunit}[apalike]
+    \begin{tikzpicture}[remember picture,overlay]
+      \draw (conj) ++ (0.45\textwidth, 0) node[rounded corners, rotate=15, opacity=0.8, fill=black!50!red!50!white, draw=black!50!red, very thick, minimum width=3.8cm, minimum height=1.5cm] {\Huge\color{black!50!red}\textbf{FALSE!}};
+    \end{tikzpicture}
+    
+    The conjecture has been proved \emph{false} by Procaccia and
+    Wang\nocite{Procaccia14} using a \emph{very tricky} counterexample.
+
+    \vfill
+    
+    \begin{beamercolorbox}[wd=\textwidth,sep=1ex]{custombox}%
+      \putbib[partage-aamas]
+    \end{beamercolorbox}    
+  \end{bibunit}
+\end{frame}
+
+
+
+% \begin{frame}{Max-min fair share: special cases}
+%   \textbf{Special cases:} conjecture proved for:
+%   \begin{itemize}[<+->]
+%   \item Agents having same preferences (see definition)
+%   \item 2 agents: ``I cut, you choose''
+%   \item $\maxObjets < \maxAgents$ (strictly less objects than agents)
+%     or $\maxObjets = \maxAgents$ (matching)
+%   \item Preferences represented by \emph{scoring functions}:
+%     \begin{itemize}
+%     \item Each agent $\ag$ ranks all the objects (\textit{e.g} $3 \succ_\ag
+%       1 \succ_\ag 2 \succ_\ag 4$)
+%     \item A common \emph{scoring function} maps ranks to scores\\
+%       \ \hfill $g: \{1, \dots, \maxObjets\} \to \mathbb{N}$
+%     \item The weight of object $\ob$ for agent $\ag$ is computed using
+%       this function:\\
+%       \ \hfill $w_\ag(\ob) = g(rank_\ag(\ob))$.
+%     \end{itemize}
+%   \end{itemize}
+
+%   \pause\vfill
+
+%   \textbf{Experiments:} no counterexample found on thousands of random
+%   instances.
+
+%   \pause\vfill
+  
+%   \begin{center}
+%     \begin{tikzpicture}\usebeamercolor{structure}\small
+%       \draw[thick, fg, ->, >=latex] (0, 0) -- (0.8\textwidth, 0);
+%       \draw[fg] (0, 0) node[anchor=north] {\footnotesize weaker};
+%       \draw[fg] (0.8\textwidth, 0) node[anchor=north] {\footnotesize stronger};
+      
+%       \draw[fg, thick] (0.55\textwidth, -0.5ex) -- (0.55\textwidth, 0.5ex) node[above] {\bf envy-freeness};
+%       \draw[fg, thick] (0.25\textwidth, -0.5ex) -- (0.25\textwidth, 0.5ex) node[above] {\bf proportional fair share};
+%       \draw[fg, thick] (0.1\textwidth, -0.5ex) -- (0.1\textwidth, 0.5ex) node (MFS) {};
+%       \draw[fg, <-, >=latex] (MFS) -- ++(0, 1.5em) node[above, draw=fg, fill=fg!30!bg, rounded corners] {\bf max-min fair share};
+%     \end{tikzpicture}
+%   \end{center}
+% \end{frame}
+
+\begin{frame}{Min-max fair share}
+  \begin{itemize}
+  \item Max-min fair share: \textit{``I cut, you choose (I choose last)''}\pause
+  \item \textbf{Idea:} why not do the opposite (\textit{``Someone
+      cuts, I choose first''}) ?\\
+    \ \hfill $\to$ Min-max fair share
+  \end{itemize}
+
+  \pause\vfill
+
+  \begin{block}{Min-max fair share (mFS)}
+    The \emph{min-max fair share} of an agent $\ag$ is equal to:
+    \[
+    \umFS_\ag  \Def \min_{\Shares} \max_{\agp \in \Agents } u_\ag(\share_{\agp})
+    \]
+    
+    An allocation $\Shares$ satisfies \emph{min-max fair share}
+    (mFS) if every agent gets at least her min-max fair share.
+  \end{block}    
+
+  \pause\vfill
+
+  \begin{itemize}
+  \item mFS = the worst share an agent can get in a \textit{``Someone
+      cuts, I choose first''} game.
+  \item In the \emph{cake-cutting} case, same as PFS.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Min-max fair share: properties}
+  \textbf{Facts:}
+  \begin{itemize}
+  \item Computing $\umFS_\ag$ for a given agent is hard $\to$
+    \textbf{coNP}-complete [\textsc{Partition}]
+  \item Hence, deciding whether an allocation satisfies mFS is also
+    hard.
+  \item $\Shares$ satisfies mFS $\Rightarrow$ $\Shares$ satisfies PFS.
+  \item $\Shares$ is envy-free $\Rightarrow$ $\Shares$ satisfies mFS.
+  \end{itemize}
+
+  \pause\vfill
+  
+  \begin{center}
+    \begin{tikzpicture}\usebeamercolor{structure}\small
+      \draw[thick, fg, ->, >=latex] (0, 0) -- (0.8\textwidth, 0);
+      \draw[fg] (0, 0) node[anchor=north] {\footnotesize weaker};
+      \draw[fg] (0.8\textwidth, 0) node[anchor=north] {\footnotesize stronger};
+      
+      \draw[fg, thick] (0.55\textwidth, -0.5ex) -- (0.55\textwidth, 0.5ex) node[above] {\bf envy-freeness};
+      \draw[fg, thick] (0.25\textwidth, -0.5ex) -- (0.25\textwidth, 0.5ex) node[above] {\bf proportional fair share};
+      \draw[fg, thick] (0.1\textwidth, -0.5ex) -- (0.1\textwidth, 0.5ex) node (MFS) {};
+      \draw[fg, <-, >=latex] (MFS) -- ++(0, 1.5em) node[above] {\bf max-min fair share};
+      \draw[fg, thick] (0.4\textwidth, -0.5ex) -- (0.4\textwidth, 0.5ex) node (mFS) {};
+      \draw[fg, <-, >=latex] (mFS) -- ++(0, 1.5em) node[above, draw=fg, fill=fg!30!bg, rounded corners] {\bf min-max fair share};
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% \begin{frame}{Competitive Equilibrium from Equal Incomes}
+%   \begin{bibunit}[apalike]
+%     \begin{block}{Competitive Equilibrium from Equal Incomes (CEEI)}
+%       \begin{itemize}
+%       \item Set one price $p_\ob \leq \text{\EUR 1}$ for each object $\ob$.
+%       \item Give \EUR 1 to each agent $\ag$.
+%       \item Let $\share_\ag^\star$ be (among) the best share(s) agent
+%         $\ag$ can buy with her \EUR 1.
+%       \item If $(\share_1^\star, \dots, \share_\maxAgents^\star)$ is a
+%         valid allocation, it forms, together with $\Prices$, a
+%         \emph{CEEI}.
+%       \end{itemize}
+
+%       Allocation $\Shares$ satisfies CEEI if $\exists \Prices$ such
+%       that $(\Shares, \Prices)$ is a CEEI.
+%     \end{block}
+    
+%     \pause\vfill
+    
+%     \begin{itemize}
+%     \item Classical notion in economics \cite{Moulin95}
+%     \item Not so much studied in computer science (except \cite{Othman2010})
+%     \end{itemize}
+    
+%     \vfill
+    
+%     \begin{beamercolorbox}[wd=\textwidth,sep=1ex]{custombox}%
+%       \putbib[partage-aamas]
+%     \end{beamercolorbox}
+%   \end{bibunit}
+% \end{frame}
+
+\begin{frame}{Competitive Equilibrium from Equal Incomes}
+  \emph{Competitive Equilibrium from Equal Incomes}.\\
+  \textbf{Example}: 4 objects $\{1, 2, 3, 4\}$, 2 agents $\{1, 2\}$.
+
+  \vfill\pause
+  
+  \emph{Preferences:}
+
+  \ 
+
+  \begin{tabular}{|c|c|c|c|c|}
+    \multicolumn{1}{c}{}
+    & \multicolumn{1}{c}{\only<2>{\phantom{\tikz\node[rectangle callout, fill=structure.fg!80!bg, callout relative pointer={(0,-0.5)}] {\color{structure.fg!10!bg}\EUR 0.80};}}\only<3->{\tikz\node[rectangle callout, fill=structure.fg!80!bg, callout relative pointer={(0,-0.5)}] {\color{structure.fg!10!bg}\EUR 0.80};}}
+    & \multicolumn{1}{c}{\only<2>{\phantom{\tikz\node[rectangle callout, fill=structure.fg!80!bg, callout relative pointer={(0,-0.5)}] {\color{structure.fg!10!bg}\EUR 0.20};}}\only<3->{\tikz\node[rectangle callout, fill=structure.fg!80!bg, callout relative pointer={(0,-0.5)}] {\color{structure.fg!10!bg}\EUR 0.20};}}
+    & \multicolumn{1}{c}{\only<2>{\phantom{\tikz\node[rectangle callout, fill=structure.fg!80!bg, callout relative pointer={(0,-0.5)}] {\color{structure.fg!10!bg}\EUR 0.80};}}\only<3->{\tikz\node[rectangle callout, fill=structure.fg!80!bg, callout relative pointer={(0,-0.5)}] {\color{structure.fg!10!bg}\EUR 0.80};}}
+    & \multicolumn{1}{c}{\only<2>{\phantom{\tikz\node[rectangle callout, fill=structure.fg!80!bg, callout relative pointer={(0,-0.5)}] {\color{structure.fg!10!bg}\EUR 0.20};}}\only<3->{\tikz\node[rectangle callout, fill=structure.fg!80!bg, callout relative pointer={(0,-0.5)}] {\color{structure.fg!10!bg}\EUR 0.20};}}
+    \\    
+    \hline
+    & $1$ & $2$ & $3$ & $4$\\\hline
+    agent $1$ & {7} & {\only<4->{\color{fg!30!bg}}2} & {\only<4->{\color{fg!30!bg}}6} & 10\\\hline
+    agent $2$ & {\only<4->{\color{fg!30!bg}}7} & {6} & {8} & {\only<4->{\color{fg!30!bg}}4}\\\hline
+  \end{tabular}
+
+  \pause\vfill
+
+  \textit{For \EUR 1, what would you buy?}
+
+  \pause\vfill
+
+  \parbox{0.4\textwidth}{
+    \begin{itemize}
+    \item\textbf{Agent 1: } \textbf{1} and \textbf{4};
+    \item\textbf{Agent 2: } \textbf{2} and \textbf{3}.
+    \end{itemize}
+  }\pause\vrule\quad
+  \parbox{0.4\textwidth}{
+    \textbf{Disjoint shares!}
+  }
+
+  \pause\vfill
+
+  $\Rightarrow$ Allocation $\langle \{1, 4\}, \{2, 3\} \rangle$, with
+  prices $\langle 0.8, 0.2, 0.8, 0.2 \rangle$ forms a CEEI.
+
+  $\Rightarrow$ Allocation $\langle \{1, 4\}, \{2, 3\} \rangle$
+  satisfies CEEI.
+\end{frame}
+
+\begin{frame}{Competitive Equilibrium from Equal Incomes}
+  \begin{bibunit}[apalike]
+    \begin{itemize}
+    \item Classical notion in economics \cite{Moulin95}
+    \item Not so much studied in computer science (except \cite{Othman2010})
+    \end{itemize}
+    
+    \vfill
+    
+    \begin{beamercolorbox}[wd=\textwidth,sep=1ex]{custombox}%
+      \putbib[partage-aamas]
+    \end{beamercolorbox}
+  \end{bibunit}  
+
+  \vfill
+
+  Complexity supposedly hard, but still \textbf{open} (?).
+
+  \vfill%\pause
+
+  \textbf{Fact:} $\Shares$ satisfies CEEI $\Rightarrow$ $\Shares$ is envy-free.
+
+  \vfill\pause
+
+  \begin{center}
+    \begin{tikzpicture}\usebeamercolor{structure}\small
+      \draw[thick, fg, ->, >=latex] (0, 0) -- (0.8\textwidth, 0);
+      \draw[fg] (0, 0) node[anchor=north] {\footnotesize weaker};
+      \draw[fg] (0.8\textwidth, 0) node[anchor=north] {\footnotesize stronger};
+      
+      \draw[fg, thick] (0.55\textwidth, -0.5ex) -- (0.55\textwidth, 0.5ex) node[above] {\bf envy-freeness};
+      \draw[fg, thick] (0.25\textwidth, -0.5ex) -- (0.25\textwidth, 0.5ex) node[above] {\bf proportional fair share};
+      \draw[fg, thick] (0.1\textwidth, -0.5ex) -- (0.1\textwidth, 0.5ex) node (MFS) {};
+      \draw[fg, <-, >=latex] (MFS) -- ++(0, 1.5em) node[above] {\bf max-min fair share};
+      \draw[fg, thick] (0.4\textwidth, -0.5ex) -- (0.4\textwidth, 0.5ex) node (mFS) {};
+      \draw[fg, <-, >=latex] (mFS) -- ++(0, 1.5em) node[above] {\bf min-max fair share};
+      \draw[fg, thick] (0.7\textwidth, -0.5ex) -- (0.7\textwidth, 0.5ex) node (CEEI) {};
+      \draw[fg, <-, >=latex] (CEEI) -- ++(0, 1.5em) node[above, draw=fg, fill=fg!30!bg, rounded corners] {\bf CEEI};
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Interpretation}
+  \begin{center}
+    \begin{tikzpicture}\usebeamercolor{structure}\small
+      \draw[thick, fg, ->, >=latex] (0, 0) -- (0.8\textwidth, 0);
+      \draw[fg] (0, 0) node[anchor=north] {\footnotesize weaker};
+      \draw[fg] (0.8\textwidth, 0) node[anchor=north] {\footnotesize stronger};
+      
+      \draw[fg, thick] (0.55\textwidth, -0.5ex) -- (0.55\textwidth, 0.5ex) node[above] {\bf envy-freeness};
+      \draw[fg, thick] (0.25\textwidth, -0.5ex) -- (0.25\textwidth, 0.5ex) node[above] {\bf proportional fair share};
+      \draw[fg, thick] (0.1\textwidth, -0.5ex) -- (0.1\textwidth, 0.5ex) node (MFS) {};
+      \draw[fg, <-, >=latex] (MFS) -- ++(0, 1.5em) node[above] {\bf max-min fair share};
+      \draw[fg, thick] (0.4\textwidth, -0.5ex) -- (0.4\textwidth, 0.5ex) node (mFS) {};
+      \draw[fg, <-, >=latex] (mFS) -- ++(0, 1.5em) node[above] {\bf min-max fair share};
+      \draw[fg, thick] (0.7\textwidth, -0.5ex) -- (0.7\textwidth, 0.5ex) node (CEEI) {};
+      \draw[fg, <-, >=latex] (CEEI) -- ++(0, 1.5em) node[above] {\bf CEEI};
+    \end{tikzpicture}
+  \end{center}
+
+  \vfill
+
+  \begin{enumerate}
+  \item<2-> For all allocation $\Shares$:
+    \[
+    (\Verif{\CEEI}{\Shares}) \Rightarrow (\Verif{\EF}{\Shares})
+    \Rightarrow (\Verif{\mFS}{\Shares}) \Rightarrow
+    (\Verif{\PFS}{\Shares}) \Rightarrow (\Verif{\MFS}{\Shares})
+    \]
+    \ \hfill$\to$ the highest property $\Shares$ satisfies, the most
+    satisfactory it is.
+  \item<3-> If $\Inst{\mathcal{P}}$ is the set of instances s.t at
+    least one allocation satisfies $\mathcal{P}$:
+    \[
+    \InstCEEI \subset \InstEF \subset
+    \InstmFS \subset \InstPFS \subset \InstMFS \subset \Instances
+    \]
+    \ \hfill$\to$ the lowest subset, the less ``conflict-prone''.
+  \end{enumerate}
+
+  \vfill
+
+  \begin{overlayarea}{\textwidth}{3cm}
+    \only<4->{
+      \textbf{Two extreme examples:}
+      \begin{itemize}
+      \item 2 agents, 1 object $\to$ only in $\InstMFS$
+      \item 2 agents, 2 objects, with\\
+        \begin{tabular}{|c|c|c|}
+          \hline
+          & $1$ & $2$\\\hline
+          agent $1$ & 1000 & 0\\\hline
+          agent $2$ & 0 & 1000\\\hline
+        \end{tabular}
+        $\to$ in $\InstCEEI$ (with \textit{e.g.} $\Prices = \langle 1,
+        1\rangle$).
+      \end{itemize}
+    }
+  \end{overlayarea}
+\end{frame}
+
+
+% \section{Additional properties}
+
+% % \begin{frame}{Outline}
+% %   \tableofcontents[current]
+% % \end{frame}
+
+
+% \begin{frame}{Additional properties}
+%   \emph{1. Strict inclusions}\hfill
+%   $\InstCEEI \subset \InstEF \subset
+%   \InstmFS \subset \InstPFS \subset \InstMFS (= \Instances ?)$\\
+
+%   Are these inclusions strict? \pause Yes, they are, and we can prove
+%   it!
+
+%   \pause\vfill
+  
+%   \emph{2. Properties and egalitarianism?}
+  
+%   \begin{itemize}
+%   \item\emph{Envy-freeness:} question studied in [Brams and King, 2005]
+%   \item\emph{Max-min fair share:} egalitarian optimal
+%     allocations \emph{almost always satisfy} max-min fair share.
+%   \end{itemize}
+  
+%   \pause\vfill
+  
+%   \emph{3. Interpersonal comparison}
+
+%   \begin{itemize}
+%   \item Egalitarianism requires the preferences to be
+%     \emph{comparable}:
+%     \begin{itemize}
+%     \item either expressed on a same scale (\textit{e.g.} money)...
+%     \item ...or normalized (\textit{e.g.} Kalai-Smorodinsky)
+%     \end{itemize}
+%   \item The five fairness criteria introduced do not
+%     (\emph{independence of the individual utility scales}).
+%   \end{itemize}
+
+%   $\to$ This is a very appealing property.
+
+% \end{frame}
+
+
+% \begin{frame}{Strict inclusions?}  
+%   \[
+%   \InstCEEI \subset \InstEF \subset
+%   \InstmFS \subset \InstPFS \subset \InstMFS (= \Instances ?)
+%   \]
+
+%   \ 
+
+%   Are these inclusions strict?
+
+%   \pause
+
+%   \begin{itemize}
+%   \item From MFS to PFS: two agents, one object.
+%   \item From PFS to mFS: an example with 3 agents, 3 objects
+%     found.
+%   \item From mFS to EF: not straightforward, but one example with
+%     3 agents, 4 objects found.
+%   \item From EF to CEEI: no example found\fup{1}, but very likely to
+%     be strict by computational complexity arguments.
+%   \end{itemize}
+
+%   \vfill
+
+%   \hrule
+%   \vskip0.1cm
+%   {\footnotesize\fup{1} because it seems algorithmically hard to
+%     compute a CEEI...}
+% \end{frame}
+
+% \begin{frame}{Back to egalitarianism...}
+%   Other approach to fairness... Find an allocation $\Shares$ that:
+%   \begin{enumerate}
+%   \item maximizes the collective utility defined by a \emph{collective utility function},\\
+%     \ \hfill \textit{e.g.} $uc(\Shares) = \min_{\ag \in \Agents}
+%     u(\share_\ag)$ -- egalitarian solution
+%   \end{enumerate}
+  
+%   \pause\vfill
+
+%   To which extent is it compatible with the property-based approach?
+
+%   \pause\vfill
+  
+%   \begin{bibunit}[apalike]
+%     \begin{itemize}
+%     \item<3-> \emph{Envy-freeness:} question studied in \cite{BramsKing05}
+%     \item<4-> \emph{Max-min fair share:} egalitarian optimal
+%       allocations \emph{almost always satisfy} max-min fair share.\\
+%       \ \\
+%       \begin{tabular}{|c|c|c|c|c|l}
+%         \cline{1-5}
+%         & 1 & 2 & 3 & 4 & \\\cline{1-5}
+%         agent 1 & 58 &\dag 15 &\dag *19 &  8  & $\rightarrow$ *19 / \dag34\\\cline{1-5}
+%         agent 2 & \dag 63 &*5 & 25 & *7 & $\rightarrow$ *12 / \dag63 \\\cline{1-5}
+%         agent 3 & 37 &10 & *27 & \dag26 & $\rightarrow$ *27 / \dag26 \\\cline{1-5}
+%       \end{tabular}\\
+%       {
+%         \footnotesize
+%         \textbf{3 agents, 4 objects:}
+%         about 1 counterexample for 3500 instances
+%       }
+%     \end{itemize}
+    
+%     \vfill
+    
+%     \begin{beamercolorbox}[wd=\textwidth,sep=1ex]{custombox}%
+%       \putbib[partage-aamas]
+%     \end{beamercolorbox}
+%   \end{bibunit}
+% \end{frame}
+
+% \begin{frame}{Interpersonal comparison}
+%   \textbf{Note:}
+%   \begin{itemize}
+%   \item Egalitarianism requires the preferences to be
+%     \emph{comparable}:
+%     \begin{itemize}
+%     \item either expressed on a same scale (\textit{e.g.} money)...
+%     \item ...or normalized (\textit{e.g.} Kalai-Smorodinsky)
+%     \end{itemize}
+%   \item The five fairness criteria introduced do not
+%     (\emph{independence of the individual utility scales}).
+%   \end{itemize}
+
+%   $\to$ This is a very appealing property.
+% \end{frame}
+
+
+% \section{A glimpse beyond additive preferences}
+
+% \begin{frame}{Outline}
+%   \tableofcontents[current]
+% \end{frame}
+
+% % \begin{frame}{$k$-additive preferences}
+% %   \begin{itemize}
+% %   \item Additive preferences are nice but have a limited
+% %     expressiveness.
+% %   \item<2-> \textbf{Examples:}
+% %     \begin{itemize}
+% %     \item the pair of skis and the pair of ski poles (complementarity)\\
+% %       \ \hfill\ \only<3->{$\to$ $u(\{skis, poles\}) > u(skis) + u(poles)$}
+% %     \item the pair of skis and the snowboard (substitutability)\\
+% %       \ \hfill\ \only<4->{$\to$ $u(\{skis, snowboard\}) < u(skis) +
+% %         u(snowboard)$}
+% %     \end{itemize}
+% %   \end{itemize}
+
+% %   \vfill
+
+% %   \begin{overlayarea}{\textwidth}{2cm}
+% %     \only<5->{
+% %       \begin{block}{$k$-additive preferences}
+% %         A weight $w(\mathcal{S})$ to each subset $\mathcal{S}$ of
+% %         objects (not only singletons) of size $\leq k$.
+
+% %         \textbf{Note:} additive = 1-additive
+% %       \end{block}
+% %     }
+% %   \end{overlayarea}
+  
+% %   \vfill
+
+% %   \begin{overlayarea}{\textwidth}{3cm}
+% %     \only<6->{
+% %       \textbf{Examples:}
+% %       \begin{itemize}
+% %       \item $w(skis) = 10$; $w(poles) = 0$; $w(\{skis, poles\}) = 90$\\
+% %         \ \hfill $\to$ $u(\{skis, poles\}) = 100 > 10 + 0$
+% %       \item $w(skis) = 100$; $w(snowboard) = 100$; $w(\{skis, snowboard\})
+% %         = -100$\\
+% %         \ \hfill $\to$ $u(\{skis, snowboard\}) = 100 < 100 + 100$
+% %       \end{itemize}
+% %     }
+% %   \end{overlayarea}
+% % \end{frame}
+
+% \begin{frame}{MFS and $k$-additive preferences}
+%   \begin{block}{Reminder}
+%     For \textbf{additive preferences} we can almost always find an allocation
+%     satisfying max-min fair share.
+%   \end{block}
+  
+%   \pause\vfill
+
+%   For $k$-additive preferences ($k \geq 2$) this is obviously not true:\\
+
+%   \ 
+
+%   \textbf{Example:} 4 objects, 2 agents\\
+%   \scalebox{0.8}{
+%     \begin{tikzpicture}
+%       \useasboundingbox (-0.25, -0.75) rectangle (5, 2.75);
+%       \draw[thick] (0, 0) node[draw, cross out, inner sep=1pt] (a) {};
+%       \draw[thick] (2, 0) node[draw, cross out, inner sep=1pt] (b) {};
+%       \draw[thick] (2, 2) node[draw, cross out, inner sep=1pt] (c) {};
+%       \draw[thick] (0, 2) node[draw, cross out, inner sep=1pt] (d) {};
+      
+%       \draw (a.north) node[anchor=south] {1};
+%       \draw (b.north) node[anchor=south] {2};
+%       \draw (c.north) node[anchor=south] {3};
+%       \draw (d.north) node[anchor=south] {4};
+      
+%       \only<3->{
+%         \draw[opacity=0.4] (1, 0) node[draw=blue, thick, fill=blue!50!white, shape=ellipse, minimum width=2.5cm, minimum height=1cm] {};
+%         \draw[opacity=0.4] (1, 2) node[draw=blue, thick, fill=blue!50!white, shape=ellipse, minimum width=2.5cm, minimum height=1cm] {};
+%         \draw[blue] (3, 2) node[anchor=west] {Agent 1: $w(\{1,2\}) = w(\{3,4\}) = 1$ $\to$ $\uMFS_1 = 1$};
+%       }
+      
+%       \only<4->{
+%         \draw[opacity=0.4] (0, 1) node[draw=red, thick, fill=red!50!white, shape=ellipse, minimum height=2.5cm, minimum width=1cm] {};
+%         \draw[opacity=0.4] (2, 1) node[draw=red, thick, fill=red!50!white, shape=ellipse, minimum height=2.5cm, minimum width=1cm] {};
+%         \draw[red] (3, 1.5) node[anchor=west] {Agent 2: $w(\{1,4\}) = w(\{2,3\}) = 1$  $\to$ $\uMFS_2 = 1$};
+%       }
+%     \end{tikzpicture}
+%   }
+
+%   \begin{overlayarea}{\textwidth}{1cm}
+%     \only<5->{
+%       Worse\dots Deciding whether there exists one is
+%       \textbf{NP}-complete [\textsc{Partition}].
+%     }
+%   \end{overlayarea}
+% \end{frame}
+
+\section{Conclusion}
+
+% \begin{frame}{Outline}
+%   \tableofcontents[current]
+% \end{frame}
+
+\begin{frame}{Take-away message}
+  A scale of properties (for numerical additive preferences)...
+
+  \scalebox{0.7}{
+    \begin{tikzpicture}
+      \useasboundingbox (0, 0) rectangle (10, 5);
+      \only<2->{\draw[opacity=0.4, thick,draw=red, fill=red!50!white] (0, 0) rectangle (1.5, 1);}
+      \only<3->{\draw[opacity=0.4, thick,draw=red!50!orange, fill=red!50!orange!50!white] (0, 1) rectangle (1.5, 2);}
+      \only<4->{\draw[opacity=0.4, thick,draw=orange, fill=orange!50!white] (0, 2) rectangle (1.5, 3);}
+      \only<5->{\draw[opacity=0.4, thick,draw=orange!50!green, fill=orange!50!green!50!white] (0, 3) rectangle (1.5, 4);}
+      \only<6->{\draw[opacity=0.4, thick,draw=green!60!black, fill=green!60!black!50!white] (0, 4) rectangle (1.5, 5);}
+      
+      \only<2->{\draw (2, 0.5) node[anchor=west, text width=8cm] {{\color{red} \bf Max-min fair share}\\Almost always possible to satisfy it};}
+      \only<3->{\draw (2, 1.5) node[anchor=west, text width=8cm] {{\color{red!50!orange}\bf Proportional fair share}\\Cannot be satisfied \textit{e.g.} in the 1 object, 2 agents case};}
+      \only<4->{\draw[orange] (2, 2.5) node[anchor=west] {\bf Min-max fair share};}
+      \only<5->{\draw (2, 3.5) node[anchor=west, text width=8cm] {{\color{orange!50!green}\bf Envy-freeness}\\Requires somewhat complementary preferences};}
+      \only<6->{\draw (2, 4.5) node[anchor=west, text width=8cm] {{\color{green!60!black}\bf Competitive Equilibrium from Equal Incomes}\\Requires complementary preferences};}
+    \end{tikzpicture}
+  }
+
+  \vfill
+
+  \begin{overlayarea}{\textwidth}{2.5cm}
+    \only<7->{
+      A possible approach to fairness in multiagent resource allocation problems:
+      \begin{enumerate}
+      \item Determine the highest satisfiable criterion.
+      \item Find an allocation that satisfies this criterion.
+      \item Explain to the upset agents that we cannot do much better.
+      \end{enumerate}
+    }
+  \end{overlayarea}
+\end{frame}
+
+\begin{frame}{What else}
+  Some other results (see the paper)\dots
+  \begin{itemize}
+  \item All the inclusions are strict
+  \item Link with egalitarianism
+  \item Experimental results
+  \item A glimpse beyond additive preferences
+  \end{itemize}
+
+  \pause\vfill
+
+  Some future directions\dots
+
+  \begin{itemize}
+  \item Some missing complexity results.
+  \item Develop efficient \emph{algorithms}
+  \item More \emph{experiments}
+  \item Extend to \emph{more expressive preference languages}
+    (including ordinal ones...).
+  \end{itemize}
+\end{frame}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

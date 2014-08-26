@@ -1,0 +1,151 @@
+\usepackage{stmaryrd}                  % Pour avoir les d\'elimiteurs entiers
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xspace}
+
+\newcommand{\Omit}[1]{}
+\newcommand{\fixme}[1]{{\small\color{red}[FIXME : #1]}}
+\definecolor{mybeautifulcyan}{rgb}{0.08,0.58,0.89}
+\newcommand{\sylvain}[1]{{\small\color{mybeautifulcyan}[Sylvain : #1]}}
+\newcommand{\michel}[1]{{\small\color{green}[Michel : #1]}}
+
+% --------- ensembles célèbres
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rplus}{\R^+}
+
+
+% -------- variables
+%\newcommand{\Var}[1]{\mathbf{#1}}
+%\newcommand{\Dom}[1]{\mathrm{Dom}(#1)}
+%\newcommand{\EnsVar}[1]{\mathbf{#1}}
+
+\newcommand{\ens}[1]{\mathcal{#1}}
+%\newcommand{\vect}[1]{\boldsymbol{\mathbf{#1}}}        
+\newcommand{\vect}[1]{\overrightarrow{#1}}
+\newcommand{\setsof}[1]{\wp(#1)}     
+\newcommand{\mat}[1]{\vect{#1}}
+%\newcommand{\matrices}[3]{\mathcal{M}_{#1, #2}(#3)}
+\newcommand{\multiens}[1]{\{\!\!\{#1\}\!\!\}}
+
+%--------- logique
+% \newcommand{\If}{\mathbf{if}}
+% \newcommand{\Otherwise}{\mathbf{otherwise}}
+
+%--------- divers
+\newcommand{\Def}{\buildrel\hbox{\tiny \textit{def}}\over =}
+\newcommand{\tq}{\ |\ }
+\DeclareMathOperator*{\esp}{E}
+\DeclareMathOperator*{\esppr}{E_{\Pr}}
+\DeclareMathOperator{\argmax}{argmax}
+\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\leximin}{leximin}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\variance}{Var}
+\newcommand{\Variance}[1]{\variance(#1)}
+
+\newtheorem{defin}{Définition}
+\newtheorem{prop}{Proposition}
+\newtheorem{exemple}{Exemple}
+\newtheorem{remarque}{Remarque}
+\newtheorem{lemme}{Lemme}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{corollaire}{Corollaire}
+
+%\renewcommand{\qedsymbol}{$\blacksquare$}
+\theoremstyle{nonumberplain}
+%\theorembodyfont{\normalfont}
+%\theoremsymbol{\qedsymbol}
+
+%------------ macros specifiques pour l'article
+
+% lettre pour agents, objets
+\newcommand{\Ag}{A} 
+\newcommand{\Ob}{O}
+\newcommand{\ag}{i}
+\newcommand{\agp}{j}
+\newcommand{\ob}{o}
+
+\newcommand{\Agents}{{\ens{\Ag}}}
+\newcommand{\maxAgents}{{n}}
+\newcommand{\Objets}{{\ens{\Ob}}}
+\newcommand{\maxObjets}{{m}}
+
+\newcommand{\score}{g}
+\newcommand{\rang}{r}
+
+\newcommand{\Poids}{W}
+\newcommand{\poids}{w}
+
+\newcommand{\share}{\pi}
+\newcommand{\Shares}{\vect{\share}}
+
+\newcommand{\price}{p}
+\newcommand{\Prices}{\vect{\price}}
+
+\newcommand{\Ut}{u}     % utilité individuelle
+\newcommand{\Utc}{cu}   % utilité collective
+
+\newcommand{\pb}{problème de partage de biens indivisibles à
+préférences additives\xspace}
+\newcommand{\jpp}{juste part proportionnelle\xspace}
+\newcommand{\jpM}{juste part max-min\xspace}
+\newcommand{\jpm}{juste part min-max\xspace}
+
+
+\newcommand{\PFS}{\mathrm{PFS}}   % proportional fair share property
+\newcommand{\MFS}{\mathrm{MFS}} % maxmin fair share property
+\newcommand{\mFS}{\mathrm{mFS}}  % minmax fair share property
+\newcommand{\EF}{\mathrm{EF}}  % envy-free property
+\newcommand{\CEEI}{\mathrm{CEEI}}  % CEEI property
+
+\newcommand{\Instances}{\mathcal{I}}
+\newcommand{\Inst}[1]{\mathcal{I}_{| #1}}
+\newcommand{\InstPFS}{\Inst{\PFS}}   % proportional fair share property
+\newcommand{\InstMFS}{\Inst{\MFS}} % maxmin fair share property
+\newcommand{\InstmFS}{\Inst{\mFS}}  % minmax fair share property
+\newcommand{\InstEF}{\Inst{\EF}}  % envy-free property
+\newcommand{\InstCEEI}{\Inst{\CEEI}}  % CEEI property
+
+\newcommand{\Verif}[2]{#2 \vDash #1}
+
+\newcommand{\uPFS}{u^\PFS}   
+\newcommand{\uMFS}{u^\MFS}
+\newcommand{\umFS}{u^\mFS}
+
+\newcommand{\Adm}{{\cal F}}
+
+\newcommand{\llb}{\llbracket}
+\newcommand{\rrb}{\rrbracket}
+
+\newcommand{\pol}{\textsf{P}\xspace}
+\newcommand{\np}{\textsf{NP}\xspace}
+\newcommand{\conp}{\textsf{coNP}\xspace}
+\newcommand{\DP}{\textsf{DP}\xspace}
+\newcommand{\bhdeux}{$\mathsf{BH_2}$\xspace}
+\newcommand{\Prob}[1]{\textsc{[#1]}}
+\newcommand{\sigmaDeuxP}{$\mathsf{\Sigma_2^P}$\xspace}
+
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\newcounter{problem}
+\newcommand{\EP}[3]{
+  \refstepcounter{problem}
+  \smallskip
+  \begin{center}
+    {\small
+      \begin{tabularx}{\columnwidth}{ll}
+        \toprule
+        \multicolumn{2}{c}{Problème~\theproblem\quad\Prob{#1}} \\
+        \midrule
+        {\bf Entrée :} & \parbox[t]{0.70\columnwidth}{#2\vspace*{1mm}} \\
+        {\bf Question :}& \parbox[t]{0.70\columnwidth}{#3\vspace*{.5mm}} \\
+        \bottomrule
+      \end{tabularx}
+    }
+  \end{center}
+  \smallskip
+}
+

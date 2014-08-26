@@ -1,0 +1,137 @@
+\setbeamertemplate{title page}{
+  \global\def\progressbar@intitle{t}
+  \edef\tempa{picture}
+  \ifx\progressbar@titlepage\tempa
+  \setbeamertemplate{background canvas}[progressbar theme title]
+  \vfill
+  \parbox[t]{0.28\textwidth}{
+    \ \\
+    \pgfimage[width=0.27\textwidth]{\progressbar@imagename}
+  }\hfill
+  \parbox[t]{0.7\textwidth}{
+    \ \\
+    {\usebeamercolor{title}{\usebeamerfont{title}\color{fg}\inserttitle}}
+    \ifx\insertsubtitle\@empty\\[\baselineskip]
+    \else{\\\usebeamerfont{subtitle}\usebeamercolor{subtitle}{\color{fg}\insertsubtitle}}\\\fi
+    {\usebeamercolor{title}\color{fg}\hrule}\vskip\baselineskip
+    \ifx\insertauthor\@empty\ \\
+    \else{\usebeamerfont{author}\usebeamercolor{author}{\color{fg}\insertauthor}}\\\fi
+    \vskip\baselineskip
+    \usebeamercolor{title}\color{fg}
+    \rule{1cm}{0.5pt}\\
+    \ifx\insertdate\@empty\ \\
+    \else{\usebeamerfont{date}\usebeamercolor{date}{\color{fg}\insertdate}}\\\fi
+  }
+  \vfill
+  \else
+  \pgfdeclarehorizontalshading{separationtitlepagelineshading}{0.5pt}{color(0cm)=(bg); 
+    color(0.5\textwidth)=(structure.fg); color(\textwidth)=(bg)}
+  \begin{center}
+    \vfill
+    {\usebeamerfont{title}\usebeamercolor{title}{\color{fg}\inserttitle}}
+
+    \ifx\insertsubtitle\@empty 
+    \else{\usebeamerfont{subtitle}\usebeamercolor{subtitle}{\color{fg}\insertsubtitle}}\\[\baselineskip]\fi
+
+    \pgfuseshading{separationtitlepagelineshading}
+    \ifx\insertauthor\@empty\ \\
+    \else{\usebeamerfont{author}\usebeamercolor{author}{\color{fg}\insertauthor}}\\\fi
+    \ifx\insertdate\@empty\ \\
+    \else{\usebeamerfont{date}\usebeamercolor{date}{\color{fg}\insertdate}}\\\fi
+    \ifx\insertinstitute\@empty 
+    \else{\usebeamerfont{institute}\usebeamercolor{institute}{\color{fg}\insertinstitute}}\\\fi
+    \insertlogo
+    \pgfuseshading{separationtitlepagelineshading}
+    \vfill
+  \end{center}
+  \fi
+}
+
+\setbeamertemplate{background canvas}{
+  \if\progressbar@intitle\relax
+  \pgfuseshading{background shading}
+  \else
+  \pgfuseshading{background shading title}
+  \begin{tikzpicture}[remember picture,overlay]
+    \path[clip] (current page.north west) rectangle (current page.south east);
+    \fill [fill=white!60!section in head/foot.bg,ultra nearly transparent] (current page.south east) ++ (0cm, -2.1\paperheight) circle (3\paperheight);
+    \fill [fill=white!60!section in head/foot.bg,ultra nearly transparent] (current page.south east) ++ (0cm, -2.5\paperheight) circle (3.4\paperheight);
+    \fill [fill=white!60!section in head/foot.bg,ultra nearly transparent] (current page.south east) ++ (0cm, -4.12\paperheight) circle (5\paperheight);
+    
+    \fill [fill=black!60!section in head/foot.bg,ultra nearly transparent] (current page.north east) ++ (-0.5\paperheight, 2.1\paperheight) circle (3\paperheight);
+    \fill [fill=black!60!section in head/foot.bg,ultra nearly transparent] (current page.north east) ++ (-0.5\paperheight, 5.1\paperheight) circle (6\paperheight);
+    \fill [fill=black!60!section in head/foot.bg,ultra nearly transparent] (current page.north east) ++ (-0.5\paperheight, 6.08\paperheight) circle (7\paperheight);
+    
+    \fill [fill=white!40!section in head/foot.bg,ultra nearly transparent] (current page.south east) ++ (0.9\paperwidth, -0.5\paperheight) circle (1.85\paperwidth);
+    \fill [fill=black!60!section in head/foot.bg,ultra nearly transparent] (current page.south east) ++ (0.6\paperwidth, -0.5\paperheight) circle (1.52\paperwidth);
+  \end{tikzpicture}
+  \global\def\progressbar@intitle{\relax}
+  \fi
+}%
+
+
+\AtBeginDocument{%
+  {
+    \usebeamercolor{section in head/foot}
+    \usebeamercolor{normal text}
+    \pgfdeclareverticalshading{background shading}{\the\paperwidth}{color(0cm)=(black!20!white);color(0.2\paperheight)=(black!10!white);color(\paperheight)=(white)
+    }
+    \pgfdeclareverticalshading{background shading title}{\the\paperwidth}{color(0cm)=(section in head/foot.bg);color(\paperheight)=(black!60!section in head/foot.bg)
+    }
+    \global\def\progressbar@intitle{\relax}
+  }
+}
+
+
+\setbeamertemplate{frametitle}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.15\paperheight,dp=0ex]{structure.fg}%
+    \begin{tikzpicture}
+      \useasboundingbox (0, 0) rectangle (\paperwidth, -0.21\paperheight);    
+      \shade[top color=black, bottom color=white, opacity=1] (0, -0.199\paperheight) rectangle ++(\paperwidth, -0.011\paperheight);
+      \shade[top color=black!50!progressbar@fgblue, bottom color=progressbar@fgblue,opacity=1] (0, 0) rectangle ++(\paperwidth, -0.2\paperheight);
+      \draw (0.05\paperwidth, -0.1\paperheight) node[anchor=west] (im) {\pgfuseimage{headlineimage}};
+      \draw (im.east) ++(0.02\paperwidth, 0) node[anchor=west] {\parbox[c]{0.85\textwidth}{
+          \usebeamercolor{frametitle}{\scriptsize \ifx\insertsection\@empty\ \else\insertsection\fi}\\[-0.3cm]\rule{0.7\textwidth}{0.5pt}\par%\vskip-1cm\rule{0.7\textwidth}{0.5pt}\par
+          \textbf{\vphantom{Hp}\insertframetitle}
+        }
+      };
+    \end{tikzpicture}
+  \end{beamercolorbox}
+}
+
+
+\linespread{1.1}
+
+\setbeamercolor{normal text}{fg=black!90!white,bg=bg}
+\usepackage{iwona}
+
+\setbeamercolor{custombox}{bg=structure.fg!30!structure.bg,fg=structure.fg}
+
+\setlength{\arrayrulewidth}{0.5pt}
+
+\pgfdeclareimage[width=0.4cm,interpolate=true]{documentImage}{images/document.png}
+
+\setbeamertemplate{bibliography item}{
+  \parbox{0.6cm}{
+    \raggedleft
+    \pgfuseimage{documentImage}
+  }
+}
+
+\setbeamertemplate{itemize item}{\begin{tikzpicture}\fill[thin, draw=fg!10!bg, fill=fg!60!bg] (0, 0) circle (0.05);\end{tikzpicture}%
+}
+
+\setbeamertemplate{enumerate item}{\raisebox{-1ex}{\begin{tikzpicture}\draw node (a) {\small\color{fg!70!bg}\textbf{\insertenumlabel} \quad\ };\draw[thick, fg!70!bg] (a.south east) -- (a.north east);\end{tikzpicture}}}
+  
+
+
+
+% \setbeamertemplate{enumerate item}{\raisebox{-0.5ex}{\scalebox{0.6}{\begin{tikzpicture}\node [draw=bg, fill=fg!80!bg, inner sep=2pt, circle] {\small\color{black!10!bg}\textbf{\insertenumlabel}};\end{tikzpicture}}}
+% }
+
+\setbeamertemplate{section in toc}
+{\leavevmode%
+  \raisebox{-1ex}{\begin{tikzpicture}\draw node (a) {\small\color{fg!70!bg}\textbf{\inserttocsectionnumber} \quad\ };\draw[thick, fg!70!bg] (a.south east) -- (a.north east);\end{tikzpicture}}
+  \inserttocsection\par
+}
+

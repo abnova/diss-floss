@@ -1,0 +1,3717 @@
+% -*- coding: utf-8 -*-
+
+% UAI, AAMAS, KR, EC
+
+
+@STRING{AI = "Artificial Intelligence"}
+@STRING{JAIR = "Journal of Artificial Intelligence Research"}
+@STRING{RIA = "Revue d'Intelligence Artificielle"}
+@STRING{CI = "Computational Intelligence"}
+@STRING{IPL = "Information Processing Letters"}
+@STRING{IJAIT = "International Journal of Artificial
+		  Intelligence Tools"}
+@STRING{JACM = "Journal of the ACM"}
+
+
+@STRING{EC99P = "Proceedings of the 1st ACM Conference on Electronic Commerce (EC-99)"}
+@STRING{EC99L = "Denver, CO"}
+@STRING{EC99M = nov}
+@STRING{EC99PB = "ACM"}
+@STRING{EC00P = "Proceedings of the 2nd ACM Conference on Electronic Commerce (EC-00)"}
+@STRING{EC00L = "Minneapolis, MN"}
+@STRING{EC00M = oct}
+@STRING{EC00PB = "ACM"}
+@STRING{EC01P = "Proceedings of the 3rd ACM Conference on Electronic Commerce (EC-01)"}
+@STRING{EC01L = "Tampa, FL"}
+@STRING{EC01M = oct}
+@STRING{EC01PB = "ACM"}
+@STRING{EC03P = "Proceedings of the 4th ACM Conference on Electronic Commerce (EC-03)"}
+@STRING{EC03L = "San Diego, CA"}
+@STRING{EC03M = jun}
+@STRING{EC03PB = "ACM"}
+@STRING{EC04P = "Proceedings of the 5th ACM Conference on Electronic Commerce (EC-04)"}
+@STRING{EC04L = "New York, NY"}
+@STRING{EC04M = may}
+@STRING{EC04PB = "ACM"}
+@STRING{EC05P = "Proceedings of the 6th ACM Conference on Electronic Commerce (EC-05)"}
+@STRING{EC05L = "Vancouver, British Columbia, Canada"}
+@STRING{EC05M = jun}
+@STRING{EC05PB = "ACM"}
+@STRING{EC06P = "Proceedings of the 7th ACM Conference on Electronic Commerce (EC-06)"}
+@STRING{EC06L = "Ann Arbor, MI"}
+@STRING{EC06M = jun}
+@STRING{EC06PB = "ACM"}
+@STRING{EC06E =	 "Gerhard Brewka and Silvia Coradeschi and Anna Perini and Paolo Traverso"}
+
+
+@STRING{UAI94P = "Proceedings of the 10th Conference on Uncertainty in Artificial Intelligence (UAI-94)"}
+@STRING{UAI94L = "Seattle, WA"}
+@STRING{UAI94M = jul}
+@STRING{UAI94E = "Ramon López de Mántaras and David Poole"}
+@STRING{UAI94PB = "Morgan Kaufmann"}
+@STRING{UAI95P = "Proceedings of the 11th Conference on Uncertainty in Artificial Intelligence (UAI-95)"}
+@STRING{UAI95L = "Montr{\'e}al, Canada"}
+@STRING{UAI95M = aug}
+@STRING{UAI95E = "Philippe Besnard and Steve Hanks"}
+@STRING{UAI95PB = "Morgan Kaufmann"}
+@STRING{UAI01P = "Proceedings of the 17th Conference on Uncertainty in Artificial Intelligence (UAI-01)"}
+@STRING{UAI01L = "Washington, DC"}
+@STRING{UAI01M = aug}
+@STRING{UAI01E = "Jack S. Breese and Daphne Koller"}
+@STRING{UAI01PB = "Morgan Kaufmann"}
+@STRING{UAI02P = "Proceedings of the 18th Conference on Uncertainty in Artificial Intelligence (UAI-02)"}
+@STRING{UAI02L = "Edmonton, Alberta, Canada"}
+@STRING{UAI02M = aug}
+@STRING{UAI02E = "Adnan Darwiche and Nir Friedman"}
+@STRING{UAI02PB = "Morgan Kaufmann"}
+@STRING{UAI04P = "Proceedings of the 20th Conference on Uncertainty in Artificial Intelligence (UAI-04)"}
+@STRING{UAI04L = "Banff, Canada"}
+@STRING{UAI04M = jul}
+@STRING{UAI04E = "David Maxwell Chickering and Joseph Y. Halpern"}
+@STRING{UAI04PB = "AUAI Press"}
+@STRING{UAI07P = "Proceedings of the 23rd Conference on Uncertainty in Artificial Intelligence (UAI-07)"}
+@STRING{UAI07L = "Vancouver, Canada"}
+@STRING{UAI07M = jul}
+@STRING{UAI07PB = "AAAI Press"}
+
+@STRING{AAMAS02P = "Proceedings of the 1st International Joint Conference on Autonomous Agents and Multiagent Systems (AAMAS-02)"}
+@STRING{AAMAS02L = "Bologna, Italy"}
+@STRING{AAMAS02M = jul}
+@STRING{AAMAS02PB = "AACM"}
+@STRING{AAMAS03P = "Proceedings of the 2nd International Joint Conference on Autonomous Agents and Multiagent Systems (AAMAS-03)"}
+@STRING{AAMAS03L = "Melbourne, Australia"}
+@STRING{AAMAS03M = jul}
+@STRING{AAMAS03PB = "ACM"}
+@STRING{AAMAS04P = "Proceedings of the 3rd International Joint Conference on Autonomous Agents and Multiagent Systems (AAMAS-04)"}
+@STRING{AAMAS04L = "New York, NY"}
+@STRING{AAMAS04M = jul}
+@STRING{AAMAS04PB = "IEEE Computer Society"}
+@STRING{AAMAS05P = "Proceedings of the 4th International Joint Conference on Autonomous Agents and Multiagent Systems (AAMAS-05)"}
+@STRING{AAMAS05L = "Utrecht, The Netherlands"}
+@STRING{AAMAS05M = jul}
+@STRING{AAMAS05E = "Frank Dignum and Virginia Dignum and Sven Koenig and Sarit Kraus and Munindar P. Singh and Michael Wooldridge"}
+@STRING{AAMAS05PB = "ACM"}
+@STRING{AAMAS06P = "Proceedings of the 5th International Joint Conference on Autonomous Agents and Multiagent Systems (AAMAS-06)"}
+@STRING{AAMAS06L = "Hakodate, Japan"}
+@STRING{AAMAS06M = may}
+@STRING{AAMAS06E = "Hideyuki Nakashima and Michael P. Wellman and Gerhard Weiss and Peter Stone"}
+@STRING{AAMAS06PB = "ACM"}
+
+@STRING{KR89P = "Proceedings of the 1st International Conference on Principles of Knowledge Representation and Reasoning (KR-89)"}
+@STRING{KR89L = "Toronto, Canada"}
+@STRING{KR89M = may}
+@STRING{KR89E = "Ronald J. Brachman and Hector J. Levesque and Raymond Reiter"}
+@STRING{KR89PB = "Morgan Kaufmann"}
+@STRING{KR91P = "Proceedings of the 2nd International Conference on Principles of Knowledge Representation and Reasoning (KR-91)"}
+@STRING{KR91L = "Cambridge, MA"}
+@STRING{KR91M = apr}
+@STRING{KR91E = "James F. Allen and Richard Fikes and Erik Sandewall"}
+@STRING{KR91PB = "Morgan Kaufmann"}
+@STRING{KR92P = "Proceedings of the 3rd International Conference on Principles of Knowledge Representation and Reasoning (KR-92)"}
+@STRING{KR92L = "Cambridge, MA"}
+@STRING{KR92M = oct}
+@STRING{KR92E = "Bernhard Nebel and Charles Rich and William R. Swartout"}
+@STRING{KR92PB = "Morgan Kaufmann"}
+@STRING{KR94P = "Proceedings of the 4th International Conference on Principles of Knowledge Representation and Reasoning (KR-94)"}
+@STRING{KR94L = "Bonn, Germany"}
+@STRING{KR94M = may}
+@STRING{KR94E = "Jon Doyle and Erik Sandewall and Pietro Torasso"}
+@STRING{KR94PB = "Morgan Kaufmann"}
+@STRING{KR96P = "Proceedings of the 5th International Conference on Principles of Knowledge Representation and Reasoning (KR-96)"}
+@STRING{KR96L = "Cambridge, MA"}
+@STRING{KR96M = nov}
+@STRING{KR96E = "Luigia Carlucci Aiello and Jon Doyle and Stuart C. Shapiro"}
+@STRING{KR96PB = "Morgan Kaufmann"}
+@STRING{KR98P = "Proceedings of the 6th International Conference on Principles of Knowledge Representation and Reasoning (KR-98)"}
+@STRING{KR98L = "Trento, Italy"}
+@STRING{KR98M = jun}
+@STRING{KR98E = "Anthony G. Cohn and Lenhard K. Schubert and Stuart C. Shapiro"}
+@STRING{KR98PB = "Morgan Kaufmann"}
+@STRING{KR00P = "Proceedings of the 7th International Conference on Principles of Knowledge Representation and Reasoning (KR-00)"}
+@STRING{KR00L = "Breckenridge, CO"}
+@STRING{KR00M = apr}
+@STRING{KR00E = "Anthony G. Cohn and Fausto Giunchiglia and Bart Selman"}
+@STRING{KR00PB = "Morgan Kaufmann"}
+@STRING{KR02P = "Proceedings of the 8th International Conference on Principles of Knowledge Representation and Reasoning (KR-02)"}
+@STRING{KR02L = "Toulouse, France"}
+@STRING{KR02M = apr}
+@STRING{KR02E = "Dieter Fensel and Fausto Giunchiglia and Deborah L. McGuinness and Mary-Anne Williams"}
+@STRING{KR02PB = "Morgan Kaufmann"}
+@STRING{KR04P = "Proceedings of the 9th International Conference on Principles of Knowledge Representation and Reasoning (KR-04)"}
+@STRING{KR04L = "Whistler, Canada"}
+@STRING{KR04M = jun}
+@STRING{KR04E = "Didier Dubois and Christopher A. Welty and Mary-Anne Williams"}
+@STRING{KR04PB = "AAAI Press"}
+@STRING{KR06P = "Proceedings of the 10th International Conference on Principles of Knowledge Representation and Reasoning (KR-06)"}
+@STRING{KR06L = "Lake District, UK"}
+@STRING{KR06M = jun}
+@STRING{KR06E = "Patrick Doherty and John Mylopoulos and Christopher A. Welty"}
+@STRING{KR06PB = "AAAI Press"}
+
+
+@STRING{IJCAI69P = "Proceedings of the 1st International Joint Conference on Artificial Intelligence (IJCAI-69)"}
+@STRING{IJCAI69L = "Washington, DC"}
+@STRING{IJCAI69M = may}
+@STRING{IJCAI69E = "Donald E. Walker and Lewis M. Norton"}
+@STRING{IJCAI69PB = "William Kaufmann"}
+@STRING{IJCAI71P = "Proceedings of the 2nd International Joint Conference on Artificial Intelligence (IJCAI-71)"}
+@STRING{IJCAI71L = "London, UK"}
+@STRING{IJCAI71M = sep}
+@STRING{IJCAI71E = "David C. Cooper"}
+@STRING{IJCAI71PB = "William Kaufmann"}
+@STRING{IJCAI73P = "Proceedings of the 3rd International Joint Conference on Artificial Intelligence (IJCAI-73)"}
+@STRING{IJCAI73L = "Stanford, MA"}
+@STRING{IJCAI73M = aug}
+@STRING{IJCAI73E = "Nils J. Nilsson"}
+@STRING{IJCAI73PB = "William Kaufmann"}
+@STRING{IJCAI75P = "Proceedings of the 4th International Joint Conference on Artificial Intelligence (IJCAI-75)"}
+@STRING{IJCAI75L = "Tiblisi, USSR"}
+@STRING{IJCAI75M = sep}
+@STRING{IJCAI77P = "Proceedings of the 5th International Joint Conference on Artificial Intelligence (IJCAI-77)"}
+@STRING{IJCAI77L = "Cambridge, MA"}
+@STRING{IJCAI77M = aug}
+@STRING{IJCAI77E = "Raj Reddy"}
+@STRING{IJCAI77PB = "William Kaufmann"}
+@STRING{IJCAI79P = "Proceedings of the 6th International Joint Conference on Artificial Intelligence (IJCAI-79)"}
+@STRING{IJCAI79L = "Tokyo, Japan"}
+@STRING{IJCAI79M = aug}
+@STRING{IJCAI81P = "Proceedings of the 7th International Joint Conference on Artificial Intelligence (IJCAI-81)"}
+@STRING{IJCAI81L = "Vancouver, Canada"}
+@STRING{IJCAI81M = aug}
+@STRING{IJCAI81E = "Patrick J. Hayes"}
+@STRING{IJCAI81PB = "William Kaufmann"}
+@STRING{IJCAI83P = "Proceedings of the 8th International Joint Conference on Artificial Intelligence (IJCAI-83)"}
+@STRING{IJCAI83L = "Karlsruhe, FRG"}
+@STRING{IJCAI83M = aug}
+@STRING{IJCAI83E = "Alan Bundy"}
+@STRING{IJCAI83PB = "William Kaufmann"}
+@STRING{IJCAI85P = "Proceedings of the 9th International Joint Conference on Artificial Intelligence (IJCAI-85)"}
+@STRING{IJCAI85L = "Los Angeles, CA"}
+@STRING{IJCAI85M = aug}
+@STRING{IJCAI85E = "Aravind K. Joshi"}
+@STRING{IJCAI85PB = "Morgan Kaufmann"}
+@STRING{IJCAI87P = "Proceedings of the 10th International Joint Conference on Artificial Intelligence (IJCAI-87)"}
+@STRING{IJCAI87L = "Milan, Italy"}
+@STRING{IJCAI87M = aug}
+@STRING{IJCAI87E = "John P. McDermott"}
+@STRING{IJCAI87PB = "Morgan Kaufmann"}
+@STRING{IJCAI89P = "Proceedings of the 11th International Joint Conference on Artificial Intelligence (IJCAI-89)"}
+@STRING{IJCAI89L = "Detroit, MI"}
+@STRING{IJCAI89M = aug}
+@STRING{IJCAI89E = "Natesa Sastri Sridharan"}
+@STRING{IJCAI89PB = "Morgan Kaufmann"}
+@STRING{IJCAI91P = "Proceedings of the 12th International Joint Conference on Artificial Intelligence (IJCAI-91)"}
+@STRING{IJCAI91L = "Sidney, Australia"}
+@STRING{IJCAI91M = aug}
+@STRING{IJCAI91E = "John Mylopoulos and Raymond Reiter"}
+@STRING{IJCAI91PB = "Morgan Kaufmann"}
+@STRING{IJCAI93P = "Proceedings of the 13th International Joint Conference on Artificial Intelligence (IJCAI-93)"}
+@STRING{IJCAI93L = "Chambery, France"}
+@STRING{IJCAI93M = aug}
+@STRING{IJCAI93E = "Ruzena Bajcsy"}
+@STRING{IJCAI93PB = "Morgan Kaufmann"}
+@STRING{IJCAI95P = "Proceedings of the 14th International Joint Conference on Artificial Intelligence (IJCAI-95)"}
+@STRING{IJCAI95L = "Montr{\'e}al, Canada"}
+@STRING{IJCAI95M = aug}
+@STRING{IJCAI95PB = "Morgan Kaufmann"}
+@STRING{IJCAI97P = "Proceedings of the 15th International Joint Conference on Artificial Intelligence (IJCAI-97)"}
+@STRING{IJCAI97L = "Nagoya, Japan"}
+@STRING{IJCAI97M = aug}
+@STRING{IJCAI97PB = "Morgan Kaufmann"}
+@STRING{IJCAI99P = "Proceedings of the 16th International Joint Conference on Artificial Intelligence (IJCAI-99)"}
+@STRING{IJCAI99L = "Stockholm, Sweden"}
+@STRING{IJCAI99M = jul}
+@STRING{IJCAI99E = "Thomas Dean"}
+@STRING{IJCAI99PB = "Morgan Kaufmann"}
+@STRING{IJCAI01P = "Proceedings of the 17th International Joint Conference on Artificial Intelligence (IJCAI-01)"}
+@STRING{IJCAI01L = "Seattle, Washington, USA"}
+@STRING{IJCAI01M = aug}
+@STRING{IJCAI01E = "Bernhard Nebel"}
+@STRING{IJCAI01PB = "Morgan Kaufmann"}
+@STRING{IJCAI03P = "Proceedings of the 18th International Joint Conference on Artificial Intelligence (IJCAI-03)"}
+@STRING{IJCAI03L = "Acapulco, Mexico"}
+@STRING{IJCAI03M = aug}
+@STRING{IJCAI03E = "Georg Gottlob and Toby Walsh"}
+@STRING{IJCAI03PB = "Morgan Kaufmann"}
+@STRING{IJCAI05P = "Proceedings of the 19th International Joint Conference on Artificial Intelligence (IJCAI-05)"}
+@STRING{IJCAI05L = "Edinburgh, Scotland"}
+@STRING{IJCAI05M = aug}
+@STRING{IJCAI05E = "Leslie Pack Kaelbling and Alessandro Saffiotti"}
+@STRING{IJCAI05PB = "Professional Book Center"}
+@STRING{IJCAI07P = "Proceedings of the 20th International Joint Conference on Artificial Intelligence (IJCAI-07)"}
+@STRING{IJCAI07L = "Hyderabad, India"}
+@STRING{IJCAI07M = jan}
+@STRING{IJCAI07E = "Manuela M. Veloso"}
+@STRING{IJCAI07PB = "AAAI Press"}
+
+@STRING{AAAI80P = "Proceedings of the 1st AAAI Conference on Artificial Intelligence (AAAI-80)"}
+@STRING{AAAI80L = "Stanford, CA"}
+@STRING{AAAI80M = aug}
+@STRING{AAAI80E = "Robert Balzer"}
+@STRING{AAAI80PB = "AAAI Press / MIT Press"}
+@STRING{AAAI82P = "Proceedings of the 2nd AAAI Conference on Artificial Intelligence (AAAI-82)"}
+@STRING{AAAI82L = "Pittsburgh, PA"}
+@STRING{AAAI82M = aug}
+@STRING{AAAI82E = "David L. Waltz"}
+@STRING{AAAI82PB = "AAAI Press"}
+@STRING{AAAI83P = "Proceedings of the 3rd AAAI Conference on Artificial Intelligence (AAAI-83)"}
+@STRING{AAAI83L = "Washington, DC"}
+@STRING{AAAI83M = aug}
+@STRING{AAAI83E = "Michael R. Genesereth"}
+@STRING{AAAI83PB = "AAAI Press"}
+@STRING{AAAI84P = "Proceedings of the 4th AAAI Conference on Artificial Intelligence (AAAI-84)"}
+@STRING{AAAI84L = "Austin, TX"}
+@STRING{AAAI84M = aug}
+@STRING{AAAI84E = "Ronald J. Brachman"}
+@STRING{AAAI84PB = "AAAI Press"}
+@STRING{AAAI86P = "Proceedings of the 5th AAAI Conference on Artificial Intelligence (AAAI-86)"}
+@STRING{AAAI86L = "Philadelphia, PA"}
+@STRING{AAAI86M = aug}
+@STRING{AAAI86PB = "Morgan Kaufmann"}
+@STRING{AAAI87P = "Proceedings of the 6th AAAI Conference on Artificial Intelligence (AAAI-87)"}
+@STRING{AAAI87L = "Seattle, WA"}
+@STRING{AAAI87M = jul}
+@STRING{AAAI87PB = "Morgan Kaufmann"}
+@STRING{AAAI88P = "Proceedings of the 7th AAAI Conference on Artificial Intelligence (AAAI-88)"}
+@STRING{AAAI88L = "St. Paul, MN"}
+@STRING{AAAI88M = jul}
+@STRING{AAAI88PB = "AAAI Press / MIT Press"}
+@STRING{AAAI90P = "Proceedings of the 8th AAAI Conference on Artificial Intelligence (AAAI-90)"}
+@STRING{AAAI90L = "Boston, MA"}
+@STRING{AAAI90M = jul}
+@STRING{AAAI90PB = "AAAI Press / MIT Press"}
+@STRING{AAAI91P = "Proceedings of the 9th AAAI Conference on Artificial Intelligence (AAAI-91)"}
+@STRING{AAAI91L = "Anaheim, CA"}
+@STRING{AAAI91M = jul}
+@STRING{AAAI91PB = "AAAI Press / MIT Press"}
+@STRING{AAAI92P = "Proceedings of the 10th AAAI Conference on Artificial Intelligence (AAAI-92)"}
+@STRING{AAAI92L = "San Jose, CA"}
+@STRING{AAAI92M = jul}
+@STRING{AAAI92E = "William R. Swartout"}
+@STRING{AAAI92PB = "AAAI Press / MIT Press"}
+@STRING{AAAI93P = "Proceedings of the 11th AAAI Conference on Artificial Intelligence (AAAI-93)"}
+@STRING{AAAI93L = "Washington, DC"}
+@STRING{AAAI93M = jul}
+@STRING{AAAI93PB = "AAAI Press / MIT Press"}
+@STRING{AAAI94P = "Proceedings of the 12th AAAI Conference on Artificial Intelligence (AAAI-94)"}
+@STRING{AAAI94L = "Seattle, WA"}
+@STRING{AAAI94M = jul}
+@STRING{AAAI94PB = "AAAI Press"}
+@STRING{AAAI96P = "Proceedings of the 13th AAAI Conference on Artificial Intelligence (AAAI-96)"}
+@STRING{AAAI96L = "Portland, OR"}
+@STRING{AAAI96M = aug}
+@STRING{AAAI96PB = "AAAI Press / MIT Press"}
+@STRING{AAAI97P = "Proceedings of the 14th AAAI Conference on Artificial Intelligence (AAAI-97)"}
+@STRING{AAAI97L = "Providence, RI"}
+@STRING{AAAI97M = jul}
+@STRING{AAAI97PB = "AAAI Press / MIT Press"}
+@STRING{AAAI98P = "Proceedings of the 15th AAAI Conference on Artificial Intelligence (AAAI-98)"}
+@STRING{AAAI98L = "Madison, WI"}
+@STRING{AAAI98M = jul}
+@STRING{AAAI98PB = "AAAI Press / MIT Press"}
+@STRING{AAAI99P = "Proceedings of the 16th AAAI Conference on Artificial Intelligence (AAAI-98)"}
+@STRING{AAAI99L = "Orlando, FL"}
+@STRING{AAAI99M = jul}
+@STRING{AAAI99PB = "AAAI Press / MIT Press"}
+@STRING{AAAI00P = "Proceedings of the 17th AAAI Conference on Artificial Intelligence (AAAI-98)"}
+@STRING{AAAI00L = "Austin, TX"}
+@STRING{AAAI00M = jul}
+@STRING{AAAI00PB = "AAAI Press / MIT Press"}
+@STRING{AAAI02P = "Proceedings of the 18th AAAI Conference on Artificial Intelligence (AAAI-98)"}
+@STRING{AAAI02L = "Edmonton, Alberta, Canada"}
+@STRING{AAAI02M = jul}
+@STRING{AAAI02PB = "AAAI Press"}
+@STRING{AAAI04P = "Proceedings of the 19th AAAI Conference on Artificial Intelligence (AAAI-98)"}
+@STRING{AAAI04L = "San Jose, CA"}
+@STRING{AAAI04M = jul}
+@STRING{AAAI04E = "Deborah L. McGuinness and George Ferguson"}
+@STRING{AAAI04PB = "AAAI Press / MIT Press"}
+@STRING{AAAI05P = "Proceedings of the 20th AAAI Conference on Artificial Intelligence (AAAI-98)"}
+@STRING{AAAI05L = "Pittsburgh, PA"}
+@STRING{AAAI05M = jul}
+@STRING{AAAI05E = "Manuela M. Veloso and Subbarao Kambhampati"}
+@STRING{AAAI05PB = "AAAI Press / MIT Press"}
+@STRING{AAAI06P = "Proceedings of the 21st AAAI Conference on Artificial Intelligence (AAAI-06)"}
+@STRING{AAAI06L = "Boston, MA"}
+@STRING{AAAI06M = jul}
+@STRING{AAAI06PB = "AAAI Press"}
+@STRING{AAAI07P = "Proceedings of the 22nd AAAI Conference on Artificial Intelligence (AAAI-07)"}
+@STRING{AAAI07L = "Vancouver, British Columbia, Canada"}
+@STRING{AAAI07M = jul}
+@STRING{AAAI07PB = "AAAI Press"}
+
+@STRING{ECAI74P = "Proceedings of the 1st European Conference on Artificial Intelligence (ECAI-74)"}
+@STRING{ECAI74L = "Brighton, England"}
+@STRING{ECAI74M = aug}
+@STRING{ECAI76P = "Proceedings of the 2nd European Conference on Artificial Intelligence (ECAI-76)"}
+@STRING{ECAI76L = "Edinburgh, Scotland"}
+@STRING{ECAI76M = jul}
+@STRING{ECAI78P = "Proceedings of the 3rd European Conference on Artificial Intelligence (ECAI-78)"}
+@STRING{ECAI78L = "Hamburg, Germany"}
+@STRING{ECAI78M = jul}
+@STRING{ECAI78E = "Derek H. Sleeman"}
+@STRING{ECAI80P = "Proceedings of the 4th European Conference on Artificial Intelligence (ECAI-80)"}
+@STRING{ECAI80L = "Amsterdam, The Netherlands"}
+%@STRING{ECAI80M = aug}
+@STRING{ECAI82P = "Proceedings of the 5th European Conference on Artificial Intelligence (ECAI-82)"}
+@STRING{ECAI82L = "Paris, France"}
+@STRING{ECAI82M = jul}
+@STRING{ECAI84P = "Proceedings of the 6th European Conference on Artificial Intelligence (ECAI-84)"}
+@STRING{ECAI84L = "Pisa, Italy"}
+@STRING{ECAI84M = sep}
+@STRING{ECAI84E = "Tim O'Shea"}
+@STRING{ECAI84PB = "North Holland"}
+@STRING{ECAI86P = "Proceedings of the 7th European Conference on Artificial Intelligence (ECAI-86)"}
+@STRING{ECAI86L = "Brighton, England"}
+@STRING{ECAI86M = jul}
+@STRING{ECAI86E = "J. B. H. du Boulay and David Hogg and Luc Steels"}
+@STRING{ECAI86PB = "North Holland"}
+@STRING{ECAI88P = "Proceedings of the 8th European Conference on Artificial Intelligence (ECAI-88)"}
+@STRING{ECAI88L = "Munich, Germany"}
+@STRING{ECAI88M = aug}
+@STRING{ECAI88E = "Yves Kodratoff"}
+@STRING{ECAI88PB = "Pitmann Publishing, London"}
+@STRING{ECAI90P = "Proceedings of the 9th European Conference on Artificial Intelligence (ECAI-90)"}
+@STRING{ECAI90L = "Stockholm, Sweden"}
+@STRING{ECAI90M = aug}
+@STRING{ECAI92P = "Proceedings of the 10th European Conference on Artificial Intelligence (ECAI-92)"}
+@STRING{ECAI92L = "Vienna, Austria"}
+@STRING{ECAI92M = aug}
+@STRING{ECAI92E = "Bernd Neumann"}
+@STRING{ECAI92PB = "John Wiley and Sons, Chichester"}
+@STRING{ECAI94P = "Proceedings of the 11th European Conference on Artificial Intelligence (ECAI-94)"}
+@STRING{ECAI94L = "Amsterdam, The Netherlands"}
+@STRING{ECAI94M = aug}
+@STRING{ECAI94E = "Anthony G. Cohn"}
+@STRING{ECAI94PB = "John Wiley and Sons, Chichester"}
+@STRING{ECAI96P = "Proceedings of the 12th European Conference on Artificial Intelligence (ECAI-96)"}
+@STRING{ECAI96L = "Budapest, Hungary"}
+@STRING{ECAI96M = aug}
+@STRING{ECAI96E = "Wolfgang Wahlster"}
+@STRING{ECAI96PB = "John Wiley and Sons, Chichester"}
+@STRING{ECAI98P = "Proceedings of the 13th European Conference on Artificial Intelligence (ECAI-98)"}
+@STRING{ECAI98L = "Brighton, England"}
+@STRING{ECAI98M = aug}
+@STRING{ECAI98E = "Henri Prade"}
+@STRING{ECAI98PB = "John Wiley and Sons, Chichester"}
+@STRING{ECAI00P = "Proceedings of the 14th European Conference on Artificial Intelligence (ECAI-00)"}
+@STRING{ECAI00L = "Berlin, Germany"}
+@STRING{ECAI00M = aug}
+@STRING{ECAI00E = "Werner Horn"}
+@STRING{ECAI00PB = "IOS Press"}
+@STRING{ECAI02P = "Proceedings of the 15th European Conference on Artificial Intelligence (ECAI-02"}
+@STRING{ECAI02L = "Lyon, France"}
+@STRING{ECAI02M = jul}
+@STRING{ECAI02E = "Frank van Harmelen"}
+@STRING{ECAI02PB = "IOS Press"}
+@STRING{ECAI04P = "Proceedings of the 16th European Conference on Artificial Intelligence (ECAI-04)"}
+@STRING{ECAI04L = "Valencia, Spain"}
+@STRING{ECAI04M = aug}
+@STRING{ECAI04E = "Ramon López de Mántaras and Lorenza Saitta"}
+@STRING{ECAI04PB = "IOS Press"}
+@STRING{ECAI06P = "Proceedings of the 17th European Conference on Artificial Intelligence (ECAI-06)"}
+@STRING{ECAI06L = "Riva del Garda, Italy"}
+@STRING{ECAI06M = aug}
+@STRING{ECAI06E = "Gerhard Brewka and Silvia Coradeschi and Anna Perini and Paolo Traverso"}
+@STRING{ECAI06PB = "IOS Press"}
+
+@STRING{ICTAI93P = "Proceedings of ICTAI-93"}
+@STRING{ICTAI93L = "Boston, Massachusetts, USA"}
+@STRING{ICTAI93M = nov}
+@STRING{ICTAI93PB = "IEEE Computer Society"}
+@STRING{ICTAI96P = "Proceedings of ICTAI-96"}
+@STRING{ICTAI96L = "Toulouse, France"}
+@STRING{ICTAI96M = nov}
+@STRING{ICTAI96PB = "IEEE Computer Society"}
+
+@STRING{CP95P = "Proceedings of the 1st International Conference on Principles and Practice of Constraint Programming (CP-95)"}
+@STRING{CP95L = "Cassis, France"}
+@STRING{CP95M = sep}
+@STRING{CP95E = "Ugo Montanari and Francesca Rossi"}
+@STRING{CP95PB = "Springer"}
+@STRING{CP96P = "Proceedings of the 2nd International Conference on Principles and Practice of Constraint Programming (CP-96)"}
+@STRING{CP96L = "Cambridge, MA, USA"}
+@STRING{CP96M = aug}
+@STRING{CP96E = "Eugene C. Freuder"}
+@STRING{CP96PB = "Springer"}
+@STRING{CP97P = "Proceedings of the 3rd International Conference on Principles and Practice of Constraint Programming (CP-97)"}
+@STRING{CP97L = "Schloss Hagenberg, Austria"}
+@STRING{CP97M = oct}
+@STRING{CP97E = "Gert Smolka"}
+@STRING{CP97PB = "Springer"}
+@STRING{CP98P = "Proceedings of the 4th International Conference on Principles and Practice of Constraint Programming (CP-98)"}
+@STRING{CP98L = "Pisa, Italy"}
+@STRING{CP98M = oct}
+@STRING{CP98E = "Michael J. Maher and Jean-Francois Puget"}
+@STRING{CP98PB = "Springer"}
+@STRING{CP99P = "Proceedings of the 5th International Conference on Principles and Practice of Constraint Programming (CP-99)"}
+@STRING{CP99L = "Alexandria, Virginia"}
+@STRING{CP99M = oct}
+@STRING{CP99E = "Joxan Jaffar"}
+@STRING{CP99PB = "Springer"}
+@STRING{CP00P = "Proceedings of the 6th International Conference on Principles and Practice of Constraint Programming (CP-00)"}
+@STRING{CP00L = "Singapore"}
+@STRING{CP00M = sep}
+@STRING{CP00E = "Rina Dechter"}
+@STRING{CP00PB = "Springer"}
+@STRING{CP01P = "Proceedings of the 7th International Conference on Principles and Practice of Constraint Programming (CP-01)"}
+@STRING{CP01L = "Paphos, Cyprus"}
+@STRING{CP01M = nov}
+@STRING{CP01E = "Toby Walsh"}
+@STRING{CP01PB = "Springer"}
+@STRING{CP02P = "Proceedings of the 8th International Conference on Principles and Practice of Constraint Programming (CP-02)"}
+@STRING{CP02L = "Ithaca, NY, USA"}
+@STRING{CP02M = sep}
+@STRING{CP02E = "Pascal Van Hentenryck"}
+@STRING{CP02PB = "Springer"}
+@STRING{CP03P = "Proceedings of the 9th International Conference on Principles and Practice of Constraint Programming (CP-03)"}
+@STRING{CP03L = "Kinsale, County Cork, Ireland"}
+@STRING{CP03M = sep}
+@STRING{CP03E = "Francesca Rossi "}
+@STRING{CP03PB = "Springer"}
+@STRING{CP04P = "Proceedings of the 10th International Conference on Principles and Practice of Constraint Programming (CP-04)"}
+@STRING{CP04L = "Toronto, Canada"}
+@STRING{CP04M = sep}
+@STRING{CP04E = "Mark Wallace"}
+@STRING{CP04PB = "Springer"}
+@STRING{CP05P = "Proceedings of the 11th International Conference on Principles and Practice of Constraint Programming (CP-04)"}
+@STRING{CP05L = "Sitges, Spain"}
+@STRING{CP05M = oct}
+@STRING{CP05E = "Peter van Beek"}
+@STRING{CP05PB = "Springer"}
+@STRING{CP06P = "Proceedings of the 12th International Conference on Principles and Practice of Constraint Programming (CP-04)"}
+@STRING{CP06L = "Nantes, France"}
+@STRING{CP06M = sep}
+@STRING{CP06E = "Fr\'ed\'eric Benhamou"}
+@STRING{CP06PB = "Springer"}
+
+@STRING{ICLP89P = "Proceedings of ICLP'89"}
+@STRING{ICLP89L = "Lisbon, Portugal"}
+@STRING{ICLP89M = "june"}
+@STRING{ICLP89E = "Giorgio Levi, Maurizio Martelli"}
+@STRING{ICLP89PB = "MIT Press"}
+@STRING{ICLP99P = "Proceedings of ICLP'99"}
+@STRING{ICLP99L = "Las Cruces, New Mexico"}
+@STRING{ICLP99M = "dec"}
+@STRING{ICLP99E = "Danny De Schreye"}
+@STRING{ICLP99PB = "MIT Press"}
+
+%*************
+@STRING{JNPC97P = "Proceedings of JNPC-97"} 
+@STRING{JNPC97L = "Rennes, France"}
+@STRING{JNPC99P = "Proceedings of JNPC-99"} 
+@STRING{JNPC99L = "Lyon, France"}
+@STRING{JNPC00P = "Proceedings of JNPC-00"} 
+@STRING{JNPC00L = "Marseille, France"}
+%**********
+
+@STRING{JFPLC99P = "Proceedings of JFPLC-99"} 
+@STRING{JFPLC99L = "Lyon, France"}
+@STRING{JFPLC99M = "june"}
+@STRING{JFPLC99E = "François Fages"}
+@STRING{JFPLC99PB = "Hermes"}
+@STRING{JFPLC03P = "Proceedings of JFPLC-03"} 
+@STRING{JFPLC03L = "Amiens, France"}
+@STRING{JFPLC03M = "june"}
+@STRING{JFPLC03E = "Fr\'ed\'eric Mesnard"}
+@STRING{JFPLC03PB = "Hermes"}
+
+%**************
+@STRING{JFPC05P = "Proceedings of JFPC-05"} 
+@STRING{JFPC05L = "Lens, France"}
+@STRING{JFPC06P = "Proceedings of JFPC-06"} 
+@STRING{JFPC06L = "N\^{\i}mes, France"}
+
+@STRING{CPAIOR99P = "Proceedings of CP-AI-OR'1999"} 
+@STRING{CPAIOR99L = "Ferrara, Italy"}
+@STRING{CPAIOR00P = "Proceedings of CP-AI-OR'2000"} 
+@STRING{CPAIOR00L = "Paderborn, Germany"}
+@STRING{CPAIOR01P = "Proceedings of CP-AI-OR'2001"} 
+@STRING{CPAIOR01L = "Wye College (Imperial College), Ashford, Kent UK"}
+@STRING{CPAIOR02P = "Proceedings of CP-AI-OR'2002"} 
+@STRING{CPAIOR02L = "Le Croisic, France"}
+@STRING{CPAIOR03P = "Proceedings of CP-AI-OR'2003"} 
+@STRING{CPAIOR03L = "Montr\'eal, Canada"}
+
+@STRING{ROADEF03P = "Proceedings of ROADEF-03"} 
+@STRING{ROADEF03L = "Avignon, France"}
+
+
+@Book{Alliot02,
+  author =	 {Jean-Marc Alliot and Thomas Schiex and Pascal
+                  Brisset and Fr\'ed\'erick Garcia},
+  title =	 {Intelligence Artificielle et Informatique
+                  Th\'eorique},
+  publisher =	 {C\'epadu\`es},
+  year =	 2002,
+  edition =	 {2\`eme \'edition}
+}
+
+@TechReport{Andersen99,
+  author = 	 {Henrik Reif Andersen},
+  title = 	 {An Introduction to Binary Decision Diagrams},
+  institution =  {Department of Information Technology, Technical University of Denmark},
+  year = 	 1999
+}
+
+@Book{Apt03,
+  author =	 {Krzysztof R. Apt},
+  title =	 {Principles of Constraint Programming},
+  publisher =	 {Cambridge University Press},
+  year =	 2003
+}
+
+
+@Book{Arrow02,
+  editor = 	 {Kenneth J. Arrow and Amartya K. Sen and Kotaro Suzumura},
+  title = 	 {Handbook of Social Choice and Welfare Volume 1},
+  publisher = 	 {North-Holland Elsevier},
+  year = 	 {2002},
+  number =	 19,
+  series =	 {Handbook in Economics},
+}
+
+@InCollection{Aspremont02,
+  author =	 {Claude d'Aspremont and Louis Gevers},
+  title =	 {Social Welfare Functionals and Interpersonal Comparability},
+  booktitle =	 {Handbook of Social Choice and Welfare},
+  pages =	 {459--541},
+  publisher =	 {North Holland Elsevier},
+  year =	 2002,
+  editor =	 {Kenneth J. Arrow and Amartya K. Sen and Kotaro
+                  Suzumura},
+  number =	 19,
+  series =	 {Handbook in economics},
+  chapter =	 10
+}
+
+
+
+@Article{Aspremont77,
+  author =	 {Claude d'Aspremont and Louis Gevers},
+  title =	 {Equity and the Informational Basis of Collective
+                  Choice},
+  journal =	 {Review of Economic Studies},
+  year =	 1977,
+  volume =	 44,
+  number =	 2,
+  pages =	 {199--209},
+  month =	 jun
+}
+
+@Article{Atkinson70,
+  author =	 {Anthony Barnes Atkinson},
+  title =	 {On the Measurement of Inequality},
+  journal =	 {Journal of Economic Theory},
+  year =	 1970,
+  volume =	 2,
+  pages =	 {244--263}
+}
+
+@Book{Aumann02,
+  editor =	 {Robert J. Aumann and Sergiu Hart},
+  title =	 {Handbook of Game Theory Volume 1},
+  publisher =	 {North-Holland Elsevier},
+  year =	 2002,
+  number =	 11,
+  series =	 {Handbook in Economics}
+}
+
+@inproceedings{Bacchus95,
+  author =	 {Fahiem Bacchus and Adam Grove},
+  title =	 {Graphical Models for Preference and Utility},
+  booktitle =	 UAI95P,
+  publisher =	 UAI95PB,
+  address =	 UAI95L,
+  pages =	 {3--10},
+  year =	 1995,
+  month =	 UAI95M,
+  editor =	 UAI95E
+}
+
+
+
+@InProceedings{Bahar93,
+  author =	 {R. Iris Bahar and Erica A. Frohm and Charles
+                  M. Gaona and Gary D. Hachtel and Enrico Macii and
+                  Abelardo Pardo and Fabio Somenzi},
+  title =	 {Algebraic Decision Diagrams and Their Applications},
+  booktitle =	 {ICCAD '93: Proceedings of the 1993 IEEE/ACM
+                  international conference on Computer-aided design},
+  year =	 1993,
+  pages =	 {188--191},
+  location =	 {Santa Clara, California, United States},
+  publisher =	 {IEEE Computer Society Press},
+  address =	 {Los Alamitos, CA, USA},
+}
+
+@Book{Balinski01,
+  author = 	 {M. L. Balinski and H. P. Young},
+  title = 	 {{Fair Representation : Meeting the Ideal of One Man One Vote}},
+  publisher = 	 {{Brookings Institution Press}},
+  year = 	 {2001},
+  edition = 	 {second edition}
+}
+
+@InCollection{Ball06,
+  author =	 {Michael Ball and George L. Donohue and Karla Hoffman},
+  title =	 {Auctions for the Safe, Efficient and Equitable Allocation of Airspace System Resources},
+  booktitle =	 {Combinatorial auctions},
+  publisher =	 {MIT Press},
+  year =	 2006,
+  editor =	 {P. Cramton and Yoav Shoham and Richard Steinberg},
+  chapter =	 22
+}
+
+@TechReport{Beldiceanu05,
+  author =	 {N. Beldiceanu and Mats Carlsson and Jean-Xavier
+                  Rampon},
+  title =	 {Global Constraint Catalog},
+  institution =	 {Swedish Institute of Computer Science},
+  year =	 2005,
+  key =		 {T2005:08},
+  address =	 {Kista, Sweden},
+  month =	 may
+}
+
+@Article{Beldiceanu07,
+  author =	 {N. Beldiceanu and Mats Carlsson and Sophie
+                  Demassey and Thierry Petit},
+  title =	 {Global Constraint Catalogue: Past, Present and
+                  Future},
+  journal =	 {Constraintes},
+  year =	 2007,
+  volume =	 12,
+  number =	 1,
+  pages =	 {21--62},
+  month =	 mar
+}
+
+@InProceedings{Benferhat93,
+  author = 	 {Salem Benferhat and Claudette Cayrol and Didier Dubois and J\'erôme Lang},
+  title = 	 {Inconsistency Management and Prioritized Syntax-based entailment},
+  booktitle =    IJCAI93P,
+  pages = 	 {640--647},
+  year = 	 1993,
+  month =	 IJCAI93M,
+  address =	 IJCAI93L,
+  editor =	 IJCAI93E,
+  publisher =	 IJCAI93PB
+}
+
+@article{Bensana99,
+  author =	 {\'Eric Bensana and M. Lema\^itre and G. Verfaillie},
+  title =	 {Earth Observation Satellite Management},
+  journal =	 {Constraints},
+  volume =	 4,
+  number =	 3,
+  year =	 1999,
+  pages =	 {293--299},
+  publisher =	 {Kluwer Academic Publishers}
+}
+
+
+@InProceedings{Bessiere01,
+  author =	 {Christian Bessi\`ere and Jean-Charles R\'egin},
+  title =	 {Refining the Basic Constraint Propagation Algorithm},
+  booktitle =	 IJCAI01P,
+  pages =	 {309--315},
+  year =	 2001,
+  month =	 IJCAI01M,
+  address =	 IJCAI01L,
+  editor =	 IJCAI01E,
+  publisher =	 IJCAI01PB
+}
+
+@InProceedings{Bessiere03,
+  author =	 {Christian Bessi\`ere and Pascal {van Hentenryck}},
+  title =	 {To Be or not To Be... A Global Constraint},
+  booktitle =	 CP03P,
+  pages =	 {789--794},
+  year =	 2003,
+  editor =	 CP03E,
+  address =	 CP03L,
+  month =	 CP03M,
+  publisher =	 CP03PB
+}
+
+@InCollection{Bessiere06,
+  author =	 {Christian Bessière},
+  title =	 {Constraint Propagation},
+  booktitle =	 {Handbook of Constraint Programming},
+  pages =	 {29--83},
+  publisher =	 {Elsevier},
+  year =	 2006,
+  editor =	 {Francesca Rossi and P. {van Beck} and Toby Walsh},
+  series =	 {Foundations of Artificial Intelligence},
+  chapter =	 3
+}
+
+@Article{Bessiere07,
+  author =	 {Chrisitan Bessi\`ere and Emmanuel Hebrard and Brahim
+                  Hnich and Toby Walsh},
+  title =	 {The Complexity of Reasoning with Global Constraints},
+  journal =	 {Constraints},
+  year =	 2007,
+  volume =	 12,
+  number =	 2,
+  pages =	 {239--259},
+  month =	 jun
+}
+
+@InProceedings{Bessiere93,
+  author =	 {Christian Bessière and Marie-Odile Cordier},
+  title =	 {Arc-consistency and Arc-consistency Again},
+  booktitle =	 AAAI93P,
+  pages =	 {108--113},
+  year =	 1993,
+  address =	 AAAI93L,
+  month =	 AAAI93M,
+  publisher =	 AAAI93PB
+}
+
+@Article{Bevia98,
+  author = 	 {Carmen Bevi\'a},
+  title = 	 {Fair Allocation in a General Model with Indivisible Goods},
+  journal = 	 {Review of Economic Design},
+  year = 	 {1998},
+  volume = 	 {3},
+  pages = 	 {195-213}
+}
+
+
+@Article{Bianchessi07,
+  author =	 {N. Bianchessi and J.-F. Cordeau and
+                  J. Desrosiers and G. Laporte and V.
+                  Raymond},
+  title =	 {A Heuristic for the Multi-satellite, Multi-orbit and
+                  Multi-user Management of Earth Observation
+                  Satellites},
+  journal =	 {EJOR},
+  year =	 2007,
+  volume =	 177,
+  number =	 2
+}
+
+@InProceedings{Bistarelli95,
+  author =	 {Stefano Bistarelli and Ugo Montanari and Francesca
+                  Rossi},
+  title =	 {Constraint Solving over Semirings},
+  booktitle =	 IJCAI95P,
+  pages =	 {624--630},
+  year =	 1995,
+  address =	 IJCAI95L,
+  month =	 IJCAI95M,
+  publisher =	 IJCAI95PB
+}
+
+@Article{Bistarelli97,
+  author = 	 {Stefano Bistarelli and Ugo Montanari and Francesca Rossi},
+  title = 	 {Semiring-based Constraint Solving and Optimization},
+  journal = 	 {Journal of the ACM},
+  year = 	 1997,
+  volume = 	 44,
+  number = 	 2,
+  pages = 	 {201--236}}
+
+@Article{Bistarelli99,
+  author =	 {Stefano Bistarelli and H\'el\`ene Fargier and Ugo
+                  Montanari and Francesca Rossi and Thomas Schiex and
+                  G. Verfaillie},
+  title =	 {Semiring-based CSPs and Valued CSPs: Frameworks,
+                  Properties, and Comparison},
+  journal =	 {CONSTRAINTS: An International Journal},
+  year =	 1999,
+  volume =	 4,
+  number =	 3,
+  pages =	 {199-240}
+}
+
+@Article{Bossert98,
+  author =	 {Walter Bossert},
+  title =	 {Welfarism and Rationalizability in Allocation
+                  Problems with Indivisibilities},
+  journal =	 {Mathematical Social Sciences},
+  year =	 {1998},
+  volume =	 {35},
+  pages =	 {133-150}
+} 
+
+
+@InProceedings{Boutilier01,
+  author =	 {Craig Boutilier and Holger H. Hoos},
+  title =	 {Bidding Languages for Combinatorial Auctions},
+  booktitle =	 IJCAI01P,
+  pages =	 {1211-1217},
+  year =	 2001,
+  month =	 IJCAI01M,
+  address =	 IJCAI01L,
+  editor =	 IJCAI01E,
+  publisher =	 IJCAI01PB
+}
+
+
+@inproceedings{Boutilier01uai,
+  author =	 {Craig Boutilier and Fahiem Bacchus and Ronen
+                  I. Brafman},
+  title =	 {{UCP}-Networks: A Directed Graphical Representation of
+                  Conditional Utilities},
+  booktitle =	 UAI01P,
+  year =	 2001,
+  month =	 UAI01M,
+  pages =	 {56--64},
+  address =	 UAI01L,
+  editor =	 UAI01E,
+  publisher =	 UAI01PB
+}
+
+@Article{Boutilier04a,
+  author =	 {Craig Boutilier and Ronen I. Brafman and Carmel
+                  Domshlak and Holger H. Hoos and D. Poole},
+  title =	 {{CP}-nets: A Tool for Representing and Reasoning with
+                  Conditional Ceteris Paribus Preference Statements},
+  journal =	 JAIR,
+  year =	 {2004},
+  volume =	 {21},
+  pages =	 {135--191}
+}
+
+@Article{Boutilier04b,
+  author =	 {Craig Boutilier and Ronen I. Brafman and Carmel
+                  Domshlak and Holger H. Hoos and David Poole},
+  title =	 {Preference-based Constrained Optimization with
+                  CP-nets},
+  journal =	 {Computational Intelligence},
+  year =	 2004,
+  volume =	 20,
+  number =	 2,
+  pages =	 {137-157}
+}
+
+@InProceedings{BoutilierHoos02,
+  author =	 {Craig Boutilier and Holger H. Hoos},
+  title =	 {Solving Concisely Expressed Combinatorial Auction
+                  Problems},
+  booktitle =	 AAAI02P,
+  pages =	 {359-366},
+  year =	 2002,
+  month =	 AAAI02M,
+  address =	 AAAI02L,
+  editor =	 AAAI02E,
+  publisher =	 AAAI02PB
+}
+
+@InProceedings{BoutilierHoosAAAI00,
+  author =	 {Craig Boutilier and Holger H. Hoos},
+  title =	 {Solving Combinatorial Auctions using Stochastic
+                  Local Search },
+  booktitle =	 AAAI00P,
+  pages =	 {22--29},
+  year =	 2000,
+  address =	 AAAI00L,
+  month =	 AAAI00M,
+  publisher =	 AAAI00PB
+}
+
+@InProceedings{Bouveret05aamas,
+  author =	 {S. Bouveret and H\'el\`ene Fargier and J\'erôme Lang
+                  and M. Lema\^itre},
+  title =	 {Allocation of Indivisible Goods: a General Model and
+                  some Complexity Results},
+  booktitle =	 AAMAS05P,
+  year =	 {2005},
+  address =	 AAMAS05L,
+  month =	 AAMAS05M,
+  editor =	 AAMAS05E,
+  publisher =	 AAMAS05PB
+}
+
+@InProceedings{Bouveret05ijcai,
+  author =	 {S. Bouveret and J\'erôme Lang},
+  title =	 {Efficiency and Envy-freeness in Fair Division of
+                  Indivisible Goods: Logical Representation and
+                  Complexity},
+  booktitle =	 IJCAI05P,
+  year =	 {2005},
+  address =	 IJCAI05L,
+  month =	 IJCAI05M,
+  editor =	 IJCAI05E,
+  publisher =	 IJCAI05PB
+}
+
+@InProceedings{Bouveret05mfi,
+  author =	 {S. Bouveret and H\'el\`ene Fargier and J\'erôme
+                  Lang and M. Lema\^itre},
+  title =	 {Un Mod\`ele G\'en\'eral et des R\'esultats de
+                  Complexit\'e pour le Partage de Biens Indivisibles},
+  booktitle =	 {Actes des troisi\`emes journ\'ees francophones
+                  Mod\`eles Formels de l'Interaction},
+  year =	 {2005},
+  editor =	 {Andreas Herzig, Yves Lesp\'erance, Abdel-Illah
+                  Mouaddib},
+  month =	 may,
+  publisher =	 {C\'epadu\`es \'Editions},
+}
+
+@InProceedings{Bouveret07,
+  author =	 {S. Bouveret and M. Lema\^itre},
+  title =	 {New Contraint Programming Approaches for the
+                  Computation of Leximin-optimal Solutions in
+                  Constraint Networks},
+  booktitle =	 IJCAI07P,
+  month =	 IJCAI07M,
+  year =	 2007,
+  address =	 IJCAI07L,
+  editor =	 IJCAI07E,
+  publisher =	 IJCAI07PB
+}
+
+@PhdThesis{Bouveret07PhD,
+  author = 	 {S. Bouveret},
+  title = 	 {Allocation et partage \'equitables de ressources indivisibles : mod\'elisation, complexit\'e et algorithmique},
+  school = 	 {Universit\'e de Toulouse},
+  year = 	 2007}
+
+@Book{Bouyssou06_1,
+  editor =	 {Denis Bouyssou and Didier Dubois and Marc Pirlot and
+                  Henri Prade},
+  title =	 {Concepts et M\'ethodes pour l'Aide \`a la D\'ecision
+                  1, Outils de Mod\'elisation},
+  publisher =	 {Lavoisier},
+  year =	 2006
+}
+
+@Book{Bouyssou06_2,
+  editor =	 {Denis Bouyssou and Didier Dubois and Marc Pirlot and
+                  Henri Prade},
+  title =	 {Concepts et M\'ethodes pour l'Aide \`a la D\'ecision
+                  2, Risque et incertain},
+  publisher =	 {Lavoisier},
+  year =	 2006
+}
+
+@InCollection{Bouyssou06chap2,
+  author =	 {Denis Bouyssou and Philippe Vincke},
+  title =	 {Relations Binaires et Mod\'elisation des Pr\'ef\'erences},
+  booktitle =	 {Concepts et M\'ethodes pour l'Aide \`a la D\'ecision},
+  publisher =	 {Lavoisier},
+  year =	 2006,
+  editor =	 {Denis Bouyssou and Didier Dubois and Marc Pirlot and
+                  Henri Prade},
+  volume =	 1,
+  chapter =	 2
+}
+
+@InCollection{Bouyssou06chap7,
+  author =	 {J\'erôme Lang},
+  title =	 {Repr\'esentation Logique de Pr\'ef\'erences},
+  booktitle =	 {Concepts et M\'ethodes pour l'Aide \`a la D\'ecision},
+  publisher =	 {Lavoisier},
+  year =	 2006,
+  editor =	 {Denis Bouyssou and Didier Dubois and Marc Pirlot and
+                  Henri Prade},
+  volume =	 1,
+  chapter =	 7
+}
+
+@InProceedings{Brafman02,
+  author =	 {Ronen I. Brafman and Carmel Domshlak},
+  title =	 {Introducing Variable Importance Tradeoffs into
+                  {CP}-Nets},
+  booktitle =	 UAI02P,
+  address =	 UAI02L,
+  year =	 2002,
+  month =	 UAI02M,
+  pages =	 {69-76},
+  editor =	 UAI02E,
+  publisher =	 UAI02PB
+}
+
+@InProceedings{Brafman02simple,
+  author =	 {Ronen I. Brafman and Carmel Domshlak},
+  title =	 {Introducing Variable Importance Tradeoffs into
+                  {CP}-Nets},
+  booktitle =	 UAI02P,
+  year =	 2002,
+  editor =	 UAI02E
+}
+
+@InProceedings{Brafman04,
+  author =	 {Ronen I. Brafman and Carmel Domshlak and Tanya
+                  Kogan},
+  title =	 {Compact Value-Function Representations for
+                  Qualitative Preferences},
+  booktitle =	 UAI04P,
+  address =	 UAI04L,
+  month =	 UAI04M,
+  year =	 2004,
+  pages =	 {51--59},
+  editor =	 UAI04E,
+  publisher =	 UAI04PB
+}
+
+@article{Brafman06,
+  author    = {Ronen I. Brafman and Carmel Domshlak and Solomon Eyal Shimony},
+  title     = {On Graphical Modeling of Preference and Importance},
+  journal   = {J. Artif. Intell. Res. (JAIR)},
+  volume    = {25},
+  year      = {2006},
+  pages     = {389-424},
+}
+
+@Book{Brams00,
+  author =	 {S. J. Brams and Alan D. Taylor},
+  title =	 {The Win-win Solution. Guaranteeing Fair Shares to
+                  Everybody},
+  publisher =	 {W. W. Norton \& Company},
+  year =	 2000
+}
+
+@Article{Brams06,
+  author =	 {S. J. Brams and Michal A. Jones and Christian
+                  Klamler},
+  title =	 {Better Ways to Cut a Cake},
+  journal =	 {Notices of the American Mathematical Society},
+  year =	 2006,
+  volume =	 53,
+  number =	 11,
+  pages =	 {1314--1321},
+  month =	 dec
+}
+
+@Book{Brams96,
+  author =	 {S. J. Brams and Alan D. Taylor},
+  title =	 {Fair Division --- From Cake-cutting to Dispute
+                  Resolution},
+  publisher =	 {Cambridge Univ. Press},
+  year =	 1996
+}
+
+
+@Article{BramsEdelmanFishburn04,
+  author = 	 {S. J. Brams and P. H. Edelman and P. C. Fishburn},
+  title = 	 {Fair Division of Indivisible Items},
+  journal = 	 {Theory and Decision},
+  year = 	 {2004},
+  volume = 	 {5},
+  number = 	 {2}
+}
+
+@Article{BramsKing05,
+  author = 	 {S. J. Brams and D. King},
+  title = 	 {Efficient Fair Division -- Help the Worst off or Avoid Envy? },
+  journal = 	 {Rationality and Society},
+  year = 	 2005,
+  volume = 	 17,
+  number = 	 4
+}
+
+@Article{BramsFishburn02,
+  author =	 {S. J. Brams and P. C. Fishburn},
+  title =	 {Fair Division of Indivisible Items Between Two
+                  People with Identical Preferences: Envy-freeness,
+                  Pareto-optimality, and Equity},
+  journal =	 {Social Choice and Welfare},
+  year =	 {2002},
+  volume =	 {17}
+}
+
+@TechReport{BramsR00,
+  author =	 {S. J. Brams and P. H. Edelman and P. C. Fishburn},
+  title =	 {Paradoxes of Fair Division},
+  institution =	 {New York University, Department of Economics},
+  year =	 {2000},
+  type =	 {Economic Research Reports},
+  number =	 {RR 2000-13},
+  month =	 jun
+}
+
+@article{Bryant86,
+  author =	 {Randal E. Bryant},
+  title =	 {Graph-Based Algorithms for Boolean Function
+                  Manipulation.},
+  journal =	 {IEEE Trans. Computers},
+  volume =	 35,
+  number =	 8,
+  year =	 1986,
+  pages =	 {677-691},
+}
+
+
+
+@Misc{CPLEX,
+  author = 	 {ILOG},
+  title = 	 {Cplex 10.0},
+  note = 	 {\url{http://www.ilog.com/products/cplex/}},
+  year =         {2006}
+}
+
+  publisher =	 {Morgan Kaufmann Publishers Inc.},
+@Book{Cantor15,
+  author =	 {Georg Cantor},
+  title =	 {Contributions to the Founding of the Theory of
+                  Transfinite Numbers},
+  publisher =	 {Dover Publications},
+  year =	 1915,
+  address =	 {New York}
+}
+
+@TechReport{Chen04,
+  author =	 {Li Chen and Pearl Pu},
+  title =	 {Survey of Preference Elicitation Methods},
+  institution =	 {\'Ecole Polytechnique F\'ed\'erale de Lausanne},
+  year =	 2004
+}
+
+@InProceedings{Chevaleyre05aamas,
+  author =	 {Y. Chevaleyre and U. Endriss and J\'erôme Lang and
+                  N. Maudet},
+  title =	 {Negociating over Small Bundles of Resources},
+  booktitle =	 AAMAS05P,
+  pages =	 {296--302},
+  year =	 2005,
+  address =	 AAMAS05L,
+  month =	 AAMAS05M,
+  editor =	 AAMAS05E,
+  publisher =	 AAMAS05PB
+}
+
+@InProceedings{Chevaleyre05ijcai,
+  author =	 {Y. Chevaleyre and U. Endriss and N. Maudet},
+  title =	 {On Maximal Classes of Utility Functions for
+                  Efficient One-to-one Negociation},
+  booktitle =	 {Proc. of IJCAI'05},
+  year =	 2005
+}
+
+@InProceedings{Chevaleyre06KR,
+  author =	 {Chevaleyre, Y. and Endriss, U. and Lang, J\'erôme},
+  title =	 {Expressive Power of Weighted Propositional Formulas
+                  for Cardinal Preference Modelling},
+  booktitle =	 {Proc. of KR-06},
+  year =	 2006,
+}
+
+@InProceedings{Chevaleyre07,
+  author =	 {Y. Chevaleyre and U. Endriss and S. Estivie
+                  and N. Maudet},
+  title =	 {Reaching Envy-free States in Distributed Negotiation
+                  Settings},
+  booktitle =	 IJCAI07P,
+  pages =	 {1239--1244},
+  year =	 2007,
+  address =	 IJCAI07L,
+  month =	 IJCAI07M,
+  editor =	 IJCAI07E,
+  publisher =	 IJCAI07PB
+}
+
+@inproceedings{ChevaleyreEndrissEstivieMaudetDIMACS2004,
+  AUTHOR =	 {Y. Chevaleyre and U. Endriss and S. Estivie and
+                  N. Maudet},
+  title =	 {Multiagent Resource Allocation with $k$-additive
+                  Utility Functions},
+  booktitle =	 {Proc. DIMACS-LAMSADE Workshop on Computer Science
+                  and Decision Theory},
+  year =	 {2004}
+}
+
+@InProceedings{Collin91,
+  author =	 {Zeev Collin and Rina Dechter and Shmuel Katz},
+  title =	 {On the Feasibility of Distributed Constraint
+                  Satisfaction},
+  booktitle =	 IJCAI91P,
+  pages =	 {319--324},
+  year =	 1992,
+  editor =	 IJCAI91E,
+  address =	 IJCAI91L,
+  month =	 IJCAI91M,
+  publisher =	 IJCAI91PB
+}
+
+@InProceedings{Conitzer03,
+  author =	 {Vincent Conitzer and J{\'e}r{\^o}me Lang and Tuomas
+                  Sandholm},
+  title =	 {How Many Candidates are Needed to Make Elections
+                  Hard to Manipulate ?},
+  booktitle =	 {Proceedings of the 9th Conference on Theoretical
+                  Aspects of Rationality and Knowledge (TARK-03)},
+  pages =	 {201--214},
+  year =	 2003,
+  address =	 {University of Indiana, Indiana},
+  publisher =	 {ACM Press}
+}
+
+@inproceedings{Cook71,
+  author =	 {Stephen A. Cook},
+  title =	 {The Complexity of Theorem-proving Procedures},
+  booktitle =	 {STOC '71: Proceedings of the Third Annual ACM
+                  Symposium on Theory of Computing},
+  year =	 {1971},
+  pages =	 {151--158},
+  location =	 {Shaker Heights, Ohio, United States},
+  publisher =	 {ACM Press},
+  address =	 {New York, NY, USA},
+}
+
+@article{Cooper04,
+  author =	 {Martin Cooper and Thomas Schiex},
+  title =	 {Arc Consistency for Soft Constraints},
+  journal =	 AI,
+  volume =	 {154},
+  number =	 {1-2},
+  year =	 {2004},
+  pages =	 {199--227},
+  publisher =	 {Elsevier Science Publishers Ltd.},
+  address =	 {Essex, UK},
+}
+
+@Book{Cormen01,
+  author =	 {Thomas H. Cormen and Charles E. Leiserson and Ronald L. Rivest and Clifford Stein},
+  title = 	 {Introduction to Algorithms, Second Edition},
+  publisher = 	 {MIT Press},
+  year = 	 2001
+}
+
+@InProceedings{Coste04,
+  author =	 {Sylvie Coste-Marquis and J\'erôme Lang and Paolo
+                  Liberatore and Pierre Marquis},
+  title =	 {Expressive Power and Succinctness of Propositional
+                  Languages for Preference Representation},
+  booktitle =	 {Proc. of KR-04},
+  year =	 {2004},
+}
+
+
+@Book{Cramton06,
+  editor = 	 {P. Cramton and Yoav Shoham and Richard Steinberg},
+  title = 	 {Combinatorial Auctions},
+  publisher = 	 {MIT Press},
+  year = 	 {2006}
+}
+
+@Article{Darwiche02,
+  author =	 {Adnan Darwiche and Pierre Marquis},
+  title =	 {A Konwledge Compilation Map},
+  journal =	 JAIR,
+  year =	 2002,
+  volume =	 17,
+  pages =	 {229--264},
+  month =	 sep
+}
+
+@InProceedings{DeGivry06,
+  author =	 {Simon de Givry and Thomas Schiex and G.
+                  Verfaillie},
+  title =	 {Exploiting Tree Decomposition and Soft Local
+                  Consistency in Weighted CSP},
+  booktitle =	 AAAI06P,
+  year =	 {2006},
+  address =	 AAAI06L,
+  month =	 AAAI06M,
+  publisher =	 AAAI06PB
+}
+
+@Book{Dechter03,
+  author =	 {Rina Dechter},
+  title =	 {Constraint Processing},
+  publisher =	 {Morgan Kaufmann},
+  year =	 2003
+}
+
+@InProceedings{Degivry03,
+  author =	 {Simon de Givry and Javier Larrosa and Pedro Meseguer
+                  and Thomas Schiex },
+  title =	 {Solving Max-SAT as Weighted CSP},
+  booktitle =	 CP03P,
+  month =	 CP03M,
+  year =	 2003,
+  address =	 CP03L,
+  editor =	 CP06E,
+  publisher =	 CP06PB
+}
+
+@InProceedings{Degivry05,
+  author =	 {Simon de Givry and Federico Heras and Matthias Zytnicki and
+                  Javier Larrosa},
+  title =	 {Existential Arc Consistency: Getting Closer to Full
+                  Arc Consistency in Weighted CSPs},
+  booktitle =	 IJCAI05P,
+  year =	 {2005},
+  address =	 IJCAI05L,
+  month =	 IJCAI05M,
+  editor =	 IJCAI05E,
+  publisher =	 IJCAI05PB
+}
+
+@Article{Delahaye05,
+  author =	 {Jean-P. Delahaye},
+  title =	 {On se sacrifie{\dots} pour nuire aux autres !},
+  journal =	 {Pour La Science},
+  year =	 2005,
+  volume =	 {dossier sp\'ecial 49 : les chemins de la logique},
+  month =	 oct
+}
+
+@Article{DemkoHill98,
+  author = 	 {Stephen Demko and Theodore P. Hill},
+  title = 	 {Equitable Distribution of Indivisible Items},
+  journal = 	 {Mathematical Social Sciences},
+  year = 	 {1998},
+  volume = 	 {16},
+  pages = 	 {145-158}
+}
+
+@inproceedings{Denda00,
+  author =	 {Robert Denda and Albert Banchs and Wolfgang
+                  Effelsberg},
+  title =	 {The Fairness Challenge in Computer Networks},
+  booktitle =	 {QofIS '00: Proceedings of the First COST 263
+                  International Workshop on Quality of Future Internet
+                  Services},
+  year =	 2000,
+  pages =	 {208--220},
+  publisher =	 {Springer-Verlag},
+  address =	 {London, UK},
+}
+
+@PhdThesis{Deschinkel01,
+  author =	 {Karine Deschinkel},
+  title =	 {R\'egulation du Trafic a\'erien par Optimisation
+                  Dynamique des Prix du R\'eseau},
+  school =	 {\'Ecole Nationale Sup\'erieure de l'A\'eronautique et de
+                  l'Espace},
+  year =	 2001
+}
+
+@PhdThesis{Domshlak02,
+  author =	 {Carmel Domshlak},
+  title =	 {Modelling and Reasoning About Preferences with
+                  CP-nets},
+  school =	 {Ben-Gurion University},
+  year =	 2002
+}
+
+
+@InProceedings{Domshlak03,
+  author =	 {Carmel Domshlak and Francesca Rossi and Kristen
+                  Brent Venable and Toby Walsh},
+  title =	 {Reasoning About Soft Constraints and Conditional
+                  Preferences: Complexity Results and Approximation
+                  Techniques},
+  booktitle =	 IJCAI03P,
+  address =	 IJCAI03L,
+  month =	 IJCAI03M,
+  year =	 2003,
+  editor =	 IJCAI03E,
+  publisher =	 IJCAI03PB
+}
+
+@Article{Dubois01,
+  author =	 {Didier Dubois and Philippe Fortemps and Marc Pirlot and
+                  Henri Prade},
+  title =	 {Leximin Optimality and Fuzzy Set-theoretic
+                  Operations},
+  journal =	 {European journal of operational research},
+  year =	 2001,
+  volume =	 130,
+  pages =	 {20--28}
+}
+
+@Article{Dubois96,
+  author =	 {Didier Dubois and H\'el\`ene Fargier and Henri
+                  Prade},
+  title =	 {Refinements of the maximin approach to decision
+                  making in a fuzzy environment},
+  journal =	 {Fuzzy sets and systems},
+  year =	 1996,
+  volume =	 81,
+  pages =	 {103--122}
+}
+
+@Article{Dubois99,
+  author =	 {Didier Dubois and Philippe Fortemps},
+  title =	 {Computing Improved Optimal Solutions to Max-min
+                  Flexible Constraint Satisfaction Problems},
+  journal =	 {European Journal of Operational Research},
+  year =	 {1999},
+}
+
+@article{Dunne05,
+  author =	 {P. E. Dunne and Michael Wooldridge and Michael
+                  Laurence},
+  title =	 {The Complexity of Contract Negotiation},
+  journal =	 AI,
+  volume =	 {164},
+  number =	 {1-2},
+  year =	 {2005},
+  pages =	 {23--46},
+  publisher =	 {Elsevier Science Publishers Ltd.},
+  address =	 {Essex, UK},
+}
+
+@Article{Ebert02,
+  author =	 {Udo Ebert and Patrick Moyes},
+  title =	 {Welfare, Inequality and the Transformation of
+                  Incomes. The Case of Weighted Income Distributions.},
+  journal =	 {Journal of Economics},
+  year =	 2002,
+  volume =	 {Supplement \#9},
+  pages =	 {9--50}
+}
+
+@Article{EdelmanFishburn01,
+  author =	 {P. H. Edelman and P. C. Fishburn},
+  title =	 {Fair Division of Indivisible Items Among People with
+                  Similar Preferences},
+  journal =	 {Mathematical Social Sciences},
+  year =	 {2001}
+}
+
+@Book{Ehrgott00,
+  author =	 {Matthias Ehrgott},
+  title =	 {Multicriteria Optimization},
+  publisher =	 {Springer},
+  year =	 2000,
+  number =	 491,
+  series =	 {Lecture Notes in Economics and Mathematical Systems}
+}
+
+@Book{Ehrgott02,
+  editor =	 {Matthias Ehrgott and Xavier Gandibleux},
+  title =	 {Multiple Criteria Optimization: State of the Art
+                  Annotated Bibliographic Surveys},
+  publisher =	 {Springer},
+  year =	 2002,
+  volume =	 52,
+  series =	 {International Series in Operations Research and
+                  Management Science}
+}
+
+@InProceedings{Endriss03,
+  author =	 {U. Endriss and N. Maudet and Fariba Sadri and
+                  Francesca Toni},
+  title =	 {On Optimal Outcomes of Negociations Over Resources},
+  booktitle =	 AAMAS03P,
+  year =	 {2003},
+  month =	 AAMAS03M,
+  address =	 AAMAS03L,
+  publisher =	 AAMAS03PB
+}
+
+@InProceedings{Endriss04,
+  author =	 {U. Endriss and N. Maudet},
+  title =	 {On the Communication Complexity of Multilateral
+                  Tradings},
+  booktitle =	 AAMAS04P,
+  year =	 2004,
+  month =	 AAMAS04M,
+  address =	 AAMAS04L,
+  publisher =	 AAMAS04PB
+}
+
+@Article{Endriss06,
+  author =	 {U. Endriss and N. Maudet and Fariba Sadri and
+                  Francesca Toni},
+  title =	 {Negotiating Socially Optimal Allocations of
+                  Resources},
+  journal =	 JAIR,
+  year =	 2006,
+  volume =	 25,
+  pages =	 {315--348}
+}
+
+@PhdThesis{Estivie06,
+  author =	 {S. Estivie},
+  title =	 {Allocation de Ressources Multi-agents : Th\'eorie et
+                  Pratique},
+  school =	 {Universit\'e Paris Dauphine},
+  year =	 2006,
+  month =	 dec
+}
+
+@InCollection{Faltings05,
+  author = 	{Faltings, Boi},
+  title = 	{A Budget-balanced, Incentive-compatible Scheme for Social Choice},
+  booktitle = 	{Agent-Mediated Electronic Commerce VI},
+  publisher = 	{Springer},
+  year = 	{2005},
+  editor = 	{Peyman Faratin and Juan A. Rodriguez-Aguilar},
+  volume = 	{3435},
+  series = 	{LNAI},
+  pages = 	{30-43}
+}
+
+@InCollection{Faltings06,
+  author =	 {Boi Faltings},
+  title =	 {Distributed Constraint Programming},
+  booktitle =	 {Handbook of Constraint Programming},
+  pages =	 {699--729},
+  publisher =	 {Elsevier},
+  year =	 2006,
+  editor =	 {Francesca Rossi and P. {van Beck} and Toby Walsh},
+  series =	 {Foundations of Artificial Intelligence},
+  chapter =	 20
+}
+
+
+@InProceedings{Fargier07,
+  author =	 {H\'el\`ene Fargier and Pierre Marquis},
+  title =	 {On Valued Negation Normal Form Formulas},
+  booktitle =	 IJCAI07P,
+  pages =	 {360--365},
+  year =	 2007,
+  editor =	 IJCAI07E,
+  address =	 IJCAI07L,
+  month =	 IJCAI07M,
+  publisher =	 IJCAI07PB
+}
+
+@InProceedings{Fargier93,
+  author =	 {H. Fargier and J. Lang and T. Schiex},
+  title =	 {Selecting Preferred Solutions in Fuzzy Constraint
+                  Satisfaction Problems},
+  booktitle =	 {Proceedings of the First European Congress on Fuzzy
+                  Intelligent Technologies (EUFIT'93)},
+  year =	 1993,
+  address =	 {Aachen}
+}
+
+@Book{Felsenthal98,
+  author =	 {Dan S. Felsenthal and Mosh\'e Machover},
+  title =	 {The Measurement of Voting Power: Theory and
+                  Practice, Problems and Paradoxes },
+  publisher =	 {Edward Elgar Publishing},
+  year =	 1998
+}
+
+@Book{Fishburn70,
+  author =	 {P. C. Fishburn},
+  year =	 1970,
+  title =	 {Utility Theory for Decision-Making},
+  publisher =	 {John Wiley \& Sons},
+  address =	 {New York}
+}
+
+@Book{Fodor94,
+  author =	 {J\'anos Fodor and Marc Roubens},
+  title =	 {Fuzzy Preference Modelling and Multicriteria
+                  Decision Support},
+  publisher =	 {Kluwer Academic Publishers},
+  year =	 1994
+}
+
+@Article{Foley67,
+  author = 	 {D. Foley},
+  title = 	 {Resource Allocation and the Public Sector},
+  journal = 	 {Yale Econ. Essays},
+  year = 	 {1967},
+  volume = 	 {7},
+  number = 	 {1}
+}
+
+@Book{FordFulkerson62,
+  author =	 {Lester Randolph Ford and Delbert Ray Fulkerson},
+  title = 	 {Flows in Networks},
+  publisher = 	 {Princeton University Press},
+  year = 	 1962
+}
+
+@Article{Frei05,
+  author =	 {Frei, Christian and Faltings, Boi and Hamdi, Mounir},
+  title =	 {Resource Allocation in Communication Networks Using
+                  Abstraction and Constraint Satisfaction},
+  journal =	 {IEEE Journal on Selected Areas in Communication},
+  year =	 {2005},
+  volume =	 {23},
+  number =	 {2},
+  month =	 {February},
+  pages =	 {304-320}
+}
+
+@Article{Freuder82,
+  author =	 {Eugene C. Freuder},
+  title =	 {A Sufficient Condition for Backtrack-free Search},
+  journal =	 JACM,
+  year =	 1982,
+  volume =	 29,
+  number =	 1,
+  pages =	 {24--32},
+  month =	 jan
+}
+
+@InProceedings{Frisch03,
+  author =	 {Alan M. Frisch and Brahim Hnich and Zeynep Kiziltan
+                  and Ian Miguel and Toby Walsh},
+  title =	 {Multiset Ordering constraints},
+  booktitle =	 IJCAI03P,
+  year =	 2003,
+  month =	 IJCAI03M,
+  address =	 IJCAI03L,
+  editor =	 IJCAI03E,
+  publisher =	 IJCAI03PB
+}
+
+@InProceedings{Fujishima99,
+  author =	 {Yuzo Fujishima and Kevin Leyton-Brown and Yoav
+                  Shoam},
+  title =	 {Taming the Computational Complexity of Combinatorial
+                  Auctions: Optimal and Approximate Approaches},
+  booktitle =	 IJCAI99P,
+  year =	 1999,
+  address =	 IJCAI99L,
+  month =	 IJCAI99M,
+  editor =	 IJCAI99E,
+  publisher =	 IJCAI99PB
+}
+
+@InProceedings{Galand06,
+  author =	 {Lucie Galand and Patrice Perny},
+  title =	 {Search for Compromise Solutions in Multiobjective
+                  State Space Graphs},
+  booktitle =	 ECAI06P,
+  pages =	 {93--97},
+  year =	 {2006},
+  editor =	 ECAI06E,
+  address =	 ECAI06L,
+  month =	 ECAI06M,
+  publisher =	 ECAI06PB
+}
+
+@InProceedings{Galand07,
+  author =	 {Lucie Galand and Patrice Perny},
+  title =	 {Seach for Choquet-optimal Paths under Uncertainty},
+  booktitle =	 UAI07P,
+  pages =	 {125--132},
+  year =	 2007,
+  address =	 UAI07L,
+  month =	 UAI07M,
+  publisher =	 UAI07PB
+}
+
+@Book{Garey79,
+  author =	 "Michael R. Garey and David S. Johnson",
+  title =	 "Computers and Intractability, a Guide to the Theory
+                  of NP-completeness",
+  publisher =	 "Freeman",
+  year =	 1979
+}
+
+@Book{Garfinkel72,
+  author =	 {Robert S. Garfinkel and George L. Nemhauser},
+  title =	 {Integer Programming},
+  publisher =	 {Wiley},
+  year =	 1972
+}
+
+@Book{Gayant01,
+  author =	 {Jean-Pascal Gayant},
+  title =	 {Risque et décision},
+  publisher =	 {Vuibert},
+  year =	 2001
+}
+
+@inproceedings{Gonzales04,
+  author =	 {Christophe Gonzales and Patrice Perny},
+  title =	 {GAI Networks for Utility Elicitation.},
+  booktitle =	 KR04P,
+  year =	 2004,
+  month =	 KR04M,
+  address =	 KR04L,
+  pages =	 {224-234},
+  editor =	 KR04E,
+  publisher =	 KR04PB
+}
+
+@InProceedings{Gonzales06,
+  author =	 {Christophe Gonzales and Patrice Perny and Sergio
+                  Queiroz},
+  title =	 {Preference aggregation in combinatorial domains
+                  using {GAI}-nets},
+  booktitle =	 {Proceedings of the Dimacs-Lamsade workshop on voting
+                  theory and preference modelling},
+  pages =	 {165--179},
+  year =	 2006,
+  editor =	 {Denis Bouyssou and Fred Roberts and Alexis Tsoukiàs},
+  number =	 6,
+  series =	 {Annales du LAMSADE},
+  address =	 {Paris, France},
+  month =	 oct,
+  publisher =	 {CNRS}
+}
+
+@Article{Gottlob92,
+  author = 	 {Georg Gottlob},
+  title = 	 {Complexity results for nonmonotonic logics},
+  journal = 	 {Journal of Logic and Computation},
+  year = 	 {1992},
+  volume = 	 {2},
+  pages = 	 {397--425}
+}
+
+@article{Grabisch97,
+  author =	 {Grabisch, M.},
+  title =	 {$k$-order Additive Discrete Fuzzy Measure and Their
+                  Representation},
+  journal =	 {Fuzzy Sets and Systems},
+  volume =	 92,
+  year =	 1997
+}
+
+@InProceedings{Guernalec97,
+  author =	 {Noëlle Bleuzen-Guernalec and Alain Colmerauer},
+  title =	 {Narrowing a Block of Sortings in Quadratic Time},
+  booktitle =	 CP97P,
+  pages =	 {2--16},
+  year =	 1997,
+  address =	 CP97L,
+  month =	 CP97M,
+  editor =	 CP97E,
+  publisher =	 CP97PB
+}
+
+@Article{Harsanyi55,
+  author =	 {J. C. Harsanyi},
+  title =	 {Cardinal Welfare, Individualistic Ethics, and
+                  Interpersonal Comparisons of Utility},
+  journal =	 {Journal of political economy},
+  year =	 1955,
+  volume =	 63,
+  pages =	 {309--321}
+}
+
+@TechReport{Henrich01,
+  author =	 {Joseph Henrich and Robert Boyd and Samuel Bowles and
+                  Colin Camerer and Ernst Fehr and Herbert Gintis and
+                  Richard},
+  title =	 {Cooperation, Reciprocity and Punishment in Fifteen
+                  Small-scale Societies},
+  institution =	 {Santa Fe Institute},
+  year =	 2001,
+  type =	 {Working Paper},
+  number =	 {01-01-007},
+  month =	 jan
+}
+
+@Article{HerreinerPuppe02,
+  author =	 {D. K. Herreiner and C. Puppe},
+  title =	 {A Simple Procedure for Finding Equitable Allocations
+                  of Indivisible Goods},
+  journal =	 {Social Choice and Welfare},
+  year =	 {2002},
+  volume =	 {19}
+}
+
+@article{Jegou2003,
+  author =	 {Philippe J\'{e}gou and Cyril Terrioux},
+  title =	 {Hybrid Backtracking Bounded by Tree-decomposition of
+                  Constraint Networks},
+  journal =	 AI,
+  volume =	 146,
+  number =	 1,
+  year =	 2003,
+  pages =	 {43--75},
+  publisher =	 {Elsevier Science Publishers Ltd.},
+  address =	 {Essex, UK},
+}
+
+@InProceedings{Jensen94,
+  author =	 {Frank Jensen and Finn Jensen and Soren Dittmer},
+  title =	 {From Influence Diagrams to Junction Trees},
+  booktitle =	 UAI94P,
+  address =	 UAI94L,
+  year =	 1994,
+  month =	 UAI94M,
+  pages =	 {367-37},
+  editor =	 UAI94E,
+  publisher =	 UAI94PB
+}
+
+@InProceedings{Jonker05,
+  author =	 {Geert M. Jonker and John-Jules Ch. Meyer and Frank
+                  P. M. Dignum},
+  title =	 {A Market Mechanism for Airport Traffic Planning},
+  booktitle =	 {Proceedings of the 12th Portuguese Conference on
+                  Artificial Intelligence (EPIA-05)},
+  pages =	 {500--511},
+  year =	 2005,
+  editor =	 {Carlos Bento and Am\'{\i}lcar Cardoso and Ga{\"e}l
+                  Dias},
+  series =	 {Lecture Notes in Computer Science},
+  address =	 {Covilh{\~a}, Portugal},
+  month =	 dec,
+  publisher =	 {Springer-Verlag}
+}
+
+@Article{Kalai75,
+  author =	 {Ehud Kalai and Meir Smorodinsky},
+  title =	 {Other Solutions to Nash's Bargaining Problem},
+  journal =	 {Econometrica},
+  year =	 1975,
+  volume =	 43,
+  number =	 3,
+  pages =	 {513-518}
+}
+
+@InProceedings{Karp72,
+  author = 	 {Richard M. Karp},
+  title = 	 {Reducibility Among Combinatorial Problems},
+  booktitle =	 {Complexity of Computer Computations},
+  pages =	 {85--103},
+  year =	 1972,
+  editor =	 {R. E. Miller and J. W. Watcher},
+  address =	 {New York},
+  publisher =	 {Plenum Press}
+}
+
+@Book{Keeney76,
+  author =	 {Ralph L. Keeney and Howard Raiffa},
+  title =	 {Decisions with Multiple Objectives: Preferences and
+                  Value Tradeoffs},
+  publisher =	 {John Wiley and Sons},
+  year =	 1976
+}
+
+@Book{Knuth68,
+  author =	 {Donald E. Knuth},
+  title =	 {The Art of Computer Programming},
+  year =	 1968,
+  publisher =	 {Addison-Wesley},
+  volume =	 {1, fundamental algorithms}
+}
+
+@Book{Kolm72,
+  author = 	 {Serge-Christophe Kolm},
+  title = 	 {Justice et \'Equit\'e},
+  publisher = 	 {Cepremap, CNRS Paris},
+  year = 	 1972,
+  note = 	 {(english translation: Justice and Equity, MIT Press 1998.}
+}
+
+@PhdThesis{Koster99,
+  author =	 {Arie M. C. A. Koster},
+  title =	 {Frequency Assignment - Models and Algorithms},
+  school =	 {Universiteit Maastricht},
+  year =	 1999,
+  address =	 {Maastricht, The Netherlands}
+}
+
+@InProceedings{LaburtheCHOCOTricks00,
+  author =	 {François Laburthe},
+  title =	 {{CHOCO} : Implementing a {CP} kernel},
+  booktitle =	 {Proceedings of TRICS'2000, Workshop on techniques for
+                  implementing CP systems},
+  year =	 2000,
+  note =	 {\url{http://sourceforge.net/projects/choco}},
+  address =	 {Singapore}
+}
+
+@InProceedings{Lafage00,
+  author =	 {C\'eline Lafage and J\'erôme Lang},
+  title =	 {Logical Representation of Preferences for Group
+                  Decision Making},
+  booktitle =	 KR00P,
+  address =	 KR00L,
+  pages =	 {457--468},
+  year =	 {2000},
+  month =	 KR00M,
+  editor =	 KR00E,
+  publisher =	 KR00PB
+}
+
+@Article{Lang04,
+  author =	 {J\'erôme Lang},
+  title =	 {Logical Preference Representation and Combinatorial
+                  Vote},
+  journal =	 {Annals of Mathematics and Artificial Intelligence},
+  year =	 2004,
+  volume =	 42,
+  number =	 1,
+  pages =	 {37-71}
+}
+
+@article{Larrosa04,
+  author =	 {Javier Larrosa and Thomas Schiex},
+  title =	 {Solving Weighted CSP by Maintaining Arc Consistency},
+  journal =	 AI,
+  volume =	 {159},
+  number =	 {1-2},
+  year =	 {2004},
+  pages =	 {1--26},
+  publisher =	 {Elsevier Science Publishers Ltd.},
+  address =	 {Essex, UK},
+}
+
+@Article{LarssonSvensson02,
+  author = 	 {Bo Larsson and Lars-Gunnar Svensson},
+  title = 	 {Strategy-proof and Nonbossy Allocation of Indivisible Goods and Money},
+  journal = 	 {Economic Theory},
+  year = 	 {2002},
+  volume = 	 {20}
+}
+
+@InCollection{Lehmann06,
+  author =	 {D. Lehmann and Rudolf Müller and Tuomas W. Sandholm},
+  title =	 {The Winner Determination Problem},
+  booktitle =	 {Combinatorial auctions},
+  publisher =	 {MIT Press},
+  year =	 2006,
+  editor =	 {P. Cramton and Yoav Shoham and Richard Steinberg},
+  chapter =	 12
+}
+
+@InProceedings{Lehmann99,
+  author =	 {D. Lehmann and Liaden Ita O'Callaghan and Yoav
+                  Shoham},
+  title =	 {Truth Revelation in Rapid, Approximately Efficient
+                  Combinatorial Auctions},
+  booktitle =	 EC99P,
+  year =	 1999,
+  month =	 EC99M,
+  address =	 EC99L,
+  publisher =	 EC99PB
+}
+
+@Article{Lemaitre02,
+  author =	 {M. Lema\^itre and G. Verfaillie and Frank
+                  Jouhaud and Jean-M. Lachiver and N.
+                  Bataille},
+  title =	 {Selecting and Scheduling Observations of Agile
+                  Satellites},
+  journal =	 {{Aerospace Science and Technology}},
+  year =	 2002,
+  volume =	 6,
+  pages =	 {367--381}
+}
+
+@TechReport{Lemaitre02TechReport,
+  author =	 {M. Lema\^itre and G. Verfaillie and H\'el\`ene
+                  Fargier and J\'erôme Lang},
+  title =	 {Guidage et Partage des Satellites Pl\'eiades-HR, \'Etude
+                  de Protocoles de Partage},
+  institution =	 {ONERA et IRIT},
+  year =	 2002,
+  number =	 {RF 4/06079 DCSD},
+  month =	 mar
+}
+
+@TechReport{Lemaitre04,
+  author =	 {M. Lema\^itre and H\'el\`ene Fargier and J\'erôme
+                  Lang},
+  title =	 {Partage \'Equitable des Satellites
+                  Pl\'eiades-HR. R\'egulation, N\'egociations (Lots 1
+                  et 2)},
+  institution =	 {ONERA/DCSD et IRIT/CNRS},
+  year =	 2004,
+  month =	 oct,
+  number =	 {RF 1/09401 DCSD}
+}
+ 
+
+@TechReport{Lemaitre98,
+  author =	 {M. Lema\^itre and G. Verfaillie},
+  title =	 {Partage de Ressources Satellitaires. Lot 2 :
+                  D\'efinition de Protocoles Candidats et \'Etude de leurs
+                  Caract\'eristiques},
+  institution =	 {ONERA},
+  year =	 1998
+}
+
+@inproceedings{Lemaitre99,
+  author =	 {M. Lema\^itre and G. Verfaillie and
+                  N. Bataille},
+  title =	 { Exploiting a Common Property Resource under a
+                  Fairness Constraint: a Case Study },
+  booktitle =	 {Proc. of IJCAI'99},
+  year =	 1999
+}
+
+@InProceedings{Leyton-brown00,
+  author =	 {Kevin Leyton-Brown and Mark Pearson and Yoav Shoham},
+  title =	 {Towards a Universal Test Suite for Combinatorial
+                  Auction Algorithms},
+  booktitle =	 EC00P,
+  year =	 2000,
+  month =	 EC00M,
+  address =	 EC00L,
+  publisher =	 EC00PB
+}
+
+@InProceedings{Lipton04,
+  author =	 {R. Lipton and E. Markakis and E.
+                  Mossel and A. Saberi},
+  title =	 {On Approximately Fair Allocations of Divisible
+                  Goods},
+  booktitle =	 {Proceedings of EC'04},
+  year =	 2004,
+}
+
+@Article{Luce56,
+  author = 	 {R. D. Luce},
+  title = 	 {Semiorders and a Theory of Utility Discrimination},
+  journal = 	 {Econometrica},
+  year = 	 1956,
+  volume = 	 24,
+  number = 	 2,
+  pages = 	 {178--191},
+  month = 	 apr
+}
+
+
+
+@Article{Luss99,
+  author =	 {Hanan Luss},
+  title =	 {On Equitable Resource Allocation Problems: a
+                  Lexicographic Minimax Approach},
+  journal =	 {Operations Research},
+  year =	 1999,
+  volume =	 47,
+  number =	 3,
+  pages =	 {361--378}
+}
+
+@Article{MARA06,
+  author =	 {Y. Chevaleyre and P. E. Dunne and U. Endriss
+                  and J. Lang and M. Lema\^itre and N.
+                  Maudet and J. Padget and S. Phelps and J.
+                  A. Rodr\'iguez-Aguilar and P. Sousa},
+  title =	 {Issues in Multiagent Resource Allocation},
+  journal =	 {Informatica},
+  year =	 2006,
+  volume =	 30,
+  pages =	 {3--31}
+}
+
+@Article{Mackworth77,
+  author =	 {Alan K. Mackworth},
+  title =	 {Consistency in Networks of Relations},
+  year =	 1977,
+  journal =	 AI,
+  volume =	 8,
+  number =	 1,
+  pages =	 {99--118},
+}
+
+
+
+@InProceedings{Mackworth77Ijcai,
+  author =	 {Alan K. Mackworth},
+  title =	 {On Reading Sketch Maps},
+  booktitle =	 IJCAI77P,
+  pages =	 {598--606},
+  year =	 1977,
+  editor =	 IJCAI77E,
+  address =	 IJCAI77L,
+  month =	 IJCAI77M,
+  publisher =	 IJCAI77PB
+}
+
+@PhdThesis{Marichal99,
+  author =	 {Jean-Luc Marichal},
+  title =	 {Aggregation Operators for Multicriteria Decision
+                  Aid},
+  school =	 {Facult\'e des Sciences de l'Universit\'e de Li\`eges},
+  year =	 {1999}
+}
+
+@Article{Maschler92,
+  author =	 {Michael Maschler and Jos A. M. Potters and Stef
+                  H. Tijs},
+  title =	 {The General Nucleolus and the Reduced Game Property},
+  journal =	 {International Journal of Game Theory},
+  year =	 1992,
+  volume =	 21,
+  pages =	 {85--106}
+}
+
+@InProceedings{Mehlhorn00,
+  author =	 {Kurt Mehlhorn and Sven Thiel},
+  title =	 {Faster Algorithms for Bound-Consistency of the
+                  Sortedness and the Alldifferent Constraint},
+  booktitle =	 CP00P,
+  address =	 CP00L,
+  month =	 CP00M,
+  year =	 2000,
+  pages =	 {306--319},
+  editor =	 CP00E,
+  publisher =	 CP00PB
+}
+
+@InProceedings{Mohr98,
+  author =	 {Roger Mohr and G\'erald Masini},
+  title =	 {Good Old Discrete Relaxation},
+  booktitle =	 ECAI98P,
+  pages =	 {651--656},
+  year =	 1998,
+  editor =	 ECAI98E,
+  address =	 ECAI98L,
+  month =	 ECAI98M,
+  publisher =	 ECAI98PB
+}
+
+@article{Montanari74,
+  author =	 {Ugo Montanari},
+  journal =	 {Inf. Sci.},
+  pages =	 {95--132},
+  title =	 {Network of Constraints: Fundamental Properties and
+                  Applications to Picture Processing},
+  volume =	 7,
+  year =	 1974
+}
+
+@InCollection{Moulin02,
+  author =	 {H. Moulin},
+  title =	 {Axiomatic Cost and Surplus Sharing},
+  booktitle =	 {Handbook of Social Choice and Welfare},
+  pages =	 {289--357},
+  publisher =	 {North Holland Elsevier},
+  year =	 2002,
+  editor =	 {Kenneth J. Arrow and Amartya K. Sen and Kotaro
+                  Suzumura},
+  number =	 19,
+  series =	 {Handbook in economics},
+  chapter =	 6
+}
+
+@book{Moulin03,
+  author =       {H. Moulin},
+  title =        {Fair Division and Collective Welfare},
+  publisher =    {MIT Press},
+  year =         2003
+}
+
+@Book{Moulin88,
+  author =       {H. Moulin},
+  title =        {Axioms of Cooperative Decision Making},
+  publisher =    {Cambridge Univ. Press},
+  year =         1988
+}
+
+@book{Moulin95,
+  author =       {H. Moulin},
+  title =        {Cooperative Microeconomics, A Game-Theoretic Introduction},
+  publisher =    {Prentice Hall},
+  year =         {1995}
+}
+
+@Article{Nash50,
+  author = 	 {John Forbes Nash},
+  title = 	 {The Bargaining Problem},
+  journal = 	 {Econometrica},
+  year = 	 {1950},
+  volume = 	 {28},
+  pages = 	 {155--162}
+}
+
+@InProceedings{Nisan00,
+  author =	 {Noam Nisan},
+  title =	 {Bidding and Allocation in Combinatorial Auctions},
+  booktitle =	 EC00P,
+  year =	 2000,
+  month =	 EC00M,
+  address =	 EC00L,
+  publisher =	 EC00PB
+} 
+
+@InCollection{Nisan06,
+  author =	 {Noam Nisan},
+  title =	 {Bidding Languages for Combinatorial Auctions},
+  booktitle =	 {Combinatorial auctions},
+  publisher =	 {MIT Press},
+  year =	 2006,
+  editor =	 {P. Cramton and Yoav Shoham and Richard Steinberg},
+  chapter =	 9
+}
+
+@Book{OPL99,
+  author =	 "Pascal {Van Hentenryck}",
+  title =	 "The OPL Optimization Programming Language",
+  publisher =	 "The MIT Press",
+  year =	 1999
+}
+
+@Article{Ogryczak03,
+  author =	 {Wlodzimierz Ogryczak and T.z \'Sliwi\'nski},
+  title =	 {On Solving Linear Programs with the Ordered Weighted
+                  Averaging Objective},
+  journal =	 {European Journal of Operational Research},
+  year =	 2003,
+  volume =	 148,
+  pages =	 {80--91}
+} 
+
+@Article{Ogryczak97,
+  author =	 {Wlodzimierz Ogryczak},
+  title =	 {On the Lexicographic Minimax Approach to Location
+                  Problems},
+  journal =	 {European Journal of Operational Research},
+  year =	 1997,
+  volume =	 100,
+  pages =	 {566--585}
+}
+
+@InProceedings{Ozturk06,
+  author =	 {Meltem \"Ozt\"urk and Alexis Tsouki\`as},
+  title =	 {Preference Representation with 3-points Intervals},
+  booktitle =	 ECAI06P,
+  pages =	 {417--421},
+  year =	 2006,
+  address =	 ECAI06L,
+  month =	 ECAI06M,
+  editor =	 EC06E,
+  publisher =	 EC06PB
+}
+
+@Book{Papadimitriou94,
+  author =	 {C. H. Papadimitriou},
+  title =	 {Computational Complexity},
+  publisher =	 {Addison--Wesley},
+  year =	 {1994}
+}
+
+@book{Pearl88,
+  author =	 {Judea Pearl},
+  title =	 {Probabilistic Reasoning in Intelligent Systems:
+                  Networks of Plausible Inference},
+  year =	 1988,
+  isbn =	 {0-934613-73-7},
+  publisher =	 {Morgan Kaufmann Publishers Inc.},
+  address =	 {San Francisco, CA, USA},
+}
+
+@InProceedings{Perny07,
+  author =	 {Patrice Perny and Olivier Spanjaard and Louis-Xavier
+                  Storme},
+  title =	 {State Space Search for Risk-averse Agents},
+  booktitle =	 IJCAI07P,
+  pages =	 {2353--2358},
+  year =	 2007,
+  editor =	 IJCAI07E,
+  address =	 IJCAI07L,
+  month =	 IJCAI07M,
+  publisher =	 IJCAI07PB
+}
+
+@Article{Perny92,
+  author =	 {Patrice Perny and Bernard Roy},
+  title =	 {The Use of Fuzzy Outranking Relations in Preference
+                  Modelling},
+  journal =	 {Fuzzy sets and systems},
+  year =	 1992,
+  volume =	 49,
+  pages =	 {33--53}
+}
+
+@InProceedings{Petcu06,
+  author =	 {Adrian Petcu and Boi Faltings and David Parkes},
+  title =	 {{M-DPOP}: Faithful Distributed Implementation of
+                  Efficient Social Choice Problems},
+  booktitle =	 AAMAS06P,
+  pages =	 {1397--1404},
+  year =	 2006,
+  editor =	 AAMAS06E,
+  address =	 AAMAS06L,
+  month =	 AAMAS06M,
+  publisher =	 AAMAS06PB
+}
+
+@Book{Pirlot97,
+  author =	 {Marc Pirlot and Philippe Vincke},
+  title =	 {Semi Orders},
+  publisher =	 {Kluwer Academic Publishers, Dordrecht},
+  year =	 1997
+}
+
+@Misc{Pivato06,
+  author = 	 {M. Pivato},
+  title = 	 {Voting, Arbitration and Fair Division --- The Mathematics of Social Choice},
+  month = 	 nov,
+  year = 	 2006,
+  note = 	 {URL: \url{http://xaravve.trentu.ca/pivato/Teaching/voting.pdf}}
+}
+
+@Article{Potters92,
+  author = 	 {Jos A. M. Potters and Stef H. Tijs},
+  title = 	 {The Nucleolus of a Matrix Game and Other Nucleoli},
+  journal = 	 {Mathematics of Operations Research},
+  year = 	 1992,
+  volume =	 17,
+  pages =	 {164--174}
+}
+
+@PhdThesis{Pralet06,
+  author =	 {C\'edric Pralet},
+  title =	 {A Generic Framework for Representing and Solving
+                  Sequential Decision Making Problems with
+                  Uncertainties, Feasabilities and Utilities},
+  school =	 {\'Ecole Nationale de l'A\'eronautique et de l'Espace},
+  year =	 2006,
+  month =	 nov
+}
+
+@TechReport{Ramaekers02,
+  author =	 {Eve Ramaekers},
+  title =	 {Multiple Assignment Problems of Indivisible Goods
+                  Without Monetary Transfer},
+  institution =	 {Facult\'es Universitaires Notre-Dame-de-la-Paix,
+                  Namur},
+  year =	 {2002}
+}
+
+@Book{Rawls71,
+  author =	 {J. Rawls},
+  title =	 {A Theory of Justice},
+  publisher =	 {Harvard University Press},
+  year =	 1971
+}
+
+
+@Article{Reiter80,
+  author = 	 {Raymond Reiter},
+  title = 	 {A Logic for Default Reasoning},
+  journal = 	 AI,
+  year = 	 {1980},
+  volume = 	 {13},
+  pages = 	 {81--132}
+}
+
+@Article{Roberts80,
+  author =	 {Kevin W. S. Roberts},
+  title =	 {Interpersonal Comparability and Social Choice
+                  Theory},
+  journal =	 {Review of Economic Studies},
+  year =	 {1980},
+  volume =	 {47},
+  pages =	 {421--439}
+}
+
+@article{Robertson86,
+  author =	 {Neil Robertson and P. D. Seymour},
+  title =	 {Graph Minors. II. Algorithmic Aspects of
+                  Tree-Width.},
+  journal =	 {J. Algorithms},
+  volume =	 7,
+  number =	 3,
+  year =	 1986,
+  pages =	 {309-322},
+}
+
+@Book{Robertson98,
+  author =	 {Jack Robertson and William Webb},
+  title =	 {Cake-cutting Algorithms: Be Fair if You Can},
+  publisher =	 {A. K. P.s, Ltd},
+  year =	 1998
+}
+
+@Article{Rollon06,
+  author =	 {Emma Roll\'on and Javier Larrosa},
+  title =	 {Bucket Elimination for Multiobjective Optimization},
+  journal =	 {Journal of Heuristics},
+  year =	 2006,
+  volume =	 12,
+  number =	 {4/5},
+  pages =	 {307--328},
+  month =	 sep
+}
+
+@book{Rosenschein94,
+  author =	 {Jeffrey S. Rosenschein and Gilad Zlotkin},
+  title =	 {Rules of Encounter: Designing Conventions for
+                  Automated Negotiation Among Computers},
+  year =	 1994,
+  publisher =	 {MIT Press},
+  address =	 {Cambridge, MA, USA},
+}
+
+@Book{Rossi06,
+  editor =	 {Francesca Rossi and P. {van Beck} and Toby Walsh},
+  title =	 {Handbook of Constraint Programming},
+  publisher =	 {Elsevier},
+  year =	 2006,
+  series =	 {Foundations of Artificial Intelligence}
+}
+
+@Article{RothkopfMS98,
+  author =	 {Michael H. Rothkopf and Aleksander Peke{\u c} and
+                  Ronald M. Harstad},
+  title =	 {Computationally Manageable Combinatorial Auctions},
+  journal =	 {Management Science},
+  year =	 1998,
+  volume =	 44,
+  number =	 8,
+  pages =	 {1131-1147}
+}
+
+@Book{Roy85,
+  author =	 {Bernard Roy},
+  title =	 {M\'ethodologie Multicrit\`ere d'Aide \`a la S\'ecision},
+  publisher =	 {Economica},
+  year =	 1985,
+  address =	 {Paris}
+}
+
+@Article{Sandholm02,
+  author =	 {Tuomas W. Sandholm},
+  title =	 {Algorithm for Optimal Winner Determination in
+                  Combinatorial Auctions},
+  journal =	 AI,
+  year =	 2002,
+  volume =	 134,
+  pages =	 {1-54}
+}
+
+@InCollection{Sandholm06,
+  author =	 {Tuomas W. Sandholm and Craig Boutilier},
+  title =	 {Preference Elicitation in Combinatorial Auctions},
+  booktitle =	 {Combinatorial auctions},
+  publisher =	 {MIT Press},
+  year =	 2006,
+  editor =	 {P. Cramton and Yoav Shoham and Richard Steinberg},
+  chapter =	 10
+}
+
+@InCollection{Sandholm06b,
+  author =	 {Tuomas W. Sandholm},
+  title =	 {Optimal Winner Determination Algorithms},
+  booktitle =	 {Combinatorial auctions},
+  publisher =	 {MIT Press},
+  year =	 2006,
+  editor =	 {P. Cramton and Yoav Shoham and Richard Steinberg}
+}
+
+
+@InProceedings{Sandholm98,
+  author =	 {Tuomas W. Sandholm},
+  title =	 {Contract Types for Satisficing Task Allocation:
+                  I. Theoretical Results},
+  booktitle =	 {Proceedings of the AAAI Spring Symposium:
+                  Satisficing Models},
+  pages =	 {68--75},
+  year =	 1998,
+  editor =	 {Sandip Sen},
+  address =	 {Menlo Park, California},
+  publisher =	 {AAAI Press}
+}
+
+@InProceedings{Sandholm99,
+  author =	 {Tuomas W. Sandholm},
+  title =	 {An Algorithm for Optimal Winner Determination in
+                  Combinatorial Auctions},
+  booktitle =	 IJCAI99P,
+  pages =	 {452-547},
+  year =	 {1999},
+  month =	 IJCAI99M,
+  address =	 IJCAI99L,
+  editor =	 IJCAI99E,
+  publisher =	 IJCAI99PB
+}
+
+@InProceedings{Schiex95,
+  author =	 {Thomas Schiex and H\'el\`ene Fargier and G.
+                  Verfaillie},
+  title =	 {Valued Constraint Satisfaction Problems: Hard and
+                  Easy Problems},
+  booktitle =	 IJCAI95P,
+  pages =	 {631--637},
+  year =	 1995,
+  address =	 IJCAI95L,
+  month =	 IJCAI95M,
+  publisher =	 IJCAI95PB
+}
+
+@Article{Schiex97,
+  author =	 {Thomas Schiex and H\'el\`ene Fargier and G.
+                  Verfaillie},
+  title =	 {Probl{\`e}mes de Satisfaction de Contraintes
+                  Valu{\'e}s},
+  journal =	 RIA,
+  pages =	 {339--373},
+  volume =	 9,
+  number =	 3,
+  year =	 {1997}
+}
+
+@Book{Sen70,
+  author = 	 {A. K. Sen},
+  title = 	 {Collective Choice and Social Welfare},
+  publisher = 	 {North-Holland},
+  year = 	 1970
+}
+
+@Book{Sen92,
+  author =	 {Amartya Sen},
+  title =	 {Inequality Reexamined},
+  publisher =	 {Oxford University Press},
+  year =	 1992,
+  note =	 {Traduction française aux éditions du {S}euil}
+}
+
+@InCollection{Shapley53,
+  author =	 {Lloyd S. Shapley},
+  title =	 {A value for $n$-person games},
+  booktitle =	 {Contributions to the Theory of Games, vol {II}},
+  pages =	 {307--317},
+  publisher =	 {Princeton University Press},
+  year =	 1953,
+  editor =	 {Harold W. Kuhn and Albert W. Tucker},
+  volume =	 28,
+  series =	 {Annals of mathematics studies},
+  address =	 {Princeton, NJ}
+}
+
+@InCollection{Smith06,
+  author =	 {Barbara M. Smith},
+  title =	 {Modelling},
+  booktitle =	 {Handbook of Constraint Programming},
+  pages =	 {377--406},
+  publisher =	 {Elsevier},
+  year =	 2006,
+  editor =	 {Francesca Rossi and P. {van Beck} and Toby Walsh},
+  series =	 {Foundations of Artificial Intelligence},
+  chapter =	 11
+}
+
+@Article{Smith80,
+  author =	 {Reid G. Smith},
+  title =	 {The Contract Net Protocol: High-level Communication
+                  and Control in a Distributed Problem Solver},
+  journal =	 {IEEE Transactions on Computers},
+  year =	 1980,
+  volume =	 {C-29},
+  number =	 12,
+  pages =	 {1104--1113}
+}
+
+@InProceedings{Spread05,
+  author =	 {Gilles Pesant and Jean-Charles R\'egin},
+  title =	 {{{\scriptsize S}{\footnotesize P}RE{\footnotesize
+                  A}{\scriptsize D}}: A Balancing Constraint Based on
+                  Statistics},
+  booktitle =	 CP05P,
+  year =	 2005,
+  address =	 CP05L,
+  month =	 CP05M,
+  editor =	 CP05E,
+  publisher =	 CP05PB
+}
+
+@Article{Steinhaus48,
+  author =	 {H. Steinhaus},
+  title =	 {The Problem of Fair Division},
+  journal =	 {Econometrica},
+  year =	 1948,
+  volume =	 16,
+  number =	 1
+}
+
+@Article{Svensson94,
+  author = 	 {Lars-Gunnar Svensson},
+  title = 	 {Queue Allocation of Indivisible Goods},
+  journal = 	 {Social Choice and Welfare},
+  year = 	 {1994},
+  volume = 	 {11}
+}
+
+@Article{Svensson99,
+  author = 	 {Lars-Gunnar Svensson},
+  title = 	 {Strategy-proof Allocation of Indivisible Goods},
+  journal = 	 {Social Choice and Welfare},
+  year = 	 {1999},
+  volume = 	 {16}
+}
+
+@Article{TSI04_1,
+  author =	 {H. Fargier and J. Lang and M. Lemaître and
+                  G. Verfaillie},
+  title =	 {Partage \'Equitable de Ressources communes : (1) un
+                  Mod\`ele G\'en\'eral et son Application au Partage de
+                  Ressources Satellitaires},
+  journal =	 {Technique et Science Informatiques},
+  publisher =	 {Lavoisier},
+  year =	 2004,
+  volume =	 23,
+  number =	 9
+}
+
+@Article{TSI04_2,
+  author =	 {H. Fargier and J. Lang and M. Lemaître and
+                  G. Verfaillie},
+  title =	 {Partage \'Equitable de Ressources Communes : (2)
+                  \'El\'ements de Complexit\'e et d'Algorithmique},
+  journal =	 {Technique et Science Informatiques},
+  publisher =	 {Lavoisier},
+  year =	 2004,
+  volume =	 23,
+  number =	 9
+}
+
+
+@Article{TadenumaThomson91,
+  author =	 {Koichi Tadenuma and William L. Thomson},
+  title =	 {No-envy and Consistency in Economies with
+                  Indivisible Goods},
+  journal =	 {Econometrica},
+  year =	 {1991},
+  volume =	 {59},
+  pages =	 {1755-1767}
+}
+
+@phdthesis {Terrioux02,
+  author =	 {Cyril Terrioux},
+  title =	 {Approches Structurelles et Coop\'eratives pour la
+                  R\'esolution des Probl\`emes de Satisfaction de
+                  Contraintes},
+  school =	 {Universit\'e de Provence},
+  month =	 {D\'ecembre},
+  year =	 2002,
+}
+
+@Book{Tinbergen53,
+  author =	 {Jan Tinbergen},
+  title =	 {Redeljke Inkomensverdeling},
+  publisher =	 {N. V. {DeGulden} Pers.},
+  year =	 1953,
+  address =	 {Haarlem}
+}
+
+@Article{Vanhentenryck92,
+  author =	 {Pascal {van Hentenryck} and Helmut Simonis and
+                  Mehmet Dincbas},
+  title =	 {Constraint Satisfaction Using Constraint Logic
+                  Programming},
+  journal =	 AI,
+  volume =	 58,
+  number =	 {1-3},
+  pages =	 {113-159},
+  year =	 1992,
+}
+
+@inproceedings{Vasquez01,
+  author =	 {M. Vasquez and Jin-Kao Hao},
+  title =	 {A Hybrid Approach for the 0--1 Multidimensional
+                  Knapsack Problem},
+  booktitle =	 IJCAI01P,
+  pages =	 {328--333},
+  volume =	 1,
+  month =	 IJCAI01M,
+  year =	 2001,
+  adress =	 IJCAIO1L,
+  editor =	 IJCAI01E,
+  publisher =	 IJCAI01PB
+}
+
+@Article{Vincke78,
+  author =	 {Philippe Vincke},
+  title =	 {Quasi-ordres G\'en\'eralis\'es et Repr\'esentation
+                  Num\'erique},
+  journal =	 {Math\'ematiques et sciences humaines},
+  year =	 1978,
+  volume =	 62,
+  pages =	 {35--60}
+}
+
+@Book{Vincke89,
+  author =	 {Philippe Vincke},
+  title = 	 {L'aide Multicrit\`ere \`a la D\'ecision},
+  publisher = 	 {Ellipses, Bruxelles},
+  year = 	 1989
+}
+
+@Book{VonWright63,
+  author =	 {Georg Henrik {Von Wright}},
+  title =	 {The Logic of Preferences},
+  publisher =	 {Edinburgh University Press},
+  year =	 1963
+}
+
+@Article{Wagner87,
+  author =	 {Klaus W. Wagner},
+  title =	 {More Complicated Questions About Maxima and Minima,
+                  and some closures of {NP}},
+  journal =	 {Theoretical Computer Science},
+  year =	 1987,
+  volume =	 51,
+  pages =	 {53--80}
+}
+
+@Article{Wagner90,
+  author =	 {Klaus W. Wagner},
+  title =	 {Bounded Query Classes},
+  journal =	 {{SIAM} Journal on Computing},
+  year =	 1990,
+  volume =	 19,
+  number =	 5,
+  pages =	 {833--846}
+}
+
+@InProceedings{Walsh00,
+  author =	 {Toby Walsh},
+  title =	 {SAT vs CSP},
+  booktitle =	 CP00P,
+  pages =	 {441--456},
+  year =	 2000,
+  editor =	 CP00E,
+  address =	 CP00L,
+  month =	 CP00M,
+  publisher =	 CP00PB
+}
+
+@Article{Yager88,
+  author =	 {Ronald R. Yager},
+  title =	 {On Ordered Weighted Averaging Aggregation Operators
+                  in Multicriteria Decision Making},
+  journal =	 {IEEE Transactions on Systems, Man, and Cybernetics},
+  year =	 1988,
+  volume =	 18,
+  pages =	 {183--190}
+}
+
+@Book{Young94,
+  author =	 {H. Peyton Young},
+  title =	 {Equity in Theory and Practice},
+  publisher =	 {Princeton University Press},
+  year =	 1994
+}
+
+
+@Article{Zhou97,
+  author =	 {Jiannyang Zhou},
+  title =	 {A Permutation-Based Approach for Solving the
+                  Job-Shop Problem},
+  journal =	 {Constraints},
+  year =	 1997,
+  volume =	 2,
+  number =	 2,
+  pages =	 {185--213}
+}
+
+@TechReport{Zizzo00,
+  author =	 {D. John Zizzo and Andrew Oswald},
+  title =	 {Are People Willing to Pay to Reduce Others'
+                  Incomes?},
+  institution =	 {University of Warwick, Department of Economics},
+  year =	 2000,
+  type =	 {The Warwick Economics Research Paper Series
+                  (TWERPS)},
+  number =	 568
+}
+
+@InProceedings{EndrissAAAI07,
+  author =	 {Y. Chevaleyre and U. Endriss and N. Maudet},
+  title =	 {Allocating Goods on a Graph to Eliminate Envy},
+  booktitle =	 AAAI07P,
+  year =	 2007,
+  address =	 AAAI07L,
+  month =	 AAAI07M
+}
+
+
+
+@InProceedings{WilsonAAAI04,
+  author =	 {Nic Wilson},
+  title =	 {Extending {CP}-nets with stronger conditional
+                  preference statements.},
+  booktitle =	 {Proceedings of AAAI'04},
+  year =	 2004
+}
+
+@InProceedings{BEL-IJCAI09,
+  author    = {S. Bouveret and U. Endriss and J. Lang},
+  title     = {Conditional Importance Networks: A Graphical Language for Representing Ordinal, Monotonic Preferences over Sets of Goods},
+  booktitle = {Proceedings of the 21st International Joint Conference on Artificial Intelligence (IJCAI'09)},
+  pages     = {67-72},
+  year      = 2009,
+  address   = {Pasadena, California},
+  month     = {July}
+}
+
+
+@PhdThesis{Murillo10,
+  author = 	 {Javier {Murillo Espinar}},
+  title = 	 {Egalitarian Behaviour in Multiunit Combinatorial Auctions},
+  school = 	 {Universitat de Girona},
+  year = 	 2010}
+
+@PhdThesis{Uckelman08,
+  author = 	 {Joel Uckelman},
+  title = 	 {More Than the Sum of Its Parts. Compact Preference Representation of Combinatorial Domains},
+  school = 	 {Universiteit van Amsterdam},
+  year = 	 2008
+}
+
+
+@Article{Lang09,
+  author =	 {J. Lang and Lirong Xia},
+  title =	 {Sequential composition of voting rules in
+                  multi-issue domains},
+  journal =	 {Mathematical Social Sciences},
+  year =	 2009,
+  volume =	 57,
+  number =	 3,
+  pages =	 {304--324}}
+
+@Article{Bellman57,
+    author = {Richard Bellman},
+     title = {A Markovian Decision Process},
+   journal = {Indiana Univ. Math. J.},
+  fjournal = {Indiana University Mathematics Journal},
+    volume = 6,
+      year = 1957,
+     issue = 4,
+     pages = {679--684}
+}
+
+@Book{VonNeumann47,
+  author = 	 {John {Von Neumann} and Oskar Morgenstern},
+  title = 	 {Theory of Games and Economic Behavior},
+  publisher = 	 {Princeton University Press},
+  year = 	 1947,
+  address = 	 {Princeton, NJ}}
+
+@Article{Quiggin82,
+  author = 	 {John Quiggin},
+  title = 	 {A theory of anticipated utility},
+  journal = 	 {Journal of Economic Behavior \& Organization},
+  year = 	 1982,
+  volume = 	 3,
+  number = 	 4,
+  pages = 	 {323--343}}
+
+
+@Book{Savage54,
+  author = 	 {Leonard Jimmie Savage},
+  title = 	 {The foundations of statistics},
+  publisher = 	 {John Wiley and Sons},
+  year = 	 1954,
+  address = 	 {New York}}
+
+@article{Bouveret08Jair,
+  author    = {S. Bouveret and J. Lang},
+  title     = {Efficiency and Envy-freeness in Fair Division of Indivisible Goods: Logical Representation and Complexity},
+  journal   = {Journal of Artificial Intelligence Research (JAIR)},
+  volume    = {32},
+  year      = {2008},
+  pages     = {525-564},
+}
+
+@InProceedings{KBKZ-ADT09,
+  author    = {B. de Keijzer and S. Bouveret and T. Klos and Y. Zhang},
+  title     = {On the complexity of efficiency and envy-freeness in fair division of indivisible goods with additive preferences},
+  booktitle = {Proc. of ADT'09},
+  year      = 2009,
+  publisher = {Springer Verlag}
+}
+
+@Article{Domshlak06,
+  author = 	 {Carmel Domshlak and S. Prestwich and Francesca Rossi and Kristen Brent Venable},
+  title = 	 {Hard and soft constraints for reasoning about qualitative conditional preferences},
+  journal = 	 {Journal of Heuristics},
+  year = 	 2006,
+  volume = 	 12,
+  pages = 	 {263--285}}
+
+@InProceedings{Wilson09,
+  author    = {Nic Wilson},
+  title     = {An Efficient Deduction Mechanism for Expressive Comparative Preferences Languages},
+  booktitle = {Proceedings of the 21st International Joint Conference on Artificial Intelligence (IJCAI'09)},
+  year      = 2009,
+  address   = {Pasadena, California},
+  month     = {July}}
+
+@Article{Verfaillie10,
+   author = {Verfaillie, Gérard and Pralet, Cédric and Lemaître, M.},
+   title = {Constraint-based modeling of discrete event dynamic systems},
+   journal = {Journal of Intelligent Manufacturing},
+   publisher = {Springer Netherlands},
+   pages = {31--47},
+   volume = 21,
+   issue = 1,
+   year = 2010
+}
+
+@Article{Gajdos02,
+    title = {Fairness under Uncertainty},
+    author = {T. Gajdos and J.-M. Tallon},
+    pages = {1--7},
+    journal = {Economics Bulletin},
+    volume = {4},
+    number = {18},
+    year = {2002},
+}
+
+
+@InProceedings{Lu10,
+  author =	 {Tyler Lu and Craig Boutilier},
+  title =	 {The unavailable candidate model : A
+                  decision-theoretic view of social choice},
+  booktitle =	 {Proceedings of the Eleventh ACM conference on
+                  Electronic Commerce},
+  year =	 2010,
+  address =	 {Cambridge, MA},
+  month =	 {June}
+}
+
+@article{BL-AIJ09,
+  author    = {S. Bouveret and M. Lema\^itre},
+  title     = {Computing leximin-optimal solutions in constraint networks},
+  journal   = {Artificial Intelligence},
+  volume    = {173},
+  number    = {2},
+  pages     = {343-364},
+  year      = {2009}
+}
+
+@InProceedings{Toolbar06,
+  author =	 {S. Bouveret and Simon de Givry and Federico
+                  Heras and Javier Larrosa and Emma Rollon and Marti
+                  Sanchez and Thomas Schiex and Gérard Verfaillie and
+                  Matthias Zytnicky},
+  title =	 {Max-csp competition 2006: toolbar/toulbar2 solver
+                  brief description},
+  booktitle = {Proceedings of the Second International CSP Solver
+                  Competition},
+  year =	 2006}
+
+@InProceedings{BL-MFI07,
+  author =	 {S. Bouveret and M. Lemaître},
+  title =	 {Fonctions d'utilité collective avec droits exogènes
+                  inégaux},
+  booktitle =	 {Actes des cinquièmes journées francophones Modèles
+                  Formels de l'Interaction (MFI'07)},
+  year =	 2007,
+  editor =	 {Vangelis Paschos and Bernard Roy},
+  month =	 {mai},
+  address =	 {Paris, France},
+  publisher =	 {Université Paris IX Dauphine}
+}
+
+
+
+@InProceedings{BEL-COMSOC10,
+  author    = {S. Bouveret and U. Endriss and J. Lang},
+  title     = {Fair Division under Ordinal Preferences: Computing Envy-Free Allocations of Indivisible Goods},
+  booktitle = {Proceedings of the 3rd International Workshop on Computational Social Choice (COMSOC'10)},
+  year      = 2010,
+  address   = {Düsseldorf, Germany},
+  month     = {September},
+}
+ 
+@InProceedings{BL-COMSOC06,
+  author    = {S. Bouveret and M. Lemaître},
+  title     = {Finding leximin-optimal solutions using constraint programming: new algorithms and their application to combinatorial auctions},
+  booktitle = {Proceedings of the 1st International Workshop on Computational Social Choice (COMSOC'06)},
+  year      = 2006,
+  editor    = {U. Endriss and J. Lang},
+  month     = {December},
+  address   = {ILLC, University of Amsterdam},
+}
+
+@InProceedings{BL-ECAIWS06,
+ author    = {S. Bouveret and M. Lemaître},
+ title     = {Comparison of two constraint programming algorithms for computing leximin-optimal allocations},
+ booktitle = {Proceedings the workshop on Modelling and Solving Problems with Constraints, ECAI'06},
+ editor    = {S. Prestwich and Brahim Hnich},
+ year      = {2006},
+ address   = {Riva del Garda, Italy},
+ month     = {August},
+}
+
+@InProceedings{BL-JFPC06,
+ author    = {S. Bouveret and M. Lemaître},
+ title     = {Un algorithme de programmation par contraintes pour la recherche d'allocations leximin-optimales},
+ booktitle = {Actes des deuxièmes Journées Francophones de Programmation par Contraintes (JFPC'06)},
+ year      = {2006},
+ address   = {Nîmes, France},
+ editor    = {AFPC},
+ month     = {juin},
+}
+
+@inproceedings{BFLL-MFI05,
+  author    = {S. Bouveret and H. Fargier and J. Lang and M. Lemaître},
+  title     = {Un modèle général et des résultats de complexité pour le partage de biens indivisibles},
+  booktitle = {Actes des troisièmes journées francophones Modèles Formels de l'Interaction (MFI'05)},
+  year      = 2005,
+  editor    = {Andreas Herzig and Yves Lespérance and Abdel-Illah Mouaddib},
+  month     = {mai},
+  publisher = {Cépaduès Éditions},
+}
+
+@InProceedings{BEL-ECAI10,
+  author    = {S. Bouveret and U. Endriss and J. Lang},
+  title     = {Fair Division under Ordinal Preferences: Computing Envy-Free Allocations of Indivisible Goods},
+  booktitle = {Proceedings of the 19th European Conference on Artificial Intelligence (ECAI'10)},
+  year      = 2010,
+  address   = {Lisbon, Portugal},
+  month     = {August},
+  publisher = {IOS Press}
+}
+
+@Book{Boudec01,
+  author =	 {Jean-Yves {Le Boudec} and Patrick Thiran},
+  title =	 {Network Calculus},
+  publisher =	 {Springer Verlag},
+  year =	 2001,
+  series =	 {LNCS}
+}
+
+
+
+@InProceedings{Bouveret11,
+  author =	 {S. Bouveret and Julien Brunel and David
+                  Chemouil and Fabien Dagnat},
+  title =	 {Towards a categorical framework to ensure correct
+                  software evolutions.},
+  booktitle =	 {Proceedings of the Third Workshop on Hot Topics in
+                  Software Upgrades (HotSWUp'11)},
+  year =	 2011,
+  note =	 {(accepted for publication)}
+}
+
+@techreport{BPMN08,
+	author = {{Object Management Group}},
+	institution = {Object Management Group},
+	month = {January},
+	organization = {Object Management Group},
+	title = {Business Process Modeling Notation, v1.1},
+	url = {http://www.omg.org/docs/formal/08-01-17.pdf},
+	year = {2008}
+}
+
+@Book{Reiter01,
+  author =       {Raymond Reiter},
+  title =        {Knowledge in Action: Logical Foundations for
+                  Specifying and Implementing Dynamical Systems},
+  publisher =    {MIT Press},
+  year =         2001,
+}
+
+@Inproceedings{categoricalmanifesto,
+  author =	 {Joseph A. Goguen},
+  title =	 {A Categorical Manifesto},
+  booktitle =	 {Mathematical Structures in Computer Science},
+  year =	 1991,
+  pages =	 {49--67}
+}
+
+@article{B.holdiToveyTrick89a,
+  author =	 {John J. B.holdi and Craig A. Tovey and Michael
+                  A. Trick},
+  title =	 "Voting schemes for which it can be difficult to tell
+                  who won the election",
+  journal =	 "Social Choice and Welfare",
+  year =	 1989,
+  volume =	 6,
+  pages =	 "157--165"
+}
+
+@article{B.holdiToveyTrick89b,
+  author =	 {John J. B.holdi and Craig A. Tovey and Michael
+                  A. Trick},
+  title =	 {The computational difficulty of manipulating an
+                  election},
+  journal =	 {Social Choice and Welfare},
+  volume =	 6,
+  year =	 1989,
+  pages =	 {227--241}
+}
+
+@InProceedings{ConitzerSandholm02a,
+  author = 	 {Vincent Conitzer and Tuomas Sandholm},
+  title = 	 {Complexity of manipulating elections with few candidates},
+  booktitle = 	 {Proceedings of AAAI-2002},
+  pages =        {314-319},
+  year = 	 2002
+}
+
+@Book{Puterman94,
+  author =	 {Martin L. Puterman},
+  title =	 {Markov Decision Processes: Discrete Stochastic
+                  Dynamic Programming},
+  publisher =	 {Wiley},
+  year =	 1994,
+  series =	 {Wiley Series in Probability and Statistics}
+}
+
+@InProceedings{Holland05,
+ author = {A. Holland and B. O'Sullivan},
+ title = {Robust solutions for combinatorial auctions},
+ booktitle = {Proceedings of the 6th ACM conference on Electronic commerce},
+ year = {2005},
+ location = {Vancouver, BC, Canada},
+ pages = {183--192},
+ publisher = {ACM},
+} 
+
+@Unpublished{Parkes10,
+  author =	 {David C. Parkes and Ariel Procaccia},
+  title =	 {Dynamic Social Choice: Foundations and Algorithms},
+  note =	 {Working paper},
+  month =	 aug,
+  year =	 2010
+}
+
+@Article{Koriche.AIJ.2010,
+  author = 	 {Fr\'ed\'eric Koriche and Bruno Zanuttini},
+  title = 	 {Learning conditional preference networks},
+  journal = 	 {Artificial Intelligence},
+  year = 	 {2010},
+  volume = 	 {174},
+  pages = 	 {685--703}
+}
+
+@Article{bllz09,
+  author = 	 {\'Elise Bonzon and Marie-Christine Lagasquie-Schiex
+                  and J\'er\^ome Lang and Bruno Zanuttini},
+  title = 	 {Compact preference representation and {B}oolean games},
+  journal = 	 {Journal of Autonomous Agents and Multi-Agent Systems},
+  year =         {2009},
+  volume =       {18},
+  number =       {1},
+  pages =        {1--35}
+}
+
+
+
+@InProceedings{Saval09,
+  author =	 {Arnaud Saval and Maroua Bouzid and Stephan
+                  Brunessaux},
+  title =	 {A Semantic Extension for Event Modelisation},
+  booktitle =	 {Proceedings of the 21st IEEE International
+                  Conference on Tools with Artificial Intelligence
+                  (ICTAI 2009)},
+  year =	 2009,
+  editor =	 {Sotirios G. Ziavras},
+  publisher =	 {IEEE Computer Society}
+}
+
+
+@InProceedings{Hanna02,
+  author =	 {Hossam Hanna and Abdel-Illah Mouaddib},
+  title =	 {Task Selection Problem as a Decision Making Process},
+  booktitle =	 AAMAS02P,
+  year =	 2002,
+  address =	 AAMAS02L,
+  month =	 AAMAS02M,
+  publisher =	 AAMAS02PB
+}
+
+@PhdThesis{Beynier06,
+  author =	 {Aurélie Beynier},
+  title =	 {Une contribution à la résolution de Processus
+                  Décisionnels de Markov Décentralisés avec
+                  contraintes temporelles},
+  school =	 {Université de Caen Basse-Normandie},
+  year =	 2006
+}
+
+@PhdThesis{Boussart08,
+  author =	 {Matthieu Boussard},
+  title =	 {Planification multi-agents multi-objectifs : modèle
+                  et algorithme},
+  school =	 {Université de Caen Basse-Normandie},
+  year =	 2008
+}
+
+@Article{Lesner,
+  author = 	 {Boris Lesner and Bruno Zanuttini},
+  title = 	 {R\'esolution exacte et approch\'ee de probl\`emes de
+                  d\'ecision markoviens formul\'es en logique
+                  propositionnelle},
+  journal = 	 {Revue d'intelligence artificielle},
+  year = 	 2010,
+  volume = 	 24,
+  number = 	 2,
+  pages = 	 {131--158},
+}
+
+﻿@InCollection{Chatterjee06,
+   author = {Chatterjee, Krishnendu and Majumdar, Rupak and Henzinger, Thomas},
+   title = {Markov Decision Processes with Multiple Objectives},
+   booktitle = {STACS 2006},
+   series = {Lecture Notes in Computer Science},
+   editor = {Durand, Bruno and Thomas, Wolfgang},
+   publisher = {Springer Berlin / Heidelberg},
+   pages = {325-336},
+   volume = {3884},
+   year = {2006}
+}
+
+@InProceedings{Belouaer10,
+  author =	 {Lamia Belouaer and Maroua Bouzid and Abdel-Illah
+                  Mouaddib},
+  title =	 {Ontology based spatial planning for human-robot
+                  interaction},
+  booktitle =	 {Proceedings of the 17th International Symposium on
+                  Temporal Representation and Reasoning (TIME 2010)},
+  year =	 2010
+}
+
+@article{Debreu54,
+  title={{Representation of a preference ordering by a numerical function}},
+  author={Debreu, G.},
+  journal={Decision processes},
+  pages={159--165},
+  year={1954}
+}
+
+@book{Debreu66,
+  title={{Th{\'e}orie de la valeur}},
+  author={Debreu, G.},
+  year={1966},
+  publisher={Dunod}
+}
+
+@article{Gini21,
+  title={{Measurement of inequality of incomes}},
+  author={Gini, C.},
+  journal={The Economic Journal},
+  pages={124--126},
+  issn={0013-0133},
+  year={1921},
+  publisher={JSTOR}
+}
+
+@book{Krantz71,
+  title={{Foundations of measurement, vol. 1: Additive and polynomial representations}},
+  author={Krantz, D.H. and Luce, R.D. and Suppes, P. and Tversky, A.},
+  publisher={New York: Academic},
+  year={1971}
+}
+
+@conference{Braziunas05,
+  title={{Local utility elicitation in GAI models}},
+  author={Braziunas, D. and Boutilier, C.},
+  booktitle={Proceedings of the Twenty-first Conference on Uncertainty in Artificial Intelligence},
+  pages={42--49},
+  year={2005},
+  organization={Citeseer}
+}
+
+@conference{Dubus09a,
+  title={{Multiobjective optimization using GAI models}},
+  author={Dubus, J.P. and Gonzales, C. and Perny, P.},
+  booktitle={Proceedings of the 21st international jont conference on Artifical intelligence},
+  pages={1902--1907},
+  year={2009},
+  organization={Morgan Kaufmann Publishers Inc.}
+}
+
+@article{Dubus09b,
+  title={{Choquet Optimization Using GAI Networks for Multiagent/Multicriteria Decision-Making}},
+  author={Dubus, J.P. and Gonzales, C. and Perny, P.},
+  journal={Algorithmic Decision Theory},
+  pages={377--389},
+  year={2009},
+  publisher={Springer}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+@article{Knight21,
+  title={{Risk, Uncertainty and Profit, 1921}},
+  author={Frank H. Knight},
+  journal={Boston and New York},
+  year={1921}
+}
+
+
+@article{Allais53,
+  title={{Le comportement de l'homme rationnel devant le risque: Critique des postulats et axiomes de l'{\'e}cole Am{\'e}ricaine}},
+  author={Allais, M.},
+  journal={Econometrica: Journal of the Econometric Society},
+  volume={21},
+  number={4},
+  pages={503--546},
+  issn={0012-9682},
+  year={1953},
+  publisher={JSTOR}
+}
+
+@article{Machina82,
+  title={{" Expected Utility" Analysis without the Independence Axiom}},
+  author={Machina, M.J.},
+  journal={Econometrica: Journal of the Econometric Society},
+  volume={50},
+  number={2},
+  pages={277--323},
+  issn={0012-9682},
+  year={1982},
+  publisher={JSTOR}
+}
+
+@article{Jaffray88,
+  title={{Choice under risk and the security factor: An axiomatic model}},
+  author={Jaffray, J.Y.},
+  journal={Theory and Decision},
+  volume={24},
+  number={2},
+  pages={169--200},
+  issn={0040-5833},
+  year={1988},
+  publisher={Springer}
+}
+
+@article{Gilboa88,
+  title={{A combination of expected utility and maxmin decision criteria}},
+  author={Gilboa, I.},
+  journal={Journal of Mathematical Psychology},
+  volume={32},
+  number={4},
+  pages={405--420},
+  issn={0022-2496},
+  year={1988},
+  publisher={Elsevier}
+}
+
+@article{Cohen92,
+  title={{Security level, potential level, expected utility: A three-criteria decision model under risk}},
+  author={Cohen, M.},
+  journal={Theory and Decision},
+  volume={33},
+  number={2},
+  pages={101--134},
+  issn={0040-5833},
+  year={1992},
+  publisher={Springer}
+}
+
+@article{Essid97,
+  title={{Choice under risk with certainty and potential effects: A general axiomatic model}},
+  author={Essid, S.},
+  journal={Mathematical Social Sciences},
+  volume={34},
+  number={3},
+  pages={223--247},
+  issn={0165-4896},
+  year={1997},
+  publisher={Elsevier}
+}
+
+@article{Quiggin82,
+  title={{A theory of anticipated utility}},
+  author={Quiggin, J.},
+  journal={Journal of Economic Behavior \& Organization},
+  volume={3},
+  number={4},
+  pages={323--343},
+  issn={0167-2681},
+  year={1982},
+  publisher={Elsevier}
+}
+
+@conference{Choquet53,
+  title={{Th{\'e}orie des capacit{\'e}s}},
+  author={Choquet, G.},
+  booktitle={Annales de l’Institut Fourier},
+  volume={5},
+  pages={131--295},
+  year={1953}
+}
+
+@book{Savage54,
+  title={{The foundations of statistics.}},
+  author={Savage, L.J.},
+  publisher={John Wiley and Sons, New York},
+  year={1954}
+}
+
+@article{Anscombe63,
+  title={{A definition of subjective probability}},
+  author={Anscombe, F.J. and Aumann, R.J.},
+  journal={Annals of Mathematical statistics},
+  volume={34},
+  number={1},
+  pages={199--205},
+  issn={0003-4851},
+  year={1963},
+  publisher={JSTOR}
+}
+
+@article{Ellsberg61,
+  title={{Risk, ambiguity, and the Savage axioms}},
+  author={Ellsberg, D.},
+  journal={The Quarterly Journal of Economics},
+  volume={75},
+  number={4},
+  pages={643--669},
+  issn={0033-5533},
+  year={1961},
+  publisher={JSTOR}
+}
+
+@article{Wald49,
+  title={{Statistical decision functions}},
+  author={Wald, A.},
+  journal={The Annals of Mathematical Statistics},
+  volume={20},
+  number={2},
+  pages={165--205},
+  issn={0003-4851},
+  year={1949},
+  publisher={JSTOR}
+}
+
+@book{Laffont91_2,
+  title={{Cours de th{\'e}orie micro{\'e}conomique Vol2, {\'e}conomie de l'incertain et de l'information}},
+  author={Laffont, J.J.},
+  year={1991},
+  publisher={Economica}
+}
+
+
+@article{Diamond67,
+  title={{Cardinal welfare, individualistic ethics, and interpersonal comparison of utility: Comment}},
+  author={Diamond, P.A.},
+  journal={The Journal of Political Economy},
+  volume={75},
+  number={5},
+  pages={765},
+  issn={0022-3808},
+  year={1967},
+  publisher={The University of Chicago Press}
+}
+
+@article{Myerson81,
+  title={{Utilitarianism, egalitarianism, and the timing effect in social choice problems}},
+  author={R. B. Myerson},
+  journal={Econometrica},
+  volume={49},
+  number={4},
+  pages={883--897},
+  year={1981},
+  publisher={Econometric Society}
+}
+
+
+
+@article{Gajdos04,
+  title={Unequal uncertainties and uncertain inequalities: an axiomatic approach},
+  author={Thibault Gajdos and \'Eric Maurin},
+  journal={Journal of Economic Theory},
+  volume={116},
+  number={1},
+  pages={93--118},
+  year={2004},
+  publisher={Elsevier}
+}
+
+
+@article{Porter08,
+  title={Fault tolerant mechanism design},
+  author={Ryan Porter and Amir Ronen and Yoav Shoham and Moshe Tennenholtz},
+  journal={Artificial Intelligence},
+  volume={172},
+  number={15},
+  pages={1783--1799},
+  year={2008},
+  publisher={Elsevier}
+}
+
+
+@inproceedings{Fargier96,
+  title={Mixed constraint satisfaction : a framework for decision problems under incomplete knowledge},
+  author={H\'el\`ene Fargier and J\'erôme Lang and Thomas Schiex},
+  booktitle =	 {Proceedings of the Thirteenth National Conference on Artificial Intelligence (AAAI'96)},
+  pages =	 {175--180},
+  year =	 1996,
+  editor =	 {AAAI Press/MIT Press}
+}
+
+
+@conference{Fargier95,
+  title={A constraint satisfaction framework for decision under uncertainty},
+  author={H\'el\`ene Fargier and J\'erôme Lang and Roger Martin-Clouaire and Thomas Schiex},
+  booktitle={Proc. of the 11th Int. Conf. on Uncertainty in Artificial Intelligence},
+  volume={23},
+  year={1995},
+  organization={Citeseer}
+}
+
+@conference{Koenig07,
+  title={Sequential bundle-bid single-sale auction algorithms for decentralized control},
+  author={Koenig, S. and Tovey, C. and Zheng, X. and Sungur, I.},
+  booktitle={Proceedings of the International Joint Conference on Artificial Intelligence},
+  pages={1359--1365},
+  year={2007}
+}
+
+@InProceedings{Ginsberg1998,
+  author = {Matthew L. Ginsberg and Andrew J. Parkes and Amitabha Roy},
+  title = {Supermodels and robustness},
+  booktitle = {Proc. of AAAI'98},
+  year = {1998},
+  pages = {334--339},
+  isbn = {0-262-51098-7},
+  location = {Madison, Wisconsin, United States}
+}
+
+@conference{Dubus09,
+  title={Multiobjective optimization using GAI models},
+  author={Dubus, J.P. and Gonzales, C. and Perny, P.},
+  booktitle={Proceedings of the 21st international jont conference on Artifical intelligence},
+  pages={1902--1907},
+  year={2009},
+  organization={Morgan Kaufmann Publishers Inc.}
+}
+
+@article{Hammond81,
+  title={{Ex-ante and ex-post welfare optimality under uncertainty}},
+  author={Hammond, P.J.},
+  journal={Economica},
+  volume={48},
+  number={191},
+  pages={235--250},
+  issn={0013-0427},
+  year={1981},
+  publisher={JSTOR}
+}
+
+@article{Broome84,
+  title={{Uncertainty and fairness}},
+  author={Broome, J.},
+  journal={The Economic Journal},
+  volume={94},
+  number={375},
+  pages={624--632},
+  issn={0013-0133},
+  year={1984},
+  publisher={JSTOR}
+}
+
+
+@article{Pralet07,
+  title={{An algebraic graphical model for decision with uncertainties, feasibilities, and utilities}},
+  author={Pralet, C. and Verfaillie, G. and Schiex, T.},
+  journal={Journal of Artificial Intelligence Research},
+  volume={29},
+  number={1},
+  pages={421--489},
+  issn={1076-9757},
+  year={2007},
+  publisher={AI Access Foundation}
+}
+
+
+@conference{Aroumont08,
+  title={{DVB-RCS return link Radio Resource Management for Broadband Satellite systems using fade mitigation techniques at Ka band}},
+  author={Aroumont, A. and Radzik, J. and Bousquet, M. and Castanet, L.},
+  booktitle={Satellite and Space Communications, 2008. IWSSC 2008. IEEE International Workshop on},
+  pages={221--225},
+  year={2008},
+  organization={IEEE}
+}
+
+
+
+
+
+@inproceedings{Bresina96a,
+   author    = {J. L. Bresina},
+   title     = {{Heuristic-Biased Stochastic Sampling}},
+   booktitle = AAAI96P,
+   year      = 1996,
+   address   = AAAI96L,
+   pages     = {271--278},
+   annote    = {Presentation d'une methode permettant la prise en compte d'une
+       heuristique  sur les valeurs donnee (par  un utilisateur eclaire) avec
+       une fonction 'bias'.  Mise en application  avec un greedy  qui fait du
+       sampling dans l'arbre de recherche. Generalisation aux autres methodes
+       inexactes.}
+} 
+
+
+
+@inproceedings{AsadpourSaberiSTOC2007,
+   author =    {Arash Asadpour and Amin Saberi},
+   title =     {An approximation algorithm for max-min fair allocation of indivisible goods},
+   booktitle = {Proc.\ of STOC-2007},
+   year =      {2007}
+}
+
+@InProceedings{Lesca10,
+  author = {Lesca, Julien and Perny, Patrice},
+  title = {LP Solvable Models for Multiagent Fair Allocation problems},
+  booktitle = {European Conference on Artificial Intelligence},
+  year = {2010},
+  pages = {387--392}
+}
+
+
+@Article{Valiant79,
+  author = 	 {Leslie G. Valiant},
+  title = 	 {The complexity of computing the permanent},
+  journal = 	 {Theoretical Computer Science},
+  year = 	 1979,
+  volume = 	 8,
+  pages = 	 {189--201}
+}
+
+@Book{Marshall79,
+  author = 	 {Albert W. Marshall and Ingram Olkin},
+  title = 	 {Inequalities: Theory of Majorization and Its Applications},
+  publisher = 	 {Academic Press},
+  year = 	 1979,
+  volume = 	 143,
+  series = 	 {Mathematics in Science and Engineering}}
+
+
+@Article{Budish11,
+  author =	 {E. Budish},
+  title =	 {The Combinatorial Assignment Problem: Approximate
+                  Competitive Equilibrium from Equal Incomes},
+  journal =	 {Journal of Political Economy},
+  year =	 2011,
+  volume =	 119,
+  number =	 6
+}
+
+@InProceedings{BL-IJCAI11,
+  author    = {S. Bouveret and J. Lang},
+  title     = {A general elicitation-free protocol for allocating indivisible goods},
+  booktitle = {Proc. of IJCAI'11},
+  year      = 2011
+}
+
+@Book{Mill06,
+  author =	 {J. S. Mill},
+  title =	 {Utilitarianism},
+  publisher =	 {University of Chicago Press},
+  year =	 1906}
+
+@inproceedings{Bansal06,
+  title={The {Santa Claus} problem},
+  author={Bansal, N. and Sviridenko, M.},
+  booktitle={Proceedings of STOC'06},
+  year={2006},
+  organization={ACM}
+}
+
+@inproceedings{Othman2010,
+  author =	 {Othman, A. and Sandholm, T. and Budish,
+                  E.},
+  title =	 {Finding approximate competitive equilibria:
+                  efficient and fair course allocation},
+  booktitle =	 {Proceedings of AAMAS'10},
+  year =	 2010,
+  location =	 {Toronto, Canada}
+} 
+
+@InProceedings{Procaccia14,
+  author =	 {Ariel D. Procaccia and Junxing Wang},
+  title =	 {Fair Enough: Guaranteeing Approximate Maximin
+                  Shares},
+  booktitle = {Proc. 14th ACM Conference on Economics and
+                  Computation (EC'14)},
+  year =	 2014,
+  month =	 {Jun},
+  note =	 {forthcoming}}
+
