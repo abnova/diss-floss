@@ -39,13 +39,13 @@
 }
 
 
-\let\@NX\noexpand
+% \let\@NX\noexpand
 \let\@EA\expandafter
 
 \renewcommand{\appendix}[1][]{%
   \immediate\write\@auxout{%
     \string\@writefile{nav}%
-    {\@NX\headcommand{\@NX\def\@NX\insertintermediateframenumber{%
+    {\noexpand\headcommand{\noexpand\def\noexpand\insertintermediateframenumber{%
           \the\c@framenumber}}}}
 
   % optionnal argument typeset centered on plain frame
