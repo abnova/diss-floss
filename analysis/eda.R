@@ -82,6 +82,9 @@ fitDistribution <- function (df, var, colName, extraFun) {
   
   message("\nFitting distribution for '", colName, "':\n")
 
+  # convert factors to integers
+  if (is.factor(data)) data <- as.integer(data)
+
   if (FALSE) {
     dataDist <- fitdist(data, "gamma")
     dataBoot <- bootdist(dataDist, niter=51) #default niter=1001
@@ -290,7 +293,8 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
   g <- ggplot(d, aes(sample = resids)) +
     
     # Normal distribution function by default
-    stat_qq() +
+    # suppress "Removed N rows containing missing values (stat_qq)"
+    suppressWarnings(stat_qq()) +
     
     # Gamma distribution function
     #stat_qq(distribution = qgamma, dparams=list(shape=1)) +

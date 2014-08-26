@@ -137,11 +137,6 @@ sfProjectLicense <- function (indicator, data) {
   data[["License Restrictiveness"]] <- 
     as.factor(classification[as.character(data[["Project License"]])])
 
-  # needed for missing data handling (multiple imputation / 'Amelia')
-  data[["Project License"]] <- as.integer(data[["Project License"]])
-  data[["License Restrictiveness"]] <- 
-    as.integer(data[["License Restrictiveness"]])
-  
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   
@@ -164,9 +159,6 @@ sfPrjMaturity <- function (indicator, data) {
   data[["Project Maturity"]] <- 
     cut(major, breaks = c(0, 1, 2, Inf), include.lowest = TRUE,
         right = FALSE, labels=c("Alpha/Beta", "Stable", "Mature"))
-
-  # needed for missing data handling (multiple imputation / 'Amelia')
-  data[["Project Maturity"]] <- as.integer(data[["Project Maturity"]])
 
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}

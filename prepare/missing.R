@@ -45,6 +45,19 @@ IMPUTED_FILE <- "flossData" # default
 
 DEBUG <- FALSE
 
+
+# additional transformations needed for missing data
+# handling (multiple imputation / 'Amelia')
+prepareForMI <- function (data) {
+  
+  # convert factors to integers
+  data[["Project License"]] <- as.integer(data[["Project License"]])
+  data[["License Restrictiveness"]] <- 
+    as.integer(data[["License Restrictiveness"]])
+  data[["Project Maturity"]] <- as.integer(data[["Project Maturity"]])
+}
+
+
 message("\n===== HANDLING MISSING VALUES: MI and FIML =====")
 
 # ===== PREPARATION =====
@@ -55,6 +68,9 @@ mergedFile <- file.path(MERGED_DIR, fileName)
 # load data
 message("\nLoading data...")
 flossData <- loadData(mergedFile)
+
+# additional transformations for MI
+prepareForMI()
 
 # use only (numeric) columns of our interest;
 # this is a recommended (preferred) alternative
