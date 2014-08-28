@@ -132,11 +132,25 @@ sfProjectLicense <- function (indicator, data) {
       jabber='Restrictive', cvw='Restrictive', historical='Unknown',
       nausite='Permissive', real='Restrictive')
   
-  data[["Project License"]] <- factor(data[["Project License"]])
-  
   data[["License Restrictiveness"]] <- 
     as.factor(classification[as.character(data[["Project License"]])])
-
+  
+  data[["Project License"]] <- factor(data[["Project License"]])
+  levels(data[["Project License"]]) <- 
+    list(LGPL="lgpl", BSD="bsd", GPL="gpl", Website="website",
+         ZLib="zlib", Public="public", Other="other", IBMCPL="ibmcpl",
+         RPL="rpl", MPL11="mpl11", MIT="mit", AFL="afl",
+         Python="python", MPL="mpl", Apache="apache", OSL="osl",
+         W3C="w3c", IOSL="iosl", Artistic="artistic", APSL="apsl",
+         IBM="ibm", Plan9="plan9", PHP="php", QPL="qpl", PSFL="psfl",
+         NCSA="ncsa", RSCPL="rscpl", SunPublic="sunpublic", Zope="zope",
+         Eiffel="eiffel", Nethack="nethack", SISSL="sissl",
+         Unknown="none", OpenGroup="opengroup", SleepyCat="sleepycat",
+         Nokia="nokia", Attribut="attribut", XNet="xnet",
+         Eiffel2="eiffel2", WxWindows="wxwindows", MotoSoto="motosoto",
+         Vovida="vovida", Jabber="jabber", CVW="cvw",
+         Historical="historical", Nausite="nausite", Real="real")
+  
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   
