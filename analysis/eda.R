@@ -173,6 +173,7 @@ plotHistogram <- function (df, colName) {
   
   df <- df
   df$var <- df[[colName]]
+  df <- na.omit(df)
   
   title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
@@ -180,15 +181,19 @@ plotHistogram <- function (df, colName) {
   if (identical(colName, "Project Age"))
     xLabel <- paste(colName, "(months)")
   
-  g <- ggplot(data = df, aes(x=var)) +
+  g <- ggplot(df, aes(x=var)) +
     scale_fill_continuous("Number of\nprojects") + 
-    scale_x_continuous(xLabel) +
+    #scale_x_continuous(xLabel) +
     #scale_y_continuous("Number of projects") +
-    #scale_x_log10(xLabel) +
+    scale_x_log10(xLabel) +
     scale_y_log10("Number of projects") +
     ggtitle(label=title)
   
-  g <- g + geom_histogram(aes(fill = ..count..), binwidth = 1,
+  breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
+  bwidth <- breaks[2] - breaks[1]
+  
+  g <- g + geom_histogram(aes(fill = ..count..),
+                          binwidth = 0.01, #bwidth, #0.1
                           position = "identity")
   
   # Overlay with transparent density plot
@@ -215,6 +220,7 @@ plotDensity <- function (df, colName) {
   df <- df
   df$var <- df[[colName]]
   df$category <- factor(df[[colName]])
+  df <- na.omit(df)
   
   title <- paste("Projects distribution across", colName,
                  "range (by category)")
@@ -224,8 +230,12 @@ plotDensity <- function (df, colName) {
 #    geom_bar(aes(y = (..count..)/sum(..count..)), binwidth = 25) + 
 #    scale_y_continuous(labels = percent_format())
   
-  g <- ggplot(df, aes(x=var, fill=var)) +
-    geom_density(aes(y=..count..), binwidth=1, position="identity")
+breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
+bwidth <- breaks[2] - breaks[1]
+
+g <- ggplot(df, aes(x=var, fill=var)) +
+    geom_density(aes(y=..count..), 
+                 binwidth=bwidth, position="identity")
   
 #  g <- ggplot(df, aes(var, ..density.., colour = category)) +
 #    scale_fill_continuous("Number of\nprojects") + 
@@ -252,19 +262,37 @@ plotBarGraph <- function (df, colName) {
   SHOW_LEVELS <- 10
   df <- df
   df$var <- factor(df[[colName]])
+  df <- na.omit(df)
   
   # sort factor levels by the frequency of levels
   df$var <- reorder(df$var, df$var, function(x) -length(x))
   df$var <- topFactors(df$var, SHOW_LEVELS, o="The Rest")
   
   title <- paste("Projects distribution across", colName, "range")
+
+  # prepare to place percentage on top of bars, using geom_text()
+  if (FALSE) {
+    dfTab <- as.data.frame(table(df))
+    colnames(dfTab)[1] <- "x"
+    dfTab$lab <- as.character(100 * dfTab$Freq / sum(dfTab$Freq))
+  }
   
-  g <- ggplot(data=df, aes(x=var, fill=var)) +
+  # df[!is.na(df$var), ]
+  g <- ggplot(df, aes(x=var, fill=var)) +
     geom_bar(stat="bin", position="identity") +
     scale_fill_discrete(colName) + 
     xlab(colName) +
     ylab("Number of projects") +
     ggtitle(label=title)
+
+  # display pre-calculated percentage on top of bars
+  if (FALSE) {
+    g <- g +
+      geom_text(data=dfTab,aes(x=x,y=Freq,label=lab),vjust=0) +
+      theme(axis.text.x=element_blank(),axis.ticks=element_blank(),
+            axis.title.x=element_blank(),legend.title=element_blank(),
+            axis.title.y=element_blank())  
+  }
   
   if (.Platform$GUI == "RStudio") {print(g)}
   
