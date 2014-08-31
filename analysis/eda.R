@@ -4,21 +4,29 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
+if (!suppressMessages(require(RColorBrewer)))
+  install.packages('RColorBrewer')
 if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(fitdistrplus))) 
   install.packages('fitdistrplus')
+if (!suppressMessages(require(mixtools))) install.packages('mixtools')
+if (!suppressMessages(require(rebmix))) install.packages('rebmix')
 
 library(RCurl)
 library(stringr)
 library(ggplot2)
+library(RColorBrewer)
 library(gridExtra)
 library(psych)
 library(fitdistrplus)
+library(mixtools)
+library(rebmix)
 
 source("../utils/factors.R")
 source("../utils/qq.R")
 source("../utils/data.R")
+source("../utils/mixedDist.R")
 
 READY4EDA_DIR  <- "~/diss-floss/data/ready4eda"
 READY4EDA_FILE <- "flossData" # default
@@ -28,6 +36,8 @@ RDS_EXT <- ".rds"
 TRANSFORM_DIR <- "../data/transformed"
 
 EDA_RESULTS_DIR <- "../results/eda"
+
+DIST_FIT_COLOR <- "green" # ggplot2 line color for distrib. fitting
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
@@ -76,11 +86,12 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
 }
 
 
-fitDistribution <- function (df, var, colName, extraFun) {
+fitDistParam <- function (df, var, colName, extraFun) {
   
   data <- df[[colName]]
+  df <- na.omit(df)
   
-  message("\nFitting distribution for '", colName, "':\n")
+  message("\nParametric distribution fitting for '", colName, "':\n")
 
   # convert factors to integers
   if (is.factor(data)) data <- as.integer(data)
@@ -116,6 +127,75 @@ fitDistribution <- function (df, var, colName, extraFun) {
 }
 
 
+fitDistNonParam <- function (df, var, colName, extraFun) {
+  
+  data <- df[[colName]]
+  data <- na.omit(data)
+  
+  message("\nNon-parametric distribution fitting for '", colName, "':\n")
+  
+  # convert factors to integers
+  if (is.factor(data)) data <- as.integer(data)
+  
+  # perform non-parametric mixture distribution fitting
+  if (is.numeric(data)) {
+
+    num.components <- 3 # can determine automatically?
+    
+    mixDistInfo <- fitMixDist(data, num.components)
+    g <- plotMixedDist(data, mixDistInfo, num.components)
+    
+    if (.Platform$GUI == "RStudio") {print(g)}
+    
+    #TODO: consider moving to main
+    edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
+    edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, "-DistFitMix", ".svg"))
+    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+    
+    allPlots <<- c(allPlots, list(g))
+    message("")
+  }
+  
+}
+
+
+fitDistREBMIX <- function (df, var, colName, extraFun) {
+  
+  data <- df[[colName]]
+  df <- na.omit(df)
+  
+  # convert factors to integers
+  if (is.factor(data)) data <- as.integer(data)
+  
+  # perform parametric mixture distribution fitting
+  if (is.numeric(data)) {
+    set.seed(123)
+    
+    message("\nREBMIX: Parametric distribution fitting for '", colName, "':\n")
+    
+    boot.param <- boot.REBMIX(x = list(data), pos = 1, Bootstrap = "p",
+                              B = 100, n = NULL, replace = TRUE, prob = NULL)
+    summary(boot.param)
+    
+    message("\nREBMIX: Non-parametric distribution fitting for '", colName, "':\n")
+    
+    boot.nonparam <- boot.REBMIX(x = list(data), pos = 1, Bootstrap = "n",
+                                 B = 100, n = NULL, replace = TRUE, prob = NULL)
+    summary(boot.nonparam)
+    
+    message("\nREBMIX: Poisson distribution fitting for '", colName, "':\n")
+
+    poissonest <- REBMIX(Dataset = list(data), Preprocessing = "histogram",
+                         cmax = 6, Criterion = "MDL5",
+                         Variables = rep("discrete", 2),
+                         pdf = rep("Poisson", 2), K = 1)
+    c <- as.numeric(poissonest$summary$c)
+    summary(c)
+    message("")
+  }
+}
+
+
 multiDescriptiveEDA <- function (df, var, colNames, extraFun) {
   
   message("\nDecriptive statistics for '", colNames, "':\n")
@@ -147,7 +227,9 @@ performEDA <- function (dataSource, analysis,
     
     uniDescriptiveEDA(data, indicator, colName, extraFun)
     uniVisualEDA(data, indicator, colName, extraFun)
-    fitDistribution(data, indicator, colName, extraFun)
+    #fitDistParam(data, indicator, colName, extraFun)
+    fitDistNonParam(data, indicator, colName, extraFun)
+    #fitDistREBMIX(data, indicator, colName, extraFun)
     
   } else if (identical(analysis, "multivariate")) {
    
@@ -169,7 +251,7 @@ performEDA <- function (dataSource, analysis,
 
 
 # Plot distribution of a continuous variable "colName"
-plotHistogram <- function (df, colName) {
+plotHistogram <- function (df, colName, print = TRUE) {
   
   df <- df
   df$var <- df[[colName]]
