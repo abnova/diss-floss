@@ -2,6 +2,7 @@ library(ggplot2)
 library(RColorBrewer)
 library(mixtools)
 
+source("../utils/color.R")
 
 set.seed(12345) # for reproducibility
 
@@ -26,11 +27,27 @@ calc.components <- function (x, mix, comp.number) {
 }
 
 
-plotMixedDist <- function (data, mix.info, numComponents) {
+plotMixedDist <- function (data, mix.info, numComponents,
+                           colName) {
   
-  g <- ggplot(data.frame(x = data)) +
-    geom_histogram(aes(x = data, y = ..density..),
-                   fill = "white", color = "black", binwidth = 0.5)
+  title <- paste("Projects distribution across", colName, "range")
+  xLabel <- colName
+  
+  if (identical(colName, "Project Age"))
+    xLabel <- paste(colName, "(months)")
+  
+  #df <- data
+  g <- ggplot(data) +
+    scale_fill_continuous("Number of\nprojects") + 
+    scale_x_log10(xLabel) +
+    scale_y_log10("Number of projects") +
+    ggtitle(label=title) +
+    geom_histogram(aes(x = x, fill = ..count..), # y = ..density..
+                   #fill = "white", color = "black",
+                   binwidth = 0.01,
+                   position = "identity") + # 0.5
+    scale_fill_gradient(low="skyblue", high="blue")
+  print(g)
   
   # we could select needed number of colors randomly:
   #DISTRIB_COLORS <- sample(colors(), numComponents)
@@ -39,11 +56,12 @@ plotMixedDist <- function (data, mix.info, numComponents) {
   DISTRIB_COLORS <- brewer.pal(numComponents, "Set1")
   
   distComps <- lapply(seq(numComponents), function(i)
-    stat_function(mapping = aes(names(data)[1]),
+    stat_function(#aes(data=data, x=x, y=..density..),
                   fun = calc.components,
                   arg = list(mix = mix.info, comp.number = i),
-                  geom = "line", # use alpha=.5 for "polygon"
-                  size = 2,
+                  geom = "density", # use alpha=.5 for "polygon"
+                  position = "identity",
+                  size = 1,
                   color = DISTRIB_COLORS[i]))
   return (g + distComps)
 }

@@ -129,6 +129,9 @@ fitDistParam <- function (df, var, colName, extraFun) {
 
 fitDistNonParam <- function (df, var, colName, extraFun) {
   
+  if (colName == "Development Team Size") return()
+  if (colName == "Project Maturity") return()
+  
   data <- df[[colName]]
   data <- na.omit(data)
   
@@ -143,7 +146,10 @@ fitDistNonParam <- function (df, var, colName, extraFun) {
     num.components <- 3 # can determine automatically?
     
     mixDistInfo <- fitMixDist(data, num.components)
-    g <- plotMixedDist(data, mixDistInfo, num.components)
+
+    data <- data.frame(x = data)
+    g <- plotMixedDist(data, mixDistInfo, num.components,
+                       colName)
     
     if (.Platform$GUI == "RStudio") {print(g)}
     
