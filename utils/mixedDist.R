@@ -37,16 +37,18 @@ plotMixedDist <- function (data, mix.info, numComponents,
     xLabel <- paste(colName, "(months)")
   
   #df <- data
-  g <- ggplot(data) +
+  g <- ggplot(data.frame(x = data)) +
     scale_fill_continuous("Number of\nprojects") + 
-    scale_x_log10(xLabel) +
-    scale_y_log10("Number of projects") +
+    #scale_x_log10(xLabel) +
+    #scale_y_log10("Number of projects") +
+    scale_x_continuous(xLabel) +
+    scale_y_continuous("Number of projects") +
+    scale_fill_gradient(low="#99CCFF", high="#003366") +
     ggtitle(label=title) +
-    geom_histogram(aes(x = x, fill = ..count..), # y = ..density..
+    geom_histogram(aes(x = x, fill = ..count..), # y = ..count..
                    #fill = "white", color = "black",
                    binwidth = 0.01,
-                   position = "identity") + # 0.5
-    scale_fill_gradient(low="skyblue", high="blue")
+                   position = "identity") # 0.5
   print(g)
   
   # we could select needed number of colors randomly:
@@ -59,7 +61,7 @@ plotMixedDist <- function (data, mix.info, numComponents,
     stat_function(#aes(data=data, x=x, y=..density..),
                   fun = calc.components,
                   arg = list(mix = mix.info, comp.number = i),
-                  geom = "density", # use alpha=.5 for "polygon"
+                  geom = "line", # density / use alpha=.5 for "polygon"
                   position = "identity",
                   size = 1,
                   color = DISTRIB_COLORS[i]))

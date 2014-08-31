@@ -131,6 +131,7 @@ fitDistNonParam <- function (df, var, colName, extraFun) {
   
   if (colName == "Development Team Size") return()
   if (colName == "Project Maturity") return()
+  if (colName == "Project License") return()
   
   data <- df[[colName]]
   data <- na.omit(data)
@@ -147,7 +148,7 @@ fitDistNonParam <- function (df, var, colName, extraFun) {
     
     mixDistInfo <- fitMixDist(data, num.components)
 
-    data <- data.frame(x = data)
+    #data <- data.frame(x = data)
     g <- plotMixedDist(data, mixDistInfo, num.components,
                        colName)
     
