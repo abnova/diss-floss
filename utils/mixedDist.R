@@ -1,4 +1,5 @@
 library(ggplot2)
+library(scales)
 library(RColorBrewer)
 library(mixtools)
 
@@ -38,17 +39,20 @@ plotMixedDist <- function (data, mix.info, numComponents,
   
   #df <- data
   g <- ggplot(data.frame(x = data)) +
-    scale_fill_continuous("Number of\nprojects") + 
-    #scale_x_log10(xLabel) +
-    #scale_y_log10("Number of projects") +
-    scale_x_continuous(xLabel) +
-    scale_y_continuous("Number of projects") +
-    scale_fill_gradient(low="#99CCFF", high="#003366") +
+    scale_fill_continuous("Number of\nprojects",
+                          low="#56B1F7", high="#132B43") + 
+    scale_x_log10(xLabel) +
+    scale_y_log10("Number of projects",
+                  breaks = trans_breaks("log10", function(x) 10^x),
+                  #labels = trans_format("log10", math_format(10^.x))
+                  labels = prettyNum) +
+    #scale_x_continuous(xLabel) +
+    #scale_y_continuous("Number of projects") +
     ggtitle(label=title) +
     geom_histogram(aes(x = x, fill = ..count..), # y = ..count..
                    #fill = "white", color = "black",
-                   binwidth = 0.01,
-                   position = "identity") # 0.5
+                   binwidth = 0.01)
+                   #position = "identity") # 0.5
   print(g)
   
   # we could select needed number of colors randomly:
@@ -58,11 +62,10 @@ plotMixedDist <- function (data, mix.info, numComponents,
   DISTRIB_COLORS <- brewer.pal(numComponents, "Set1")
   
   distComps <- lapply(seq(numComponents), function(i)
-    stat_function(#aes(data=data, x=x, y=..density..),
-                  fun = calc.components,
+    stat_function(fun = calc.components,
                   arg = list(mix = mix.info, comp.number = i),
                   geom = "line", # density / use alpha=.5 for "polygon"
-                  position = "identity",
+                  #position = "identity",
                   size = 1,
                   color = DISTRIB_COLORS[i]))
   return (g + distComps)

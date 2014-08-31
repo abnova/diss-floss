@@ -4,6 +4,7 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
+if (!suppressMessages(require(scales))) install.packages('scales')
 if (!suppressMessages(require(RColorBrewer)))
   install.packages('RColorBrewer')
 if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
@@ -16,6 +17,7 @@ if (!suppressMessages(require(rebmix))) install.packages('rebmix')
 library(RCurl)
 library(stringr)
 library(ggplot2)
+library(scales)
 library(RColorBrewer)
 library(gridExtra)
 library(psych)
@@ -133,6 +135,7 @@ fitDistNonParam <- function (df, var, colName, extraFun) {
   if (colName == "Project Maturity") return()
   if (colName == "Project License") return()
   
+  df <- df
   data <- df[[colName]]
   data <- na.omit(data)
   
@@ -271,11 +274,15 @@ plotHistogram <- function (df, colName, print = TRUE) {
     xLabel <- paste(colName, "(months)")
   
   g <- ggplot(df, aes(x=var)) +
-    scale_fill_continuous("Number of\nprojects") + 
+    scale_fill_continuous("Number of\nprojects",
+                          low="#56B1F7", high="#132B43") + 
     #scale_x_continuous(xLabel) +
     #scale_y_continuous("Number of projects") +
     scale_x_log10(xLabel) +
-    scale_y_log10("Number of projects") +
+    scale_y_log10("Number of projects",
+                  breaks = trans_breaks("log10", function(x) 10^x),
+                  #labels = trans_format("log10", math_format(10^.x))
+                  labels = prettyNum) +
     ggtitle(label=title)
   
   breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
