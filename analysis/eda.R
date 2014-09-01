@@ -297,7 +297,7 @@ plotHistogram <- function (df, colName, print = TRUE) {
   
   # Ignore NA values for mean
   g <- g + geom_vline(aes(xintercept=mean(var, na.rm=T)),
-                      color="red", size=1)
+                      linetype = "longdash", color="red")
   
   if (.Platform$GUI == "RStudio") {print(g)}
   

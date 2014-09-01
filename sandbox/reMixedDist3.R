@@ -6,7 +6,7 @@ NUM_COMPONENTS <- 2
 
 set.seed(12345) # for reproducibility
 
-data <- faithful$waiting # use R built-in data
+data <- diamonds$price # use R (ggplot2) built-in data
 
 # extract 'k' components from mixed distribution 'data'
 mix.info <- normalmixEM(data, k = NUM_COMPONENTS,
@@ -24,12 +24,13 @@ calc.components <- function(x, mix, comp.number) {
 }
 
 g <- ggplot(data.frame(x = data)) +
-  scale_x_log10("Waiting time (mins)") +
-  scale_y_log10("Count of particular waiting times",
+  scale_fill_continuous("Count", low="#56B1F7", high="#132B43") + 
+  scale_x_log10("Diamond Price [log10]",
                 breaks = trans_breaks("log10", function(x) 10^x),
                 labels = prettyNum) +
+  scale_y_continuous("Count") +
   geom_histogram(aes(x = data, fill = ..count..),
-                 binwidth = 0.5)
+                 binwidth = 0.01)
 print(g)
 
 # we could select needed number of colors randomly:
@@ -42,6 +43,6 @@ distComps <- lapply(seq(numComponents), function(i)
   stat_function(fun = calc.components,
                 arg = list(mix = mix.info, comp.number = i),
                 geom = "line", # use alpha=.5 for "polygon"
-                size = 2,
+                size = 1,
                 color = DISTRIB_COLORS[i]))
 print(g + distComps)

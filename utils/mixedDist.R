@@ -41,13 +41,11 @@ plotMixedDist <- function (data, mix.info, numComponents,
   g <- ggplot(data.frame(x = data)) +
     scale_fill_continuous("Number of\nprojects",
                           low="#56B1F7", high="#132B43") + 
-    scale_x_log10(xLabel) +
-    scale_y_log10("Number of projects",
+    scale_x_log10(xLabel,
                   breaks = trans_breaks("log10", function(x) 10^x),
                   #labels = trans_format("log10", math_format(10^.x))
                   labels = prettyNum) +
-    #scale_x_continuous(xLabel) +
-    #scale_y_continuous("Number of projects") +
+    scale_y_log10("Number of projects") +
     ggtitle(label=title) +
     geom_histogram(aes(x = x, fill = ..count..), # y = ..count..
                    #fill = "white", color = "black",
