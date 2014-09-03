@@ -1,7 +1,6 @@
 library(ggplot2)
 library(scales)
 library(RColorBrewer)
-library(reshape)
 library(mixtools)
 
 NUM_COMPONENTS <- 2
@@ -22,18 +21,9 @@ message("Extracted number of component distributions: ",
 
 calc.components <- function(x, mix, comp.number) {
   
-  length(x) * mix$lambda[comp.number] *
+  mix$lambda[comp.number] *
     dnorm(x, mean = mix$mu[comp.number], sd = mix$sigma[comp.number])
 }
-
-# create a data frame with columns consisting of
-# calculated values for each component distribution
-my.df <- data.frame(comp1 = calc.components(myData, mix.info, 1),
-                    comp2 = calc.components(myData, mix.info, 2),
-                    data = myData)
-
-# convert to long format
-my.df.long <- melt(my.df, id.vars = "data")
 
 # we could select needed number of colors randomly:
 #DISTRIB_COLORS <- sample(colors(), numComponents)
@@ -41,15 +31,19 @@ my.df.long <- melt(my.df, id.vars = "data")
 # or, better, use a palette with more color differentiation:
 DISTRIB_COLORS <- brewer.pal(numComponents, "Set1")
 
-g <- ggplot(my.df) +
-  geom_histogram(aes(x = data, y = 0.01 * ..count..,
-                     fill = ..count..),
-                 binwidth = 0.01) +
-  geom_line(data = my.df.long,
-            aes(x = data, y = value, color = variable)) +
+distComps <- lapply(seq(numComponents), function(i)
+  stat_function(fun = calc.components,
+                arg = list(mix = mix.info, comp.number = i),
+                geom = "line",
+                size = 1,
+                color = DISTRIB_COLORS[i])) # "red"
+
+g <- ggplot(data.frame(x = myData)) +
+  scale_fill_continuous("Count", low="#56B1F7", high="#132B43") + 
   scale_x_log10("Diamond Price [log10]", labels = prettyNum) +
   scale_y_continuous("Count") +
-  scale_fill_continuous("Count", low="#56B1F7", high="#132B43")
-print(g)
+  geom_histogram(aes(x = myData, fill = 0.01 * ..density..), # ..count..
+                 binwidth = 0.01) +
+  distComps
 
-#print(g + distComps)
+print(g + distComps)

@@ -24,7 +24,7 @@ calc.components <- function(x, mix, comp.number) {
 }
 
 g <- ggplot(data.frame(x = data)) +
-  geom_histogram(aes(x = data, y = ..density..),
+  geom_histogram(aes(x = data, y = 0.5 * ..density..),
                  fill = "white", color = "black", binwidth = 0.5)
 
 # we could select needed number of colors randomly:

@@ -7,7 +7,7 @@ NUM_COMPONENTS <- 2
 
 set.seed(12345) # for reproducibility
 
-data(diamonds, package='ggplot2')  # use built-in data
+data(diamonds, package='ggplot2') # use built-in data
 myData <- diamonds$price
 
 # extract 'k' components from mixed distribution 'data'
@@ -20,7 +20,6 @@ message("Extracted number of component distributions: ",
         numComponents)
 
 calc.components <- function(x, mix, comp.number) {
-  
   mix$lambda[comp.number] *
     dnorm(x, mean = mix$mu[comp.number], sd = mix$sigma[comp.number])
 }
@@ -39,7 +38,7 @@ distComps <- lapply(seq(numComponents), function(i)
                 color = "red")) # DISTRIB_COLORS[i]
 
 g <- ggplot(data.frame(x = myData)) +
-  scale_fill_continuous("Count", low="#56B1F7", high="#132B43") + 
+  scale_fill_continuous("Count", low="#56B1F7", high="#132B43") +
   scale_x_log10("Diamond Price [log10]",
                 breaks = trans_breaks("log10", function(x) 10^x),
                 labels = prettyNum) +
@@ -52,7 +51,5 @@ g <- ggplot(data.frame(x = myData)) +
                 geom = "line", # use alpha=.5 for "polygon"
                 size = 1,
                 color = DISTRIB_COLORS[1])
-
 print(g)
-
 #print(g + distComps)
