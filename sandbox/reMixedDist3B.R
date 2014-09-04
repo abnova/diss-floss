@@ -21,7 +21,7 @@ message("Extracted number of component distributions: ",
 
 calc.components <- function(x, mix, comp.number) {
   
-  x * mix$lambda[comp.number] *
+  mean(x) * mix$lambda[comp.number] *
     dnorm(x, mean = mix$mu[comp.number], sd = mix$sigma[comp.number])
 }
 
