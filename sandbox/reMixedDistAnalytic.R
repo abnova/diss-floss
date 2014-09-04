@@ -13,6 +13,7 @@
 #library(ggplot2)
 #library(scales)
 #library(RColorBrewer)
+library(mclust)
 library(MASS)
 library(mixtools)
 library(ddst)
@@ -27,14 +28,30 @@ data(diamonds, package='ggplot2')  # use built-in data
 myData <- diamonds$price
 myData <- log10(myData)
 
-# basic distribution fitting
+# basic distribution fitting ('MASS' package)
 #fitdistr(myData,"gamma")
 
 # selecting the number of components
 
+# Using method of model-based clustering, classification and
+# density estimation, based on finite normal mixture modeling.
+# Using 'mclust' package (http://www.jstatsoft.org/v18/i06/paper;
+# http://www.stat.washington.edu/research/reports/2012/tr597.pdf).
+mc <- Mclust(myData)
+print(summary(mc))
+
+bestModel <- mclustModel(myData, mc)
+print(summary(bestModel))
+
 # using 'mixtools' package
 #mix.sel <- multmixmodel.sel(myData, comps = 1:4, epsilon = 0.01)
 #print(mix.sel)
+
+# determine number of components in mixture distribution
+# by hypothesis testing via parametric bootstrap
+mix.boot <- boot.comp(myData, max.comp = 10, mix.type = "normalmix",
+                      maxit = 400, epsilon = 0.01)
+print(summary(mix.boot))
 
 # extract 'k' components from mixed distribution 'data'
 mix <- normalmixEM(myData, k = NUM_COMPONENTS,
