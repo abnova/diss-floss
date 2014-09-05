@@ -26,17 +26,19 @@ library(RCurl)
 library(jsonlite)
 library(stringr)
 
-source("../utils/string.R")
+PRJ_HOME <- getwd()
+
+source(file.path(PRJ_HOME, "utils/string.R"))
 #source("../utils/utils.R")
 #source("../utils/debug.R")
 
 skipped <<- 0 # counter for # of times the script skipped processing
 
 # SRDA data collection configuration template file
-SRDA_TEMPLATE <- "./SourceForge.cfg.tmpl"
+SRDA_TEMPLATE <- "SourceForge.cfg.tmpl"
 
 # SRDA data collection configuration file (auto-generated)
-SRDA_CONFIG <- "./SourceForge.cfg.json"
+SRDA_CONFIG <- "SourceForge.cfg.json"
 
 # Users must authenticate to access Query Form
 SRDA_HOST_URL  <- "http://zerlot.cse.nd.edu"
@@ -63,7 +65,9 @@ RQ_SIZE <- 50000
 
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
-RDATA_DIR <- "../cache/SourceForge" #TODO: consider passing this via CL args
+
+#TODO: consider passing this via CL args
+RDATA_DIR <- file.path(PRJ_HOME, "cache/SourceForge")
 
 # Data source prefix (to construct data object names)
 dsPrefix <- ""

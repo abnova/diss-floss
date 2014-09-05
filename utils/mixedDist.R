@@ -3,7 +3,9 @@ library(scales)
 library(RColorBrewer)
 library(mixtools)
 
-source("../utils/color.R")
+PRJ_HOME <- getwd()
+
+source(file.path(PRJ_HOME, "utils/color.R"))
 
 set.seed(12345) # for reproducibility
 

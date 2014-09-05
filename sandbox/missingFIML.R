@@ -4,9 +4,11 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(lavaan))) install.packages('lavaan')
 library(lavaan)
 
-source("../utils/data.R")
+PRJ_HOME <- getwd()
 
-MERGED_DIR <- "~/diss-floss/data/merged"
+source(file.path(PRJ_HOME, "utils/data.R"))
+
+MERGED_DIR <- file.path(PRJ_HOME, "data/merged")
 MERGED_FILE <- "flossData" # default
 RDS_EXT <- ".rds"
 

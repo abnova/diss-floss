@@ -7,11 +7,13 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(psych))) install.packages('psych')
 library(psych)
 
-source("../utils/data.R")
+PRJ_HOME <- getwd()
+
+source(file.path(PRJ_HOME, "utils/data.R"))
 
 
-TRANDFORMED_DIR <- "~/diss-floss/data/transformed"
-MERGED_DIR      <- "~/diss-floss/data/merged"
+TRANDFORMED_DIR <- file.path(PRJ_HOME, "data/transformed")
+MERGED_DIR      <- file.path(PRJ_HOME, "data/merged")
 RDS_EXT <- ".rds"
 
 

@@ -11,8 +11,11 @@ if (!suppressMessages(require(XML))) install.packages('XML')
 library(RCurl)
 library(XML)
 
-warnings(file = "./FLOSSmole.warn.log")
-source("../utils/debug.R")
+PRJ_HOME <- getwd()
+
+source(file.path(PRJ_HOME, "utils/debug.R"))
+
+#warnings(file = "./FLOSSmole.warn.log")
 
 # URL of FLOSSmole repository root directory
 FLOSSMOLE_REPO_BASE <- "http://flossdata.syr.edu/data"
@@ -36,7 +39,9 @@ repos <- data.frame(code = REPO_CODE, year = REPO_YEAR,
 BZIP_EXT  <- ".txt\\.bz2"
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
-RDATA_DIR <- "../cache/FLOSSmole" #TODO: consider passing this via CL args
+
+#TODO: consider passing this via CL args
+RDATA_DIR <- file.path(PRJ_HOME, "../cache/FLOSSmole")
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 

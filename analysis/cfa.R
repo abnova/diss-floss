@@ -11,11 +11,13 @@ library(mvtnorm)
 #library(GPArotation)
 
 
+PRJ_HOME <- getwd()
+
 # load data (commented out, as data are loaded in "missing.R")
 #source("../prepare/merge.R")
 
 # handle missing values (temporarily here)
-source("~/diss-floss/prepare/missing.R")
+source(file.path(PRJ_HOME, "prepare/missing.R"))
 
 message("\n\n===== PERFORMING CONFIRMATORY FACTOR ANALYSIS (CFA) =====")
 

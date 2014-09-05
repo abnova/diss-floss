@@ -19,7 +19,9 @@ library(RCurl)
 library(jsonlite)
 library(plyr)
 
-source("../utils/debug.R")
+PRJ_HOME <- getwd()
+
+source(file.path(PRJ_HOME, "utils/debug.R"))
 
 # Limit per CB APIs v.1 documentation
 CB_REPLY_OBJS_PER_PAGE <- 10
@@ -31,7 +33,9 @@ CB_FLOSS_DATA <- "http://api.angel.co/1/tags/59/startups"
 CB_API_SEARCH_URL <- "http://api.crunchbase.com/v/1/search.js"
 
 RDS_EXT <- ".rds"
-RDATA_DIR <- "../cache/CrunchBase" #TODO: consider passing this via CL args
+
+#TODO: consider passing this via CL args
+RDATA_DIR <- file.path(PRJ_HOME, "cache/CrunchBase")
 
 # GLOBAL Indicator of JSON response's first page
 firstPage <<- TRUE

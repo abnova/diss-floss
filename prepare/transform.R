@@ -5,8 +5,10 @@ if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 
 library(RCurl)
 
-CACHE_DIR <- "../cache"
-TRANSFORM_DIR <- "../data/transformed"
+PRJ_HOME <- getwd()
+
+CACHE_DIR <- file.path(PRJ_HOME, "cache")
+TRANSFORM_DIR <- file.path(PRJ_HOME, "data/transformed")
 RDS_EXT <- ".rds"
 
 DEBUG <- TRUE  # TODO: retrieve debug flag via CL arguments

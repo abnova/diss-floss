@@ -23,14 +23,19 @@ if (JO) {
   library(plyr)
 }
 
-source("../utils/debug.R")
+
+PRJ_HOME <- getwd()
+
+source(file.path(PRJ_HOME, "utils/debug.R"))
 
 # AngelList APIs endpoint URL for FLOSS startups
 # ('Market' tag = '1', 'FLOSS' tag = '59')
 API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
 
 RDS_EXT <- ".rds"
-RDATA_DIR <- "../cache/AngelList" #TODO: consider passing this via CL args
+
+#TODO: consider passing this via CL args
+RDATA_DIR <- file.path(PRJ_HOME, "cache/AngelList")
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 

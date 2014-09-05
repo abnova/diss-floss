@@ -31,16 +31,18 @@ library(methods)
 library(Amelia)
 library(psych)
 
-source("../utils/data.R")
+PRJ_HOME <- getwd()
+
+source(file.path(PRJ_HOME, "utils/data.R"))
 
 # Initially file was copied manually from "merged/SourceForge".
 # Implementing automatic data merging across all data sources
 # should take care of this step (TODO).
-MERGED_DIR <- "~/diss-floss/data/merged"
+MERGED_DIR <- file.path(PRJ_HOME, "data/merged")
 MERGED_FILE <- "flossData" # default
 RDS_EXT <- ".rds"
 
-IMPUTED_DIR <- "~/diss-floss/data/imputed"
+IMPUTED_DIR <- file.path(PRJ_HOME, "data/imputed")
 IMPUTED_FILE <- "flossData" # default
 
 DEBUG <- FALSE

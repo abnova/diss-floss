@@ -12,12 +12,14 @@ library(GPArotation)
 library(pcaPA)
 library(ggplot2)
 
-source("../utils/data.R")
+PRJ_HOME <- getwd()
 
-READY4EFA_DIR  <- "~/diss-floss/data/ready4efa"
+source(file.path(PRJ_HOME, "utils/data.R"))
+
+READY4EFA_DIR  <- file.path(PRJ_HOME, "data/ready4efa")
 READY4EFA_FILE <- "flossData" # default
 
-EFA_RESULTS_DIR <- "../results/efa"
+EFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/efa")
 SCREE_PLOT_FILE <- "screePlot"
 
 RDS_EXT      <- ".rds"

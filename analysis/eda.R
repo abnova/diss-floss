@@ -25,19 +25,21 @@ library(fitdistrplus)
 library(mixtools)
 library(rebmix)
 
-source("../utils/factors.R")
-source("../utils/qq.R")
-source("../utils/data.R")
-source("../utils/mixedDist.R")
+PRJ_HOME <- getwd()
 
-READY4EDA_DIR  <- "~/diss-floss/data/ready4eda"
+source(file.path(PRJ_HOME, "utils/factors.R"))
+source(file.path(PRJ_HOME, "utils/qq.R"))
+source(file.path(PRJ_HOME, "utils/data.R"))
+source(file.path(PRJ_HOME, "utils/mixedDist.R"))
+
+READY4EDA_DIR  <- file.path(PRJ_HOME, "data/ready4eda")
 READY4EDA_FILE <- "flossData" # default
 RDS_EXT <- ".rds"
 
 # temporary, until implementing EDA for single data file
-TRANSFORM_DIR <- "../data/transformed"
+TRANSFORM_DIR <- file.path(PRJ_HOME, "data/transformed")
 
-EDA_RESULTS_DIR <- "../results/eda"
+EDA_RESULTS_DIR <- file.path(PRJ_HOME, "results/eda")
 
 DIST_FIT_COLOR <- "green" # ggplot2 line color for distrib. fitting
 
