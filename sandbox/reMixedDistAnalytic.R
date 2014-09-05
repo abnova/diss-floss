@@ -203,3 +203,10 @@ if (FALSE) {
   dense <- dbscan(myData, eps=0.5, MinPts=5)
   plot(dense, myData)
 }
+
+
+da <- MclustDA(myData, c("daClass"))
+print(summary(da))
+
+dr <- MclustDR(da)
+print(summary(dr))
