@@ -1,37 +1,55 @@
 ---
 title: "EDA Report"
 author: "Aleksandr Blekh"
-output: html_document
+output:
+  pdf_document:
+    fig_caption: no
+    fig_crop: no
+    fig_width: 8
+    highlight: kate
+    latex_engine: pdflatex
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+  md_document:
+    toc: yes
+    toc_depth: 3
+  html_document:
+    css: ~/diss-floss/config/knitr/MaxGordon.css
+    fig.retina: 2
+    fig_width: 8
+    number_sections: yes
+    theme: united
+    toc: yes
+  word_document:
+    fig_width: 6.5
+    mainfont: Calibri
 ---
 
 The following report is dynamically generated and presents results of exploratory data analysis (EDA) for prepared (transformed) research data, located in directories under "data/transform".
 
 This EDA consists of performing both descriptive and visual exploratory analysis for single variables (univariate), as well as for relationships between variables (multivariate).
 
-```{r SetOptions, echo=F, message=F}
-require(knitr)
-# getwd()
-opts_chunk$set(
-  results='show',
-  message = TRUE,
-  comment = NA,
-  tidy = FALSE,
-  fig.width = 8.5,
-  fig.height = 11,
-  out.width = NULL,
-  fig.path = 'figures',
-  dev = "svg",
-  dpi = 400
-)
-echoChunks <- FALSE
-warningChunks<- FALSE
-options(width=120)  # so the output is 50% wider than the default
-read_chunk("eda-knitr.R") # the file to which knitr calls for the chunks
+```{r KnitrSetup, child='../config/knitr/knitr-setup.Rmd'}
+# empty
 ```
 
-```{r Prepare, echo=F, message=FALSE, results='hide'}
-# load packages etc.
+```{r CleanEnv, echo=FALSE}
+# empty
 ```
 
-```{r FullEDA, echo=echoChunks, message=F}
+```{r LoadPackages, echo=FALSE}
+# empty
+```
+
+```{r PrepareEDA, echo=FALSE}
+# empty
+```
+
+```{r CustomFunctions, echo=FALSE}
+# empty
+```
+
+```{r PerformEDA, echo=echoChunks}
+# empty
 ```

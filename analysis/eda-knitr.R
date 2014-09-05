@@ -1,7 +1,8 @@
 # Start with a clean environment
+## @knitr CleanEnv
 rm(list = ls(all.names = TRUE))
 
-```{r LoadPackages}
+## @knitr LoadPackages
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
@@ -13,8 +14,8 @@ library(stringr)
 library(ggplot2)
 library(gridExtra)
 library(knitr)
-```
 
+## @knitr PrepareEDA
 PRJ_HOME <- getwd()
 
 source(file.path(PRJ_HOME, "utils/factors.R"))
@@ -29,6 +30,7 @@ DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 allPlots <- list()
 
+## @knitr PerformEDA
 
 ##### EDA CATEGORIES #####
 
@@ -266,8 +268,6 @@ sfColumnNames <- c("Project Age", "Development Team Size",
 sfExtraFun <- list("projectAge", "devTeamSize",
                    "projectLicense", "projectMaturity")
 
-```{r FullEDA, echo=TRUE, message=FALSE}
-
 # sequentially call EDA functions for all indicators in data source
 silent <- lapply(seq_along(sfIndicators), function(i) {
   performEDA("SourceForge", analysis="univariate",
@@ -279,7 +279,8 @@ print(mg)
 
 message("\n===== EDA completed, results can be found ",
         "in directory \"", EDA_RESULTS_DIR, "\"\n")
-```
+
+## @knitr DoNotUse
 
 stop()
 
@@ -302,6 +303,7 @@ multiPlots <- lapply(seq_along(sfMultiIndicators), function(i) {
 
 ##### "EXTRA" (CUSTOMIZATION) FUNCTIONS #####
 
+## @knitr CustomFunctions
 
 projectAge <- function (df, var) {}
 
