@@ -1,33 +1,7 @@
-## Global (project-wide) options for 'knitr'
-
-```{r KnitrSetupGlobal, echo=FALSE, message=TRUE, cache=FALSE}
-if (!suppressMessages(require(knitr))) install.packages('knitr')
-
-PRJ_HOME <- getwd()
-
-opts_knit$set(progress = TRUE, verbose = TRUE)
-
-opts_chunk$set(
-  results='asis', # 'show'
-  message = TRUE,
-  comment = NA,
-  tidy = FALSE,
-  fig.width = 8.5,
-  fig.height = 11,
-  out.width = NULL,
-  fig.path = 'figures',
-  dev = "svg",
-  dpi = 400
-)
-#options(markdown.HTML.stylesheet = "path/to/a/custom/style.css")
-echoChunks <- FALSE
-warningChunks<- FALSE
-options(width = 120)  # so the output is 50% wider than the default
-```
-
+<!--- Global (project-wide) 'knitr' options for figures --->
 
 ```{r KnitrSetupFigures, echo=FALSE}
-library(knitr)
+#library(knitr)
  
 # Notify that you want to use the counter,
 # if you set the counter to 3 then it will use 

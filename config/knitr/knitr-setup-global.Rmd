@@ -1,0 +1,31 @@
+<!--- Global (project-wide) options for 'knitr' --->
+
+```{r KnitrSetupGlobal, cache=FALSE, eval=TRUE, include=FALSE, echo=FALSE, message=TRUE}
+if (!suppressMessages(require(knitr))) install.packages('knitr')
+
+PRJ_HOME <- getwd()
+
+opts_knit$set(progress = TRUE, verbose = TRUE)
+
+opts_chunk$set(
+  eval = TRUE,
+  echo = FALSE,
+  include = FALSE,
+  warning = FALSE,
+  message = TRUE,
+  error = TRUE,
+  tidy = FALSE,
+  fig.width = '200px',
+  fig.height = '200px',
+  fig.align = 'center',
+  out.width = '0.8\\textwidth',
+  fig.path = 'figures/',
+  dev = "svg"
+)
+
+#options(markdown.HTML.stylesheet = "path/to/a/custom/style.css")
+
+#echoChunks <- FALSE
+#warningChunks<- FALSE
+#options(width = 120)  # so the output is 50% wider than the default
+```

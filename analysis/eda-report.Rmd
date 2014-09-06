@@ -2,6 +2,16 @@
 title: "EDA Report"
 author: "Aleksandr Blekh"
 output:
+  html_document:
+    css: ~/diss-floss/config/knitr/MaxGordon.css
+    fig.retina: 2
+    fig_width: 8
+    number_sections: yes
+    theme: united
+    toc: yes
+  md_document:
+    toc: yes
+    toc_depth: 3
   pdf_document:
     fig_caption: no
     fig_crop: no
@@ -11,16 +21,6 @@ output:
     number_sections: yes
     toc: yes
     toc_depth: 3
-  md_document:
-    toc: yes
-    toc_depth: 3
-  html_document:
-    css: ~/diss-floss/config/knitr/MaxGordon.css
-    fig.retina: 2
-    fig_width: 8
-    number_sections: yes
-    theme: united
-    toc: yes
   word_document:
     fig_width: 6.5
     mainfont: Calibri
@@ -34,22 +34,28 @@ This EDA consists of performing both descriptive and visual exploratory analysis
 # empty
 ```
 
-```{r CleanEnv, echo=FALSE}
+```{r CleanEnv}
 # empty
 ```
 
-```{r LoadPackages, echo=FALSE}
+```{r ConfigReport}
+param1 <- TRUE
+param2 <- FALSE
+param3 <- 'TEST'
+```
+
+```{r LoadPackages}
 # empty
 ```
 
-```{r PrepareEDA, echo=FALSE}
+```{r PrepareEDA}
 # empty
 ```
 
-```{r CustomFunctions, echo=FALSE}
+```{r CustomFunctions}
 # empty
 ```
 
-```{r PerformEDA, echo=echoChunks}
+```{r PerformEDA}
 # empty
 ```
