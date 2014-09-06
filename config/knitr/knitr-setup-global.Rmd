@@ -1,5 +1,11 @@
 <!--- Global (project-wide) options for 'knitr' --->
 
+<!--- Set knitr's working directory to the project's home directory --->
+```{r KnitrWorkDir, echo=TRUE, message=TRUE}
+require(knitr)
+opts_knit$set(root.dir='~/diss-floss/')
+```
+
 ```{r KnitrSetupGlobal, cache=FALSE, eval=TRUE, include=FALSE, echo=FALSE, message=TRUE}
 if (!suppressMessages(require(knitr))) install.packages('knitr')
 
