@@ -18,13 +18,13 @@ library(knitr)
 ## @knitr PrepareEDA
 PRJ_HOME <- getwd()
 
-source(file.path(PRJ_HOME, "utils/factors.R"))
-source(file.path(PRJ_HOME, "utils/qq.R"))
+source(file.path(PRJ_HOME, "../utils/factors.R"))
+source(file.path(PRJ_HOME, "../utils/qq.R"))
 
-TRANSFORM_DIR <- file.path(PRJ_HOME, "data/transform")
+TRANSFORM_DIR <- file.path(PRJ_HOME, "../data/transform")
 RDS_EXT <- ".rds"
 
-EDA_RESULTS_DIR <- file.path(PRJ_HOME, "results/eda")
+EDA_RESULTS_DIR <- file.path(PRJ_HOME, "../results/eda")
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
