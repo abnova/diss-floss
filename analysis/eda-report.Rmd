@@ -59,6 +59,6 @@ param3 <- 'TEST'
 # empty
 ```
 
-```{r PerformEDA, echo=TRUE}
+```{r PerformEDA, include=TRUE}
 # empty
 ```

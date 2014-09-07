@@ -3,7 +3,7 @@
 
 <!--- Set knitr's working directory to the project's home directory --->
 
-```{r KnitrWorkDir}
+```{r KnitrWorkDir, echo=FALSE}
 
 if (!suppressMessages(require(knitr))) install.packages('knitr')
 
@@ -20,18 +20,19 @@ opts_knit$set(progress = TRUE, verbose = TRUE)
 opts_chunk$set(
   eval = TRUE,
   echo = FALSE,
-  include = FALSE,
+  results='markup',
+  include = TRUE,
   warning = FALSE,
-  message = TRUE,
   error = TRUE,
+  message = TRUE,
   tidy = FALSE,
+  comment=NA,
   fig.width = 5,
   fig.height = 5,
   fig.align = 'center',
   out.width = '0.8\\textwidth',
   fig.path = 'figures/',
-  cache.path='knitr-cache/',
-  dev = "svg"
+  cache.path='knitr-cache/'
 )
 
 #options(markdown.HTML.stylesheet = "path/to/a/custom/style.css")
