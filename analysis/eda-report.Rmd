@@ -2,6 +2,15 @@
 title: "EDA Report"
 author: "Aleksandr Blekh"
 output:
+  html_document:
+    css: ~/diss-floss/config/knitr/markdown.css
+    fig_width: 8
+    number_sections: yes
+    theme: united
+    toc: yes
+  md_document:
+    toc: yes
+    toc_depth: 3
   pdf_document:
     fig_caption: no
     fig_crop: no
@@ -11,15 +20,6 @@ output:
     number_sections: yes
     toc: yes
     toc_depth: 3
-  md_document:
-    toc: yes
-    toc_depth: 3
-  html_document:
-    css: ~/diss-floss/config/knitr/markdown.css
-    fig_width: 8
-    number_sections: yes
-    theme: united
-    toc: yes
   word_document:
     fig_width: 6.5
     mainfont: Calibri
@@ -34,7 +34,7 @@ This EDA consists of performing both descriptive and visual exploratory analysis
 ```
 
 ```{r ReadChunksEDA}
-read_chunk('eda-knitr.R')
+read_chunk('eda.R')
 ```
 
 ```{r CleanEnv}

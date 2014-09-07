@@ -3,7 +3,7 @@
 
 <!--- Set knitr's working directory to the project's home directory --->
 
-```{r KnitrWorkDir, echo=TRUE, message=TRUE}
+```{r KnitrWorkDir}
 
 if (!suppressMessages(require(knitr))) install.packages('knitr')
 
