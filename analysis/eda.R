@@ -1,6 +1,8 @@
 # Start with a clean environment
+## @knitr CleanEnv
 rm(list = ls(all.names = TRUE))
 
+## @knitr LoadPackages
 if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 if (!suppressMessages(require(stringr))) install.packages('stringr')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
@@ -25,6 +27,7 @@ library(fitdistrplus)
 library(mixtools)
 library(rebmix)
 
+## @knitr PrepareEDA
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 source(file.path(PRJ_HOME, "utils/factors.R"))
@@ -47,6 +50,7 @@ DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 allPlots <- list()
 
+## @knitr PerformEDA
 
 ##### EDA CATEGORIES #####
 
@@ -96,10 +100,10 @@ fitDistParam <- function (df, var, colName, extraFun) {
   df <- na.omit(df)
   
   message("\nParametric distribution fitting for '", colName, "':\n")
-
+  
   # convert factors to integers
   if (is.factor(data)) data <- as.integer(data)
-
+  
   if (FALSE) {
     dataDist <- fitdist(data, "gamma")
     dataBoot <- bootdist(dataDist, niter=51) #default niter=1001
@@ -148,11 +152,11 @@ fitDistNonParam <- function (df, var, colName, extraFun) {
   
   # perform non-parametric mixture distribution fitting
   if (is.numeric(data)) {
-
+    
     num.components <- 3 # can determine automatically?
     
     mixDistInfo <- fitMixDist(data, num.components)
-
+    
     #data <- data.frame(x = data)
     g <- plotMixedDist(data, mixDistInfo, num.components,
                        colName)
@@ -196,7 +200,7 @@ fitDistREBMIX <- function (df, var, colName, extraFun) {
     summary(boot.nonparam)
     
     message("\nREBMIX: Poisson distribution fitting for '", colName, "':\n")
-
+    
     poissonest <- REBMIX(Dataset = list(data), Preprocessing = "histogram",
                          cmax = 6, Criterion = "MDL5",
                          Variables = rep("discrete", 2),
@@ -224,7 +228,7 @@ multiVisualEDA <- function (df, var, colName, extraFun) {
 
 performEDA <- function (dataSource, analysis,
                         indicator, colName, extraFun) {
-
+  
   fileName <- paste0(indicator, RDS_EXT)
   rdataFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
   if (file.exists(rdataFile)) {
@@ -232,7 +236,7 @@ performEDA <- function (dataSource, analysis,
   }
   else {
     stop("RDS file for \'", indicator, "\' not found! ",
-          "Run 'make' first.")
+         "Run 'make' first.")
   }
   
   if (identical(analysis, "univariate")) {
@@ -244,7 +248,7 @@ performEDA <- function (dataSource, analysis,
     #fitDistREBMIX(data, indicator, colName, extraFun)
     
   } else if (identical(analysis, "multivariate")) {
-   
+    
     colNames <- names(data)
     colNames <- colNames[-1] # delete Project ID
     multiDescriptiveEDA(data, indicator, colNames, extraFun)
@@ -307,7 +311,7 @@ plotHistogram <- function (df, colName, print = TRUE) {
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
   suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
-
+  
   return (g)
 }
 
@@ -324,27 +328,27 @@ plotDensity <- function (df, colName) {
                  "range (by category)")
   xLabel <- colName
   
-#  g <- ggplot(df, aes(x = var)) +  
-#    geom_bar(aes(y = (..count..)/sum(..count..)), binwidth = 25) + 
-#    scale_y_continuous(labels = percent_format())
+  #  g <- ggplot(df, aes(x = var)) +  
+  #    geom_bar(aes(y = (..count..)/sum(..count..)), binwidth = 25) + 
+  #    scale_y_continuous(labels = percent_format())
   
-breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
-bwidth <- breaks[2] - breaks[1]
-
-g <- ggplot(df, aes(x=var, fill=var)) +
+  breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
+  bwidth <- breaks[2] - breaks[1]
+  
+  g <- ggplot(df, aes(x=var, fill=var)) +
     geom_density(aes(y=..count..), 
                  binwidth=bwidth, position="identity")
   
-#  g <- ggplot(df, aes(var, ..density.., colour = category)) +
-#    scale_fill_continuous("Number of\nprojects") + 
-#    scale_x_continuous(xLabel) +
-#    scale_y_continuous("Number of projects") +
-#    ggtitle(label=title)
+  #  g <- ggplot(df, aes(var, ..density.., colour = category)) +
+  #    scale_fill_continuous("Number of\nprojects") + 
+  #    scale_x_continuous(xLabel) +
+  #    scale_y_continuous("Number of projects") +
+  #    ggtitle(label=title)
   
-#  g <- g + geom_freqpoly(binwidth = 1)
+  #  g <- g + geom_freqpoly(binwidth = 1)
   
   if (.Platform$GUI == "RStudio") {print(g)}
-
+  
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
   edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
@@ -367,7 +371,7 @@ plotBarGraph <- function (df, colName) {
   df$var <- topFactors(df$var, SHOW_LEVELS, o="The Rest")
   
   title <- paste("Projects distribution across", colName, "range")
-
+  
   # prepare to place percentage on top of bars, using geom_text()
   if (FALSE) {
     dfTab <- as.data.frame(table(df))
@@ -382,7 +386,7 @@ plotBarGraph <- function (df, colName) {
     xlab(colName) +
     ylab("Number of projects") +
     ggtitle(label=title)
-
+  
   # display pre-calculated percentage on top of bars
   if (FALSE) {
     g <- g +
@@ -432,7 +436,7 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
     scale_x_continuous("Theoretical Quantiles") +
     scale_y_continuous("Sample Quantiles") +
     ggtitle(label=title)
-
+  
   if (.Platform$GUI == "RStudio") {print(g)}
   
   #TODO: consider moving to main
@@ -467,7 +471,7 @@ sfExtraFun <- list("projectAge", "devTeamSize",
 silent <- lapply(seq_along(sfIndicators), function(i) {
   performEDA("SourceForge", analysis="univariate",
              sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
-  })
+})
 
 
 edaFilePDF <- file.path(EDA_RESULTS_DIR, "eda-univar.pdf")
@@ -477,6 +481,7 @@ suppressMessages(ggsave(filename=edaFilePDF, mg, width=8.5, height=11))
 message("\n===== EDA completed, results can be found ",
         "in directory \"", EDA_RESULTS_DIR, "\"\n")
 
+## @knitr DoNotUse
 stop('OK! Intentionally stopped to prevent code from running.')
 
 # construct list of indicators & corresponding extra functions
@@ -488,7 +493,7 @@ multiPlots <- lapply(seq_along(sfMultiIndicators), function(i) {
   performEDA("SourceForge", analysis="multivariate",
              sfMultiIndicators[[i]], sfMultiColumnNames[[i]],
              sfMultiExtraFun[[i]])
-  })
+})
 
 #edaFilePDF <- file.path(EDA_RESULTS_DIR, "eda-multivar.pdf")
 #pdf(edaFilePDF)
@@ -497,6 +502,7 @@ multiPlots <- lapply(seq_along(sfMultiIndicators), function(i) {
 
 ##### "EXTRA" (CUSTOMIZATION) FUNCTIONS #####
 
+## @knitr CustomFunctions
 
 projectAge <- function (df, var) {}
 
