@@ -4,6 +4,8 @@ if (!suppressMessages(require(deducorrect))) install.packages('deducorrect')
 library(editrules)
 library(deducorrect)
 
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+
 
 ### DATA CLEANING IN 7 STATEMENTS
 

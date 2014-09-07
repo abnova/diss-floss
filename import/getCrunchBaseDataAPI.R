@@ -19,7 +19,7 @@ library(RCurl)
 library(jsonlite)
 library(plyr)
 
-PRJ_HOME <- getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 source(file.path(PRJ_HOME, "utils/debug.R"))
 

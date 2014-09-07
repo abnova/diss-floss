@@ -11,7 +11,7 @@ if (!suppressMessages(require(XML))) install.packages('XML')
 library(RCurl)
 library(XML)
 
-PRJ_HOME <- getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 source(file.path(PRJ_HOME, "utils/debug.R"))
 

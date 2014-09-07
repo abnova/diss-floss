@@ -25,7 +25,7 @@ library(fitdistrplus)
 library(mixtools)
 library(rebmix)
 
-PRJ_HOME <- getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 source(file.path(PRJ_HOME, "utils/factors.R"))
 source(file.path(PRJ_HOME, "utils/qq.R"))

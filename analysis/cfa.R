@@ -10,8 +10,7 @@ library(psych)
 library(mvtnorm)
 #library(GPArotation)
 
-
-PRJ_HOME <- getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 # load data (commented out, as data are loaded in "missing.R")
 #source("../prepare/merge.R")

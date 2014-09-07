@@ -5,7 +5,7 @@ if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 
 library(RCurl)
 
-PRJ_HOME <- getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 CACHE_DIR <- file.path(PRJ_HOME, "cache")
 TRANSFORM_DIR <- file.path(PRJ_HOME, "data/transformed")

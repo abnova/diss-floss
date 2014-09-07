@@ -2,24 +2,24 @@
 title: "EDA Report"
 author: "Aleksandr Blekh"
 output:
+  pdf_document:
+    fig_caption: no
+    fig_crop: no
+    fig_width: 8
+    highlight: kate
+    keep_tex: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+  md_document:
+    toc: yes
+    toc_depth: 3
   html_document:
     css: ~/diss-floss/config/knitr/markdown.css
     fig_width: 8
     number_sections: yes
     theme: united
     toc: yes
-  md_document:
-    toc: yes
-    toc_depth: 3
-  pdf_document:
-    fig_caption: no
-    fig_crop: no
-    fig_width: 8
-    highlight: kate
-    latex_engine: pdflatex
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
   word_document:
     fig_width: 6.5
     mainfont: Calibri

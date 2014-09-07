@@ -1,15 +1,19 @@
 <!--- Global (project-wide) options for 'knitr' --->
 
-<!--- Set knitr's working directory to the project's home directory --->
-```{r KnitrWorkDir, echo=TRUE, message=TRUE}
-require(knitr)
-opts_knit$set(root.dir='~/diss-floss/')
-```
 
-```{r KnitrSetupGlobal, cache=FALSE, eval=TRUE, include=FALSE, echo=FALSE, message=TRUE}
+<!--- Set knitr's working directory to the project's home directory --->
+
+```{r KnitrWorkDir, echo=TRUE, message=TRUE}
+
 if (!suppressMessages(require(knitr))) install.packages('knitr')
 
-PRJ_HOME <- getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+
+opts_knit$set(root.dir = PRJ_HOME) # '~/diss-floss/'
+```
+
+
+```{r KnitrSetupGlobal, cache=FALSE, eval=TRUE, include=FALSE, echo=FALSE, message=TRUE}
 
 opts_knit$set(progress = TRUE, verbose = TRUE)
 
@@ -26,6 +30,7 @@ opts_chunk$set(
   fig.align = 'center',
   out.width = '0.8\\textwidth',
   fig.path = 'figures/',
+  cache.path='knitr-cache/',
   dev = "svg"
 )
 

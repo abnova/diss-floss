@@ -12,7 +12,7 @@ library(GPArotation)
 library(pcaPA)
 library(ggplot2)
 
-PRJ_HOME <- getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 source(file.path(PRJ_HOME, "utils/data.R"))
 
