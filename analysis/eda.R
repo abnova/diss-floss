@@ -161,7 +161,8 @@ fitDistNonParam <- function (df, var, colName, extraFun) {
     g <- plotMixedDist(data, mixDistInfo, num.components,
                        colName)
     
-    if (.Platform$GUI == "RStudio") {print(g)}
+    #if (.Platform$GUI == "RStudio") {print(g)}
+    print(g)
     
     #TODO: consider moving to main
     edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -305,7 +306,8 @@ plotHistogram <- function (df, colName, print = TRUE) {
   g <- g + geom_vline(aes(xintercept=mean(var, na.rm=T)),
                       linetype = "longdash", color="red")
   
-  if (.Platform$GUI == "RStudio") {print(g)}
+  #if (.Platform$GUI == "RStudio") {print(g)}
+  print(g)
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -347,7 +349,8 @@ plotDensity <- function (df, colName) {
   
   #  g <- g + geom_freqpoly(binwidth = 1)
   
-  if (.Platform$GUI == "RStudio") {print(g)}
+  #if (.Platform$GUI == "RStudio") {print(g)}
+  print(g)
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -396,7 +399,8 @@ plotBarGraph <- function (df, colName) {
             axis.title.y=element_blank())  
   }
   
-  if (.Platform$GUI == "RStudio") {print(g)}
+  #if (.Platform$GUI == "RStudio") {print(g)}
+  print(g)
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -437,7 +441,8 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
     scale_y_continuous("Sample Quantiles") +
     ggtitle(label=title)
   
-  if (.Platform$GUI == "RStudio") {print(g)}
+  #if (.Platform$GUI == "RStudio") {print(g)}
+  print(g)
   
   #TODO: consider moving to main
   edaFile <- str_replace_all(string=varName, pattern=" ", repl="")

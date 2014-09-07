@@ -4,7 +4,6 @@ author: "Aleksandr Blekh"
 output:
   html_document:
     css: ~/diss-floss/config/knitr/markdown.css
-    fig_width: 8
     number_sections: yes
     theme: united
     toc: yes
@@ -12,9 +11,6 @@ output:
     toc: yes
     toc_depth: 3
   pdf_document:
-    fig_caption: no
-    fig_crop: no
-    fig_width: 8
     highlight: kate
     keep_tex: yes
     number_sections: yes
@@ -59,6 +55,6 @@ param3 <- 'TEST'
 # empty
 ```
 
-```{r PerformEDA, include=TRUE}
+```{r PerformEDA, include=TRUE, fig.align='center'}
 # empty
 ```

@@ -19,6 +19,7 @@ library(mixtools)
 library(ddst)
 library(rebmix)
 library(fpc)
+library(flexmix)
 
 NUM_COMPONENTS <- 2
 NUM_ITERATIONS <- 100
@@ -28,6 +29,16 @@ set.seed(12345) # for reproducibility
 data(diamonds, package='ggplot2')  # use built-in data
 myData <- diamonds$price
 myData <- log10(myData)
+
+
+# using 'flexmix' package
+#m7 <- stepFlexmix(yp ~ x + I(x^2), data = NPreg,
+#                  control = list(verbose = 0), k = 1:5, nrep = 5)
+
+#flex.mix <- stepFlexmix(myData ~ 1, k = 1:7, nrep = 3)
+#fm.models <- getModel(flex.mix, "BIC")
+#print(summary(fm.models))
+
 
 # basic distribution fitting ('MASS' package)
 #fitdistr(myData,"gamma")
