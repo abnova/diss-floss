@@ -1,0 +1,48 @@
+## @knitr CleanEnv
+rm(list = ls(all.names = TRUE))
+
+## @knitr LoadPackages
+library(psych)
+library(ggplot2)
+
+## @knitr PrepareData
+
+set.seed(100) # for reproducibility
+data(diamonds, package='ggplot2')  # use built-in data
+
+
+## @knitr PerformEDA
+
+generatePlot <- function (df, colName) {
+  
+  df <- df
+  df$var <- df[[colName]]
+  
+  g <- ggplot(data.frame(df)) +
+    scale_fill_continuous("Density", low="#56B1F7", high="#132B43") +
+    scale_x_log10("Diamond Price [log10]") +
+    scale_y_continuous("Density") +
+    geom_histogram(aes(x = var, y = ..density..,
+                       fill = ..density..),
+                   binwidth = 0.01)
+  return (g)
+}
+
+performEDA <- function (data) {
+  
+  d_var <- paste0("d_", deparse(substitute(data)))
+  assign(d_var, describe(data), envir = .GlobalEnv)
+  
+  for (colName in names(data)) {
+    if (is.numeric(data[[colName]]) || is.factor(data[[colName]])) {
+      t_var <- paste0("t_", colName)
+      assign(t_var, summary(data[[colName]]), envir = .GlobalEnv)
+
+      g_var <- paste0("g_", colName)
+      assign(g_var, generatePlot(data, colName), envir = .GlobalEnv)
+    }
+  }
+}
+
+
+performEDA(diamonds)

@@ -1,0 +1,51 @@
+```{r KnitrSetup, echo=FALSE, include=FALSE}
+library(knitr)
+opts_knit$set(progress = TRUE, verbose = TRUE)
+opts_chunk$set(
+  echo = FALSE,
+  include = FALSE,
+  tidy = FALSE,
+  warning = FALSE,
+  comment=NA
+)
+```
+
+```{r ReadChunksEDA, cache=FALSE}
+read_chunk('reEDA.R')
+```
+
+```{r CleanEnv}
+```
+
+```{r LoadPackages}
+```
+
+```{r PrepareData}
+```
+
+Narrative: Data description
+
+```{r PerformEDA}
+```
+
+Narrative: Intro to EDA results
+
+Let's look at summary descriptive statistics for our dataset
+
+```{r DescriptiveDataset, include=TRUE}
+print(d_diamonds)
+```
+
+Now, let's examine each variable of interest individually.
+
+Varible Price is ... Decriptive statistics for 'Price':
+
+```{r DescriptivePrice, include=TRUE}
+print(t_price)
+```
+
+Finally, let's examine price distribution across the dataset visually:
+
+```{r VisualPrice, include=TRUE, fig.align='center'}
+print(g_price)
+```
