@@ -34,10 +34,57 @@
 \date{March 2013}
 
 \begin{document}
+
 \maketitle
 
 \begin{abstract}
 What the paper is all about
 \end{abstract}
 
+
+<<set-options, echo=FALSE, cache=FALSE>>=
+opts_knit$set(stop_on_error=2L)
+@
+
+<<loadpackages,include=FALSE>>=
+library(memisc)
+library(apsrtable)
+@
+
+\begin{table}[htdp]
+\caption{A fascinating table}
+\begin{center}
+<<tab-fascinating,results='asis',echo=FALSE>>=
+tab <- HairEyeColor # the data: a three way table
+toLatex(ftable(tab))
+@
+\end{center}
+\label{tab:mytable}
+\end{table}
+
+\begin{figure}[htbp]
+\begin{center}
+<<plot-fascinating,echo=FALSE>>=
+mosaicplot(HairEyeColor)
+@
+\caption{A fascinating plot}
+\label{plot:fascinating}
+\end{center}
+\end{figure}
+
+\begin{table}[htbp]
+\caption{A fascinating regression table}
+\label{lm:fascinating}
+\begin{center}
+<<lm-fascinating,results='asis',echo=FALSE>>=
+m1 <- lm(rating ~ complaints + privileges + learning + raises + critical,
+         data=attitude)
+m2 <- lm(rating ~ complaints + privileges + learning, data=attitude)
+apsrtable(m1, m2, Sweave=TRUE)
+@
+\end{center}
+\end{table}
+
+
+\printbibliography
 \end{document}
