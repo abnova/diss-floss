@@ -1,0 +1,12 @@
+%%%-------------------------------------------------%%%
+%%% Sub document bibliography inclusion %%%
+%%%-------------------------------------------------%%%
+
+% \chapter{Bibliography}
+% \addcontentsline{toc}{chapter}{Bibliography}
+% \section*{Articles}
+% \addcontentsline{toc}{section}{Articles}
+\nocite{*} 
+\printbibliography
+% \printbibliography[heading=bibempty]
+% \printbibliography[heading=bibempty,type=article]

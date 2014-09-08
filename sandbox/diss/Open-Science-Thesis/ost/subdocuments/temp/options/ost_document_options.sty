@@ -1,0 +1,206 @@
+%%%------------------------------------------------------------------------------------%%
+%%%------------------------------------------------------------------------------------%%
+%%% Content : Open-Science-Thesis LateX-Style 
+%%% Use : Open-Sciene-Thesis user modifications 
+%%% Author : Claas-Thido Pfaff
+%%%------------------------------------------------------------------------------------%%
+%%%------------------------------------------------------------------------------------%%
+
+%%%-------------------------------------------------%%%
+%%% Set your geometry %%%
+%%%-------------------------------------------------%%%
+
+%% Note: 
+
+% Needs the class option autolayout=false
+
+%% Example:
+
+% \geometry{left=4cm, right=4cm, textheight=25cm}
+
+%% Note: 
+
+% Find all available options in the geometry package documentation.
+
+%%%-------------------------------------------------%%%
+%%% Set own colors %%%
+%%%-------------------------------------------------%%%
+
+% Use any command for color defintion you like or the 
+% open science thesis wrapper "ostDefineColor".
+
+% usage: 
+
+% \ostDefineColor{new color name}{model: HTML, rgb, RGB, cmyk}{colordefinition according the model}
+
+% example:
+
+% \ostDefineColor{YourColor}{rgb}{0,0,0.7}
+
+%%%-------------------------------------------------%%%
+%%% Set your color schema %%%
+%%%-------------------------------------------------%%%
+
+% usage: 
+
+% \ostSetColor{internam color name}{your color name}
+
+% example (uses color defined in section above):
+
+% \ostSetColor{ostColorTitle}{YourColor}
+
+% Full color scheme example:
+
+% \ostSetColor{ostColorTitle}{SteelBlue}
+% \ostSetColor{ostColorSectionHeader}{SteelBlue}
+% \ostSetColor{ostColorSubsectionHeader}{SteelBlue}
+% \ostSetColor{ostColorParagraphHeader}{SteelBlue}
+% \ostSetColor{ostColorLettrine}{DarkGray}  
+% \ostSetColor{ostColorLineNumbers}{DarkGray} 
+% \ostSetColor{ostColorFooterTextSeparator}{DarkGray}
+% \ostSetColor{ostColorFooterRule}{LightGray}
+% \ostSetColor{ostColorFullLeftFooter}{DarkGray} 
+% \ostSetColor{ostColorFooterPageNumber}{DarkGray}
+
+%%%-------------------------------------------------%%%
+%%% Set lengths %%%
+%%%-------------------------------------------------%%%
+
+%%%-------------------------------------------------%%%
+%%% Set own commands %%%
+%%%-------------------------------------------------%%%
+
+%% Example:
+
+% \newcommand{name}[number of parameters]{things to do}
+
+%%%-------------------------------------------------%%%
+%%% Set own environments %%%
+%%%-------------------------------------------------%%%
+
+%% Example:
+
+% \newenvironment{name}[number of parameters]{definition begin}{definition end}
+
+%%%-------------------------------------------------%%%
+%%% Set title page contents %%%
+%%%-------------------------------------------------%%%
+
+% Set all fonts
+
+% \ostSetFont{\ostFontTitle}{\normalfont\sffamily\Huge\bfseries}
+% \ostSetFont{\ostFontSubtitle}{\normalfont\sffamily\normalsize\bfseries}  
+% \ostSetFont{\ostFontAuthors}{\normalfont\sffamily\normalsize}   
+% \ostSetFont{\ostFontInstitution}{\normalfont\sffamily\normalsize}    
+% \ostSetFont{\ostFontDate}{\normalfont\sffamily\small}    
+
+% Set all lengths:
+
+% \ostSetTitleStretchAbove{\vspace*{\stretch{1}}}
+% \ostSetTitleStretchBelow{\vspace*{\stretch{1}}}
+
+% \ostSetLength{\ostLengthTitleSpacerTitleRuleUpper}{2em} 
+% \ostSetLength{\ostLengthTitleSpacerTitleRuleLower}{2em}  
+% \ostSetLength{\ostLengthTitleRuleWidth}{10pt}  
+
+% Set aesthetics
+% \ostSetTitleOverlayOpacity{0.2}
+% \ostSetColor{ostColorTitleOverlay}{LightGray}
+% \ostTitlePageBackgroundPic{ost/graphics/ostTitlePageBackground.pdf}
+% \ostSetLength{\ostLenghtBackgroundPicVoffset}{5\baselineskip}
+% \ostSetLength{\ostLenghtBackgroundPicHoffset}{\baselineskip}
+
+% Set all contents
+
+% \ostSetTitle{This is my completely unique title} 
+% \ostSetAuthors{Test Best}  
+% \ostSetInstitution{University of Test}
+% \ostSetDate{\today}
+% \ostSetAdvisorOne{Advisor: Test\\ The Best\\ Telephone}
+% \ostSetAdvisorTwo{Test\\ The Best\\ Telephone}
+
+%%%-------------------------------------------------%%%
+%%% Set footer contents %%%
+%%%-------------------------------------------------%%%
+
+% \ostSetFooterTextRightOfSeparator{DOI 123456abcd} 
+% \ostSetFooterTextSeparator{xx} 
+% \ostSetFooterTextLeftOfSeparator{Left of separator} 
+% \ostSetFullLeftFooter{I am the full left footer}
+% \ostSetFullRightFooter{\textbf{\thepage}}
+
+%%%-------------------------------------------------%%%
+%%% Change fonts %%%
+%%%-------------------------------------------------%%%
+
+%% Examples:
+
+% \ostSetFont{\ostFontTitle}{\normalfont\sffamily\tiny\bfseries}  
+
+
+%%%-------------------------------------------------%%%
+%%% Set and change the git info display  %%%
+%%%-------------------------------------------------%%%
+
+%% Note 
+% This features need the gitinfo class option set 
+% inside the root file.
+
+% \ostSetGitUrl{\url{www.....}}
+% \ostSetGitInfoLine{}
+
+%%%-------------------------------------------------%%%
+%%% Set PDF options %%%
+%%%-------------------------------------------------%%%
+
+%% Example:
+%  \hypersetup{%
+%   pdfauthor={Your-Name},
+%   pdfcreator={Your-Name},
+%   pdfsubject={Subject},
+%   pdfkeywords={Keyword1, Keyword2, ...}
+%  }
+
+%% Note: 
+% See the hyperref package documentation for more options
+
+%%%-------------------------------------------------%%%
+%%% Set revisors for the document  %%%
+%%%-------------------------------------------------%%%
+
+\ostSetRevisor{claas}
+\ostSetRevisor{chris}
+
+%% Note: 
+% This generates the commands \claas{} and \chris{} which
+% can be used inline to create notes. They get visible only
+% when you use  the class option revision=true
+
+%%%-------------------------------------------------%%%
+%%% Bibliography options %%%
+%%%-------------------------------------------------%%%
+
+% Note: As the following list of options to BibLaTeX 
+  % need to be set on load these are set in the class 
+  % file. If you find yourself in a situation where you 
+  % need change one of those you need to 
+  % do it in the class file.  
+
+% style, bibstyle, citestyle, natbib and mcite, backend 
+
+% All other options can be set here
+
+\ExecuteBibliographyOptions{
+bibencoding=utf8,%
+hyperref=true,%
+url=false,%
+isbn=false,%
+doi=false,%
+firstinits=false%
+}  
+
+% Add a BibTeX bibliography file. If you like to use anoter bib file just
+% change the path here. If you like to add another source just copy the line
+% and add a new one with the path to the new file. 
+
+\addbibresource{usr/subdocuments/bibliography/open_science_thesis.bib}
