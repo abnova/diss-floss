@@ -1,0 +1,43 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+
+%% fonts
+\usepackage[charter]{mathdesign}
+\usepackage[scaled=.95]{inconsolata}
+
+%% page margins, inter-paragraph space and no chapters
+\usepackage[margin=1.1in]{geometry}
+\setlength{\parskip}{0.5em}
+\renewcommand{\thesection}{\arabic{section}}
+
+%% bibliography
+\usepackage[american]{babel}
+\usepackage{csquotes}
+\usepackage[style=apa,natbib=true,backend=biber]{biblatex}
+\DeclareLanguageMapping{american}{american-apa}
+\addbibresource{biblio.bib}
+
+%% for memisc
+\usepackage{booktabs}
+\usepackage{dcolumn} 
+
+%% define a dark blue
+\usepackage{color}
+\definecolor{darkblue}{rgb}{0,0,.5} 
+
+%% hyperlinks to references
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=darkblue, citecolor=darkblue, filecolor=darkblue, urlcolor=darkblue}
+
+\author{Will Lowe\\Universität Mannheim \and Coauthor}
+\title{Because We Can: Studying Twitter in Political Science\thanks{Paper presented at some conference or other.}}
+\date{March 2013}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+What the paper is all about
+\end{abstract}
+
+\end{document}
