@@ -1,3 +1,7 @@
+---
+output:
+  pdf_document
+---
 ```{r KnitrSetup, echo=FALSE, include=FALSE}
 library(knitr)
 opts_knit$set(progress = TRUE, verbose = TRUE)
@@ -6,8 +10,15 @@ opts_chunk$set(
   include = FALSE,
   tidy = FALSE,
   warning = FALSE,
-  comment=NA
+  comment=NA,
+  fig.path = 'figures/'
 )
+```
+
+```{r KnitrSetupGrDev, echo=FALSE, include=FALSE}
+options(device = function(file, width = 7, height = 7, ...) {
+  cairo_pdf(tempfile(), width = width, height = height, ...)
+})
 ```
 
 ```{r ReadChunksEDA, cache=FALSE}
@@ -46,6 +57,6 @@ print(t_price)
 
 Finally, let's examine price distribution across the dataset visually:
 
-```{r VisualPrice, include=TRUE, fig.align='center'}
+```{r VisualPrice, dev='cairo_pdf', include=TRUE, fig.cap='Diamond price distribution'}
 print(g_price)
 ```
