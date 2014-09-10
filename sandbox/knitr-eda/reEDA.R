@@ -4,6 +4,7 @@ rm(list = ls(all.names = TRUE))
 ## @knitr LoadPackages
 library(psych)
 library(ggplot2)
+library(hexbin)
 
 ## @knitr PrepareData
 
@@ -28,6 +29,32 @@ generatePlot <- function (df, colName) {
   return (g)
 }
 
+
+generatePlotBinHex <- function (df, colName) {
+  
+  df <- df
+  myData <- df$var <- df[[colName]]
+  
+  # setting up manual QQ plot used to plot with and with out hexbins
+  #xSamp <- rgamma(1000,8,.5) # sample data
+  len <- length(myData)
+  i <- seq(1, len, by = 1)
+  probSeq <- (i-.5) / len # probability grid
+  invCDF <- qnorm(probSeq, 0, 1) # theoretical quantiles for standard normal
+  orderGam <- myData[order(myData)] # ordered sample
+  df <- data.frame(invCDF, orderGam)
+
+  g <- ggplot(df, aes(invCDF, orderGam)) + 
+    stat_binhex(geom = "point", size = 1, bins = 300) + 
+    geom_smooth(method = "lm")
+  
+  #g <- ggplot(df, aes(invCDF, orderGam)) + 
+  #  stat_ecdf(geom = "hex")
+  
+  return (g)
+}
+
+
 performEDA <- function (data) {
   
   d_var <- paste0("d_", deparse(substitute(data)))
@@ -40,6 +67,9 @@ performEDA <- function (data) {
 
       g_var <- paste0("g_", colName)
       assign(g_var, generatePlot(data, colName), envir = .GlobalEnv)
+
+      h_var <- paste0("h_", colName)
+      assign(h_var, generatePlotBinHex(data, colName), envir = .GlobalEnv)
     }
   }
 }

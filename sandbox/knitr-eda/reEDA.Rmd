@@ -1,6 +1,5 @@
 ---
-output:
-  pdf_document
+output: pdf_document
 ---
 ```{r KnitrSetup, echo=FALSE, include=FALSE}
 library(knitr)
@@ -59,4 +58,10 @@ Finally, let's examine price distribution across the dataset visually:
 
 ```{r VisualPrice, dev='cairo_pdf', include=TRUE, fig.cap='Diamond price distribution'}
 print(g_price)
+```
+
+Hex binning plot:
+
+```{r VisualPriceHex, dev='cairo_pdf', include=TRUE, fig.cap='Diamond price distribution'}
+print(h_price)
 ```

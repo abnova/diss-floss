@@ -55,6 +55,6 @@ param3 <- 'TEST'
 # empty
 ```
 
-```{r PerformEDA, include=TRUE, fig.align='center'}
+```{r PerformEDA, include=TRUE, fig.cap='EDA Report'}
 # empty
 ```
