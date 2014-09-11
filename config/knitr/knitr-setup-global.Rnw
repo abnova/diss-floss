@@ -1,0 +1,43 @@
+% Global (project-wide) options for 'knitr'
+
+% Set knitr's working directory to the project's home directory
+
+<<KnitrPackageSetup, echo=FALSE>>=
+if (!suppressMessages(require(knitr))) install.packages('knitr')
+library(knitr)
+library(xtable)
+
+KNITR <<- TRUE
+
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+
+opts_knit$set(root.dir = PRJ_HOME) # '~/diss-floss/'
+opts_knit$set(progress = TRUE, verbose = TRUE)
+opts_knit$set(eval.after = "fig.cap")
+@
+
+<<KnitrChunksSetup, cache=FALSE, include=FALSE, echo=FALSE, message=TRUE>>=
+opts_chunk$set(
+  eval = TRUE,
+  echo = FALSE,
+  #results='markup',
+  include = FALSE,
+  warning = FALSE,
+  error = TRUE,
+  message = TRUE,
+  tidy = FALSE,
+  comment=NA,
+  #fig.width = 5,
+  #fig.height = 4,
+  #fig.align = 'center',
+  #out.width = '0.8\\textwidth',
+  #fig.path = 'figures/',
+  cache.path='knitr-cache/'
+)
+
+#options(markdown.HTML.stylesheet = "path/to/a/custom/style.css")
+
+#echoChunks <- FALSE
+#warningChunks<- FALSE
+#options(width = 120)  # so the output is 50% wider than the default
+@

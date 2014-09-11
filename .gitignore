@@ -1,4 +1,6 @@
 figures
+figure
+knitr-cache
 .Rproj.user
 .Rhistory
 *.RData

@@ -1,5 +1,6 @@
 *.svg
 *.pdf
 *.tex
+*.gz
 figures
 knitr-cache
