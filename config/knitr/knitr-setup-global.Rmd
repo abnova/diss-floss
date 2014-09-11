@@ -6,6 +6,7 @@
 
 if (!suppressMessages(require(knitr))) install.packages('knitr')
 library(knitr)
+library(xtable)
 
 KNITR <<- TRUE
 
