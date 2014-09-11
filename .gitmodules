@@ -1,0 +1,3 @@
+[submodule "manuscript"]
+	path = manuscript
+	url = git://github.com/cpfaff/Open-Science-Thesis.git
