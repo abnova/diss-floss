@@ -21,6 +21,7 @@ getData <- function () {
   df$prjage   <- df[["Project Age"]]
   df$teamsize <- df[["Development Team Size"]]
   df$license  <- df[["Project License"]]
+  df$prjmaturity <- df[["Project Maturity"]]
   
   return (df)
 }
@@ -58,30 +59,35 @@ if (FALSE) {
 
 # tests with my data set
 df <- getData()
-df <- df[, c("prjage", "teamsize", "license")]
+df <- df[, c("prjage", "teamsize", "license", "prjmaturity")]
 
 #brewer.pal(length(colnames(df)), "Set1")
 
 #The diverging palettes are
 #BrBG PiYG PRGn PuOr RdBu RdGy RdYlBu RdYlGn Spectral
 
-# Labelled output, with coefficient transparency.
-ggcorr(df,
-       label = TRUE,
-       label_alpha = TRUE,
-       name = "") +
-  theme(legend.position = "bottom")
-
 # Default output.
-#ggcorr(df)
+ggcorr(df)
 
 # Custom options.
-ggcorr(
-  df,
-  geom = "circle",
-  max_size = 6,
-  size = 3,
-  hjust = 0.75,
-  #angle = -45,
-  palette = "Accent" # Paired / Spectral RdYlBu RdYlGn
+# produces error: "Breaks and labels are different lengths"
+if (FALSE) {
+  ggcorr(df,
+         geom = "point",
+         max_size = 6,
+         size = 3,
+         hjust = 0.75,
+         #angle = -45,
+         palette = "Accent" # Paired / Spectral RdYlBu RdYlGn
+  ) + labs(title = "Basic correlations plot")
+}
+
+
+ggcorr(df,
+       #geom = "point",
+       #max_size = 6,
+       #size = 3,
+       #hjust = 0.75,
+       #angle = 45,
+       palette = "Accent"
 ) + labs(title = "Basic correlations plot")
