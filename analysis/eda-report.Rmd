@@ -2,20 +2,20 @@
 title: "EDA Report"
 author: "Aleksandr Blekh"
 output:
-  html_document:
-    css: ~/diss-floss/config/knitr/markdown.css
-    number_sections: yes
-    theme: united
-    toc: yes
-  md_document:
-    toc: yes
-    toc_depth: 3
   pdf_document:
     highlight: kate
     keep_tex: yes
     number_sections: yes
     toc: yes
     toc_depth: 3
+  md_document:
+    toc: yes
+    toc_depth: 3
+  html_document:
+    css: ~/diss-floss/config/knitr/markdown.css
+    number_sections: yes
+    theme: united
+    toc: yes
   word_document:
     fig_width: 6.5
     mainfont: Calibri
@@ -55,6 +55,12 @@ param3 <- 'TEST'
 # empty
 ```
 
-```{r PerformEDA, include=TRUE, fig.cap='EDA Report'}
+```{r PerformEDA, cache=TRUE}
 # empty
+```
+
+The SourceForge pilot data set consists of `r length(dir(file.path(TRANSFORM_DIR, "SourceForge")))` indicators. The following is the summary descriptive statistics of the data set.
+
+```{r edaReportSummary, include=TRUE, fig.cap='EDA Report'}
+print(describe_flossData)
 ```

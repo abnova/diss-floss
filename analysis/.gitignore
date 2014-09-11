@@ -2,3 +2,4 @@
 *.pdf
 *.tex
 figures
+knitr-cache

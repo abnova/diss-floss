@@ -30,6 +30,8 @@ library(rebmix)
 ## @knitr PrepareEDA
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
+KNITR <<- TRUE
+
 source(file.path(PRJ_HOME, "utils/factors.R"))
 source(file.path(PRJ_HOME, "utils/qq.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
@@ -215,10 +217,14 @@ fitDistREBMIX <- function (df, var, colName, extraFun) {
 
 multiDescriptiveEDA <- function (df, var, colNames, extraFun) {
   
-  message("\nDecriptive statistics for '", colNames, "':\n")
-  
-  # suppress "NAs introduced by coercion" warnings
-  suppressWarnings(describe(flossData))
+  if (KNITR) {
+    describe_var <- paste0("describe_", deparse(substitute(flossData)))
+    assign(describe_var, describe(flossData), envir = .GlobalEnv)
+  } else {
+    message("\nDecriptive statistics for '", colNames, "':\n")
+    # suppress "NAs introduced by coercion" warnings
+    suppressWarnings(describe(flossData))
+  }
 }
 
 
@@ -242,6 +248,7 @@ performEDA <- function (dataSource, analysis,
   
   if (identical(analysis, "univariate")) {
     
+    multiDescriptiveEDA(data, indicator, colNames, extraFun)
     uniDescriptiveEDA(data, indicator, colName, extraFun)
     uniVisualEDA(data, indicator, colName, extraFun)
     #fitDistParam(data, indicator, colName, extraFun)

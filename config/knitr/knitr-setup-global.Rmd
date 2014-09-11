@@ -1,11 +1,13 @@
 <!--- Global (project-wide) options for 'knitr' --->
 
-
 <!--- Set knitr's working directory to the project's home directory --->
 
 ```{r KnitrPackageSetup, echo=FALSE}
 
 if (!suppressMessages(require(knitr))) install.packages('knitr')
+library(knitr)
+
+KNITR <<- TRUE
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
