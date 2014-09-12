@@ -1,6 +1,8 @@
 \documentclass[11pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
 
+\usepackage{longtable}
+
 %% fonts
 \usepackage[charter]{mathdesign}
 \usepackage[scaled=.95]{inconsolata}
@@ -74,7 +76,10 @@ And now let's see what output would be produced by 'xtable' package:
 print(xtable(describe_flossData, caption="flossData Summary",
              digits=3),
       comment = FALSE,
-      include.rownames = FALSE)
+      include.rownames = FALSE,
+      #floating = FALSE,
+      #tabular.environment = "longtable",
+      booktabs = TRUE)
 @
 
 
