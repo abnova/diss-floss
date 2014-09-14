@@ -33,10 +33,11 @@
 %\usepackage[expert]{mathdesign}
 
 
-\usepackage[american]{babel}
+\usepackage[english, american]{babel}
 \usepackage{csquotes}
-\usepackage[backend=biber,style=apa]{biblatex}
-\DeclareLanguageMapping{american}{american-apa}
+
+\usepackage[style=apa,sortcites=true,sorting=nyt,backend=biber]{biblatex}
+\DeclareLanguageMapping{english}{american-apa}
 
 % AB: OST's alternative to 'biblatex-apa' package?
 %\documentclass[style=, citestyle=, bibstyle=, natbib=]{open_science_thesis}

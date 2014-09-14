@@ -192,10 +192,9 @@
 % All other options can be set here
 
 \ExecuteBibliographyOptions{
-style=apa,%
 bibencoding=utf8,%
 hyperref=true,%
-url=false,%
+url=true,%
 isbn=false,%
 doi=true,%
 firstinits=true%
@@ -205,9 +204,24 @@ firstinits=true%
 %\setlength{\bibitemsep}{0.5\baselineskip}
 \setlength\bibitemsep{2.0\itemsep}
 
+% AB: Restore escaped underscore in URL fields from "%5C",
+%     as converted by Biber to the original values.
+\DeclareSourcemap{
+ \maps[datatype=bibtex]{
+   \map{
+     \step[fieldsource=url,
+       match=\regexp{\\_},
+       replace=\regexp{_}]
+     \step[fieldsource=doi,
+       match=\regexp{\\_},
+       replace=\regexp{_}]
+   }
+ }
+}
+
 % Add a BibTeX bibliography file. If you like to use anoter bib file just
 % change the path here. If you like to add another source just copy the line
 % and add a new one with the path to the new file. 
 
 %\addbibresource{usr/subdocuments/bibliography/open_science_thesis.bib}
-\addbibresource{~/diss-floss/bib/diss-bib-6-091214.bib}
+\addbibresource{~/diss-floss/bib/diss-bib-7-091414.bib}
