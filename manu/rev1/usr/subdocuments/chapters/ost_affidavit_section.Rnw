@@ -4,11 +4,23 @@
 
 % \part{Preface}
 
-\chapter{Affidavit} 
+\chapter{Affidavit}
 
-I hereby declare that this document has been written only by the undersigned
-and without any assistance from third parties. Furthermore, I confirm that no
-sources have been used in the preparation of this document other than those
-indicated in the thesis itself. 
+\begin{figure}[ht!]
+\centering
+\includegraphics{../../graphics/static/NSU_Primary_Logo3.jpg}
+\caption{The Graduate School of Computer and Information Sciences \label{overflow}}
+\end{figure}
+
+Certification of Authorship of Dissertation Work
+
+\begin{tabular}{ l l }
+  Submitted to (Advisor’s Name): & Professor Sumitra Mukherjee, Ph.D. \\
+  Student’s Name: & Aleksandr Blekh \\
+  Date of Submission: & 10/30/2014 \\
+  Purpose and Title of Submission: & Dissertation Report – Revision 1.0 (Draft) \\
+\end{tabular}
+
+Certification of Authorship:  I hereby certify that I am the author of this document and that any assistance I received in its preparation is fully acknowledged and disclosed in the document. I have also cited all sources from which I obtained data, ideas, or words that are copied directly or paraphrased in the document. Sources are properly credited according to accepted standards for professional publications. I also certify that this paper was prepared by me for this purpose.
 
 \ostAffidavitSignatureLine{}

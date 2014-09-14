@@ -12,33 +12,39 @@
 %%
 %
 
-% The following is here just for reference:
+
+\documentclass[
+  BCOR=5mm,
+  colortheme=blue,
+  pagelayout=oneside,
+  titlepagetheme=plain,
+  linespacing=doublespacing,
+  justification=centered
+]{ost/subdocuments/open_science_thesis}
+
+% AB: The following is here just for reference:
 % it's likely not a good idea to mix the OST document class
 % with 'apa6' document class (might try it separately)
 % \documentclass[options]{apa6}
 
-\usepackage[T1]{fontenc}
-\usepackage{charter}
-\usepackage[expert]{mathdesign}
+% AB: I tried to switch to charter, but LaTeX produces an error
+%\usepackage[T1]{fontenc}
+%\usepackage{charter}
+%\usepackage[expert]{mathdesign}
 
 
-%\usepackage[american]{babel}
-%\usepackage{csquotes}
-%\usepackage[style=apa]{biblatex}
-%\DeclareLanguageMapping{american}{american-apa}
+\usepackage[american]{babel}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=apa]{biblatex}
+\DeclareLanguageMapping{american}{american-apa}
 
-% OST's alternative to 'biblatex-apa' package?
+% AB: OST's alternative to 'biblatex-apa' package?
 %\documentclass[style=, citestyle=, bibstyle=, natbib=]{open_science_thesis}
 
+% \documentclass[fontchoice={lmodern, libertine, times, palatino, utopia}]{open_science_thesis}
 
-\documentclass[
-BCOR=5mm,
-colortheme=blue,
-pagelayout=oneside,
-titlepagetheme=plain,
-linespacing=doublespacing,
-justification=centered
-]{ost/subdocuments/open_science_thesis} 
+% for inserting images into a document
+\usepackage{graphicx}
 
 % linenumbers = true/[false] Enable or disable line numbering. This can be handy on revisions.
 % colormode = [rgb]/cmyk The colormode can be switched between rgb which is optima for displays 
