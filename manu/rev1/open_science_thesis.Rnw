@@ -43,8 +43,14 @@
 
 % \documentclass[fontchoice={lmodern, libertine, times, palatino, utopia}]{open_science_thesis}
 
-% for inserting images into a document
+
+% AB: for inserting images into a document
 \usepackage{graphicx}
+\graphicspath{ {usr/graphics/static/} }
+
+% AB: for flxible control of spacing
+\usepackage{setspace}
+
 
 % linenumbers = true/[false] Enable or disable line numbering. This can be handy on revisions.
 % colormode = [rgb]/cmyk The colormode can be switched between rgb which is optima for displays 

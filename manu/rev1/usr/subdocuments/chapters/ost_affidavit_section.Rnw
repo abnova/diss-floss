@@ -6,21 +6,37 @@
 
 \chapter{Affidavit}
 
-\begin{figure}[ht!]
-\centering
-\includegraphics{../../graphics/static/NSU_Primary_Logo3.jpg}
-\caption{The Graduate School of Computer and Information Sciences \label{overflow}}
-\end{figure}
+{\centering
+\includegraphics[scale=0.5]{NSU_Primary_Logo3.jpg}
 
-Certification of Authorship of Dissertation Work
+\textbf{The Graduate School of Computer and Information Sciences}
+}
 
+\vspace{0.5cm}
+
+{\centering
+\textbf{Certification of Authorship of Dissertation Work}
+}
+
+\vspace{0.5cm}
+
+{\raggedright
 \begin{tabular}{ l l }
   Submitted to (Advisor’s Name): & Professor Sumitra Mukherjee, Ph.D. \\
   Student’s Name: & Aleksandr Blekh \\
   Date of Submission: & 10/30/2014 \\
   Purpose and Title of Submission: & Dissertation Report – Revision 1.0 (Draft) \\
 \end{tabular}
+}
 
+\vspace{0.5cm}
+
+{\raggedright
+\begin{singlespacing}
 Certification of Authorship:  I hereby certify that I am the author of this document and that any assistance I received in its preparation is fully acknowledged and disclosed in the document. I have also cited all sources from which I obtained data, ideas, or words that are copied directly or paraphrased in the document. Sources are properly credited according to accepted standards for professional publications. I also certify that this paper was prepared by me for this purpose.
+\end
+}
+
+\vspace{0.5cm}
 
 \ostAffidavitSignatureLine{}
