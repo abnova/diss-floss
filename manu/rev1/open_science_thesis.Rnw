@@ -1,0 +1,212 @@
+%%%------------------------------------------------------------------------------------%%
+%%%------------------------------------------------------------------------------------%%
+%%% Content: Open-Science-Thesis LaTeX Scaffold 
+%%% Usage: Collaborative scientific thesis writing 
+%%% Author: Claas-Thido Pfaff
+%%%------------------------------------------------------------------------------------%%
+%%%------------------------------------------------------------------------------------%%
+
+%%%------------------------------------------------------------------------------%%%
+%%% Document class: open_science_thesis (Based on Koma-Script: scrbook) %%%
+%%%------------------------------------------------------------------------------%%%
+%%
+%
+
+\documentclass[BCOR=5mm, colortheme=green]{ost/subdocuments/open_science_thesis} 
+
+% linenumbers = true/[false] Enable or disable line numbering. This can be handy on revisions.
+% colormode = [rgb]/cmyk The colormode can be switched between rgb which is optima for displays 
+%			 and cmyk which is useful for professional printing.
+% fancytocs = [true]/false Enable or disable fancy styled TOC.
+% toctosection= [part]/chapter/false Add a partial toc to part, chapter or disable it completely.
+% revision = true/[false] enables line numbers, extends paper size and allows to use the command \ostSetRevisor{name} to set
+%		          up revisors for the document. Comments of revisors in the margin of the page. If you set up a revisor 
+%                         for example with \ostSetRevisor{chris} the revisor can use the command \chris{Some note} in your text to
+%			  place a note. If you set this option to true the notes get visible
+
+% Available class options [defaults]
+
+% titlepagestyle = [simple, plain, image, vertical]
+% toctosection = [part, chapter]
+
+% linenumbers=false, 
+% colortheme=[orange, blue, green, red], 
+% gitinfo=false, 
+% sectionnumbers=true,
+% autolayout=true,
+% resetdefaultclassoptions=false, 
+% parindent=false,
+
+% backroundimage=false, enable background image for title page. use with onside only 
+
+
+% - autolayout [true]/false: Switch between the nice automatic calculated typearea layout 
+%   (Koma script) and a fixed geometry page layout (geometry package). You need to set the 
+%   geometry inside of the style file if you choose false. (needs some work)
+
+% - gitinfo true/[false]: Include git information into the title header of the 
+%   document. This requires the setup of git hooks which you can do by issuing 
+%   the make task (make githooks). After that you need to specify the URL of the 
+%   git repository inside of the style file and you are done.  (needs some work)
+
+% - print true/[false] switches between the color model rgb which is optimal for displays 
+%   and the cmyk color model which is required for professional printing. 
+% - linenumbers true/[false]: Switch on/off line numbers for the whole document. 
+
+
+
+% - resetdefaultclassoptions true/[false] resets the default options the open science thesis 
+%   loads the scrartcl class. After that you can modify every option via the open science 
+%   thesis class call. For example to change the calculated typearea you can use 
+%   \documentclass[resetdefaultclassoptions=true, DIV=7]{ost/subdocuments/open_science_thesis}   
+
+% - parindent true/[false] Switch paragraph indent on or off.
+
+%% scrbook class options 
+% - oneside/[twoside] enables oneside or twoside layout with twoside layout as 
+%   default.
+
+%%%------------------------------------------------------------------------------%%%
+%%% Load user options %%%
+%%%------------------------------------------------------------------------------%%%
+
+\input{usr/subdocuments/options/ost_document_options.sty} 
+
+%%%------------------------------------------------------------------------------%%%
+%%% Load glossary definitions %%%
+%%%------------------------------------------------------------------------------%%%
+
+<<glossary_definitions, child='usr/subdocuments/options/open_science_glossary.Rnw', eval=T>>=
+@
+
+%%%------------------------------------------------------------------------------%%%
+%%% Begin the document %%%
+%%%------------------------------------------------------------------------------%%%
+
+
+\begin{document}
+
+% start front matter
+\frontmatter
+
+%%%--------------------------------------------------------------%%%
+%%% Document preparations %%%
+%%%--------------------------------------------------------------%%%
+%%
+%
+
+%%%-------------------------------------------------%%%
+%%% Preferences for Knitr %%%
+%%%-------------------------------------------------%%%
+
+<<chunk_global_r_options, child='usr/subdocuments/options/ost_global_r_options.Rnw', eval=T>>=
+@ 
+
+%%%--------------------------------------------------------------%%%
+%%% Document content %%%
+%%%--------------------------------------------------------------%%%
+%%
+%
+
+%%%-------------------------------------------------%%%
+%%% Include header %%%
+%%%-------------------------------------------------%%%
+
+<<subdoc_content_header, child='usr/subdocuments/chapters/ost_header.Rnw', eval=T>>=
+@
+
+%%%-------------------------------------------------%%%
+%%% Tables of content %%%
+%%%-------------------------------------------------%%%
+
+% \tableofcontents
+% \listoffigures 
+% \listoftables 
+\makealltables
+\listofrevisions
+
+\mainmatter
+
+%%%-------------------------------------------------%%%
+%%% Include abstract %%%
+%%%-------------------------------------------------%%%
+
+<<subdoc_content_abstract, child='usr/subdocuments/chapters/ost_abstract_section.Rnw', eval=T>>=
+@
+
+%%%-------------------------------------------------%%%
+%%% Include introduction %%%
+%%%-------------------------------------------------%%%
+
+<<subdoc_content_introduction, child='usr/subdocuments/chapters/ost_introduction_section.Rnw', eval=T>>=
+@
+
+%%%-------------------------------------------------%%%
+%%% Include material and methods %%%
+%%%-------------------------------------------------%%%
+
+<<subdoc_content_material_methods, child='usr/subdocuments/chapters/ost_material_methods_section.Rnw', eval=T>>=
+@
+
+%%%-------------------------------------------------%%%
+%%% Include results %%%
+%%%-------------------------------------------------%%%
+
+<<subdoc_content_results, child='usr/subdocuments/chapters/ost_results_section.Rnw', eval=T>>=
+@
+
+%%%-------------------------------------------------%%%
+%%% Include discussion %%%
+%%%-------------------------------------------------%%%
+
+<<subdoc_content_discussion, child='usr/subdocuments/chapters/ost_discussion_section.Rnw', eval=T>>=
+@
+
+%%%-------------------------------------------------%%%
+%%% Include acknowledgements %%%
+%%%-------------------------------------------------%%%
+
+<<subdoc_content_acknowledgement, child='usr/subdocuments/chapters/ost_acknowledgements_section.Rnw', eval=T>>=
+@
+
+%%%-------------------------------------------------%%%
+%%% Include the appendix %%%
+%%%-------------------------------------------------%%%
+
+% Appendix content 
+\appendix
+
+<<subdoc_content_appendix, child='usr/subdocuments/chapters/ost_appendix_section.Rnw', eval=T>>=
+@ 
+
+%%%-------------------------------------------------%%%
+%%% Affidavit %%%
+%%%-------------------------------------------------%%%
+
+% start main matter
+
+<<subdoc_content_introduction, child='usr/subdocuments/chapters/ost_affidavit_section.Rnw', eval=T>>=
+@
+
+%%%-------------------------------------------------%%%
+%%% Include the bibliography %%%
+%%%-------------------------------------------------%%%
+
+<<options_bibliography, child='usr/subdocuments/chapters/ost_bibliography_section.Rnw', eval=T>>=
+@
+
+% Literature and Index
+\backmatter
+
+%%%-------------------------------------------------%%%
+%%% Glossary %%%
+%%%-------------------------------------------------%%%
+
+<<body_mainmatter_chapter_one, child='usr/subdocuments/chapters/ost_glossaries_section.Rnw', eval=T>>=
+@
+
+%%%------------------------------------------------------------------------------%%%
+%%% End of document %%%
+%%%------------------------------------------------------------------------------%%%
+
+\end{document}
