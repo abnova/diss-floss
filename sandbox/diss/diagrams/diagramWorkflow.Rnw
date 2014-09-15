@@ -6,58 +6,60 @@
 %\usepackage{pgfpages}
 %\pgfpagesuselayout{4 on 1}[letterpaper, border shrink = 5mm, landscape]
 
-\tikzstyle{block} = [rectangle, draw, text width = 10em, text centered, rounded corners, minimum height = 5em, minimum width = 10em, top color = white, bottom color=blue!30, drop shadow]
+\tikzstyle{block} = [rectangle, draw, text width = 7em, text centered, rounded corners, minimum height = 2em, minimum width = 7em, top color = white, bottom color=blue!30, drop shadow]
 
 
 \begin{document}
 
 \begin{center}
-\begin{tikzpicture}[node distance=5cm, auto, >=stealth]
+\begin{tikzpicture}[node distance=4cm, auto, >=stealth]
 
 \node[block] (dataHeader) {Data};
-  \node[block] (softHeader) [right of = dataHeader, node distance = 5cm] {Software};
+  \node[block] (softHeader) [right of = dataHeader, node distance = 4cm] {Software};
  	%\draw[->] (a) -- (b);
- 	\node[block] (artiHeader) [right of = softHeader, node distance = 5cm] {Artifacts};
+ 	\node[block] (artiHeader) [right of = softHeader, node distance = 4cm] {Artifacts};
  	%\draw[->] (b) -- (c);
 
-  \node[block] (dataSources)  [below of = dataHeader, node distance = 3cm]{Data Sources};
-  \node[block] (softImport) [right of = dataSources, node distance = 5cm] {import};
+%  \draw[-] (\xcoord[west]{dataHeader}, \ycoord[south]{dataHeader} - 1) -- (\xcoord[east]{artiHeader}, \ycoord[south]{dataHeader} - 1);
+
+  \node[block] (dataSources)  [below of = dataHeader, node distance = 1.5cm]{Data Sources};
+  \node[block] (softImport) [right of = dataSources, node distance = 4cm] {import};
  	\draw[->] (dataSources) -- (softImport);
    
- 	\node[block] (dataCache) [below of = dataSources, node distance = 3cm] {cache};
+ 	\node[block] (dataCache) [below of = dataSources, node distance = 1.5cm] {cache};
  	\draw[->] (softImport) -- (dataCache);
-  \node[block] (softPrepare) [right of = dataCache, node distance = 5cm] {prepare};
+  \node[block] (softPrepare) [right of = dataCache, node distance = 4cm] {prepare};
    \draw[->] (dataCache) -- (softPrepare);
 
-   \node[block] (dataTransform) [below of = dataCache, node distance = 3cm] {transform};
+   \node[block] (dataTransform) [below of = dataCache, node distance = 1.5cm] {transform};
  	\draw[->] (softPrepare) -- (dataTransform);
-   \node[block] (dataReady4EDA) [below of = dataCache, node distance = 3cm] {ready4EDA};
+   \node[block] (dataReady4EDA) [below of = dataCache, node distance = 1.5cm] {ready4EDA};
    \draw[->] (dataTransform) -- (dataReady4EDA);
 
-\node[block] (softEDA) [right of = dataReady4EDA, node distance = 5cm] {EDA};
+\node[block] (softEDA) [right of = dataReady4EDA, node distance = 4cm] {EDA};
    \draw[->] (dataReady4EDA) -- (softEDA);
-  \node[block] (artiEDA) [right of = softEDA, node distance = 5cm] {EDA Report};
+  \node[block] (artiEDA) [right of = softEDA, node distance = 4cm] {EDA Report};
    \draw[->] (softEDA) -- (artiEDA);
 
-   \node[block] (dataReady4EFA) [below of = dataReady4EDA, node distance = 3cm] {ready4EFA};
+   \node[block] (dataReady4EFA) [below of = dataReady4EDA, node distance = 1.5cm] {ready4EFA};
    \draw[->] (softEDA) -- (dataReady4EFA);
-  \node[block] (softEFA) [right of = dataReady4EFA, node distance = 5cm] {EFA};
+  \node[block] (softEFA) [right of = dataReady4EFA, node distance = 4cm] {EFA};
    \draw[->] (dataReady4EFA) -- (softEFA);
-  \node[block] (artiEFA) [right of = softEFA, node distance = 5cm] {EFA Report};
+  \node[block] (artiEFA) [right of = softEFA, node distance = 4cm] {EFA Report};
    \draw[->] (softEFA) -- (artiEFA);
 
-   \node[block] (dataReady4CFA) [below of = dataReady4EFA, node distance = 3cm] {ready4CFA};
+   \node[block] (dataReady4CFA) [below of = dataReady4EFA, node distance = 1.5cm] {ready4CFA};
    \draw[->] (softEFA) -- (dataReady4CFA);
-  \node[block] (softCFA) [right of = dataReady4CFA, node distance = 5cm] {CFA};
+  \node[block] (softCFA) [right of = dataReady4CFA, node distance = 4cm] {CFA};
    \draw[->] (dataReady4CFA) -- (softCFA);
-  \node[block] (artiCFA) [right of = softCFA, node distance = 5cm] {CFA Report};
+  \node[block] (artiCFA) [right of = softCFA, node distance = 4cm] {CFA Report};
    \draw[->] (softCFA) -- (artiCFA);
 
-   \node[block] (dataReady4SEM) [below of = dataReady4CFA, node distance = 3cm] {ready4SEM};
+   \node[block] (dataReady4SEM) [below of = dataReady4CFA, node distance = 1.5cm] {ready4SEM};
    \draw[->] (softCFA) -- (dataReady4SEM);
-  \node[block] (softSEM) [right of = dataReady4SEM, node distance = 5cm] {SEM};
+  \node[block] (softSEM) [right of = dataReady4SEM, node distance = 4cm] {SEM};
    \draw[->] (dataReady4SEM) -- (softSEM);
-  \node[block] (artiSEM) [right of = softSEM, node distance = 5cm] {SEM Report};
+  \node[block] (artiSEM) [right of = softSEM, node distance = 4cm] {SEM Report};
    \draw[->] (softSEM) -- (artiSEM);
 
 \end{tikzpicture}
