@@ -204,6 +204,28 @@ firstinits=true%
 %\setlength{\bibitemsep}{0.5\baselineskip}
 \setlength\bibitemsep{2.0\itemsep}
 
+% AB: Format title in the sentence case:
+% http://tex.stackexchange.com/q/20335/48376 and
+% http://tex.stackexchange.com/q/22980/48376
+
+\DeclareFieldFormat{titlecase}{\MakeTitleCase{#1}}
+
+\newrobustcmd{\MakeTitleCase}[1]{%
+  \ifthenelse{\ifcurrentfield{booktitle}\OR\ifcurrentfield{booksubtitle}%
+    \OR\ifcurrentfield{maintitle}\OR\ifcurrentfield{mainsubtitle}%
+    \OR\ifcurrentfield{journaltitle}\OR\ifcurrentfield{journalsubtitle}%
+    \OR\ifcurrentfield{issuetitle}\OR\ifcurrentfield{issuesubtitle}%
+    \OR\ifentrytype{book}\OR\ifentrytype{mvbook}\OR\ifentrytype{bookinbook}%
+    \OR\ifentrytype{booklet}\OR\ifentrytype{suppbook}%
+    \OR\ifentrytype{collection}\OR\ifentrytype{mvcollection}%
+    \OR\ifentrytype{suppcollection}\OR\ifentrytype{manual}%
+    \OR\ifentrytype{periodical}\OR\ifentrytype{suppperiodical}%
+    \OR\ifentrytype{proceedings}\OR\ifentrytype{mvproceedings}%
+    \OR\ifentrytype{reference}\OR\ifentrytype{mvreference}%
+    \OR\ifentrytype{report}\OR\ifentrytype{thesis}}
+    {#1}
+    {\MakeSentenceCase{#1}}}
+    
 % AB: Restore escaped underscore in URL fields from "%5C",
 %     as converted by Biber to the original values.
 \DeclareSourcemap{
