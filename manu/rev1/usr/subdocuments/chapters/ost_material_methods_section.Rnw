@@ -6,12 +6,14 @@
 
 % Remove the lipsum and example table fill in your material and methods text here
 
-\lipsum[1] And a glossary entry about \gls{eml}. If you use the entry again
-then it will be shortened to \gls{eml}.
+% AB: commented out
+% \lipsum[1] And a glossary entry about \gls{eml}. If you use the entry again
+% then it will be shortened to \gls{eml}.
 
 \section{A section} 
 
-\chris{This is nice! But correct the typo!}
+% AB: commented out
+% \chris{This is nice! But correct the typo!}
 
 \lipsum[1]
 

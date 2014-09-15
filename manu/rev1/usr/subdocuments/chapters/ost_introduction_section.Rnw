@@ -25,12 +25,14 @@ to the first line it is typeset.}
   \item Three
 \end{itemize}
 
-\claas{This command is generated from ostSetRevisor!}
+% AB: commented out
+% \claas{This command is generated from ostSetRevisor!}
+
 \lipsum[1]  
 
 \section{Section} 
 
-This is just a test citation \citep{renwick_chemical_2002}.
+This is just a test citation \parencite{Anderson1988}.
 \lipsum[1]  
 
 \subsection{Subsection} 
