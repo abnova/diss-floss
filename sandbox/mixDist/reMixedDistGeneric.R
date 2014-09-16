@@ -10,34 +10,40 @@ set.seed(12345) # for reproducibility
 data(diamonds, package='ggplot2')  # use built-in data
 myData <- diamonds$price
 
-# extract 'k' components from mixed distribution 'data'
-mix.info <- normalmixEM(myData, k = NUM_COMPONENTS,
-                        maxit = 100, epsilon = 0.01)
-summary(mix.info)
-
-numComponents <- length(mix.info$sigma)
-message("Extracted number of component distributions: ",
-        numComponents)
-
-comp.1 <- list(myData, mix.info, 1)
-comp.2 <- list(myData, mix.info, 2)
-
-calc.components <- function(x, mix, comp.number) {
-  
-  mean(x) * mix$lambda[comp.number] *
-    dnorm(x, mean = mix$mu[comp.number], sd = mix$sigma[comp.number])
+calc.component <- function(x, lambda, mu, sigma) {
+  lambda * dnorm(x, mean = mu, sd = sigma)
 }
 
-DISTRIB_COLORS <- brewer.pal(numComponents, "Set1")
 
-g <- ggplot(myData) +
-  scale_fill_continuous("Density", low="#56B1F7", high="#132B43") +
-  scale_x_log10("Diamond Price [log10]") +
-  scale_y_continuous("Density") +
-  geom_histogram(aes(x = myData, y = ..density.., fill = ..density..),
-                 binwidth = 0.01) +
-  stat_function(fun = "calc.components", args = comp.1,
-                aes(color = DISTRIB_COLORS[1])) +
-  stat_function(fun = "calc.components", args = comp.2,
-                aes(color = DISTRIB_COLORS[2]))
-print(g)
+hist_with_density <- function(data, func, start = NULL) {
+  
+  # fit density to data
+  # extract 'k' components from mixed distribution 'data'
+  mix <- normalmixEM(data, k = NUM_COMPONENTS,
+                     maxit = 100, epsilon = 0.01)
+  summary(mix)
+  
+  DISTRIB_COLORS <- brewer.pal(numComponents, "Set1")
+  
+  # plot histogram, empirical and fitted densities
+  g <- "qplot(data, geom = `blank`)"
+  
+  for (i in length(mix$lambda)) {
+    args <- list(lambda = mix$lambda[i], mu = mix$mu[i], sigma = mix$sigma[i])
+    g <- paste(g, "stat_function(fun = func, args = args, aes(color = ",
+               DISTRIB_COLORS[i], ")) +\n")
+  }
+  
+  tail <- 
+  "geom_line(aes(y = ..density..,colour = `Empirical`),stat = `density`) +
+    geom_histogram(aes(y = ..density..), alpha = 0.4) +
+    scale_colour_manual(name = ``, values = c(`red`, `blue`)) + 
+    theme(legend.position = `top`, legend.direction = `horizontal`)"
+  
+  g <- paste(g, tail)
+  gr <- eval(parse(text = g))
+  return (gr)
+}
+
+hist_with_density(log10(myData),
+                  'calc.component', start = list(mean = 0, sd = 1))
