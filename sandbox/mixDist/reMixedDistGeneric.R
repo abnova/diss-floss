@@ -15,35 +15,40 @@ calc.component <- function(x, lambda, mu, sigma) {
 }
 
 
-hist_with_density <- function(data, func, start = NULL) {
-  
-  # fit density to data
+overlayHistDensity <- function(data, func) {
   # extract 'k' components from mixed distribution 'data'
   mix <- normalmixEM(data, k = NUM_COMPONENTS,
                      maxit = 100, epsilon = 0.01)
   summary(mix)
   
-  DISTRIB_COLORS <- brewer.pal(numComponents, "Set1")
+  DISTRIB_COLORS <- 
+    suppressWarnings(brewer.pal(NUM_COMPONENTS, "Set1"))
   
   # plot histogram, empirical and fitted densities
-  g <- "qplot(data, geom = `blank`)"
+  g <- "ggplot(as.data.frame(data), aes(x = data)) +\n"
   
-  for (i in length(mix$lambda)) {
-    args <- list(lambda = mix$lambda[i], mu = mix$mu[i], sigma = mix$sigma[i])
-    g <- paste(g, "stat_function(fun = func, args = args, aes(color = ",
-               DISTRIB_COLORS[i], ")) +\n")
+  for (i in seq(length(mix$lambda))) {
+    args <- paste0("args.", i)
+    assign(args, list(lambda = mix$lambda[i], mu = mix$mu[i],
+                      sigma = mix$sigma[i]))
+    g <- paste0(g,
+                "stat_function(fun = func, args = ",
+                args,
+                ", color = '",
+                DISTRIB_COLORS[i], "', size = 2) +\n")
   }
   
-  tail <- 
-  "geom_line(aes(y = ..density..,colour = `Empirical`),stat = `density`) +
-    geom_histogram(aes(y = ..density..), alpha = 0.4) +
-    scale_colour_manual(name = ``, values = c(`red`, `blue`)) + 
-    theme(legend.position = `top`, legend.direction = `horizontal`)"
+  # geom_line(aes(y = ..density..,colour = 'Empirical'),stat = 'density') +
+  # scale_colour_manual(name = '', values = c('red', 'blue')) +
+    
+  tailStr <- "geom_histogram(aes(y = ..density..),
+                             binwidth = 0.01, alpha = 0.5) +
+  theme(legend.position = 'top', legend.direction = 'horizontal')"
   
-  g <- paste(g, tail)
+  g <- paste0(g, tailStr)
   gr <- eval(parse(text = g))
   return (gr)
 }
 
-hist_with_density(log10(myData),
-                  'calc.component', start = list(mean = 0, sd = 1))
+overlayPlot <- overlayHistDensity(log10(myData), 'calc.component')
+print(overlayPlot)
