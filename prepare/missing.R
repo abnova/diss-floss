@@ -72,7 +72,7 @@ message("\nLoading data...")
 flossData <- loadData(mergedFile)
 
 # additional transformations for MI
-prepareForMI()
+prepareForMI(flossData)
 
 # use only (numeric) columns of our interest;
 # this is a recommended (preferred) alternative
@@ -93,11 +93,13 @@ message("\nAnalyzing missingness patterns...\n")
 print(mice::md.pattern(flossData))
 
 # add trailing '\n' when code below is enabled
-message("\nTesting data for being MCAR... Currently disabled.")
+#message("\nTesting data for being MCAR... Currently disabled.")
+message("\nTesting data for being MCAR...\n")
 
 # currently disabled due to producing the following error:
 # "Error: cannot allocate vector of size 4.3 Gb"
-#MissMech::TestMCARNormality(flossData)
+MissMech::TestMCARNormality(flossData, nrep = 100)
+#MissMech::TestMCARNormality(flossData[complete.cases(flossData),])
 
 # instead, let's use function from 'BaylorEdPsych' package
 # currently also disabled due to producing the following error:
@@ -105,12 +107,13 @@ message("\nTesting data for being MCAR... Currently disabled.")
 #mcar.little <- BaylorEdPsych::LittleMCAR(flossData)
 
 # try removing all incomplete cases to prevent error below
-#mcar.little <- 
-#  BaylorEdPsych::LittleMCAR(flossData[complete.cases(flossData),])
+mcar.little <- 
+  BaylorEdPsych::LittleMCAR(flossData[complete.cases(flossData),])
 
-#print(mcar.little[c("chi.square", "df", "p.value")])
+print("\n\n")
+print(mcar.little[c("chi.square", "df", "p.value")])
 #message("\n")
-
+stop()
 
 # ===== HANDLE MISSING VALUES =====
 
