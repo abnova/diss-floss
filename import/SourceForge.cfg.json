@@ -23,7 +23,7 @@ FROM sf0514.external_tool_links"
          "resultSize":"100000",
          "resultNames":"Project ID, Project License, License Category",
          "requestSQL":"
-SELECT tgl.group_id, tc.fullname, tc2.fullname
+SELECT tgl.group_id, tc.shortname, tc2.shortname
 FROM sf0514.trove_group_link tgl, sf0514.trove_cat tc, sf0514.trove_cat tc2
 WHERE tgl.trove_cat_id = tc.trove_cat_id AND tc.parent = tc2.trove_cat_id AND tc.root_parent = 13"
       },
