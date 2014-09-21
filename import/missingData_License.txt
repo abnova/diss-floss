@@ -81,3 +81,30 @@ SELECT tgl.*, tc.fullname, tc.parent, tc2.fullname FROM sf0514.trove_group_link 
 24996462:679:0:330150:13:3:GNU General Public License version 3.0 (GPLv3):14:OSI-Approved Open Source:
 17396931:188:0:330367:13:3:MIT License:14:OSI-Approved Open Source:
 24766331:196:0:309841:13:3:Other License:13:License:
+
+-----
+
+*) Retrieve just Project ID and license information
+
+SELECT tgl.group_id, tc.fullname, tc2.fullname FROM sf0514.trove_group_link tgl, sf0514.trove_cat tc, sf0514.trove_cat tc2 WHERE tgl.group_id   > 300000 AND tgl.group_id < 350000 AND tgl.trove_cat_id = tc.trove_cat_id AND tc.parent = tc2.trove_cat_id AND tc.root_parent = 13
+
+303060:GNU General Public License version 2.0 (GPLv2):OSI-Approved Open Source:
+304404:GNU General Public License version 3.0 (GPLv3):OSI-Approved Open Source:
+323679:BSD License:OSI-Approved Open Source:
+310061:GNU General Public License version 2.0 (GPLv2):OSI-Approved Open Source:
+307478:Apache Software License:OSI-Approved Open Source:
+333745:Academic Free License (AFL):OSI-Approved Open Source:
+328715:GNU General Public License version 2.0 (GPLv2):OSI-Approved Open Source:
+324992:GNU Library or Lesser General Public License version 3.0 (LGPLv3):OSI-Approved Open Source:
+334954:BSD License:OSI-Approved Open Source:
+348018:MIT License:OSI-Approved Open Source:
+310286:Creative Commons Attribution ShareAlike License V3.0:Creative Commons Attribution License:
+333217:GNU General Public License version 3.0 (GPLv3):OSI-Approved Open Source:
+328392:GNU General Public License version 2.0 (GPLv2):OSI-Approved Open Source:
+323422:GNU Library or Lesser General Public License version 3.0 (LGPLv3):OSI-Approved Open Source:
+300309:GNU General Public License version 2.0 (GPLv2):OSI-Approved Open Source:
+330150:GNU General Public License version 3.0 (GPLv3):OSI-Approved Open Source:
+330367:MIT License:OSI-Approved Open Source:
+309841:Other License:License:
+308075:GNU General Public License version 3.0 (GPLv3):OSI-Approved Open Source:
+336632:Other License:License:
