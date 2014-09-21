@@ -34,6 +34,7 @@ library(psych)
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 source(file.path(PRJ_HOME, "utils/data.R"))
+source(file.path(PRJ_HOME, "utils/factors.R"))
 
 # Initially file was copied manually from "merged/SourceForge".
 # Implementing automatic data merging across all data sources
@@ -52,11 +53,17 @@ DEBUG <- FALSE
 # handling (multiple imputation / 'Amelia')
 prepareForMI <- function (data) {
   
-  # convert factors to integers
-  data[["Project License"]] <- as.integer(data[["Project License"]])
+  # convert factors to integers, using function in "factors.R"
+  data[["Project License"]] <- 
+    as.numeric.factor(data[["Project License"]])
   data[["License Restrictiveness"]] <- 
-    as.integer(data[["License Restrictiveness"]])
-  data[["Project Maturity"]] <- as.integer(data[["Project Maturity"]])
+    as.numeric.factor(data[["License Restrictiveness"]])
+  data[["Development Stage"]] <- 
+    as.numeric.factor(data[["Development Stage"]])
+  data[["Project Maturity"]] <- 
+    as.numeric.factor(data[["Project Maturity"]])
+  
+  return (data)
 }
 
 
@@ -72,7 +79,7 @@ message("\nLoading data...")
 flossData <- loadData(mergedFile)
 
 # additional transformations for MI
-prepareForMI(flossData)
+flossData <- prepareForMI(flossData)
 
 # use only (numeric) columns of our interest;
 # this is a recommended (preferred) alternative
@@ -80,10 +87,13 @@ prepareForMI(flossData)
 flossData <- flossData[c("Repo URL",
                          "Project License",
                          "License Restrictiveness",
+                         "Development Stage",
+                         "Project Maturity",
                          "User Community Size")]
 
 # temp fix for limited dataset - comment out/remove for full dataset
 flossData[["Repo URL"]] <- NULL
+
 
 # ===== ANALYSIS =====
 
@@ -98,8 +108,9 @@ message("\nTesting data for being MCAR...\n")
 
 # currently disabled due to producing the following error:
 # "Error: cannot allocate vector of size 4.3 Gb"
-MissMech::TestMCARNormality(flossData, nrep = 100)
+#MissMech::TestMCARNormality(flossData, nrep = 100)
 #MissMech::TestMCARNormality(flossData[complete.cases(flossData),])
+#MissMech::TestMCARNormality(flossData)
 
 # instead, let's use function from 'BaylorEdPsych' package
 # currently also disabled due to producing the following error:
@@ -110,10 +121,10 @@ MissMech::TestMCARNormality(flossData, nrep = 100)
 mcar.little <- 
   BaylorEdPsych::LittleMCAR(flossData[complete.cases(flossData),])
 
-print("\n\n")
+message("\n\n")
 print(mcar.little[c("chi.square", "df", "p.value")])
 #message("\n")
-stop()
+#stop()
 
 # ===== HANDLE MISSING VALUES =====
 
