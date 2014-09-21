@@ -108,3 +108,208 @@ SELECT tgl.group_id, tc.fullname, tc2.fullname FROM sf0514.trove_group_link tgl,
 309841:Other License:License:
 308075:GNU General Public License version 3.0 (GPLv3):OSI-Approved Open Source:
 336632:Other License:License:
+
+-----
+
+*) List of all SRDA licenses (without license categories):
+
+SELECT shortname FROM sf0514.trove_cat WHERE parent <> 13 AND root_parent = 13
+
+php-license:
+zope:
+eiffel2:
+miroslicense:
+ibm:
+w3c:
+multicslicense:
+catosl:
+sleepycat:
+ipafontlicense:
+fair:
+isclicense:
+classpath:
+artisticv2:
+zlib:
+boostlicense:
+cddl:
+ccanclv2:
+ccaslv2:
+ccaslv3:
+mpl20:
+mit:
+cvw:
+ms-rl:
+ntplicense:
+bsd:
+plan9:
+mpl:
+attribut:
+iosl:
+entessa:
+wxwindows:
+sybase:
+artistic:
+rscpl:
+psfl:
+afl:
+vovida:
+jabber:
+opengroup:
+eclipselicense:
+nasalicense:
+oclc:
+qpl:
+sunpublic:
+eiffel:
+nokia:
+apache:
+python:
+rpl15:
+osl:
+frameworx:
+agpl:
+apache2:
+openfontlicense11:
+nethack:
+ibmcpl:
+nposl3:
+cua:
+lgplv3:
+latexppl:
+lgpl:
+eupublicense:
+sissl:
+cpal:
+motosoto:
+ms-pl:
+mpl11:
+apsl:
+splicense2:
+gplv3:
+ncsa:
+xnet:
+nausite:
+educom:
+adaptive:
+datagrid:
+public102:
+historical:
+real:
+rpl:
+gpl:
+
+-----
+
+*) Same, with full license names:
+
+SELECT shortname, fullname FROM sf0514.trove_cat WHERE parent <> 13 AND root_parent = 13
+
+php-license:PHP License:
+zope:Zope Public License:
+eiffel2:Eiffel Forum License V2.0:
+miroslicense:MirOS License:
+ibm:IBM Public License:
+w3c:W3C License:
+multicslicense:Multics License:
+catosl:Computer Associates Trusted Open Source License 1.1:
+sleepycat:Sleepycat License:
+ipafontlicense:IPA Font License:
+fair:Fair License:
+isclicense:ISC License:
+classpath:GNU General Public License with Classpath exception (Classpath::License):
+artisticv2:Artistic License 2.0:
+zlib:zlib/libpng License:
+boostlicense:Boost Software License (BSL1.0):
+cddl:Common Development and Distribution License:
+ccanclv2:Creative Commons Attribution Non-Commercial License V2.0:
+ccaslv2:Creative Commons Attribution ShareAlike License V2.0:
+ccaslv3:Creative Commons Attribution ShareAlike License V3.0:
+mpl20:Mozilla Public License 2.0 (MPL 2.0):
+mit:MIT License:
+cvw:MITRE Collaborative Virtual Workspace License (CVW License):
+ms-rl:Microsoft Reciprocal License:
+ntplicense:NTP License:
+bsd:BSD License:
+plan9:Lucent Public License (Plan9):
+mpl:Mozilla Public License 1.0 (MPL):
+attribut:Attribution Assurance License:
+iosl:Intel Open Source License:
+entessa:Entessa Public License:
+wxwindows:wxWindows Library Licence:
+sybase:Sybase Open Watcom Public License:
+artistic:Artistic License:
+rscpl:Ricoh Source Code Public License:
+psfl:Python Software Foundation License:
+afl:Academic Free License (AFL):
+vovida:Vovida Software License 1.0:
+jabber:Jabber Open Source License:
+opengroup:Open Group Test Suite License:
+eclipselicense:Eclipse Public License:
+nasalicense:NASA Open Source Agreement:
+oclc:OCLC Research Public License 2.0:
+qpl:Qt Public License (QPL):
+sunpublic:Sun Public License:
+eiffel:Eiffel Forum License:
+nokia:Nokia Open Source License:
+apache:Apache Software License:
+python:Python License (CNRI Python License):
+rpl15:Reciprocal Public License 1.5 (RPL1.5):
+osl:Open Software License 3.0 (OSL3.0):
+frameworx:Frameworx Open License:
+agpl:Affero GNU Public License :
+apache2:Apache License V2.0:
+openfontlicense11:Open Font License 1.1 (OFL 1.1):
+nethack:Nethack General Public License:
+ibmcpl:Common Public License 1.0:
+nposl3:Non-Profit Open Software License 3.0 (Non-Profit OSL 3.0):
+cua:CUA Office Public License Version 1.0:
+lgplv3:GNU Library or Lesser General Public License version 3.0 (LGPLv3):
+latexppl:LaTeX Project Public License:
+lgpl:GNU Library or Lesser General Public License version 2.0 (LGPLv2):
+eupublicense:European Union Public License:
+sissl:Sun Industry Standards Source License (SISSL):
+cpal:Common Public Attribution License 1.0 (CPAL):
+motosoto:Motosoto License:
+ms-pl:Microsoft Public License:
+mpl11:Mozilla Public License 1.1 (MPL 1.1):
+apsl:Apple Public Source License:
+splicense2:Simple Public License 2.0:
+gplv3:GNU General Public License version 3.0 (GPLv3):
+ncsa:University of Illinois/NCSA Open Source License:
+xnet:X.Net License:
+nausite:Naumen Public License:
+educom:Educational Community License, Version 2.0:
+adaptive:Adaptive Public License:
+datagrid:EU DataGrid Software License:
+public102:Lucent Public License Version 1.02:
+historical:Historical Permission Notice and Disclaimer:
+real:RealNetworks Public Source License V1.0:
+rpl:Reciprocal Public License:
+gpl:GNU General Public License version 2.0 (GPLv2):
+
+-----
+
+*) Retrieve Project ID and Development Stage
+
+SELECT tgl.group_id, tc.shortname FROM sf0514.trove_group_link tgl, sf0514.trove_cat tc WHERE tgl.group_id   > 300000 AND tgl.group_id < 350000 AND tgl.trove_cat_id = tc.trove_cat_id AND tc.root_parent = 6
+
+303060:production:
+304404:production:
+323679:production:
+310061:beta:
+307478:mature:
+333745:production:
+328715:production:
+334954:planning:
+310286:production:
+330150:beta:
+333217:alpha:
+323849:prealpha:
+328392:production:
+306217:alpha:
+323422:prealpha:
+300309:mature:
+309841:alpha:
+343148:production:
+
+-----

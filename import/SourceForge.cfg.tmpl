@@ -81,12 +81,11 @@ AND ph.mod_by = u.user_id"
          "indicatorType":"character",
          "resultType":"data.frame",
          "resultSize":"100000",
-         "resultNames":"Project ID, Latest Release",
+         "resultNames":"Project ID, Development Stage",
          "requestSQL":"
-SELECT fp.group_id, MAX(fr.name)
-FROM ${schema}.frs_package fp, ${schema}.frs_release fr, ${schema}.frs_status fs
-WHERE fp.package_id = fr.package_id
-GROUP BY fp.group_id"
+SELECT tgl.group_id, tc.shortname
+FROM ${schema}.trove_group_link tgl, ${schema}.trove_cat tc
+WHERE tgl.trove_cat_id = tc.trove_cat_id AND tc.root_parent = 6"
       },
       {
          "indicatorName":"prjAge",
