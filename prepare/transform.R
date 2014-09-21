@@ -165,17 +165,20 @@ sfPrjMaturity <- function (indicator, data) {
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
   
-  var <- data[["Latest Release"]]
+  classification <- 
+    c(planning='Pre.Alpha', prealpha='Pre.Alpha', alpha='Alpha',
+      beta='Beta', production='Stable', mature='Mature',
+      inactive='Inactive')
   
-  rx <- "^([^[:digit:]]*)([[:digit:]]+)(\\.|-)+(.*)$"
-  major <- gsub(rx, "\\2", var)
-  # suppress "NAs introduced by coercion" warnings
-  major <- suppressWarnings(as.numeric(major))
-
   data[["Project Maturity"]] <- 
-    cut(major, breaks = c(0, 1, 2, Inf), include.lowest = TRUE,
-        right = FALSE, labels=c("Alpha/Beta", "Stable", "Mature"))
-
+    as.factor(classification[as.character(data[["Development Stage"]])])
+  
+  data[["Development Stage"]] <- factor(data[["Development Stage"]])
+  levels(data[["Development Stage"]]) <- 
+    list(Planning="planning", Pre.Alpha="prealpha", Alpha="alpha",
+         Beta="beta", Production="production", Mature="mature",
+         Inactive="inactive")
+  
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   
