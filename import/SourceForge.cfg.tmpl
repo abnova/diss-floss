@@ -21,10 +21,11 @@ FROM ${schema}.external_tool_links"
          "indicatorType":"character",
          "resultType":"data.frame",
          "resultSize":"100000",
-         "resultNames":"Project ID, Project License",
+         "resultNames":"Project ID, Project License, License Category",
          "requestSQL":"
-SELECT group_id, license
-FROM ${schema}.groups"
+SELECT tgl.group_id, tc.fullname, tc2.fullname
+FROM ${schema}.trove_group_link tgl, ${schema}.trove_cat tc, ${schema}.trove_cat tc2
+WHERE tgl.trove_cat_id = tc.trove_cat_id AND tc.parent = tc2.trove_cat_id AND tc.root_parent = 13"
       },
       {
          "indicatorName":"devSupport",
