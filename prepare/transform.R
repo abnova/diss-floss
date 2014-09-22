@@ -200,8 +200,8 @@ sfPrjMaturity <- function (indicator, data) {
                      appendLF = FALSE)
   
   classification <- 
-    c(planning='Pre.Alpha', prealpha='Pre.Alpha', alpha='Alpha',
-      beta='Beta', production='Stable', mature='Mature',
+    c(planning='Alpha/Beta', prealpha='Alpha/Beta', alpha='Alpha/Beta',
+      beta='Alpha/Beta', production='Stable', mature='Mature',
       inactive='Inactive')
   
   data[["Project Maturity"]] <- 
