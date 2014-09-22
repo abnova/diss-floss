@@ -132,7 +132,22 @@ sfProjectLicense <- function (indicator, data) {
       attribut='Restrictive', xnet='Permissive', eiffel2='Restrictive',
       wxwindows='Restrictive', motosoto='Restrictive', vovida='Permissive',
       jabber='Restrictive', cvw='Restrictive', historical='Unknown',
-      nausite='Permissive', real='Restrictive')
+      nausite='Permissive', real='Restrictive',
+      # licenses below are those expecting classification
+      miroslicense='Unknown', multicslicense='Unknown', catosl='Unknown',
+      ipafontlicense='Unknown', fair='Unknown', isclicense='Unknown',
+      classpath='Unknown', artisticv2='Unknown',
+      boostlicense='Unknown', cddl='Unknown',
+      ccanclv2='Unknown', ccaslv2='Unknown', ccaslv3='Unknown',
+      mpl20='Unknown', 'ms-rl'='Unknown', ntplicense='Unknown',
+      entessa='Unknown', sybase='Unknown', eclipselicense='Unknown',
+      nasalicense='Unknown', oclc='Unknown', rpl15='Unknown',
+      frameworx='Unknown', agpl='Unknown', apache2='Unknown',
+      openfontlicense11='Unknown', nposl3='Unknown', cua='Unknown',
+      lgplv3='Unknown', latexppl='Unknown', eupublicense='Unknown',
+      cpal='Unknown', 'ms-pl'='Unknown', splicense2='Unknown',
+      gplv3='Unknown', educom='Unknown', adaptive='Unknown',
+      datagrid='Unknown', public102='Unknown')
   
   data[["License Restrictiveness"]] <- 
     as.factor(classification[as.character(data[["Project License"]])])
@@ -151,8 +166,27 @@ sfProjectLicense <- function (indicator, data) {
          Nokia="nokia", Attribut="attribut", XNet="xnet",
          Eiffel2="eiffel2", WxWindows="wxwindows", MotoSoto="motosoto",
          Vovida="vovida", Jabber="jabber", CVW="cvw",
-         Historical="historical", Nausite="nausite", Real="real")
+         Historical="historical", Nausite="nausite", Real="real",
+         # licenses below are those expecting classification
+         MirOS="miroslicense", Multics="multicslicense", CAtosl="catosl",
+         IPAfl="ipafontlicense", fair="fair", ISC="isclicense",
+         GNUclasspath="classpath", Artistic2="artisticv2",
+         Boost="boostlicense", CDDL="cddl",
+         CCANC2="ccanclv2", CCASA2="ccaslv2", CCASA3="ccaslv3",
+         MPL2="mpl20", MSRL="ms-rl", NTP="ntplicense",
+         Entessa="entessa", Sybase="sybase", Eclipse="eclipselicense",
+         NASA="nasalicense", OCLC="oclc", RPL15="rpl15",
+         Frameworx="frameworx", Affero="agpl", Apache2="apache2",
+         OpenFont11="openfontlicense11", NPOSL3="nposl3", CUA="cua",
+         LGPL3="lgplv3", LaTeX="latexppl", EUPL="eupublicense",
+         CPAL="cpal", MSPL="ms-pl", Simple2="splicense2",
+         GPL3="gplv3", EDUCOM="educom", Adaptive="adaptive",
+         EUDataGrid="datagrid", Lucent102="public102")
   
+  data[["License Category"]] <- factor(data[["License Category"]])
+  levels(data[["License Category"]]) <- 
+    list(OSI="osi", Other="license", CCAL="ccal")
+         
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   

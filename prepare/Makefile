@@ -29,7 +29,8 @@ import.done: $(IMPORT_DONE)
 	@cd $(IMPORT_DIR) && $(MAKE)
 	@touch $@
 
-transform.done: transform.R import.done
+# TODO: make work dependency from "import.done"
+transform.done: transform.R
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
