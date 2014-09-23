@@ -63,6 +63,10 @@ REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), C
 
 RQ_SIZE <- 50000
 
+SPECIFY_PROJECT_ID_RANGE <- TRUE
+PID_LOW <- 1
+PID_HIGH <- 100000
+
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
 
@@ -73,7 +77,7 @@ RDATA_DIR <- file.path(PRJ_HOME, "cache/SourceForge")
 dsPrefix <- ""
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
-DEBUG2 <- FALSE
+DEBUG2 <- TRUE
 
 cookiesFile <- "cookies.txt"
 
@@ -163,7 +167,7 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
   # for simple polling of results file in srdaGetData() function
   beforeDate <- url.exists(RESULTS_URL, .header=TRUE)["Last-Modified"]
   beforeDate <<- strptime(beforeDate, "%a, %d %b %Y %X", tz="GMT")
-
+  
   #if (DEBUG2) {print(select); print(from); print(where)}
   
   params <- list('uitems' = select,
@@ -442,11 +446,22 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   REPLACE_CLAUSE <- "" #temp
   rq$select <- paste(rq$select, REPLACE_CLAUSE)
-
+  
   if (rq$where == '')
     where <- ''
   else
     where <- paste("WHERE", rq$where)
+  
+  if (SPECIFY_PROJECT_ID_RANGE) {
+    if (where != '') where <- paste(where, 'AND')
+    where <- paste(where,
+                   'group_id BETWEEN', PID_LOW, 'AND', PID_HIGH)
+  }
+  
+  #print(rq$select)
+  #print(rq$from)
+  #print(where)
+  #stop()
   
   # First, retrieve total number of rows for the request
   # (we use subselect here as some queries use aggregate functions)
@@ -471,7 +486,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   # Determine number of requests, based on the whole result
   numRequests <- numPages(data, RQ_SIZE)
-
+  
   # Determine whether we have a configuration limit
   # for the result size and handle the request accordingly
   resultSize <- config$data[row, "resultSize"]
@@ -490,17 +505,27 @@ getSourceForgeData <- function (row, config) { # dataFrame
   }
   
   if (DEBUG) message("Page: ", appendLF = FALSE)
-
+  
   # Now, we can request & retrieve data via SQL pagination
   for (i in 1:numRequests) {
     
     where <- rq$where
     
-    # Setup SQL pagination
+    # Setup SQL pagination and specifying Project ID range
     if (where == '') where <- '1=1'
+
+    if (SPECIFY_PROJECT_ID_RANGE)
+      where <- paste(where,
+                     'AND group_id BETWEEN', PID_LOW, 'AND', PID_HIGH)
+    
     where <- paste(where,
                    'LIMIT', RQ_SIZE, 'OFFSET', RQ_SIZE*(i-1))
-
+    
+    print(rq$select)
+    print(rq$from)
+    print(where)
+    stop()
+    
     # Submit data request
     success <- srdaRequestData(queryURL, rq$select, rq$from, where,
                                DATA_SEP, ADD_SQL)
