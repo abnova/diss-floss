@@ -454,10 +454,20 @@ getSourceForgeData <- function (row, config) { # dataFrame
   else
     where <- rq$where
   
+  # Setup Project ID range specification, if needed
   if (SPECIFY_PROJECT_ID_RANGE) {
-    if (where != '') where <- paste(where, 'AND')
-    where <- paste(where,
-                   'group_id BETWEEN', PID_LOW, 'AND', PID_HIGH)
+    if (grepl("GROUP BY", where)) { # handle GROUP BY special case
+      parts <- strsplit(where, "GROUP BY")
+      leftOfGB <- parts[[1]][1]
+      rightOfGB <- parts[[1]][2]
+      whereBeforeGB <- paste(leftOfGB, 'AND',
+                             'group_id BETWEEN', PID_LOW, 'AND', PID_HIGH)
+      where <- paste(whereBeforeGB, "GROUP BY", rightOfGB)
+    } else {
+      if (where != '') where <- paste(where, 'AND')
+      where <- paste(where,
+                     'group_id BETWEEN', PID_LOW, 'AND', PID_HIGH)
+    }
   }
   
   # First, retrieve total number of rows for the request
@@ -505,15 +515,11 @@ getSourceForgeData <- function (row, config) { # dataFrame
   # Now, we can request & retrieve data via SQL pagination
   for (i in 1:numRequests) {
     
-    where <- rq$where
-    
-    # Setup SQL pagination and specifying Project ID range
+    # Prepare and setup SQL pagination
     if (where == '') where <- '1=1'
     
-    if (SPECIFY_PROJECT_ID_RANGE)
-      where <- paste(where,
-                     'AND group_id BETWEEN', PID_LOW, 'AND', PID_HIGH)
-    
+    # Re-use here the already prepared (Project ID range specified)
+    # WHERE clause from the Count request code block above
     where <- paste(where,
                    'LIMIT', RQ_SIZE, 'OFFSET', RQ_SIZE*(i-1))
     
