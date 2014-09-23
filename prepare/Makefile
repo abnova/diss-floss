@@ -40,6 +40,7 @@ cleanup.done: cleanup.R transform.done
 
 merge.done: merge.R cleanup.done
 	@$(RSCRIPT) $(R_OPTS) $<
+	@cp ../data/merged/SourceForge/merged.rds ../data/merged/flossData.rds
 	@touch $@
 
 sample.done: sample.R merge.done

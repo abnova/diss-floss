@@ -288,7 +288,6 @@ indicators[["SourceForge"]] <- c("prjAge",
                                  "devSupport",
                                  "pubRoadmap",
                                  "dmProcess",
-                                 "contribPeople",
                                  "softwareType")
 
 transforms[["SourceForge"]] <- list(sfProjectAge,
