@@ -26,7 +26,9 @@ library(RCurl)
 library(jsonlite)
 library(stringr)
 
-PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+PRJ_HOME  <- Sys.getenv("DISS_FLOSS_HOME")
+SRDA_USER <- Sys.getenv("SRDA_USER")
+SRDA_PASS <- Sys.getenv("SRDA_PASS")
 
 source(file.path(PRJ_HOME, "utils/string.R"))
 #source("../utils/utils.R")
@@ -77,7 +79,7 @@ RDATA_DIR <- file.path(PRJ_HOME, "cache/SourceForge")
 dsPrefix <- ""
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
-DEBUG2 <- TRUE
+DEBUG2 <- FALSE
 
 cookiesFile <- "cookies.txt"
 
@@ -314,7 +316,7 @@ srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
 }
 
 
-# Parse SRAD data collection JSON-like config. template file
+# Parse SRDA data collection JSON-like config. template file
 # by substituting all references to config. variables with
 # corresponding JSON elements' values and generate config. file.
 generateConfig <- function(configTemplate, configFile) {
@@ -513,7 +515,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
     
     # Setup SQL pagination and specifying Project ID range
     if (where == '') where <- '1=1'
-
+    
     if (SPECIFY_PROJECT_ID_RANGE)
       where <- paste(where,
                      'AND group_id BETWEEN', PID_LOW, 'AND', PID_HIGH)
@@ -521,10 +523,10 @@ getSourceForgeData <- function (row, config) { # dataFrame
     where <- paste(where,
                    'LIMIT', RQ_SIZE, 'OFFSET', RQ_SIZE*(i-1))
     
-    print(rq$select)
-    print(rq$from)
-    print(where)
-    stop()
+    #print(rq$select)
+    #print(rq$from)
+    #print(where)
+    #stop()
     
     # Submit data request
     success <- srdaRequestData(queryURL, rq$select, rq$from, where,
