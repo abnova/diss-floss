@@ -61,21 +61,6 @@ SELECT group_id, use_wiki, use_forum
 FROM sf0514.groups"
       },
       {
-         "indicatorName":"contribPeople",
-         "indicatorDescription":"Transparency of contributors to source code",
-         "indicatorType":"character",
-         "resultType":"data.frame",
-         "resultSize":"100000",
-         "resultNames":"Project ID, User ID",
-         "requestSQL":"
-SELECT g.group_id, u.user_id
-FROM sf0514.groups g, sf0514.users u, sf0514.project_history ph, sf0514.project_task pt, sf0514.project_group_list pgl
-WHERE ph.project_task_id = pt.project_task_id
-AND pt.group_project_id = pgl.group_project_id
-AND g.group_id = pgl.group_id
-AND ph.mod_by = u.user_id"
-      },
-      {
          "indicatorName":"prjMaturity",
          "indicatorDescription":"Project maturity",
          "indicatorType":"character",
