@@ -452,7 +452,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
   if (rq$where == '')
     where <- ''
   else
-    where <- paste("WHERE", rq$where)
+    where <- rq$where
   
   if (SPECIFY_PROJECT_ID_RANGE) {
     if (where != '') where <- paste(where, 'AND')
@@ -460,19 +460,13 @@ getSourceForgeData <- function (row, config) { # dataFrame
                    'group_id BETWEEN', PID_LOW, 'AND', PID_HIGH)
   }
   
-  #print(rq$select)
-  #print(rq$from)
-  #print(where)
-  #stop()
-  
   # First, retrieve total number of rows for the request
   # (we use subselect here as some queries use aggregate functions)
   success <- 
     srdaRequestData(queryURL, "COUNT(*)",
                     paste("(", "SELECT", rq$select,
-                          "FROM", rq$from,
-                          where, ")", "AS MyAlias"),
-                    "", DATA_SEP, ADD_SQL)
+                          "FROM", rq$from),
+                    paste(where, ")", "AS MyAlias"), DATA_SEP, ADD_SQL)
   if (!success) error("Data request failed!")
   
   assign(dataName, srdaGetData(TRUE))
@@ -522,11 +516,6 @@ getSourceForgeData <- function (row, config) { # dataFrame
     
     where <- paste(where,
                    'LIMIT', RQ_SIZE, 'OFFSET', RQ_SIZE*(i-1))
-    
-    #print(rq$select)
-    #print(rq$from)
-    #print(where)
-    #stop()
     
     # Submit data request
     success <- srdaRequestData(queryURL, rq$select, rq$from, where,
