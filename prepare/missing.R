@@ -52,10 +52,12 @@ DEBUG <- FALSE
 # additional transformations needed for missing data
 # handling (multiple imputation / 'Amelia')
 prepareForMI <- function (data) {
-  
+
   # convert factors to integers, using function in "factors.R"
   data[["Project License"]] <- 
     as.numeric.factor(data[["Project License"]])
+  data[["License Category"]] <- 
+    as.numeric.factor(data[["License Category"]])
   data[["License Restrictiveness"]] <- 
     as.numeric.factor(data[["License Restrictiveness"]])
   data[["Development Stage"]] <- 
@@ -63,6 +65,10 @@ prepareForMI <- function (data) {
   data[["Project Maturity"]] <- 
     as.numeric.factor(data[["Project Maturity"]])
   
+  print(str(data))
+  print(head(data[,12:16,18], 25))
+  stop()
+
   return (data)
 }
 

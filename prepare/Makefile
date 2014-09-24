@@ -38,7 +38,8 @@ cleanup.done: cleanup.R transform.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
-merge.done: merge.R cleanup.done
+# TODO: temp dep disabled: cleanup.done
+merge.done: merge.R
 	@$(RSCRIPT) $(R_OPTS) $<
 	@cp ../data/merged/SourceForge/merged.rds ../data/merged/flossData.rds
 	@touch $@

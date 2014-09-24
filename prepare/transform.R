@@ -299,7 +299,6 @@ transforms[["SourceForge"]] <- list(sfProjectAge,
                                     sfDevSupport,
                                     NULL,
                                     NULL,
-                                    NULL,
                                     NULL)
 
 indicators[["FLOSSmole"]] <- c()
