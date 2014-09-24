@@ -53,21 +53,18 @@ DEBUG <- FALSE
 # handling (multiple imputation / 'Amelia')
 prepareForMI <- function (data) {
 
-  # convert factors to integers, using function in "factors.R"
+  # convert factors to integers via as.numeric.factor() ["factors.R"]
+  # the above doesn't work - however, as.integer() works just fine
   data[["Project License"]] <- 
-    as.numeric.factor(data[["Project License"]])
+    as.integer(data[["Project License"]])
   data[["License Category"]] <- 
-    as.numeric.factor(data[["License Category"]])
+    as.integer(data[["License Category"]])
   data[["License Restrictiveness"]] <- 
-    as.numeric.factor(data[["License Restrictiveness"]])
+    as.integer(data[["License Restrictiveness"]])
   data[["Development Stage"]] <- 
-    as.numeric.factor(data[["Development Stage"]])
+    as.integer(data[["Development Stage"]])
   data[["Project Maturity"]] <- 
-    as.numeric.factor(data[["Project Maturity"]])
-  
-  print(str(data))
-  print(head(data[,12:16,18], 25))
-  stop()
+    as.integer(data[["Project Maturity"]])
 
   return (data)
 }
