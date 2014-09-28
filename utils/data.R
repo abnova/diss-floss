@@ -25,3 +25,27 @@ loadDataSets <- function (dataDir) {
                      })
   return (dataSets)
 }
+
+
+# sample() replacement function for vectors
+# - excludes NAs from the sampling 
+# - also handles cases with all NAs
+sampleVector <- function (x, ...) {
+  
+  if (all(is.na(x))) {
+    return(NA)
+  }
+  return (sample(x[!is.na(x)], ...))
+}
+
+
+# sample() replacement function for data frames
+# - excludes NAs from the sampling 
+sampleDF <- function (df, n) {
+  
+  df <- na.omit(df)
+  if (n <= nrow(df))
+    return (df[sample(nrow(df), n),])
+  else
+    stop("Attempting to sample more cases than available!")
+}
