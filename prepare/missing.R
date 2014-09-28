@@ -15,6 +15,7 @@ if (!suppressMessages(require(mvnmle))) install.packages('mvnmle')
 if (!suppressMessages(require(methods))) install.packages('methods')
 if (!suppressMessages(require(Amelia))) install.packages('Amelia')
 if (!suppressMessages(require(psych))) install.packages('psych')
+if (!suppressMessages(require(MVN))) install.packages('MVN')
 
 # 'mice' is needed for determining missingness patterns
 # 'MissMech' is needed for testing data for being MCAR
@@ -23,6 +24,7 @@ if (!suppressMessages(require(psych))) install.packages('psych')
 # 'methods' is needed for 'Amelia' to alleviate the following error:
 # "Error in match.fun(FUN) : object 'is' not found"
 # 'psych' is needed for describe()
+# 'MVN' is needed for testing multivariate normality
 library(mice)
 library(MissMech)
 library(BaylorEdPsych)
@@ -30,6 +32,7 @@ library(mvnmle)
 library(methods)
 library(Amelia)
 library(psych)
+library(MVN)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
@@ -97,8 +100,30 @@ flossData <- flossData[c("Repo URL",
 # temp fix for limited dataset - comment out/remove for full dataset
 flossData[["Repo URL"]] <- NULL
 
+# Test for multivariate normality: 'mvnormtest' package
+# if data is non-multivariate normal, then I cannot use Amelia
+# to perform MI, but can use 'mice' package (and it handles data
+# even if it is not being MCAR)
+
+message("\n===== TESTING DATA FOR MULTIVARIATE NORMALITY =====")
+
+print(str(flossData))
+print(head(flossData, 25))
+
+mvn.result <- MVN::mardiaTest(flossData, cov = TRUE, qqplot = FALSE)
+if (mvn.result != NULL) print(mvn.result)
+
+mvn.result <- MVN::hzTest(flossData, cov = TRUE, qqplot = FALSE)
+if (mvn.result != NULL) print(mvn.result)
+
+mvn.result <- MVN::roystonTest(flossData, qqplot = FALSE)
+if (mvn.result != NULL) print(mvn.result)
+
+stop()
+
 
 # ===== ANALYSIS =====
+
 
 # First, determine the missingness patterns
 # (amount of missingness across observations and variables)
@@ -108,6 +133,11 @@ print(mice::md.pattern(flossData))
 # add trailing '\n' when code below is enabled
 #message("\nTesting data for being MCAR... Currently disabled.")
 message("\nTesting data for being MCAR...\n")
+
+
+a <- colMeans(is.na(flossData[rowSums(is.na(flossData)) < ncol(flossData), ])) * 100
+print(a)
+
 
 # currently disabled due to producing the following error:
 # "Error: cannot allocate vector of size 4.3 Gb"
@@ -121,8 +151,10 @@ message("\nTesting data for being MCAR...\n")
 #mcar.little <- BaylorEdPsych::LittleMCAR(flossData)
 
 # try removing all incomplete cases to prevent error below
+#mcar.little <- 
+#  BaylorEdPsych::LittleMCAR(flossData[complete.cases(flossData),])
 mcar.little <- 
-  BaylorEdPsych::LittleMCAR(flossData[complete.cases(flossData),])
+  BaylorEdPsych::LittleMCAR(flossData[rowSums(is.na(flossData)) < ncol(flossData),])
 
 message("\n\n")
 print(mcar.little[c("chi.square", "df", "p.value")])
