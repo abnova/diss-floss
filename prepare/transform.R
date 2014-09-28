@@ -301,9 +301,12 @@ transforms[["SourceForge"]] <- list(sfProjectAge,
                                     NULL,
                                     NULL)
 
-indicators[["FLOSSmole"]] <- c()
+fNames <- strsplit(dir(file.path(CACHE_DIR, "FLOSSmole")), ".rds")
 
-transforms[["FLOSSmole"]] <- list()
+indicators[["FLOSSmole"]] <- unlist(fNames)
+
+transforms[["FLOSSmole"]] <- 
+  replicate(length(fNames), NULL, simplify = FALSE)
 
 dataSourcesList <- c("SourceForge", "FLOSSmole")
 
