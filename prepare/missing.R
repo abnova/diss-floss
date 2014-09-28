@@ -100,26 +100,28 @@ flossData <- flossData[c("Repo URL",
 # temp fix for limited dataset - comment out/remove for full dataset
 flossData[["Repo URL"]] <- NULL
 
-# Test for multivariate normality: 'mvnormtest' package
-# if data is non-multivariate normal, then I cannot use Amelia
-# to perform MI, but can use 'mice' package (and it handles data
-# even if it is not being MCAR)
 
-message("\n===== TESTING DATA FOR MULTIVARIATE NORMALITY =====")
+# Test for multivariate normality, using 'MVN' package
+message("\nTesting data for multivariate normality...\n")
 
-print(str(flossData))
-print(head(flossData, 25))
+flossData <- sampleDF(flossData, 1000)
 
 mvn.result <- MVN::mardiaTest(flossData, cov = TRUE, qqplot = FALSE)
-if (mvn.result != NULL) print(mvn.result)
+print(mvn.result)
 
 mvn.result <- MVN::hzTest(flossData, cov = TRUE, qqplot = FALSE)
-if (mvn.result != NULL) print(mvn.result)
+print(mvn.result)
 
 mvn.result <- MVN::roystonTest(flossData, qqplot = FALSE)
-if (mvn.result != NULL) print(mvn.result)
+print(mvn.result)
 
 stop()
+
+# Results show that the data is not multivariate normal. Therefore,
+# we cannot use Amelia to perform MI, as it requires MV normality.
+# However, we can use 'mice' package to perform MI, as it handles
+# data without restrictions of being MVN and being MCAR.
+
 
 
 # ===== ANALYSIS =====
