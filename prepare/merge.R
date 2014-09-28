@@ -1,4 +1,3 @@
-# Module responsible for merging already transformed data
 # into a single data frame for further analysis
 
 # Start session with a clean R environment
@@ -16,10 +15,23 @@ TRANDFORMED_DIR <- file.path(PRJ_HOME, "data/transformed")
 MERGED_DIR      <- file.path(PRJ_HOME, "data/merged")
 RDS_EXT <- ".rds"
 
+commonColumn <- data.frame(
+  prefix  = c("fc",         "fsf",      "gc",        "lpd",  "sv",           "tig"),
+  mergeBy = c("project_id", "proj_num", "proj_name", "name", "project_name", ""))
 
-mergeDataSets <- function (datasets, method = "plyr") {
+
+mergeDataSets <- function (datasets, prefix = "",
+                           method = "plyr") {
 
   flossData <<- data.frame()
+  
+  if (prefix == "")
+    mergeBy <- "Project ID"
+  else {
+    # lookup a column to merge data by
+    index <- match(prefix , commonColumn$prefix)
+    mergeBy <- commonColumn[index,]$mergeBy
+  }
   
   lapplyMerge <- function (dataSets) {
     
@@ -92,7 +104,8 @@ mergeDataSets <- function (datasets, method = "plyr") {
     flossData <<- dataSets[[1]]
     for (i in seq.int(2, length(dataSets), 1)) {
       flossData <<- plyr::join(flossData, dataSets[[i]],
-                               by = 'Project ID',
+                               #by = 'Project ID',
+                               by = mergeBy,
                                type = 'left', match = 'first')
     }
   }
@@ -152,21 +165,21 @@ mergeDataSets <- function (datasets, method = "plyr") {
 }
 
 
-mergeData <- function (dataSource, fileName = "merged") {
+mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
   
   transformedDir <- file.path(TRANDFORMED_DIR, dataSource)
   mergedDir <- file.path(MERGED_DIR, dataSource)
   if (!file.exists(mergedDir))
     dir.create(mergedDir, recursive = TRUE)
 
-  fileName <- paste0(fileName, RDS_EXT)
+  fileName <- paste0(prefix, fileName, RDS_EXT)
   mergedFile <- file.path(mergedDir, fileName)
   
   # load datasets of transformed data
-  dataSets <- loadDataSets(transformedDir)
+  dataSets <- loadDataSets(transformedDir, prefix)
   
   # merge loaded datasets
-  flossData <- mergeDataSets(dataSets) # method "plyr" is default
+  flossData <- mergeDataSets(dataSets, prefix) # method "plyr" is default
   
   # verify the data frame structure
   str(flossData)
@@ -180,3 +193,9 @@ mergeData <- function (dataSource, fileName = "merged") {
 
 
 mergeData("SourceForge")
+mergeData("FLOSSmole", "fc")
+mergeData("FLOSSmole", "fsf")
+mergeData("FLOSSmole", "gc")
+mergeData("FLOSSmole", "lpd")
+mergeData("FLOSSmole", "sv")
+mergeData("FLOSSmole", "tig")
