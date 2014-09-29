@@ -2,7 +2,7 @@
 rm(list = ls(all.names = TRUE))
 
 # This module handles missing data by using multiple imputation (MI);
-# prior to MI, data are tested on being multivariate normal (MVN)
+# prior to MI, data is tested for being multivariate normal (MVN)
 # and being missing completely at randome (MCAR).
 
 if (!suppressMessages(require(mice))) install.packages('mice')
