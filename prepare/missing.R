@@ -12,8 +12,8 @@ if (!suppressMessages(require(MissMech))) install.packages('MissMech')
 if (!suppressMessages(require(BaylorEdPsych))) 
   install.packages('BaylorEdPsych')
 if (!suppressMessages(require(mvnmle))) install.packages('mvnmle')
-if (!suppressMessages(require(methods))) install.packages('methods')
-if (!suppressMessages(require(Amelia))) install.packages('Amelia')
+#if (!suppressMessages(require(methods))) install.packages('methods')
+#if (!suppressMessages(require(Amelia))) install.packages('Amelia')
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(MVN))) install.packages('MVN')
 
@@ -29,10 +29,11 @@ library(mice)
 library(MissMech)
 library(BaylorEdPsych)
 library(mvnmle)
-library(methods)
-library(Amelia)
+#library(methods)
+#library(Amelia)
 library(psych)
 library(MVN)
+library(parallel)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
@@ -73,7 +74,7 @@ prepareForMI <- function (data) {
 }
 
 
-message("\n===== HANDLING MISSING VALUES: MI and FIML =====")
+message("\n===== HANDLING MISSING VALUES =====")
 
 # ===== PREPARATION =====
 
@@ -84,14 +85,12 @@ mergedFile <- file.path(MERGED_DIR, fileName)
 message("\nLoading data...")
 flossData <- loadData(mergedFile)
 
-# additional transformations for MI
-flossData <- prepareForMI(flossData)
-
 # use only (numeric) columns of our interest;
 # this is a recommended (preferred) alternative
 # to declaring unused variables as ID variables
 flossData <- flossData[c("Repo URL",
                          "Project License",
+                         "License Category",
                          "License Restrictiveness",
                          "Development Stage",
                          "Project Maturity",
@@ -100,28 +99,27 @@ flossData <- flossData[c("Repo URL",
 # temp fix for limited dataset - comment out/remove for full dataset
 flossData[["Repo URL"]] <- NULL
 
+# additional transformations for MVN & MCAR testing
+flossDataTest <- prepareForMI(flossData)
 
 # Test for multivariate normality, using 'MVN' package
 message("\nTesting data for multivariate normality...\n")
 
-flossData <- sampleDF(flossData, 1000)
+flossDataTest <- sampleDF(flossDataTest, 1000)
 
-mvn.result <- MVN::mardiaTest(flossData, cov = TRUE, qqplot = FALSE)
+mvn.result <- MVN::mardiaTest(flossDataTest, cov = TRUE, qqplot = FALSE)
 print(mvn.result)
 
-mvn.result <- MVN::hzTest(flossData, cov = TRUE, qqplot = FALSE)
+mvn.result <- MVN::hzTest(flossDataTest, cov = TRUE, qqplot = FALSE)
 print(mvn.result)
 
-mvn.result <- MVN::roystonTest(flossData, qqplot = FALSE)
+mvn.result <- MVN::roystonTest(flossDataTest, qqplot = FALSE)
 print(mvn.result)
-
-stop()
 
 # Results show that the data is not multivariate normal. Therefore,
 # we cannot use Amelia to perform MI, as it requires MV normality.
 # However, we can use 'mice' package to perform MI, as it handles
 # data without restrictions of being MVN and being MCAR.
-
 
 
 # ===== ANALYSIS =====
@@ -132,48 +130,94 @@ stop()
 message("\nAnalyzing missingness patterns...\n")
 print(mice::md.pattern(flossData))
 
-# add trailing '\n' when code below is enabled
-#message("\nTesting data for being MCAR... Currently disabled.")
 message("\nTesting data for being MCAR...\n")
 
-
-a <- colMeans(is.na(flossData[rowSums(is.na(flossData)) < ncol(flossData), ])) * 100
-print(a)
-
-
 # currently disabled due to producing the following error:
-# "Error: cannot allocate vector of size 4.3 Gb"
-#MissMech::TestMCARNormality(flossData, nrep = 100)
-#MissMech::TestMCARNormality(flossData[complete.cases(flossData),])
-#MissMech::TestMCARNormality(flossData)
+# "Error in t(yo) %*% yo : requires numeric/complex matrix/vector arguments"
+#MissMech::TestMCARNormality(flossData[rowSums(is.na(flossData)) < ncol(flossData),])
 
-# instead, let's use function from 'BaylorEdPsych' package
-# currently also disabled due to producing the following error:
-# "Error in solve.default(cov) : 'a' is 0-diml"
-#mcar.little <- BaylorEdPsych::LittleMCAR(flossData)
-
-# try removing all incomplete cases to prevent error below
-#mcar.little <- 
-#  BaylorEdPsych::LittleMCAR(flossData[complete.cases(flossData),])
+# instead, let's use function from 'BaylorEdPsych' package;
+# set index condition to all rows that contain at least some data
+# (partial missingness)
 mcar.little <- 
-  BaylorEdPsych::LittleMCAR(flossData[rowSums(is.na(flossData)) < ncol(flossData),])
+  LittleMCAR(flossData[rowSums(is.na(flossData)) < ncol(flossData),])
 
 message("\n\n")
 print(mcar.little[c("chi.square", "df", "p.value")])
-#message("\n")
-#stop()
+
 
 # ===== HANDLE MISSING VALUES =====
 
 message("\nPerforming Multiple Imputation (MI)...", appendLF = FALSE)
 
 # perform multiple imputation with 'Amelia'
-a.out <- amelia(flossData, p2s = 0)
+#a.out <- amelia(flossData, p2s = 0)
 
 #if (DEBUG) str(a.out) #TODO: why fails?
 
+
+# perform multiple imputation, using 'mice'
+
+# first, remove totally missing data, leaving partially missing
+part.miss.index <- rowSums(is.na(flossData)) < ncol(flossData)
+
+# subset the data to those rows with at least some data (part.miss)
+flossData2 <- flossData[part.miss.index, ]
+
+# a matrix of ones, used to indicate which variables predict which
+# in the multiple imputation
+pmat <- matrix(1, nrow = ncol(flossData2), ncol = ncol(flossData2))
+
+# never predict a variable from itself
+diag(pmat) <- 0
+
+# make other modifications, as needed, here,
+# so that some variables are not predicted,
+# or that some variables do not predict
+# (for details, see the JSS article or ?mice)
+
+
+# the methods should match the order of
+# variables in your data
+# use norm for continuous variables
+# use polr for ordered variables (like
+#   1, 2, 3, 4, or low, med, high type variables)
+#   note for ordered variables they must be ordered factors
+#   factor(1:3, ordered = TRUE)
+# for binary variables (like 0/1, yes/no)
+#   use logreg, again the variables should be
+#   factors (but they do not have to be ordered factors)
+#   factor(0:1)
+
+# empty character vector
+mi.methods <- rep("", ncol(flossData2))
+
+# replace first with norm for continuous
+mi.methods[unlist(mclapply(flossData2,
+                           function(x) is.integer(x) | is.numeric(x),
+                           mc.cores = detectCores()))] <- "norm"
+
+# now replace factors with logreg, note that ordered factors are factors
+# so this is not specific to binary
+#mi.methods[unlist(lapply(flossData2, is.factor & nlevels))] <- "logreg"
+
+# use polytomous logistic regression, as we have factors with > 2 levels
+mi.methods[unlist(lapply(flossData2, is.factor))] <- "polyreg"
+
+# now replace ordered factors (a subset of factors) with polr
+mi.methods[unlist(lapply(flossData2, is.ordered))] <- "polr"
+
+
+# note that mice can be slow
+imputedData <- mice(flossData2,
+                    method = mi.methods, predictorMatrix = pmat)
+
 # display results of the MI and data summary
 message("Completed.\n")
+
+print(str(imputedData))
+stop()
+
 message("MI Results:")
 message("===========")
 summary(a.out)
