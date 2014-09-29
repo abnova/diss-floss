@@ -106,7 +106,7 @@ mergeDataSets <- function (datasets, prefix = "",
       flossData <<- plyr::join(flossData, dataSets[[i]],
                                #by = 'Project ID',
                                by = mergeBy,
-                               type = 'left', match = 'first')
+                               type = 'full', match = 'first') # 'left' 'all'
     }
   }
   
@@ -192,7 +192,13 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
 }
 
 
+message("\nMerging SourceForge data...\n")
+
 mergeData("SourceForge")
+
+
+message("\nMerging FLOSSmole data...\n")
+
 mergeData("FLOSSmole", "fc")
 mergeData("FLOSSmole", "fsf")
 mergeData("FLOSSmole", "gc")
