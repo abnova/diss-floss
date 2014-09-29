@@ -1,41 +1,33 @@
 # Start session with a clean R environment
 rm(list = ls(all.names = TRUE))
 
-# This module will handle missing values in data by using
-# multiple imputation, implemented in Amelia II software.
-
-# Corresponding R package 'Amelia' and documentation are
-# available at http://cran.r-project.org/web/packages/Amelia.
+# This module handles missing data by using multiple imputation (MI);
+# prior to MI, data are tested on being multivariate normal (MVN)
+# and being missing completely at randome (MCAR).
 
 if (!suppressMessages(require(mice))) install.packages('mice')
 if (!suppressMessages(require(MissMech))) install.packages('MissMech')
 if (!suppressMessages(require(BaylorEdPsych))) 
   install.packages('BaylorEdPsych')
 if (!suppressMessages(require(mvnmle))) install.packages('mvnmle')
-#if (!suppressMessages(require(methods))) install.packages('methods')
-#if (!suppressMessages(require(Amelia))) install.packages('Amelia')
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(MVN))) install.packages('MVN')
 
-# 'mice' is needed for determining missingness patterns
+# 'mice' is needed for determining missingness patterns & MI
 # 'MissMech' is needed for testing data for being MCAR
 # 'BaylorEdPsych' is needed as an alternative for MCAR testing
 # 'mvnmle' is needed as it is used by 'BaylorEdPsych'
-# 'methods' is needed for 'Amelia' to alleviate the following error:
-# "Error in match.fun(FUN) : object 'is' not found"
 # 'psych' is needed for describe()
 # 'MVN' is needed for testing multivariate normality
 library(mice)
 library(MissMech)
 library(BaylorEdPsych)
 library(mvnmle)
-#library(methods)
-#library(Amelia)
 library(psych)
 library(MVN)
 library(parallel)
 
-PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/factors.R"))
@@ -53,8 +45,7 @@ IMPUTED_FILE <- "flossData" # default
 DEBUG <- FALSE
 
 
-# additional transformations needed for missing data
-# handling (multiple imputation / 'Amelia')
+# additional transformations needed for data testing
 prepareForMI <- function (data) {
 
   # convert factors to integers via as.numeric.factor() ["factors.R"]
@@ -85,9 +76,7 @@ mergedFile <- file.path(MERGED_DIR, fileName)
 message("\nLoading data...")
 flossData <- loadData(mergedFile)
 
-# use only (numeric) columns of our interest;
-# this is a recommended (preferred) alternative
-# to declaring unused variables as ID variables
+# use only (numeric) columns of our interest
 flossData <- flossData[c("Repo URL",
                          "Project License",
                          "License Category",
@@ -150,12 +139,6 @@ print(mcar.little[c("chi.square", "df", "p.value")])
 
 message("\nPerforming Multiple Imputation (MI)...", appendLF = FALSE)
 
-# perform multiple imputation with 'Amelia'
-#a.out <- amelia(flossData, p2s = 0)
-
-#if (DEBUG) str(a.out) #TODO: why fails?
-
-
 # perform multiple imputation, using 'mice'
 
 # first, remove totally missing data, leaving partially missing
@@ -199,7 +182,7 @@ mi.methods[unlist(mclapply(flossData2,
 
 # now replace factors with logreg, note that ordered factors are factors
 # so this is not specific to binary
-#mi.methods[unlist(lapply(flossData2, is.factor & nlevels))] <- "logreg"
+#mi.methods[unlist(lapply(flossData2, is.factor))] <- "logreg"
 
 # use polytomous logistic regression, as we have factors with > 2 levels
 mi.methods[unlist(lapply(flossData2, is.factor))] <- "polyreg"
