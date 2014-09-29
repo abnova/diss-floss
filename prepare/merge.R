@@ -30,7 +30,7 @@ mergeDataSets <- function (datasets, prefix = "",
   else {
     # lookup a column to merge data by
     index <- match(prefix , commonColumn$prefix)
-    mergeBy <- commonColumn[index,]$mergeBy
+    mergeBy <- as.character(commonColumn[index,]$mergeBy)
   }
   
   lapplyMerge <- function (dataSets) {
