@@ -167,6 +167,11 @@ mergeDataSets <- function (datasets, prefix = "",
 
 mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
   
+  prefixMsg <- ''
+  if (prefix != '') prefixMsg <- paste0(" '", prefix, "'")
+  msg <- paste0("\nMerging ", dataSource, prefixMsg, " data...\n")
+  message(msg)
+  
   transformedDir <- file.path(TRANDFORMED_DIR, dataSource)
   mergedDir <- file.path(MERGED_DIR, dataSource)
   if (!file.exists(mergedDir))
@@ -192,12 +197,7 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
 }
 
 
-message("\nMerging SourceForge data...\n")
-
 mergeData("SourceForge")
-
-
-message("\nMerging FLOSSmole data...\n")
 
 mergeData("FLOSSmole", "fc")
 mergeData("FLOSSmole", "fsf")
