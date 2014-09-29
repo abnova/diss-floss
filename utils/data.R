@@ -14,7 +14,8 @@ loadDataSets <- function (dataDir, prefix) {
   
   dataSets <- list()
   
-  dataFiles <- dir(dataDir, pattern=paste0(prefix, '*', '\\.rds$'))
+  # '^' in regex is not necessary here, but this emphasizes the position
+  dataFiles <- dir(dataDir, pattern=paste0('^', prefix, '.*', '\\.rds$'))
   dataSets <- lapply(seq_along(dataFiles),
                      function(i) {
                        nameSplit <- strsplit(dataFiles[i], "\\.")
