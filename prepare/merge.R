@@ -6,18 +6,25 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(psych))) install.packages('psych')
 library(psych)
 
-PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
+
+# prevents "Error: invalid multibyte string at '<b5>Backu'" & similar
+invisible(Sys.setlocale('LC_ALL', 'C'))
 
 source(file.path(PRJ_HOME, "utils/data.R"))
 
+
+DEBUG <- TRUE
 
 TRANDFORMED_DIR <- file.path(PRJ_HOME, "data/transformed")
 MERGED_DIR      <- file.path(PRJ_HOME, "data/merged")
 RDS_EXT <- ".rds"
 
 commonColumn <- data.frame(
-  prefix  = c("fc",         "fsf",      "gc",        "lpd",  "sv",           "tig"),
-  mergeBy = c("project_id", "proj_num", "proj_name", "name", "project_name", ""))
+  prefix  = c("fc",         "fsf",      "gc",        "lpd",
+              "sv",         "tig"),
+  mergeBy = c("project_id", "proj_num", "proj_name", "project_name",
+              "",           ""))
 
 
 mergeDataSets <- function (datasets, prefix = "",
@@ -102,6 +109,10 @@ mergeDataSets <- function (datasets, prefix = "",
     library(plyr)
     
     flossData <<- dataSets[[1]]
+    
+    # check if we're dealing with a single data set
+    if (length(dataSets) == 1) return
+    else
     for (i in seq.int(2, length(dataSets), 1)) {
       flossData <<- plyr::join(flossData, dataSets[[i]],
                                #by = 'Project ID',
@@ -168,8 +179,12 @@ mergeDataSets <- function (datasets, prefix = "",
 mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
   
   prefixMsg <- ''
+  msg <- ''
+  
   if (prefix != '') prefixMsg <- paste0(" '", prefix, "'")
-  msg <- paste0("\nMerging ", dataSource, prefixMsg, " data...\n")
+  if (DEBUG) msg <- '\n'
+  msg <- paste0(msg, "Merging ", dataSource, prefixMsg, " data...")
+  if (DEBUG) msg <- paste0(msg, '\n')
   message(msg)
   
   transformedDir <- file.path(TRANDFORMED_DIR, dataSource)
@@ -187,7 +202,7 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
   flossData <- mergeDataSets(dataSets, prefix) # method "plyr" is default
   
   # verify the data frame structure
-  str(flossData)
+  if (DEBUG) str(flossData)
   
   # suppress "NAs introduced by coercion" warnings
   suppressWarnings(describe(flossData))
@@ -197,11 +212,16 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
 }
 
 
+message("===== STARTING DATA MERGING...")
+if (!DEBUG) message("")
+
 mergeData("SourceForge")
 
 mergeData("FLOSSmole", "fc")
 mergeData("FLOSSmole", "fsf")
 mergeData("FLOSSmole", "gc")
 mergeData("FLOSSmole", "lpd")
-mergeData("FLOSSmole", "sv")
-mergeData("FLOSSmole", "tig")
+mergeData("FLOSSmole", "svProjectInfo")
+mergeData("FLOSSmole", "tigProjects")
+
+message("\n===== DATA MERGING SUCCESSFULLY COMPLETED.\n")
