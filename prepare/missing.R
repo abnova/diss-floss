@@ -27,6 +27,8 @@ library(psych)
 library(MVN)
 library(parallel)
 
+set.seed(100) # for reproducability
+
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
 source(file.path(PRJ_HOME, "utils/data.R"))
@@ -40,7 +42,7 @@ MERGED_FILE <- "flossData" # default
 RDS_EXT <- ".rds"
 
 IMPUTED_DIR <- file.path(PRJ_HOME, "data/imputed")
-IMPUTED_FILE <- "flossData" # default
+IMPUTED_FILE <- "flossDataImputed" # default
 
 DEBUG <- FALSE
 
@@ -121,11 +123,10 @@ print(mice::md.pattern(flossData))
 
 message("\nTesting data for being MCAR...\n")
 
-# currently disabled due to producing the following error:
-# "Error in t(yo) %*% yo : requires numeric/complex matrix/vector arguments"
-#MissMech::TestMCARNormality(flossData[rowSums(is.na(flossData)) < ncol(flossData),])
+# test MCAR using 'MissMech' package
+TestMCARNormality(prepareForMI(flossData[sample(nrow(flossData), 1000),]))
 
-# instead, let's use function from 'BaylorEdPsych' package;
+# let's also test, using 'BaylorEdPsych' package;
 # set index condition to all rows that contain at least some data
 # (partial missingness)
 mcar.little <- 
@@ -190,39 +191,21 @@ mi.methods[unlist(lapply(flossData2, is.factor))] <- "polyreg"
 # now replace ordered factors (a subset of factors) with polr
 mi.methods[unlist(lapply(flossData2, is.ordered))] <- "polr"
 
+mclapply(1:2, function(i) 
+  mice(flossData2, m = 3, method = mi.methods, predictorMatrix = pmat,
+       seed = seeds[i])
 
 # note that mice can be slow
-imputedData <- mice(flossData2,
-                    method = mi.methods, predictorMatrix = pmat)
+#imputedData <- mice(flossData2,
+#                    method = mi.methods, predictorMatrix = pmat)
 
 # display results of the MI and data summary
 message("Completed.\n")
 
-print(str(imputedData))
-stop()
+if (DEBUG) print(str(imputedData))
 
-message("MI Results:")
-message("===========")
-summary(a.out)
-
-# output data summary before and after MI (latest MI iteration)
-message("Data before MI:")
-message("===============\n")
-print(summary(flossData))
-
-# suppress "NAs introduced by coercion" warnings
-message("\nMore detailed summary statistics:")
-message("=================================\n")
-suppressWarnings(describe(flossData))
-
-message("\nData after MI:")
-message("==============\n")
-print(summary(a.out$imputations$imp5))
-
-# suppress "NAs introduced by coercion" warnings
-message("\nMore detailed summary statistics:")
-message("=================================\n")
-suppressWarnings(describe(a.out$imputations$imp5))
+# combine the separate imputations into one
+combinedImputed <- ibind(imputed[[1]], imputed[[2]])
 
 message("\nSaving imputed data... ", appendLF = FALSE)
 
@@ -232,10 +215,10 @@ if (!file.exists(IMPUTED_DIR))
 # save imputed data to a separate directory
 fileName <- paste0(IMPUTED_FILE, RDS_EXT)
 imputedFile <- file.path(IMPUTED_DIR, fileName)
-saveRDS(a.out$imputations$imp5, imputedFile)
+saveRDS(combinedImputed, imputedFile)
 
 message("Done.")
 
-# TODO: analyze results?
+# TODO: analyze results? In a later phase (pre-CFA/SEM).
 
 message("")
