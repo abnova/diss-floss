@@ -274,10 +274,39 @@ sfDevSupport <- function (indicator, data) {
 }
 
 
+##### FLOSSmole transformation functions #####
+
+fmLaunchPad <- function (indicator, data) {
+  
+  # rename 'name' column in select tables to match
+  # corresponding column in the other LaunchPad tables
+  if (indicator == 'lpdLicenses' ||
+        indicator == 'lpdOfficialBugTags' ||
+        indicator == 'lpdProgrammingLanguages' ||
+        indicator == 'lpdProjects') {
+    
+    if (DEBUG) message("Transforming '", indicator, "' ...",
+                       appendLF = FALSE)
+    
+    colnames(data)[colnames(data) == 'name'] <- 'project_name'
+  }
+  else return (NULL)
+  
+  if (DEBUG) message(" Done.")
+  if (DEBUG2) {message(""); print(summary(data)); message("")}
+  
+  return (data)
+}
+
+
 ##### MAIN #####
+
+# ===== Begin Transformation Initialization =====
 
 # construct list of indicators & corresponding transform. functions
 indicators <- c(); transforms <- list()
+
+# ===== SourceForge segment initialization =====
 
 indicators[["SourceForge"]] <- c("prjAge",
                                  "prjLicense",
@@ -301,20 +330,36 @@ transforms[["SourceForge"]] <- list(sfProjectAge,
                                     NULL,
                                     NULL)
 
-fNames <- strsplit(dir(file.path(CACHE_DIR, "FLOSSmole")), ".rds")
+# ===== FLOSSmole segment initialization =====
 
+# initialize FLOSSmole indicators with repos information file names
+fNames <- strsplit(dir(file.path(CACHE_DIR, "FLOSSmole")), ".rds")
 indicators[["FLOSSmole"]] <- unlist(fNames)
 
+# initially set all transformation function entries to NULL
 transforms[["FLOSSmole"]] <- 
   replicate(length(fNames), NULL, simplify = FALSE)
 
+# re-initialize the list with actual transformation functions
+#transforms[["FLOSSmole"]][[1]] <- fmLaunchPad
+# TODO: consider wrapping this in a generic repo-based function
+for (i in seq(indicators[["FLOSSmole"]])) {
+  if (grepl('^lpd', indicators[["FLOSSmole"]][[i]]))
+    transforms[["FLOSSmole"]][[i]] <- fmLaunchPad
+}
+
+# set data sources
 dataSourcesList <- c("SourceForge", "FLOSSmole")
+
+# ===== End Transformation Initialization =====
 
 if (DEBUG) message("===== Data Transformation started\n")
 
 for (dataSource in dataSourcesList) {
   
-  if (DEBUG) message("Transforming ", dataSource, " data:\n")
+  if (DEBUG) message("Transforming ", dataSource, " data:")
+  if (DEBUG) message("=============",
+                     rep.int('=', nchar(dataSource)), "======\n")
   
   # TBD here - transform result data types as specified in config.
   
