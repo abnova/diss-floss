@@ -13,16 +13,13 @@
 #library(ggplot2)
 #library(scales)
 #library(RColorBrewer)
+#library(ddst)
 library(mclust)
-library(MASS)
 library(mixtools)
-library(ddst)
-library(rebmix)
-library(fpc)
 library(flexmix)
 
-NUM_COMPONENTS <- 2
-NUM_ITERATIONS <- 100
+NUM_ITERATIONS <- 500
+CHANGE_RATE <- 0.01
 
 set.seed(12345) # for reproducibility
 
@@ -31,50 +28,22 @@ myData <- diamonds$price
 myData <- log10(myData)
 
 
-# using 'flexmix' package
-#m7 <- stepFlexmix(yp ~ x + I(x^2), data = NPreg,
-#                  control = list(verbose = 0), k = 1:5, nrep = 5)
-
-#flex.mix <- stepFlexmix(myData ~ 1, k = 1:7, nrep = 3)
-#fm.models <- getModel(flex.mix, "BIC")
-#print(summary(fm.models))
-
-
-# basic distribution fitting ('MASS' package)
-#fitdistr(myData,"gamma")
-
 # selecting the number of components
 
 # Using method of model-based clustering, classification and
 # density estimation, based on finite normal mixture modeling.
 # Using 'mclust' package (http://www.jstatsoft.org/v18/i06/paper;
 # http://www.stat.washington.edu/research/reports/2012/tr597.pdf).
-if (FALSE) {
-  mc <- Mclust(myData)
-  print(summary(mc, parameters = TRUE))
-}
 
-if (TRUE) {
-  mc <- mclustBIC(myData)
-  print(summary(mc, myData, parameters = TRUE))
-  plot(mc)
-  
-  bestModel <- mclustModel(myData, mc)
-  print(summary(bestModel, myData))
-}
+mc <- mclustBIC(myData)
+bicDeltas <- diff(diff(mc[,1]/max(mc[,1])))
+# now bicDelta contains differences between the rate of change for BIC
 
-# using 'mixtools' package
-#mix.sel <- multmixmodel.sel(myData, comps = 1:4, epsilon = 0.01)
-#print(mix.sel)
+numComponents <- length(bicDeltas[bicDeltas > CHANGE_RATE])
 
-# determine number of components in mixture distribution
-# by hypothesis testing via parametric bootstrap
-#mix.boot <- boot.comp(myData, max.comp = 10, mix.type = "normalmix",
-#                      maxit = 400, epsilon = 0.01)
-#print(summary(mix.boot))
 
 # extract 'k' components from mixed distribution 'data'
-mix <- normalmixEM(myData, k = NUM_COMPONENTS,
+mix <- normalmixEM(myData, k = numComponents,
                    maxit = NUM_ITERATIONS, epsilon = 0.01)
 summary(mix)
 
@@ -82,7 +51,7 @@ numComponents <- length(mix$sigma)
 message("Extracted number of component distributions: ",
         numComponents)
 
-##### TESTING
+##### TESTING of GOODNESS-OF-FIT
 
 # CDF of mixture of two log-normal distributions
 pmlnorm <- function(x, meanlog, sdlog, pmix) {
@@ -91,7 +60,9 @@ pmlnorm <- function(x, meanlog, sdlog, pmix) {
     (1 - pmix[1]) * plnorm(x, meanlog[2], sdlog[2])
 }
 
-# Kolmogorov-Smirnov (K-S) test
+
+##### Kolmogorov-Smirnov (K-S) test
+
 ks.info <- ks.test(log(myData), pmlnorm,
                    meanlog=mix$mu, sdlog=mix$sigma, pmix=mix$lambda)
 print(ks.info)
@@ -171,53 +142,12 @@ lognormalKS <- function (d, limit = 2500) {
                  stat = t$stat, p = count/limit, KSp = t$p))
 }
 
-ks.logn <- lognormalKS(myData, limit = 100)
-print(ks.logn$KSp)
+#ks.logn <- lognormalKS(myData, limit = 100)
+#print(ks.logn$KSp)
 
 
-# Anderson-Darling test
-
+##### Anderson-Darling test
 
 # smooth test of goodness-of-fit
-ddst.info <- ddst.norm.test(myData, compute.p = FALSE)
-print(ddst.info)
-
-
-# REBMIX
-
-if (FALSE) {
-  dist.est <- REBMIX(Dataset = list(data.frame(myData)),
-                     Preprocessing = "histogram",
-                     cmax = 8, Criterion = c("AIC", "BIC"),
-                     Variables = "continuous",
-                     pdf = "gamma", K = 30:80)
-  summary(dist.est)
-  
-  plot(dist.est, pos = 1, what = c("den", "dis"), ncol = 2, npts = 1000)
-  
-  coef(dist.est)
-  numComps <- as.numeric(dist.est$summary$c)
-  summary(numComps)
-}
-
-# parametric bootstraping to determine number of components
-if (FALSE) {
-  dist.boot <- boot.REBMIX(x = dist.est, pos = 1,
-                           Bootstrap = "p", B = 100,
-                           n = NULL, replace = TRUE, prob = NULL)
-  summary(dist.boot)
-}
-
-
-# density-based clustering (DBSCAN), using 'fpc' package
-if (FALSE) {
-  dense <- dbscan(myData, eps=0.5, MinPts=5)
-  plot(dense, myData)
-}
-
-
-da <- MclustDA(myData, c("daClass"))
-print(summary(da))
-
-dr <- MclustDR(da)
-print(summary(dr))
+#ddst.info <- ddst.norm.test(myData, compute.p = FALSE)
+#print(ddst.info)
