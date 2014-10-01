@@ -200,14 +200,12 @@ mi.methods[unlist(lapply(flossData2, is.factor))] <- "polyreg" # "fastpmm"
 # now replace ordered factors (a subset of factors) with polr
 mi.methods[unlist(lapply(flossData2, is.ordered))] <- "polr"
 
-imputed <- c()
-
 # perform MI, using parallel processing on all available cores
-invisible(mclapply(seq_len(NUM_CORES), function(i) {
-  imputed[i] <- mice(flossData2, m = NUM_IMPUTATIONS %/% NUM_CORES + 1,
+imputed <- mclapply(seq_len(NUM_CORES), function(i) {
+  mice(flossData2, m = NUM_IMPUTATIONS %/% NUM_CORES + 1,
                      method = mi.methods, predictorMatrix = pmat,
-                     seed = RNG_SEED)
-}))
+                     seed = RNG_SEED + i)
+})
 
 msg <- ifelse(DEBUG, "\n", "")
 message(paste0(msg, "Completed.\n"))
@@ -215,9 +213,9 @@ message(paste0(msg, "Completed.\n"))
 if (DEBUG) print(str(imputedData))
 
 # combine separate imputations into a single one
-imputedCombined <- imputed[1]
+imputedCombined <- imputed[[1]]
 for (i in seq.int(2, length(imputed), 1))
-  imputedCombined <- ibind(imputedCombined, imputed[i])
+  imputedCombined <- ibind(imputedCombined, imputed[[i]])
 
 message("\nSaving imputed data... ", appendLF = FALSE)
 
@@ -231,6 +229,6 @@ saveRDS(imputedCombined, imputedFile)
 
 message("Done.")
 
-# TODO: analyze results? In a later phase (pre-CFA/SEM).
+##### TODO: analyze results? In a later phase (pre-CFA/SEM).
 
 message("")
