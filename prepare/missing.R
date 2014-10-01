@@ -146,6 +146,9 @@ print(mcar.little[c("chi.square", "df", "p.value")])
 
 message("\nPerforming Multiple Imputation (MI)...", appendLF = DEBUG)
 
+# remove "Project License" column, as this data doesn't require MI
+flossData <- flossData[setdiff(names(flossData), "Project License")]
+
 # perform multiple imputation, using 'mice'
 
 # first, remove totally missing data, leaving partially missing
@@ -192,24 +195,29 @@ mi.methods[unlist(mclapply(flossData2,
 #mi.methods[unlist(lapply(flossData2, is.factor))] <- "logreg"
 
 # use polytomous logistic regression, as we have factors with > 2 levels
-mi.methods[unlist(lapply(flossData2, is.factor))] <- "fastpmm" # "polyreg"
+mi.methods[unlist(lapply(flossData2, is.factor))] <- "polyreg" # "fastpmm"
 
 # now replace ordered factors (a subset of factors) with polr
 mi.methods[unlist(lapply(flossData2, is.ordered))] <- "polr"
 
+imputed <- c()
+
 # perform MI, using parallel processing on all available cores
-invisible(mclapply(seq_along(NUM_CORES), function(i) 
-  mice(flossData2, m = NUM_IMPUTATIONS %/% NUM_CORES + 1,
-       method = mi.methods, predictorMatrix = pmat,
-       seed = RNG_SEED)))
+invisible(mclapply(seq_len(NUM_CORES), function(i) {
+  imputed[i] <- mice(flossData2, m = NUM_IMPUTATIONS %/% NUM_CORES + 1,
+                     method = mi.methods, predictorMatrix = pmat,
+                     seed = RNG_SEED)
+}))
 
 msg <- ifelse(DEBUG, "\n", "")
 message(paste0(msg, "Completed.\n"))
 
 if (DEBUG) print(str(imputedData))
 
-# combine the separate imputations into one
-combinedImputed <- ibind(imputed[[1]], imputed[[2]])
+# combine separate imputations into a single one
+imputedCombined <- imputed[1]
+for (i in seq.int(2, length(imputed), 1))
+  imputedCombined <- ibind(imputedCombined, imputed[i])
 
 message("\nSaving imputed data... ", appendLF = FALSE)
 
@@ -219,7 +227,7 @@ if (!file.exists(IMPUTED_DIR))
 # save imputed data to a separate directory
 fileName <- paste0(IMPUTED_FILE, RDS_EXT)
 imputedFile <- file.path(IMPUTED_DIR, fileName)
-saveRDS(combinedImputed, imputedFile)
+saveRDS(imputedCombined, imputedFile)
 
 message("Done.")
 
