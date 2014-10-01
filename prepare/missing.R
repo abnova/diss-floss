@@ -27,7 +27,8 @@ library(psych)
 library(MVN)
 library(parallel)
 
-set.seed(100) # for reproducability
+RNG_SEED <- 100
+set.seed(RNG_SEED) # for reproducibility
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
@@ -35,6 +36,7 @@ source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/factors.R"))
 
 # Initially file was copied manually from "merged/SourceForge".
+# Currently it is copied as a part of Makefile's merge rule.
 # Implementing automatic data merging across all data sources
 # should take care of this step (TODO).
 MERGED_DIR <- file.path(PRJ_HOME, "data/merged")
@@ -45,6 +47,10 @@ IMPUTED_DIR <- file.path(PRJ_HOME, "data/imputed")
 IMPUTED_FILE <- "flossDataImputed" # default
 
 DEBUG <- FALSE
+
+NUM_CORES <- detectCores() # for parallel processing
+
+NUM_IMPUTATIONS <- 5 # minimum recommended # of imputations
 
 
 # additional transformations needed for data testing
@@ -138,7 +144,7 @@ print(mcar.little[c("chi.square", "df", "p.value")])
 
 # ===== HANDLE MISSING VALUES =====
 
-message("\nPerforming Multiple Imputation (MI)...", appendLF = FALSE)
+message("\nPerforming Multiple Imputation (MI)...", appendLF = DEBUG)
 
 # perform multiple imputation, using 'mice'
 
@@ -179,28 +185,26 @@ mi.methods <- rep("", ncol(flossData2))
 # replace first with norm for continuous
 mi.methods[unlist(mclapply(flossData2,
                            function(x) is.integer(x) | is.numeric(x),
-                           mc.cores = detectCores()))] <- "norm"
+                           mc.cores = NUM_CORES))] <- "norm"
 
 # now replace factors with logreg, note that ordered factors are factors
 # so this is not specific to binary
 #mi.methods[unlist(lapply(flossData2, is.factor))] <- "logreg"
 
 # use polytomous logistic regression, as we have factors with > 2 levels
-mi.methods[unlist(lapply(flossData2, is.factor))] <- "polyreg"
+mi.methods[unlist(lapply(flossData2, is.factor))] <- "fastpmm" # "polyreg"
 
 # now replace ordered factors (a subset of factors) with polr
 mi.methods[unlist(lapply(flossData2, is.ordered))] <- "polr"
 
-mclapply(1:2, function(i) 
-  mice(flossData2, m = 3, method = mi.methods, predictorMatrix = pmat,
-       seed = seeds[i])
+# perform MI, using parallel processing on all available cores
+invisible(mclapply(seq_along(NUM_CORES), function(i) 
+  mice(flossData2, m = NUM_IMPUTATIONS %/% NUM_CORES + 1,
+       method = mi.methods, predictorMatrix = pmat,
+       seed = RNG_SEED)))
 
-# note that mice can be slow
-#imputedData <- mice(flossData2,
-#                    method = mi.methods, predictorMatrix = pmat)
-
-# display results of the MI and data summary
-message("Completed.\n")
+msg <- ifelse(DEBUG, "\n", "")
+message(paste0(msg, "Completed.\n"))
 
 if (DEBUG) print(str(imputedData))
 

@@ -17,12 +17,14 @@ prepare: import \
          transform \
          cleanup \
          merge \
+         missing \
          sample
 
 import: import.done
 transform: transform.done
 cleanup: cleanup.done
 merge: merge.done
+missing: missing.done
 sample: sample.done
 
 import.done: $(IMPORT_DONE)
@@ -41,10 +43,14 @@ cleanup.done: cleanup.R transform.done
 # TODO: temp dep disabled: cleanup.done
 merge.done: merge.R
 	@$(RSCRIPT) $(R_OPTS) $<
-	@cp ../data/merged/SourceForge/merged.rds ../data/merged/flossData.rds
+	@cp ../data/merged/SourceForge/Merged.rds ../data/merged/flossData.rds
 	@touch $@
 
-sample.done: sample.R merge.done
+missing.done: missing.R merge.done
+	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
+
+sample.done: sample.R missing.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
