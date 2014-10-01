@@ -283,6 +283,10 @@ srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
   results <- gsub("-\\r\\n", "-", results) # order is important here
   results <- gsub("\\r\\n", " ", results)
   
+  # remove multiple LF characters within a project record, if any
+  rx <- "\\n([^0-9])"
+  while(any(grepl(rx, results))) {results <- gsub(rx, "\\1", results)}
+  
   # fix for improperly formatted result data (AniSa, project 7606)
   results <- gsub("\\n:gpl:962356288", ":gpl:962356288", results)
   
