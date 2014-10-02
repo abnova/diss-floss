@@ -15,14 +15,14 @@ PREP_DIR = ../prepare
 PREP_DONE = $(PREP_DIR)/transform.done
 
 analysis: prepare \
-          eda \
+          eda-report \
           efa \
           cfa \
           sem
 
 prepare: prepare.done
 eda: eda.done
-eda-report: eda-report.done
+eda-report: eda-report-Rmd.done
 efa: efa.done
 cfa: cfa.done
 sem: sem.done
@@ -35,8 +35,14 @@ eda.done: eda.R prepare
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
-eda-report.done: eda-report.Rmd eda-knitr.R prepare
+eda-report-Rmd.done: eda-report.Rmd eda.R prepare
 	@$(RSCRIPT) -e 'library(rmarkdown); render("eda-report.Rmd")'
+	@touch $@
+
+eda-report-Rnw.done: eda-report.Rnw eda.R prepare
+	@$(RSCRIPT) -e 'library(knitr); knit("eda-report.Rnw")'
+	@pdflatex eda-report.tex
+	@rm -f eda-report.tex eda-report.log eda-report.aux
 	@touch $@
 
 efa.done: efa.R eda
