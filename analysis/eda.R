@@ -11,10 +11,6 @@ if (!suppressMessages(require(RColorBrewer)))
   install.packages('RColorBrewer')
 if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
 if (!suppressMessages(require(psych))) install.packages('psych')
-if (!suppressMessages(require(fitdistrplus))) 
-  install.packages('fitdistrplus')
-if (!suppressMessages(require(mixtools))) install.packages('mixtools')
-if (!suppressMessages(require(rebmix))) install.packages('rebmix')
 
 library(RCurl)
 library(stringr)
@@ -23,9 +19,6 @@ library(scales)
 library(RColorBrewer)
 library(gridExtra)
 library(psych)
-library(fitdistrplus)
-library(mixtools)
-library(rebmix)
 
 ## @knitr PrepareEDA
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
@@ -96,125 +89,6 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
 }
 
 
-fitDistParam <- function (df, var, colName, extraFun) {
-  
-  data <- df[[colName]]
-  df <- na.omit(df)
-  
-  message("\nParametric distribution fitting for '", colName, "':\n")
-  
-  # convert factors to integers
-  if (is.factor(data)) data <- as.integer(data)
-  
-  if (FALSE) {
-    dataDist <- fitdist(data, "gamma")
-    dataBoot <- bootdist(dataDist, niter=51) #default niter=1001
-    print(dataBoot)
-    #plot(dataBoot)
-    print(summary(dataBoot))
-    print(quantile(dataBoot))
-    message("")
-  }
-  
-  if (is.numeric(data) || is.factor(data)) {
-    fitgmme <- fitdist(data, "gamma", method="mme")
-    print(summary(fitgmme))
-    message("")
-  }
-  
-  if (is.numeric(data) || is.factor(data)) {
-    ##fitg <- fitdist(data, "gamma")
-    ##print(summary(fitg))
-    #plot(fitg)
-    #plot(fitg, demp = TRUE)
-    #plot(fitg, histo = FALSE, demp = TRUE)
-    ##cdfcomp(fitg, addlegend=FALSE)
-    ##denscomp(fitg, addlegend=FALSE)
-    ##ppcomp(fitg, addlegend=FALSE)
-    ##qqcomp(fitg, addlegend=FALSE)
-    ##message("")
-  }
-}
-
-
-fitDistNonParam <- function (df, var, colName, extraFun) {
-  
-  if (colName == "Development Team Size") return()
-  if (colName == "Project Maturity") return()
-  if (colName == "Project License") return()
-  
-  df <- df
-  data <- df[[colName]]
-  data <- na.omit(data)
-  
-  message("\nNon-parametric distribution fitting for '", colName, "':\n")
-  
-  # convert factors to integers
-  if (is.factor(data)) data <- as.integer(data)
-  
-  # perform non-parametric mixture distribution fitting
-  if (is.numeric(data)) {
-    
-    num.components <- 3 # can determine automatically?
-    
-    mixDistInfo <- fitMixDist(data, num.components)
-    
-    #data <- data.frame(x = data)
-    g <- plotMixedDist(data, mixDistInfo, num.components,
-                       colName)
-    
-    #if (.Platform$GUI == "RStudio") {print(g)}
-    print(g)
-    
-    #TODO: consider moving to main
-    edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
-    edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, "-DistFitMix", ".svg"))
-    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
-    
-    allPlots <<- c(allPlots, list(g))
-    message("")
-  }
-  
-}
-
-
-fitDistREBMIX <- function (df, var, colName, extraFun) {
-  
-  data <- df[[colName]]
-  df <- na.omit(df)
-  
-  # convert factors to integers
-  if (is.factor(data)) data <- as.integer(data)
-  
-  # perform parametric mixture distribution fitting
-  if (is.numeric(data)) {
-    set.seed(123)
-    
-    message("\nREBMIX: Parametric distribution fitting for '", colName, "':\n")
-    
-    boot.param <- boot.REBMIX(x = list(data), pos = 1, Bootstrap = "p",
-                              B = 100, n = NULL, replace = TRUE, prob = NULL)
-    summary(boot.param)
-    
-    message("\nREBMIX: Non-parametric distribution fitting for '", colName, "':\n")
-    
-    boot.nonparam <- boot.REBMIX(x = list(data), pos = 1, Bootstrap = "n",
-                                 B = 100, n = NULL, replace = TRUE, prob = NULL)
-    summary(boot.nonparam)
-    
-    message("\nREBMIX: Poisson distribution fitting for '", colName, "':\n")
-    
-    poissonest <- REBMIX(Dataset = list(data), Preprocessing = "histogram",
-                         cmax = 6, Criterion = "MDL5",
-                         Variables = rep("discrete", 2),
-                         pdf = rep("Poisson", 2), K = 1)
-    c <- as.numeric(poissonest$summary$c)
-    summary(c)
-    message("")
-  }
-}
-
-
 multiDescriptiveEDA <- function (df, var, colNames, extraFun) {
   
   if (KNITR) {
@@ -253,7 +127,6 @@ performEDA <- function (dataSource, analysis,
     uniVisualEDA(data, indicator, colName, extraFun)
     #fitDistParam(data, indicator, colName, extraFun)
     fitDistNonParam(data, indicator, colName, extraFun)
-    #fitDistREBMIX(data, indicator, colName, extraFun)
     
   } else if (identical(analysis, "multivariate")) {
     
@@ -290,12 +163,9 @@ plotHistogram <- function (df, colName, print = TRUE) {
   g <- ggplot(df, aes(x=var)) +
     scale_fill_continuous("Number of\nprojects",
                           low="#56B1F7", high="#132B43") + 
-    #scale_x_continuous(xLabel) +
-    #scale_y_continuous("Number of projects") +
     scale_x_log10(xLabel) +
     scale_y_log10("Number of projects",
                   breaks = trans_breaks("log10", function(x) 10^x),
-                  #labels = trans_format("log10", math_format(10^.x))
                   labels = prettyNum) +
     ggtitle(label=title)
   
@@ -313,7 +183,6 @@ plotHistogram <- function (df, colName, print = TRUE) {
   g <- g + geom_vline(aes(xintercept=mean(var, na.rm=T)),
                       linetype = "longdash", color="red")
   
-  #if (.Platform$GUI == "RStudio") {print(g)}
   print(g)
   
   #TODO: consider moving to main
@@ -337,10 +206,6 @@ plotDensity <- function (df, colName) {
                  "range (by category)")
   xLabel <- colName
   
-  #  g <- ggplot(df, aes(x = var)) +  
-  #    geom_bar(aes(y = (..count..)/sum(..count..)), binwidth = 25) + 
-  #    scale_y_continuous(labels = percent_format())
-  
   breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
   bwidth <- breaks[2] - breaks[1]
   
@@ -348,15 +213,6 @@ plotDensity <- function (df, colName) {
     geom_density(aes(y=..count..), 
                  binwidth=bwidth, position="identity")
   
-  #  g <- ggplot(df, aes(var, ..density.., colour = category)) +
-  #    scale_fill_continuous("Number of\nprojects") + 
-  #    scale_x_continuous(xLabel) +
-  #    scale_y_continuous("Number of projects") +
-  #    ggtitle(label=title)
-  
-  #  g <- g + geom_freqpoly(binwidth = 1)
-  
-  #if (.Platform$GUI == "RStudio") {print(g)}
   print(g)
   
   #TODO: consider moving to main
@@ -406,7 +262,6 @@ plotBarGraph <- function (df, colName) {
             axis.title.y=element_blank())  
   }
   
-  #if (.Platform$GUI == "RStudio") {print(g)}
   print(g)
   
   #TODO: consider moving to main
@@ -448,7 +303,6 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
     scale_y_continuous("Sample Quantiles") +
     ggtitle(label=title)
   
-  #if (.Platform$GUI == "RStudio") {print(g)}
   print(g)
   
   #TODO: consider moving to main
