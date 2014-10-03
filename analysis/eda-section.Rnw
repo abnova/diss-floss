@@ -1,0 +1,110 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+
+\usepackage{longtable}
+
+%% fonts
+\usepackage[charter]{mathdesign}
+\usepackage[scaled=.95]{inconsolata}
+
+%% for memisc
+\usepackage{booktabs}
+\usepackage{dcolumn} 
+
+\author{Aleksandr Blekh}
+\title{EDA Report}
+\date{September 2014}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+The following report is dynamically generated and presents results of exploratory data analysis (EDA) for prepared (transformed) research data, located in directories under "data/transform".
+
+This EDA consists of performing both descriptive and visual exploratory analysis for single variables (univariate), as well as for relationships between variables (multivariate).
+
+\end{abstract}
+
+<<KnitrSetup, child='../config/knitr/knitr-setup-global.Rnw'>>=
+@
+
+<<set-options, echo=FALSE, cache=FALSE>>=
+opts_knit$set(stop_on_error=2L)
+@
+
+<<ReadChunksEDA>>=
+read_chunk('eda.R')
+@
+
+<<CleanEnv>>=
+@
+
+<<ConfigReport>>=
+param1 <- TRUE
+param2 <- FALSE
+param3 <- 'TEST'
+@
+
+<<LoadPackages>>=
+@
+
+<<loadpackages,include=FALSE>>=
+#library(memisc)
+#library(apsrtable)
+@
+
+<<PrepareEDA>>=
+@
+
+<<CustomFunctions>>=
+@
+
+<<PerformEDA, cache=TRUE>>=
+@
+
+The SourceForge pilot data set consists of \Sexpr{length(dir(file.path(TRANSFORM_DIR, "SourceForge")))} indicators. The following is the summary descriptive statistics of the data set.
+
+<<edaReportSummary, include=TRUE>>=
+print(describe_flossData)
+@
+
+And now let's see what output would be produced by 'xtable' package:
+
+<<edaReportSummary2, include=TRUE, results='asis'>>=
+print(xtable(describe_flossData, caption="flossData Summary",
+             digits=3),
+      comment = FALSE,
+      include.rownames = FALSE,
+      #floating = FALSE,
+      #tabular.environment = "longtable",
+      booktabs = TRUE)
+@
+
+
+\begin{table}[htdp]
+\caption{A fascinating table}
+\begin{center}
+Something 1
+\end{center}
+\label{tab:mytable}
+\end{table}
+
+\begin{figure}[htbp]
+\begin{center}
+Something 2
+\caption{A fascinating plot}
+\label{plot:fascinating}
+\end{center}
+\end{figure}
+
+\begin{table}[htbp]
+\caption{A fascinating regression table}
+\label{lm:fascinating}
+\begin{center}
+Something 3
+\end{center}
+\end{table}
+
+\end{document}

@@ -15,6 +15,7 @@ PREP_DIR = ../prepare
 PREP_DONE = $(PREP_DIR)/transform.done
 
 analysis: prepare \
+          eda-section \
           eda-report \
           efa \
           cfa \
@@ -22,6 +23,7 @@ analysis: prepare \
 
 prepare: prepare.done
 eda: eda.done
+eda-section: eda-section-Rnw.done
 eda-report: eda-report-Rmd.done
 efa: efa.done
 cfa: cfa.done
@@ -33,6 +35,10 @@ prepare.done: $(PREP_DONE)
 
 eda.done: eda.R prepare
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
+
+eda-section-Rnw.done: eda-section.Rnw eda.R prepare
+	@$(RSCRIPT) -e 'library(knitr); knit("eda-section.Rnw")'
 	@touch $@
 
 eda-report-Rmd.done: eda-report.Rmd eda.R prepare
