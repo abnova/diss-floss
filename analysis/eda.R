@@ -68,18 +68,39 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
   #do.call(extraFun, list(df, var), envir = env)
   
   if (is.numeric(data)) {
-    plot <- plotHistogram(df, colName)
-    allPlots <<- c(allPlots, list(plot))
+    # plot original data
+    g_var <- paste0("histogram_", colName)
+    assign(g_var, plotHistogram(df, colName), envir = .GlobalEnv)
+    myPlot <- get(g_var, envir = .GlobalEnv)
+    myList <- list(myPlot)
+    names(myList) <- g_var
+    allPlots <<- c(allPlots, myList)
+    
+    # plot log-transformed data
+    g_var <- paste0("histogram_log_", colName)
+    assign(g_var, plotHistogram(df, colName, TRUE), envir = .GlobalEnv)
+    myPlot <- get(g_var, envir = .GlobalEnv)
+    myList <- list(myPlot)
+    names(myList) <- g_var
+    allPlots <<- c(allPlots, myList)
   }
   
   if (is.factor(data)) {
-    plot <- plotBarGraph(df, colName)
-    allPlots <<- c(allPlots, list(plot))
+    g_var <- paste0("barchart_", colName)
+    assign(g_var, plotBarChart(df, colName), envir = .GlobalEnv)
+    myPlot <- get(g_var, envir = .GlobalEnv)
+    myList <- list(myPlot)
+    names(myList) <- g_var
+    allPlots <<- c(allPlots, myList)
   }
-  
+  if (FALSE)
   if (is.numeric(data)) {
-    plot <- ggQQplot(data, colName)
-    allPlots <<- c(allPlots, list(plot))
+    g_var <- paste0("qqplot_", colName)
+    assign(g_var, ggQQplot(df, colName), envir = .GlobalEnv)
+    myPlot <- get(g_var, envir = .GlobalEnv)
+    myList <- list(myPlot)
+    names(myList) <- g_var
+    allPlots <<- c(allPlots, myList)
   }
   
   #if (TBD CONDITION) {
@@ -125,8 +146,9 @@ performEDA <- function (dataSource, analysis,
     multiDescriptiveEDA(data, indicator, colNames, extraFun)
     uniDescriptiveEDA(data, indicator, colName, extraFun)
     uniVisualEDA(data, indicator, colName, extraFun)
+    # TODO: Integrate mixture analysis from 'sandbox'
     #fitDistParam(data, indicator, colName, extraFun)
-    fitDistNonParam(data, indicator, colName, extraFun)
+    #fitDistNonParam(data, indicator, colName, extraFun)
     
   } else if (identical(analysis, "multivariate")) {
     
@@ -148,11 +170,15 @@ performEDA <- function (dataSource, analysis,
 
 
 # Plot distribution of a continuous variable "colName"
-plotHistogram <- function (df, colName, print = TRUE) {
+plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   
   df <- df
   df$var <- df[[colName]]
   df <- na.omit(df)
+  if (log) {
+    if (any(df$var < 0)) df$var <- df$var + abs(min(df$var)) + 0.01
+    df$var <- log(df$var)
+  }
   
   title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
@@ -177,18 +203,18 @@ plotHistogram <- function (df, colName, print = TRUE) {
                           position = "identity")
   
   # Overlay with transparent density plot
-  #g <- g + geom_density(alpha=.2, fill="#FF6666")
+  g <- g + geom_density(alpha=.2, fill="#FF6666")
   
   # Ignore NA values for mean
   g <- g + geom_vline(aes(xintercept=mean(var, na.rm=T)),
                       linetype = "longdash", color="red")
   
-  print(g)
-  
   #TODO: consider moving to main
-  edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
-  edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
-  suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  if (!KNITR) {
+    edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
+    edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
+    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  }
   
   return (g)
 }
@@ -213,19 +239,19 @@ plotDensity <- function (df, colName) {
     geom_density(aes(y=..count..), 
                  binwidth=bwidth, position="identity")
   
-  print(g)
-  
   #TODO: consider moving to main
-  edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
-  edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
-  suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  if (!KNITR) {
+    edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
+    edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
+    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  }
   
   return (g)
 }
 
 
 # Plot distribution of a categorical variable "colName"
-plotBarGraph <- function (df, colName) {
+plotBarChart <- function (df, colName) {
   
   SHOW_LEVELS <- 10
   df <- df
@@ -262,12 +288,12 @@ plotBarGraph <- function (df, colName) {
             axis.title.y=element_blank())  
   }
   
-  print(g)
-  
   #TODO: consider moving to main
-  edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
-  edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
-  suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  if (!KNITR) {
+    edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
+    edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
+    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  }
   
   return (g)
 }
@@ -303,12 +329,12 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
     scale_y_continuous("Sample Quantiles") +
     ggtitle(label=title)
   
-  print(g)
-  
   #TODO: consider moving to main
-  edaFile <- str_replace_all(string=varName, pattern=" ", repl="")
-  edaFile <- file.path(EDA_RESULTS_DIR, paste0("QQ-", edaFile, ".svg"))
-  suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  if (!KNITR) {
+    edaFile <- str_replace_all(string=varName, pattern=" ", repl="")
+    edaFile <- file.path(EDA_RESULTS_DIR, paste0("QQ-", edaFile, ".svg"))
+    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  }
   
   return (g)
 }
@@ -340,9 +366,11 @@ silent <- lapply(seq_along(sfIndicators), function(i) {
 })
 
 
-edaFilePDF <- file.path(EDA_RESULTS_DIR, "eda-univar.pdf")
-mg <- do.call(marrangeGrob, c(allPlots, list(nrow=2, ncol = 1)));
-suppressMessages(ggsave(filename=edaFilePDF, mg, width=8.5, height=11))
+if (!KNITR) {
+  edaFilePDF <- file.path(EDA_RESULTS_DIR, "eda-univar.pdf")
+  mg <- do.call(marrangeGrob, c(allPlots, list(nrow=2, ncol = 1)));
+  suppressMessages(ggsave(filename=edaFilePDF, mg, width=8.5, height=11))
+}
 
 message("\n===== EDA completed, results can be found ",
         "in directory \"", EDA_RESULTS_DIR, "\"\n")
