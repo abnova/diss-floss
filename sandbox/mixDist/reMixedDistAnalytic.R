@@ -22,8 +22,12 @@ message("\nLoading data...\n")
 
 data(diamonds, package='ggplot2')  # use built-in data
 myData <- diamonds$price
-myData <- log10(myData)
+#myData <- log10(myData)
 
+# Note that we log transform data for passing to mclustBIC() and
+# normalmixEM(), as these functions can work only with normal data.
+# We use natural log transformation as opposed to other log bases
+# because plnorm() is based on natural log transformation.
 
 # selecting the number of components
 
@@ -35,7 +39,7 @@ myData <- log10(myData)
 message("Determining mixture components ",
         "by using model-based clustering...")
 
-mc <- mclustBIC(myData)
+mc <- mclustBIC(log(myData))
 bicDeltas <- diff(diff(mc[,1]/max(mc[,1])))
 # now bicDelta contains differences between the rate of change for BIC
 
@@ -46,7 +50,7 @@ message("Number of mixture components determined: ", numComponents)
 message("\nExtracting mixture components...\n")
 
 # extract 'k' components from mixture distribution 'myData'
-mix <- normalmixEM(myData, k = numComponents,
+mix <- normalmixEM(log(myData), k = numComponents,
                    maxit = NUM_ITERATIONS, epsilon = 0.01)
 print(summary(mix))
 
@@ -71,3 +75,15 @@ message("Assessing the solution's goodness-of-fit (GoF)...\n")
 ks.info <- ks.test(myData, mix_plnorm,
                    mean = mix$mu, sd = mix$sigma, lambda = mix$lambda)
 print(ks.info)
+
+# D-value being low enough indicates a good fit
+# (in this case, D-value indicates less then 5% deviation
+#  between the data dstribution and a fitted mixture).
+# P-value being high enough indicates the same.
+fit.devation <- ks.info$statistic * 100
+if (ks.info$statistic < 0.05 || ks.info$p.value > 0.05)
+  message("KS test confirmed a good fit of calculated mixture to ",
+          "the data distribution (", fit.deviation, "% of deviation).")
+else
+  message("KS test confirmed an absense of good fit of calculated mixture ",
+          "to the data distribution (", fit.deviation, "% of deviation).")
