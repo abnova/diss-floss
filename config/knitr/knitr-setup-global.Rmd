@@ -35,6 +35,7 @@ opts_chunk$set(
   #fig.align = 'center',
   #out.width = '0.8\\textwidth',
   #fig.path = 'figures/',
+  cache=FALSE,
   cache.path='knitr-cache/'
 )
 

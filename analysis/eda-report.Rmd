@@ -8,6 +8,7 @@ output:
     number_sections: yes
     toc: yes
     toc_depth: 3
+    lib_dir: figures/eda-report
   md_document:
     toc: yes
     toc_depth: 3
