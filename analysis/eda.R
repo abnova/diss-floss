@@ -232,7 +232,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   g <- g + stat_function(fun = dnorm.count, 
                          args = list(mean = mean(df$var),
                                      sd = sd(df$var),
-                                     log = log,
+                                     #log = log,
                                      n = length(df$var),
                                      binwidth = bwidth),
                          color = "red")
