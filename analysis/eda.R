@@ -28,6 +28,7 @@ KNITR <<- TRUE
 source(file.path(PRJ_HOME, "utils/factors.R"))
 source(file.path(PRJ_HOME, "utils/qq.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
+source(file.path(PRJ_HOME, "utils/utils.R"))
 source(file.path(PRJ_HOME, "utils/mixedDist.R"))
 
 READY4EDA_DIR  <- file.path(PRJ_HOME, "data/ready4eda")
@@ -177,37 +178,68 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   df <- na.omit(df)
   if (log) {
     if (any(df$var < 0)) df$var <- df$var + abs(min(df$var)) + 0.01
-    df$var <- log(df$var)
+    # instead of log transforming data directly,
+    # we do that further via ggplot2's scales functionality
+    # df$var <- log(df$var)
   }
+  upperLimit <- max(df$var)
   
   title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
   
   if (identical(colName, "Project Age"))
-    xLabel <- paste(colName, "(months)")
+    xLabel <- paste(xLabel, "(months)")
   
-  g <- ggplot(df, aes(x=var)) +
+  if (log) {
+    xLabel <- paste(xLabel, "[Log]")
+    scale_x <-
+      scale_x_continuous(xLabel,
+                         trans = "log",
+                         #limit = c(1, upperLimit),
+                         breaks = trans_breaks("log10", function(x) 10^x),
+                         labels = prettyNum)
+  } else {
+    scale_x <-
+      scale_x_continuous(xLabel,
+                         #limit = c(0, upperLimit),
+                         #breaks = trans_breaks("log10", function(x) 10^x),
+                         labels = prettyNum)
+  }
+  
+  g <- ggplot(df, aes(x = var)) +
     scale_fill_continuous("Number of\nprojects",
-                          low="#56B1F7", high="#132B43") + 
-    scale_x_log10(xLabel) +
-    scale_y_log10("Number of projects",
-                  breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = prettyNum) +
-    ggtitle(label=title)
+                          low = "#56B1F7", high = "#132B43") + 
+    scale_x +
+    scale_y_continuous("Number of projects",
+                       #limit = c(1, upperLimit),
+                       #breaks = trans_breaks("log10", function(x) 10^x),
+                       labels = prettyNum) +
+  ggtitle(label=title)
   
   breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
-  bwidth <- breaks[2] - breaks[1]
+  bwidth <- (breaks[2] - breaks[1]) / 2
+  if (log) bwidth <- bwidth/100
   
-  g <- g + geom_histogram(aes(fill = ..count..),
-                          binwidth = 0.01, #bwidth, #0.1
+  # Use (..density..) * bwidth IF want to match y-range with kernel density
+  g <- g + geom_histogram(aes(fill = ..count..), # y = ..density..
+                          binwidth = bwidth, #0.01, #bwidth
                           position = "identity")
   
   # Overlay with transparent density plot
-  g <- g + geom_density(alpha=.2, fill="#FF6666")
+  #g <- g + geom_density(alpha = .2, fill = "#FF6666")
+
+  # Overlay with density-like plot, based on data count
+  g <- g + stat_function(fun = dnorm.count, 
+                         args = list(mean = mean(df$var),
+                                     sd = sd(df$var),
+                                     log = log,
+                                     n = length(df$var),
+                                     binwidth = bwidth),
+                         color = "red")
   
   # Ignore NA values for mean
-  g <- g + geom_vline(aes(xintercept=mean(var, na.rm=T)),
-                      linetype = "longdash", color="red")
+  g <- g + geom_vline(aes(xintercept=mean(var, na.rm = TRUE)),
+                      linetype = "longdash", color = "red")
   
   if (.Platform$GUI == "RStudio") print(g)
   
