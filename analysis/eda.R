@@ -209,6 +209,8 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   g <- g + geom_vline(aes(xintercept=mean(var, na.rm=T)),
                       linetype = "longdash", color="red")
   
+  if (.Platform$GUI == "RStudio") print(g)
+  
   #TODO: consider moving to main
   if (!KNITR) {
     edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -238,6 +240,8 @@ plotDensity <- function (df, colName) {
   g <- ggplot(df, aes(x=var, fill=var)) +
     geom_density(aes(y=..count..), 
                  binwidth=bwidth, position="identity")
+  
+  if (.Platform$GUI == "RStudio") print(g)
   
   #TODO: consider moving to main
   if (!KNITR) {
@@ -288,6 +292,8 @@ plotBarChart <- function (df, colName) {
             axis.title.y=element_blank())  
   }
   
+  if (.Platform$GUI == "RStudio") print(g)
+  
   #TODO: consider moving to main
   if (!KNITR) {
     edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -328,6 +334,8 @@ ggQQplot <- function (vec, varName) # argument: vector of numbers
     scale_x_continuous("Theoretical Quantiles") +
     scale_y_continuous("Sample Quantiles") +
     ggtitle(label=title)
+  
+  if (.Platform$GUI == "RStudio") print(g)
   
   #TODO: consider moving to main
   if (!KNITR) {
