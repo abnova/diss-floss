@@ -94,7 +94,7 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
     names(myList) <- g_var
     allPlots <<- c(allPlots, myList)
   }
-  if (FALSE)
+  
   if (is.numeric(data)) {
     g_var <- paste0("qqplot_", colName)
     assign(g_var, ggQQplot(df, colName), envir = .GlobalEnv)
@@ -337,10 +337,10 @@ plotBarChart <- function (df, colName) {
 }
 
 
-ggQQplot <- function (vec, varName) # argument: vector of numbers
+ggQQplot <- function (df, colName) # argument: vector of numbers
 {
-  
-  title <- paste0("Q-Q plot for '", varName, "'")
+  title <- paste0("Q-Q plot for '", colName, "'")
+  vec <- df[[colName]]
   
   # following four lines from base R's qqline()
   y <- quantile(vec[!is.na(vec)], c(0.25, 0.75))
