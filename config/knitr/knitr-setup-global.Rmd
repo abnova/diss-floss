@@ -8,8 +8,6 @@ if (!suppressMessages(require(knitr))) install.packages('knitr')
 library(knitr)
 library(xtable)
 
-KNITR <<- TRUE
-
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 opts_knit$set(root.dir = PRJ_HOME) # '~/diss-floss/'

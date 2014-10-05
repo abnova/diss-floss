@@ -23,9 +23,9 @@ library(psych)
 library(polycor)
 
 ## @knitr PrepareEDA
-PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
-KNITR <<- FALSE
+KNITR <<- isTRUE(getOption("knitr.in.progress"))
 
 source(file.path(PRJ_HOME, "utils/factors.R"))
 source(file.path(PRJ_HOME, "utils/qq.R"))
