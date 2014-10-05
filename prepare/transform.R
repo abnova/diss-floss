@@ -274,6 +274,20 @@ sfDevSupport <- function (indicator, data) {
 }
 
 
+sfSoftwareType <- function (indicator, data) {
+  
+  if (DEBUG) message("Transforming '", indicator, "' ...",
+                     appendLF = FALSE)
+  
+  data[["Software Type"]] <- factor(data[["Software Type"]])
+  
+  if (DEBUG) message(" Done.")
+  if (DEBUG2) {message(""); print(summary(data)); message("")}
+  
+  return (data)
+}
+
+
 ##### FLOSSmole transformation functions #####
 
 fmLaunchPad <- function (indicator, data) {
@@ -315,9 +329,9 @@ indicators[["SourceForge"]] <- c("prjAge",
                                  "devTeamSize",
                                  "userCommunitySize",
                                  "devSupport",
+                                 "softwareType",
                                  "pubRoadmap",
-                                 "dmProcess",
-                                 "softwareType")
+                                 "dmProcess")
 
 transforms[["SourceForge"]] <- list(sfProjectAge,
                                     sfProjectLicense,
@@ -326,7 +340,7 @@ transforms[["SourceForge"]] <- list(sfProjectAge,
                                     sfDevTeamSize,
                                     sfUserCommunitySize,
                                     sfDevSupport,
-                                    NULL,
+                                    sfSoftwareType,
                                     NULL,
                                     NULL)
 
