@@ -25,7 +25,7 @@ library(polycor)
 ## @knitr PrepareEDA
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
-KNITR <<- TRUE
+KNITR <<- FALSE
 
 source(file.path(PRJ_HOME, "utils/factors.R"))
 source(file.path(PRJ_HOME, "utils/qq.R"))
@@ -115,13 +115,15 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
 
 multiDescriptiveEDA <- function (df) {
   
+  datasetName <- deparse(substitute(df))
+  
   if (KNITR) {
-    describe_var <- paste0("describe_", deparse(substitute(flossData)))
-    assign(describe_var, describe(flossData), envir = .GlobalEnv)
+    describe_var <- paste0("describe_", datasetName)
+    assign(describe_var, describe(df), envir = .GlobalEnv)
   } else {
-    message("\nDecriptive statistics for '", colNames, "':\n")
+    message("\nDecriptive statistics for '", datasetName, "':\n")
     # suppress "NAs introduced by coercion" warnings
-    suppressWarnings(describe(flossData))
+    suppressWarnings(print(describe(df)))
   }
 }
 
@@ -420,7 +422,7 @@ ggQQplot <- function (df, colName) # argument: vector of numbers
   
   #TODO: consider moving to main
   if (!KNITR) {
-    edaFile <- str_replace_all(string=varName, pattern=" ", repl="")
+    edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
     edaFile <- file.path(EDA_RESULTS_DIR, paste0("QQ-", edaFile, ".svg"))
     suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
   }
