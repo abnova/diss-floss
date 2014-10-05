@@ -11,6 +11,7 @@ if (!suppressMessages(require(RColorBrewer)))
   install.packages('RColorBrewer')
 if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
 if (!suppressMessages(require(psych))) install.packages('psych')
+if (!suppressMessages(require(polycor))) install.packages('polycor')
 
 library(RCurl)
 library(stringr)
@@ -19,6 +20,7 @@ library(scales)
 library(RColorBrewer)
 library(gridExtra)
 library(psych)
+library(polycor)
 
 ## @knitr PrepareEDA
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
@@ -111,7 +113,7 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
 }
 
 
-multiDescriptiveEDA <- function (df, var, colNames, extraFun) {
+multiDescriptiveEDA <- function (df) {
   
   if (KNITR) {
     describe_var <- paste0("describe_", deparse(substitute(flossData)))
@@ -124,13 +126,57 @@ multiDescriptiveEDA <- function (df, var, colNames, extraFun) {
 }
 
 
-multiVisualEDA <- function (df, var, colName, extraFun) {
+correlationAnalysis <- function (df) {
+  
+  # use hetcor() from 'polycor' package instead of corr.test()
+  # in order to handle heterogenous data w/out conversion
+  corr.info <- hetcor(df, std.err = FALSE)
+  print(corr.info)
+}
+
+
+mvnTests <- function (df, indicators) {
+  
+  # Test for multivariate normality, using 'MVN' package
+  message("\nTesting data for multivariate normality...\n")
+  
+  # default to 1% of the data set
+  sampleSize <- nrow(df) / 100
+  
+  # sample size should not exceed 2000 for one of MVN tests
+  sampleSize <- ifelse(sampleSize >= 2000, 1000, sampleSize)
+  
+  # sample the data set
+  flossDataTest <- sampleDF(df, sampleSize)
+
+  # convert factors to integers
+  factorCols <- vapply(flossDataTest, is.factor, logical(1))
+  flossDataTest[factorCols] <- lapply(flossDataTest[factorCols], as.integer)
+  
+  mvn.result <- MVN::mardiaTest(flossDataTest, cov = TRUE, qqplot = FALSE)
+  print(mvn.result)
+  
+  mvn.result <- MVN::hzTest(flossDataTest, cov = TRUE, qqplot = FALSE)
+  print(mvn.result)
+  
+  mvn.result <- MVN::roystonTest(flossDataTest, qqplot = FALSE)
+  print(mvn.result)
+}
+
+
+multiAnalyticalEDA <- function (df, indicators) {
+  
+  correlationAnalysis(df)
+  mvnTests(df)
+}
+
+
+multiVisualEDA <- function (df, indicators) {
   
 }
 
 
-performEDA <- function (dataSource, analysis,
-                        indicator, colName, extraFun) {
+performEDA <- function (dataSource, indicator, colName, extraFun) {
   
   fileName <- paste0(indicator, RDS_EXT)
   rdataFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
@@ -142,28 +188,31 @@ performEDA <- function (dataSource, analysis,
          "Run 'make' first.")
   }
   
-  if (identical(analysis, "univariate")) {
-    
-    multiDescriptiveEDA(data, indicator, colNames, extraFun)
-    uniDescriptiveEDA(data, indicator, colName, extraFun)
-    uniVisualEDA(data, indicator, colName, extraFun)
-    # TODO: Integrate mixture analysis from 'sandbox'
-    #fitDistParam(data, indicator, colName, extraFun)
-    #fitDistNonParam(data, indicator, colName, extraFun)
-    
-  } else if (identical(analysis, "multivariate")) {
-    
-    colNames <- names(data)
-    colNames <- colNames[-1] # delete Project ID
-    multiDescriptiveEDA(data, indicator, colNames, extraFun)
-    multiVisualEDA(data, indicator, colNames, extraFun)
-    
-  } else {
-    error("Unknown type of EDA analysis - ",
-          "accepted values are 'univariate' and 'multivariate'")
-  }
-  
+  uniDescriptiveEDA(data, indicator, colName, extraFun)
+  uniVisualEDA(data, indicator, colName, extraFun)
+  # TODO: Integrate mixture analysis from 'sandbox'
+  #fitDistParam(data, indicator, colName, extraFun)
+  #fitDistNonParam(data, indicator, colName, extraFun)
+
   rm(data)
+}
+
+
+performMultiEDA <- function (flossData, dataSource, indicators) {
+
+  # validity check
+  if (length(indicators) == 0) {
+    warning("No indicators specified for '", dataSource, "' - EDA skipped!")
+    return
+  }
+
+  # restrict EDA to specified set of indicators
+  flossData <- flossData[indicators]
+  
+  # perform multivariate EDA
+  multiDescriptiveEDA(flossData)
+  multiAnalyticalEDA(flossData)
+  multiVisualEDA(flossData)
 }
 
 
@@ -401,8 +450,8 @@ sfExtraFun <- list("projectAge", "devTeamSize",
 
 # sequentially call EDA functions for all indicators in data source
 silent <- lapply(seq_along(sfIndicators), function(i) {
-  performEDA("SourceForge", analysis="univariate",
-             sfIndicators[[i]], sfColumnNames[[i]], sfExtraFun[[i]])
+  performEDA("SourceForge", sfIndicators[[i]], sfColumnNames[[i]],
+             sfExtraFun[[i]])
 })
 
 
@@ -412,26 +461,41 @@ if (!KNITR) {
   suppressMessages(ggsave(filename=edaFilePDF, mg, width=8.5, height=11))
 }
 
-message("\n===== EDA completed, results can be found ",
+message("\n===== Univariate EDA completed, results can be found ",
         "in directory \"", EDA_RESULTS_DIR, "\"\n")
 
-## @knitr DoNotUse
-stop('OK! Intentionally stopped to prevent code from running.')
+# -- ## @knitr DoNotUse
+# -- stop('OK! Intentionally stopped to prevent code from running.')
 
-# construct list of indicators & corresponding extra functions
-sfMultiIndicators <- c("prjAge", "prjLicense")
-sfMultiColumnNames <- c("Project Age", "Project License")
-sfMultiExtraFun <- list("projectAge", "projectLicense")
+# define data sources
+dataSourcesList <- c("SourceForge")  # TODO: add "FLOSSmole", when ready
 
-multiPlots <- lapply(seq_along(sfMultiIndicators), function(i) {
-  performEDA("SourceForge", analysis="multivariate",
-             sfMultiIndicators[[i]], sfMultiColumnNames[[i]],
-             sfMultiExtraFun[[i]])
-})
+# sets of indicators for multivariate EDA per data source
+indicators <- c()
+indicators[["SourceForge"]] <- c("Project Age",
+                                 "Project License",
+                                 "License Category",
+                                 "License Restrictiveness",
+                                 "Development Stage",
+                                 "Project Maturity",
+                                 "Development Team Size",
+                                 "User Community Size",
+                                 "Software Type")
 
+indicators[["FLOSSmole"]] <- c()
+
+for (dataSource in dataSourcesList)
+  performMultiEDA(flossData, dataSource, indicators[[dataSource]])
+
+# TODO: produce 'multiPlots'
+#if (!KNITR) {
 #edaFilePDF <- file.path(EDA_RESULTS_DIR, "eda-multivar.pdf")
 #pdf(edaFilePDF)
 #silent <- lapply(multiPlots, print)
+#}
+
+message("\n===== Multivariate EDA completed, results can be found ",
+        "in directory \"", EDA_RESULTS_DIR, "\"\n")
 
 
 ##### "EXTRA" (CUSTOMIZATION) FUNCTIONS #####
