@@ -117,6 +117,9 @@ multiDescriptiveEDA <- function (df) {
   
   datasetName <- deparse(substitute(df))
   
+  # it's possible to customize describe()'s output as follows:
+  # describe(mtcars)[, c(2, 3, 4, 5, 8, 9)]
+  
   if (KNITR) {
     describe_var <- paste0("describe_", datasetName)
     assign(describe_var, describe(df), envir = .GlobalEnv)
@@ -130,10 +133,19 @@ multiDescriptiveEDA <- function (df) {
 
 correlationAnalysis <- function (df) {
   
+  names(df) <- make.names(names(df))
+
+  # due to very small amount of projects with "Non-OSI" licesnse
+  # and their disapperance due to calculating correlations,
+  # we remove this indicator from EDA (consider analyzing it
+  # at later phases with inclusion of imputed data)
+  df <- df[setdiff(names(df), "License.Category")]
+
   # use hetcor() from 'polycor' package instead of corr.test()
   # in order to handle heterogenous data w/out conversion
-  corr.info <- hetcor(df, std.err = FALSE)
-  print(corr.info)
+  corr.info <- hetcor(df, use="pairwise.complete.obs",
+                      std.err = FALSE) # use $correlations just for corr
+  print(corr.info, digits=2)
 }
 
 
@@ -154,6 +166,9 @@ mvnTests <- function (df, indicators) {
   # convert factors to integers
   factorCols <- vapply(flossDataTest, is.factor, logical(1))
   flossDataTest[factorCols] <- lapply(flossDataTest[factorCols], as.integer)
+  
+  flossDataTest <-
+    flossDataTest[setdiff(names(flossDataTest), "License Category")]
   
   mvn.result <- MVN::mardiaTest(flossDataTest, cov = TRUE, qqplot = FALSE)
   print(mvn.result)
@@ -224,6 +239,16 @@ performMultiEDA <- function (flossData, dataSource, indicators) {
   # restrict EDA to specified set of indicators
   flossData <- flossData[indicators]
   
+  # exclude nominal variables from further analysis
+  analysisCols <- vapply(flossData,
+                         function(x) {is.ordered(x) || is.numeric(x)},
+                         logical(1))
+  flossData <- flossData[, analysisCols]
+  
+  # remove projects with level 'Inactive' from further analysis
+  pmFactor <- as.name(flossData[["Project Stage"]])
+  levels(pmFactor)[nlevels(pmFactor)] <- NA
+  
   # perform multivariate EDA
   multiDescriptiveEDA(flossData)
   multiAnalyticalEDA(flossData)
@@ -293,11 +318,13 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   # Overlay with transparent density plot
   #g <- g + geom_density(alpha = .2, fill = "#FF6666")
 
+  mean <- ifelse(log, mean(log(df$var)), mean(df$var))
+  sd <- ifelse(log, sd(log(df$var)), sd(df$var))
+  
   # Overlay with density-like plot, based on data count
   g <- g + stat_function(fun = dnorm.count, 
-                         args = list(mean = mean(df$var),
-                                     sd = sd(df$var),
-                                     #log = log,
+                         args = list(mean = mean,
+                                     sd = sd,
                                      n = length(df$var),
                                      binwidth = bwidth),
                          color = "red")
@@ -490,7 +517,7 @@ flossData <- loadData(ready4edaFile)
 sfIndicators <- c("prjAge", "devTeamSize",
                   "prjLicense", "prjMaturity")
 sfColumnNames <- c("Project Age", "Development Team Size",
-                   "Project License", "Project Maturity")
+                   "Project License", "Project Stage")
 sfExtraFun <- list("projectAge", "devTeamSize",
                    "projectLicense", "projectMaturity")
 
@@ -523,7 +550,7 @@ indicators[["SourceForge"]] <- c("Project Age",
                                  "License Category",
                                  "License Restrictiveness",
                                  "Development Stage",
-                                 "Project Maturity",
+                                 "Project Stage",
                                  "Development Team Size",
                                  "User Community Size",
                                  "Software Type")

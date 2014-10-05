@@ -150,7 +150,10 @@ sfProjectLicense <- function (indicator, data) {
       datagrid='Unknown', public102='Unknown')
   
   data[["License Restrictiveness"]] <- 
-    as.factor(classification[as.character(data[["Project License"]])])
+    factor(classification[as.character(data[["Project License"]])],
+           ordered = TRUE,
+           levels = c("Highly Restrictive", "Restrictive",
+                      "Permissive")) # set definite order
   
   data[["Project License"]] <- factor(data[["Project License"]])
   levels(data[["Project License"]]) <- 
@@ -186,7 +189,13 @@ sfProjectLicense <- function (indicator, data) {
   data[["License Category"]] <- factor(data[["License Category"]])
   levels(data[["License Category"]]) <- 
     list(OSI="osi", Other="license", CCAL="ccal")
-         
+  
+  classification <- c(OSI="OSI", Other="Non-OSI", CCAL="Non-OSI")
+  data[["License Category"]] <- 
+    factor(classification[as.character(data[["License Category"]])],
+           ordered = TRUE,
+           levels = c("OSI", "Non-OSI")) # set definite order
+  
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   
@@ -204,8 +213,10 @@ sfPrjMaturity <- function (indicator, data) {
       beta='Alpha/Beta', production='Stable', mature='Mature',
       inactive='Inactive')
   
-  data[["Project Maturity"]] <- 
-    as.factor(classification[as.character(data[["Development Stage"]])])
+  data[["Project Stage"]] <- 
+    factor(classification[as.character(data[["Development Stage"]])],
+           ordered = TRUE,
+           levels = c("Alpha/Beta", "Stable", "Mature", "Inactive"))
   
   data[["Development Stage"]] <- factor(data[["Development Stage"]])
   levels(data[["Development Stage"]]) <- 
