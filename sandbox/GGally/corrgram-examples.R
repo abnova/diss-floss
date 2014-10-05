@@ -21,7 +21,7 @@ getData <- function () {
   df$prjage   <- df[["Project Age"]]
   df$teamsize <- df[["Development Team Size"]]
   df$license  <- df[["Project License"]]
-  df$prjmaturity <- df[["Project Maturity"]]
+  df$prjmaturity <- df[["Project Stage"]]
   
   return (df)
 }

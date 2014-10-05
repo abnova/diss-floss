@@ -66,8 +66,8 @@ prepareForMI <- function (data) {
     as.integer(data[["License Restrictiveness"]])
   data[["Development Stage"]] <- 
     as.integer(data[["Development Stage"]])
-  data[["Project Maturity"]] <- 
-    as.integer(data[["Project Maturity"]])
+  data[["Project Stage"]] <- 
+    as.integer(data[["Project Stage"]])
 
   return (data)
 }
@@ -90,7 +90,7 @@ flossData <- flossData[c("Repo URL",
                          "License Category",
                          "License Restrictiveness",
                          "Development Stage",
-                         "Project Maturity",
+                         "Project Stage",
                          "User Community Size")]
 
 # temp fix for limited dataset - comment out/remove for full dataset

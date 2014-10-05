@@ -24,9 +24,9 @@ names(df) <- make.names(names(df))
 
 # select columns
 df2 <- df[, c("Project.Age", "Development.Team.Size", "User.Community.Size",
-              "License.Restrictiveness", "Project.Maturity")]
+              "License.Restrictiveness", "Project.Stage")]
 df3 <- df[, c("Project.Age", "Development.Team.Size", "User.Community.Size",
-              "License.Restrictiveness", "Project.Maturity")]
+              "License.Restrictiveness", "Project.Stage")]
 
 
 # This plot might be useful (but separate plots are better?)
@@ -37,14 +37,12 @@ g1 <- ggpairs(df2, title = "Pairwise Scatterplots",
         axisLabels = "show")
 print(g1)
 
-# Plot with 'prjmaturity' as color (should be a factor)
-# (this plot doesn't seem to be very informative)
-if (TRUE) {
-  g2 <- ggpairs(df3, title = "Pairwise Scatterplots",
-          lower=list(continuous = "smooth", params = c(colour = "blue")),
-          upper=list(params = list(corSize = 6)),
-          diag=list(continuous = "bar", params = c(colour = "blue")), 
-          axisLabels = "show",
-          color = "Project.Maturity")
-  print(g2)
-}
+# Plot with 'Project.Stage' as color (should be a factor)
+# (this plot doesn't seem to be very informative, but...)
+g2 <- ggpairs(df3, title = "Pairwise Scatterplots",
+              lower=list(continuous = "smooth", params = c(color = "blue")),
+              upper=list(params = list(corSize = 6)),
+              diag=list(continuous = "bar", params = c(color = "blue")), 
+              axisLabels = "show",
+              color = "Project.Stage")
+print(g2)
