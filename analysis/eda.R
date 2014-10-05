@@ -173,8 +173,21 @@ multiAnalyticalEDA <- function (df, indicators) {
 }
 
 
-multiVisualEDA <- function (df, indicators) {
+multiVisualEDA <- function (df) {
+
+  facetVars <- c()
   
+  for (colName in names(df)) {
+    if (is.factor(colName))
+      facetVars <- c(facetVars, colName)
+  }
+  scatterPlotVars <- setdiff(names(df), facetVars)
+  
+  varPairs <- combn(scatterPlotVars, 2)
+  for (i in dim(varPairs[2])) {
+    for (facet in facetVars)
+      scatterPlot(df, vPairs[1, i], vPairs[2, i], facet)
+  }
 }
 
 
@@ -220,6 +233,7 @@ performMultiEDA <- function (flossData, dataSource, indicators) {
 
 ##### VISUAL EDA #####
 
+##### Univariate Visual EDA
 
 # Plot distribution of a continuous variable "colName"
 plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
@@ -430,6 +444,36 @@ ggQQplot <- function (df, colName) # argument: vector of numbers
   return (g)
 }
 
+
+##### Multivariate Visual EDA
+
+
+scatterPlot <- function (df, xName, yName, facetVar) {
+  
+  df <- df
+  df <- na.omit(df)
+  df$x <- df[[xName]]
+  df$y <- df[[yName]]
+  
+  datasetName <- deparse(substitute(df))
+  title <- paste0("Scatterplot for '", datasetName, "' with faceting")
+  xLabel <- colName
+  
+  g <- ggplot(df, aes(x, y)) + geom_point() + facet_grid(.~facetVar)
+  
+  if (.Platform$GUI == "RStudio") print(g)
+  
+  #TODO: consider moving to main
+  if (!KNITR) {
+    edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
+    edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
+    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  }
+  
+  return (g)
+}
+
+
 ##### EDA MAIN #####
 
 
@@ -485,6 +529,11 @@ indicators[["SourceForge"]] <- c("Project Age",
                                  "Software Type")
 
 indicators[["FLOSSmole"]] <- c()
+
+# TODO: Options for converting multi-word var/column names
+#       to sysntactically valid names:
+# 1) names(df) <- make.names(names(df))
+# 2) TBD
 
 for (dataSource in dataSourcesList)
   performMultiEDA(flossData, dataSource, indicators[[dataSource]])
