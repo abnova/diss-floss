@@ -65,9 +65,9 @@ REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), C
 
 RQ_SIZE <- 50000
 
-SPECIFY_PROJECT_ID_RANGE <- TRUE
+SPECIFY_PROJECT_ID_RANGE <<- TRUE
 PID_LOW <- 1
-PID_HIGH <- 100000
+PID_HIGH <<- 0
 
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
@@ -458,8 +458,15 @@ getSourceForgeData <- function (row, config) { # dataFrame
   else
     where <- rq$where
   
+  # synchronize this flag with crresponding config. attribute
+  SPECIFY_PROJECT_ID_RANGE <<- 
+    ifelse(config$data[row, "resultSize"] == 'all', FALSE, TRUE)
+  
   # Setup Project ID range specification, if needed
   if (SPECIFY_PROJECT_ID_RANGE) {
+    
+    PID_HIGH <<- config$data[row, "resultSize"]
+    
     if (grepl("GROUP BY", where)) { # handle GROUP BY special case
       parts <- strsplit(where, "GROUP BY")
       leftOfGB <- parts[[1]][1]
@@ -476,11 +483,14 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   # First, retrieve total number of rows for the request
   # (we use subselect here as some queries use aggregate functions)
+  myWhere <- paste(where, ")", "AS MyAlias")
+  myFrom <- paste("(", "SELECT", rq$select, "FROM", rq$from)
+  myFrom <- ifelse(where == '', paste(myFrom, myWhere), myFrom)
+  myWhere <- ifelse(where == '', '', myWhere)
+  
   success <- 
-    srdaRequestData(queryURL, "COUNT(*)",
-                    paste("(", "SELECT", rq$select,
-                          "FROM", rq$from),
-                    paste(where, ")", "AS MyAlias"), DATA_SEP, ADD_SQL)
+    srdaRequestData(queryURL, "COUNT(*)", myFrom, myWhere,
+                    DATA_SEP, ADD_SQL)
   if (!success) error("Data request failed!")
   
   assign(dataName, srdaGetData(TRUE))
@@ -515,20 +525,23 @@ getSourceForgeData <- function (row, config) { # dataFrame
   }
   
   if (DEBUG) message("Page: ", appendLF = FALSE)
-  
+
   # Now, we can request & retrieve data via SQL pagination
   for (i in 1:numRequests) {
     
+    # use previously generated WHERE clause for re-initializing 'whereLoop'
+    whereLoop <- where
+    
     # Prepare and setup SQL pagination
-    if (where == '') where <- '1=1'
+    if (whereLoop == '') whereLoop <- '1=1'
     
     # Re-use here the already prepared (Project ID range specified)
     # WHERE clause from the Count request code block above
-    where <- paste(where,
+    whereLoop <- paste(whereLoop,
                    'LIMIT', RQ_SIZE, 'OFFSET', RQ_SIZE*(i-1))
     
     # Submit data request
-    success <- srdaRequestData(queryURL, rq$select, rq$from, where,
+    success <- srdaRequestData(queryURL, rq$select, rq$from, whereLoop,
                                DATA_SEP, ADD_SQL)
     if (!success) error("Data request failed!")
     
