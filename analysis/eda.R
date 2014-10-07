@@ -194,14 +194,14 @@ multiAnalyticalEDA <- function (df, indicators) {
 
 multiVisualEDA <- function (df, corrMat) {
 
-  ##GGally
-  
   names(df) <- make.names(names(df))
 
+  # log transform continuous data
+  df["Project.Age"] <- log(df["Project.Age"])
   df["Development.Team.Size"] <- log(df["Development.Team.Size"])
   df["User.Community.Size"] <- log(df["User.Community.Size"])
 
-  # drop this indicator to match the dimension of the hetcor() results
+  # drop this indicator to match dimensions of the hetcor()'s results
   df <- df[setdiff(names(df), "License.Category")]
   
   g1 <- ggpairs(df, title = "Pairwise Scatterplots",
@@ -228,7 +228,7 @@ multiVisualEDA <- function (df, corrMat) {
   
   # print customized plot
   print(g1)
-  stop()
+  stop("Intended stop!")
   
   # Plot with 'Project.Stage' as color (should be a factor)
   # (this plot doesn't seem to be very informative, but...)
@@ -239,22 +239,6 @@ multiVisualEDA <- function (df, corrMat) {
                 axisLabels = "show",
                 color = "Project.Stage")
   print(g2)
-  
-  if (FALSE) {
-    facetVars <- c()
-    
-    for (colName in names(df)) {
-      if (is.factor(colName))
-        facetVars <- c(facetVars, colName)
-    }
-    scatterPlotVars <- setdiff(names(df), facetVars)
-    
-    varPairs <- combn(scatterPlotVars, 2)
-    for (i in dim(varPairs[2])) {
-      for (facet in facetVars)
-        scatterPlot(df, vPairs[1, i], vPairs[2, i], facet)
-    }
-  }
 }
 
 
