@@ -4,6 +4,7 @@
    "_action":"import",
    "_schema":"sf0514",
    "_blacklist":"692859",
+   "_outlier_limit_DevTeamSize":"100",
    "data":[
       {
          "indicatorName":"devLinks",
@@ -21,7 +22,7 @@ FROM ${schema}.external_tool_links"
          "indicatorDescription":"Project's license",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"100000",
+         "resultSize":"300000",
          "resultNames":"Project ID, Project License, License Category",
          "requestSQL":"
 SELECT tgl.group_id, tc.shortname, tc2.shortname
@@ -33,7 +34,7 @@ WHERE tgl.trove_cat_id = tc.trove_cat_id AND tc.parent = tc2.trove_cat_id AND tc
          "indicatorDescription":"Existense of unrestricted dev. support",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"100000",
+         "resultSize":"300000",
          "resultNames":"Project ID, Preferred Support Type, Preferred Support Resource",
          "requestSQL":"
 SELECT group_id, preferred_support_type, preferred_support_resource
@@ -44,7 +45,7 @@ FROM ${schema}.groups"
          "indicatorDescription":"Public availability of project roadmap",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"100000",
+         "resultSize":"300000",
          "resultNames":"Project ID, Use Wiki",
          "requestSQL":"
 SELECT group_id, use_wiki
@@ -55,7 +56,7 @@ FROM ${schema}.groups"
          "indicatorDescription":"Transparency of decision making",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"100000",
+         "resultSize":"300000",
          "resultNames":"Project ID, Use Wiki, Use Forum",
          "requestSQL":"
 SELECT group_id, use_wiki, use_forum
@@ -66,7 +67,7 @@ FROM ${schema}.groups"
          "indicatorDescription":"Project maturity",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"100000",
+         "resultSize":"300000",
          "resultNames":"Project ID, Development Stage",
          "requestSQL":"
 SELECT tgl.group_id, tc.shortname
@@ -78,7 +79,7 @@ WHERE tgl.trove_cat_id = tc.trove_cat_id AND tc.root_parent = 6"
          "indicatorDescription":"Project age",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"700000",
+         "resultSize":"300000",
          "resultNames":"Project ID, Registration Time",
          "requestSQL":"
 SELECT group_id, register_time
@@ -89,7 +90,7 @@ FROM ${schema}.groups"
          "indicatorDescription":"Development team size",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"100000",
+         "resultSize":"300000",
          "resultNames":"Project ID, Development Team Size",
          "requestSQL":"
 SELECT group_id, COUNT(user_id)
@@ -102,7 +103,7 @@ GROUP BY group_id"
          "indicatorDescription":"User community size",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"100000",
+         "resultSize":"300000",
          "resultNames":"Project ID, User Community Size",
          "requestSQL":"
 SELECT group_id, downloads
@@ -113,7 +114,7 @@ FROM ${schema}.stats_project_all"
          "indicatorDescription":"Software type",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"100000",
+         "resultSize":"300000",
          "resultNames":"Project ID, Active, Software Type",
          "requestSQL":"
 SELECT tgl.group_id, tgl.entity_type, tf.description

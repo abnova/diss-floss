@@ -654,6 +654,11 @@ blacklistPIDs <- strsplit(unlist(blacklist), split = ",")
 blacklistPIDs <- lapply(blacklistPIDs, str_trim)
 blacklist <<- unlist(blacklistPIDs)
 
+# initialize env. var. for outlier control
+outLim_DevTeamSize <- unlist(config["_outlier_limit_DevTeamSize"])
+strToAdd <- paste0("OUTLIER_LIM_DEV_TEAM_SIZE = ", outLim_DevTeamSize)
+cat(strToAdd, file = "~/.Renviron", append = TRUE)
+
 # Create cache directory, if it doesn't exist
 if (!file.exists(RDATA_DIR)) {
   dir.create(RDATA_DIR, recursive = TRUE, showWarnings = FALSE)

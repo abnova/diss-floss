@@ -4,6 +4,7 @@
    "_action":"import",
    "_schema":"sf0514",
    "_blacklist":"692859",
+   "_outlier_limit_DevTeamSize":"100",
    "data":[
       {
          "indicatorName":"devLinks",
