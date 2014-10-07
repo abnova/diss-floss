@@ -3,6 +3,7 @@
    "_prefix":"sf",
    "_action":"import",
    "_schema":"sf0514",
+   "_blacklist":"692859",
    "data":[
       {
          "indicatorName":"devLinks",
