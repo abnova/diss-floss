@@ -78,6 +78,8 @@ RDATA_DIR <- file.path(PRJ_HOME, "cache/SourceForge")
 # Data source prefix (to construct data object names)
 dsPrefix <- ""
 
+blacklist <- c()
+
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 DEBUG2 <- FALSE
 
@@ -563,6 +565,9 @@ getSourceForgeData <- function (row, config) { # dataFrame
     varNamesModif <- lapply(varNamesModif, str_trim)
     names(data) <- unlist(varNamesModif)
     
+    # remove projects from the blacklist
+    data <- data[!(data[["Project ID"]] %in% blacklist), ]
+    
     # add current data frame to the list
     dfList[[i]] <- data
     if (DEBUG) message(i, " ", appendLF = FALSE)
@@ -641,6 +646,13 @@ if (DEBUG) {
 
 # Save data source prefix in a global variable
 dsPrefix <<- config["_prefix"]
+
+# Process projects' blacklist
+blacklist <<- config["_blacklist"]
+
+blacklistPIDs <- strsplit(unlist(blacklist), split = ",")
+blacklistPIDs <- lapply(blacklistPIDs, str_trim)
+blacklist <<- unlist(blacklistPIDs)
 
 # Create cache directory, if it doesn't exist
 if (!file.exists(RDATA_DIR)) {
