@@ -12,6 +12,7 @@ if (!suppressMessages(require(RColorBrewer)))
 if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(polycor))) install.packages('polycor')
+if (!suppressMessages(require(GGally))) install.packages('GGally')
 
 library(RCurl)
 library(stringr)
@@ -21,6 +22,7 @@ library(RColorBrewer)
 library(gridExtra)
 library(psych)
 library(polycor)
+library("GGally")
 
 ## @knitr PrepareEDA
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
@@ -183,25 +185,75 @@ mvnTests <- function (df, indicators) {
 
 multiAnalyticalEDA <- function (df, indicators) {
   
-  correlationAnalysis(df)
+  corrMat <- correlationAnalysis(df)
   mvnTests(df)
+  
+  return (corrMat)
 }
 
 
-multiVisualEDA <- function (df) {
+multiVisualEDA <- function (df, corrMat) {
 
-  facetVars <- c()
+  ##GGally
   
-  for (colName in names(df)) {
-    if (is.factor(colName))
-      facetVars <- c(facetVars, colName)
+  names(df) <- make.names(names(df))
+
+  df["Development.Team.Size"] <- log(df["Development.Team.Size"])
+  df["User.Community.Size"] <- log(df["User.Community.Size"])
+
+  # drop this indicator to match the dimension of the hetcor() results
+  df <- df[setdiff(names(df), "License.Category")]
+  
+  g1 <- ggpairs(df, title = "Pairwise Scatterplots",
+                lower=list(continuous = "smooth", combo="box",
+                           discrete="ratio", params = c(colour = "blue")),
+                upper=list(params = list(corSize = 6), combo=""),
+                diag=list(continuous = "bar", params = c(colour = "blue")),
+                axisLabels = "show")
+
+  # generate custom panels with corr. coefficients from hetcor()
+  
+  # index of upper triangle rows and columns
+  # replace r with hetcor matrix
+  index <- which(upper.tri(corrMat), arr.ind = TRUE)
+  
+  # loop through upper triangle and replace
+  for (i in 1:nrow(index)) {
+    g1 <- putPlot(g1,
+                  ggally_text(sprintf("Corr:\n%0.2f",
+                                      corrMat[index[i, 1],
+                                              index[i, 2]])),
+                  index[i, 1], index[i, 2])
   }
-  scatterPlotVars <- setdiff(names(df), facetVars)
   
-  varPairs <- combn(scatterPlotVars, 2)
-  for (i in dim(varPairs[2])) {
-    for (facet in facetVars)
-      scatterPlot(df, vPairs[1, i], vPairs[2, i], facet)
+  # print customized plot
+  print(g1)
+  stop()
+  
+  # Plot with 'Project.Stage' as color (should be a factor)
+  # (this plot doesn't seem to be very informative, but...)
+  g2 <- ggpairs(df, title = "Pairwise Scatterplots",
+                lower=list(continuous = "smooth", params = c(color = "blue")),
+                upper=list(params = list(corSize = 6)),
+                diag=list(continuous = "bar", params = c(color = "blue")), 
+                axisLabels = "show",
+                color = "Project.Stage")
+  print(g2)
+  
+  if (FALSE) {
+    facetVars <- c()
+    
+    for (colName in names(df)) {
+      if (is.factor(colName))
+        facetVars <- c(facetVars, colName)
+    }
+    scatterPlotVars <- setdiff(names(df), facetVars)
+    
+    varPairs <- combn(scatterPlotVars, 2)
+    for (i in dim(varPairs[2])) {
+      for (facet in facetVars)
+        scatterPlot(df, vPairs[1, i], vPairs[2, i], facet)
+    }
   }
 }
 
@@ -251,8 +303,8 @@ performMultiEDA <- function (flossData, dataSource, indicators) {
   
   # perform multivariate EDA
   multiDescriptiveEDA(flossData)
-  multiAnalyticalEDA(flossData)
-  multiVisualEDA(flossData)
+  corrMat <- multiAnalyticalEDA(flossData)
+  multiVisualEDA(flossData, corrMat$correlations)
 }
 
 
