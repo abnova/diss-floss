@@ -242,20 +242,10 @@ multiVisualEDA <- function (df, corrMat) {
 }
 
 
-performEDA <- function (dataSource, indicator, colName, extraFun) {
+performEDA <- function (df, indicator, colName, extraFun) {
   
-  fileName <- paste0(indicator, RDS_EXT)
-  rdataFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
-  if (file.exists(rdataFile)) {
-    data <- readRDS(rdataFile)
-  }
-  else {
-    stop("RDS file for \'", indicator, "\' not found! ",
-         "Run 'make' first.")
-  }
-  
-  uniDescriptiveEDA(data, indicator, colName, extraFun)
-  uniVisualEDA(data, indicator, colName, extraFun)
+  uniDescriptiveEDA(df, indicator, colName, extraFun)
+  uniVisualEDA(df, indicator, colName, extraFun)
   # TODO: Integrate mixture analysis from 'sandbox'
   #fitDistParam(data, indicator, colName, extraFun)
   #fitDistNonParam(data, indicator, colName, extraFun)
@@ -358,6 +348,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   sd <- ifelse(log, sd(log(df$var)), sd(df$var))
   
   # Overlay with density-like plot, based on data count
+  if (FALSE)
   g <- g + stat_function(fun = dnorm.count, 
                          args = list(mean = mean,
                                      sd = sd,
@@ -559,7 +550,7 @@ sfExtraFun <- list("projectAge", "devTeamSize",
 
 # sequentially call EDA functions for all indicators in data source
 silent <- lapply(seq_along(sfIndicators), function(i) {
-  performEDA("SourceForge", sfIndicators[[i]], sfColumnNames[[i]],
+  performEDA(flossData, sfIndicators[[i]], sfColumnNames[[i]],
              sfExtraFun[[i]])
 })
 
