@@ -77,7 +77,7 @@ WHERE tgl.trove_cat_id = tc.trove_cat_id AND tc.root_parent = 6"
          "indicatorDescription":"Project age",
          "indicatorType":"character",
          "resultType":"data.frame",
-         "resultSize":"100000",
+         "resultSize":"all",
          "resultNames":"Project ID, Registration Time",
          "requestSQL":"
 SELECT group_id, register_time
