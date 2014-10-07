@@ -200,6 +200,10 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
   
   # merge loaded datasets
   flossData <- mergeDataSets(dataSets, prefix) # method "plyr" is default
+
+  # exclude inactive projects
+  if (dataSource == "SourceForge")
+    flossData <- flossData[flossData[["Active"]] != 21, ]
   
   # verify the data frame structure
   if (DEBUG) str(flossData)

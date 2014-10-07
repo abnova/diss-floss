@@ -114,9 +114,9 @@ FROM sf0514.stats_project_all"
          "indicatorType":"character",
          "resultType":"data.frame",
          "resultSize":"100000",
-         "resultNames":"Project ID, Software Type",
+         "resultNames":"Project ID, Active, Software Type",
          "requestSQL":"
-SELECT tgl.group_id, tf.description
+SELECT tgl.group_id, tgl.entity_type, tf.description
 FROM sf0514.trove_group_link tgl, sf0514.trove_frontpage tf
 WHERE tgl.trove_cat_id = tf.trove_cat_id"
       }
