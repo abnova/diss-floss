@@ -75,6 +75,9 @@ RDS_EXT <- ".rds"
 #TODO: consider passing this via CL args
 RDATA_DIR <- file.path(PRJ_HOME, "cache/SourceForge")
 
+R_ENV_FILE <- "~/.Renviron"
+envVarFound <- FALSE
+
 # Data source prefix (to construct data object names)
 dsPrefix <- ""
 
@@ -655,9 +658,45 @@ blacklistPIDs <- lapply(blacklistPIDs, str_trim)
 blacklist <<- unlist(blacklistPIDs)
 
 # initialize env. var. for outlier control
-outLim_DevTeamSize <- unlist(config["_outlier_limit_DevTeamSize"])
-strToAdd <- paste0("OUTLIER_LIM_DEV_TEAM_SIZE = ", outLim_DevTeamSize)
-cat(strToAdd, file = "~/.Renviron", append = TRUE)
+setEnvVar <- function (envVarName, configAttrName) {
+  
+  configVal <- unlist(config[configAttrName])
+  fileVal <- ""
+  valueChanged <- FALSE
+  
+  # read in the data
+  #lines <- scan(R_ENV_FILE, what="", sep="\n", comment.char = "#")
+  lines <- readLines(R_ENV_FILE)
+  
+  # separate elements by one or more whitepace
+  y <- strsplit(lines, "[[:space:]]+")
+  
+  # check whether the value has been changed
+  for (i in seq_len(length(y))) {
+    if (envVarName %in% y[[i]][1]) { # env. var. found
+      envVarFound <- TRUE
+      fileVal <- y[[i]][3]
+      if (fileVal != configVal) { # value changed
+        lines[i] <- paste(envVarName, '=', configVal)
+        valueChanged <- TRUE
+      }
+    }
+  }
+  
+  if (envVarFound) {
+    if (valueChanged) {
+      unlink(R_ENV_FILE)
+      writeLines(lines, R_ENV_FILE)
+    }
+  }
+  else { # no env. var. found - just add corresponding line
+    strToAdd <- paste(envVarName, '=', configVal, "\n")
+    cat(strToAdd, file = R_ENV_FILE, append = TRUE)
+  }
+}
+
+# initialize env. var. for outlier control
+setEnvVar("OUTLIER_LIM_DEV_TEAM_SIZE", "_outlier_limit_DevTeamSize")
 
 # Create cache directory, if it doesn't exist
 if (!file.exists(RDATA_DIR)) {

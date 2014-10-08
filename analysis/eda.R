@@ -249,8 +249,6 @@ performEDA <- function (df, indicator, colName, extraFun) {
   # TODO: Integrate mixture analysis from 'sandbox'
   #fitDistParam(data, indicator, colName, extraFun)
   #fitDistNonParam(data, indicator, colName, extraFun)
-
-  rm(data)
 }
 
 

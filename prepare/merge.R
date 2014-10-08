@@ -208,6 +208,16 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
   # exclude outliers
   if (dataSource == "SourceForge") {
     outLim_DevTeamSize <- Sys.getenv("OUTLIER_LIM_DEV_TEAM_SIZE")
+    if (outLim_DevTeamSize == "") {
+      warning("Cannot find environment variable ",
+              "OUTLIER_LIM_DEV_TEAM_SIZE, defaulting to 100!")
+      outLim_DevTeamSize <- 100
+    }
+    else {
+      warning("Value of environment variable OUTLIER_LIM_DEV_TEAM_SIZE",
+              " is not numeric, defaulting to 100!")
+      outLim_DevTeamSize <- 100
+    }
     outLim_DevTeamSize <- as.numeric(outLim_DevTeamSize)
     flossData <- 
       flossData[flossData[["Development Team Size"]] <= outLim_DevTeamSize, ]
