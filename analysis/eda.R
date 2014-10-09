@@ -289,7 +289,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   
   df <- df
   df$var <- df[[colName]]
-  #df <- na.omit(df)
+  df <- na.omit(df)
   if (log) {
     if (any(df$var < 0)) df$var <- df$var + abs(min(df$var)) + 0.01
     # instead of log transforming data directly,
@@ -376,7 +376,7 @@ plotDensity <- function (df, colName) {
   df <- df
   df$var <- df[[colName]]
   df$category <- factor(df[[colName]])
-  #df <- na.omit(df)
+  df <- na.omit(df)
   
   title <- paste("Projects distribution across", colName,
                  "range (by category)")
@@ -408,7 +408,7 @@ plotBarChart <- function (df, colName) {
   SHOW_LEVELS <- 10
   df <- df
   df$var <- factor(df[[colName]])
-  #df <- na.omit(df)
+  df <- na.omit(df)
   
   # sort factor levels by the frequency of levels
   df$var <- reorder(df$var, df$var, function(x) -length(x))
