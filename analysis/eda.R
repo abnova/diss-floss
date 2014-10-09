@@ -289,7 +289,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   
   df <- df
   df$var <- df[[colName]]
-  df <- na.omit(df)
+  #df <- na.omit(df)
   if (log) {
     if (any(df$var < 0)) df$var <- df$var + abs(min(df$var)) + 0.01
     # instead of log transforming data directly,
@@ -346,7 +346,6 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   sd <- ifelse(log, sd(log(df$var)), sd(df$var))
   
   # Overlay with density-like plot, based on data count
-  if (FALSE)
   g <- g + stat_function(fun = dnorm.count, 
                          args = list(mean = mean,
                                      sd = sd,
@@ -377,7 +376,7 @@ plotDensity <- function (df, colName) {
   df <- df
   df$var <- df[[colName]]
   df$category <- factor(df[[colName]])
-  df <- na.omit(df)
+  #df <- na.omit(df)
   
   title <- paste("Projects distribution across", colName,
                  "range (by category)")
@@ -409,7 +408,7 @@ plotBarChart <- function (df, colName) {
   SHOW_LEVELS <- 10
   df <- df
   df$var <- factor(df[[colName]])
-  df <- na.omit(df)
+  #df <- na.omit(df)
   
   # sort factor levels by the frequency of levels
   df$var <- reorder(df$var, df$var, function(x) -length(x))
@@ -497,33 +496,7 @@ ggQQplot <- function (df, colName) # argument: vector of numbers
 }
 
 
-##### Multivariate Visual EDA
-
-
-scatterPlot <- function (df, xName, yName, facetVar) {
-  
-  df <- df
-  df <- na.omit(df)
-  df$x <- df[[xName]]
-  df$y <- df[[yName]]
-  
-  datasetName <- deparse(substitute(df))
-  title <- paste0("Scatterplot for '", datasetName, "' with faceting")
-  xLabel <- colName
-  
-  g <- ggplot(df, aes(x, y)) + geom_point() + facet_grid(.~facetVar)
-  
-  if (.Platform$GUI == "RStudio") print(g)
-  
-  #TODO: consider moving to main
-  if (!KNITR) {
-    edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
-    edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, ".svg"))
-    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
-  }
-  
-  return (g)
-}
+##### Multivariate Visual EDA: see above
 
 
 ##### EDA MAIN #####
