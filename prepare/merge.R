@@ -13,6 +13,11 @@ invisible(Sys.setlocale('LC_ALL', 'C'))
 
 source(file.path(PRJ_HOME, "utils/data.R"))
 
+# SRDA internal codes 
+_PRJ_INACTIVE <- 21
+
+# default values for limits, etc.
+TEAM_SIZE <- 100
 
 DEBUG <- TRUE
 
@@ -203,7 +208,7 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
 
   # exclude inactive projects
   if (dataSource == "SourceForge")
-    flossData <- flossData[flossData[["Active"]] != 21, ]
+    flossData <- flossData[flossData[["Active"]] != _PRJ_INACTIVE, ]
 
   # exclude outliers
   if (dataSource == "SourceForge") {
@@ -212,14 +217,14 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
     if (outLim_DevTeamSize == "") {
       warning("Cannot find environment variable ",
               "OUTLIER_LIM_DEV_TEAM_SIZE, defaulting to 100!")
-      outLim_DevTeamSize <- 100
+      outLim_DevTeamSize <- TEAM_SIZE
     }
     
     outLim_DevTeamSize <- as.numeric(outLim_DevTeamSize)
-    if (outLim_DevTeamSize == NA) {
+    if (is.na(outLim_DevTeamSize)) {
       warning("Value of environment variable OUTLIER_LIM_DEV_TEAM_SIZE",
               " is not numeric, defaulting to 100!")
-      outLim_DevTeamSize <- 100
+      outLim_DevTeamSize <- TEAM_SIZE
     }
     
     flossData <- 

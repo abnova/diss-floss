@@ -63,11 +63,11 @@ ADD_SQL  <- "0" # add SQL to file
 
 REPLACE_CLAUSE <- "REPLACE(REPLACE(REPLACE(a.details, ':', ';'), CHR(10),' '), CHR(13),' ')"
 
-RQ_SIZE <- 50000
+RQ_SIZE <- 50000 # number of records returned by a single SQL query
 
-SPECIFY_PROJECT_ID_RANGE <<- TRUE
+SPECIFY_PROJECT_ID_RANGE <<- TRUE # depends on 'resultSize' config. attr.
 PID_LOW <- 1
-PID_HIGH <<- 0
+PID_HIGH <<- 0 # auto-initialized by 'resultSize' config. attribute
 
 RDATA_EXT <- ".RData"
 RDS_EXT <- ".rds"
@@ -463,7 +463,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
   else
     where <- rq$where
   
-  # synchronize this flag with crresponding config. attribute
+  # synchronize this flag with corresponding config. attribute
   SPECIFY_PROJECT_ID_RANGE <<- 
     ifelse(config$data[row, "resultSize"] == 'all', FALSE, TRUE)
   
