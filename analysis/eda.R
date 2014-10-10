@@ -289,8 +289,9 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   
   df <- df
   df$var <- df[[colName]]
-  df <- na.omit(df)
+  #df <- na.omit(df)
   if (log) {
+    if (any(is.na(df$var))) df$var <- 1
     if (any(df$var < 0)) df$var <- df$var + abs(min(df$var)) + 0.01
     # instead of log transforming data directly,
     # we do that further via ggplot2's scales functionality
@@ -334,6 +335,8 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   bwidth <- (breaks[2] - breaks[1]) / 2
   if (log) bwidth <- bwidth/100
   
+  if (is.na(bwidth)) bwidth <- 0.01
+  
   # Use (..density..) * bwidth IF want to match y-range with kernel density
   g <- g + geom_histogram(aes(fill = ..count..), # y = ..density..
                           binwidth = bwidth, #0.01, #bwidth
@@ -376,7 +379,7 @@ plotDensity <- function (df, colName) {
   df <- df
   df$var <- df[[colName]]
   df$category <- factor(df[[colName]])
-  df <- na.omit(df)
+  #df <- na.omit(df)
   
   title <- paste("Projects distribution across", colName,
                  "range (by category)")
@@ -408,7 +411,7 @@ plotBarChart <- function (df, colName) {
   SHOW_LEVELS <- 10
   df <- df
   df$var <- factor(df[[colName]])
-  df <- na.omit(df)
+  #df <- na.omit(df)
   
   # sort factor levels by the frequency of levels
   df$var <- reorder(df$var, df$var, function(x) -length(x))
