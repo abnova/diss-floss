@@ -14,7 +14,7 @@ invisible(Sys.setlocale('LC_ALL', 'C'))
 source(file.path(PRJ_HOME, "utils/data.R"))
 
 # SRDA internal codes 
-_PRJ_INACTIVE <- 21
+PRJ_INACTIVE_ <- 21
 
 # default values for limits, etc.
 TEAM_SIZE <- 100
@@ -113,6 +113,10 @@ mergeDataSets <- function (datasets, prefix = "",
     if (!suppressMessages(require(plyr))) install.packages('plyr')
     library(plyr)
     
+    # We could use join_all() here to recursively list of data frames,
+    # but because this functionality exists in 'plyr' since ver. 1.8,
+    # we opt for manual merge solution for wider platform support.
+    
     flossData <<- dataSets[[1]]
     
     # check if we're dealing with a single data set
@@ -120,9 +124,8 @@ mergeDataSets <- function (datasets, prefix = "",
     else
     for (i in seq.int(2, length(dataSets), 1)) {
       flossData <<- plyr::join(flossData, dataSets[[i]],
-                               #by = 'Project ID',
                                by = mergeBy,
-                               type = 'full', match = 'first') # 'left' 'all'
+                               type = 'full', match = 'first')
     }
   }
   
@@ -208,7 +211,7 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
 
   # exclude inactive projects
   if (dataSource == "SourceForge")
-    flossData <- flossData[flossData[["Active"]] != _PRJ_INACTIVE, ]
+    flossData <- flossData[flossData[["Active"]] != PRJ_INACTIVE_, ]
 
   # exclude outliers
   if (dataSource == "SourceForge") {
@@ -247,11 +250,13 @@ if (!DEBUG) message("")
 
 mergeData("SourceForge")
 
-mergeData("FLOSSmole", "fc")
-mergeData("FLOSSmole", "fsf")
-mergeData("FLOSSmole", "gc")
-mergeData("FLOSSmole", "lpd")
-mergeData("FLOSSmole", "svProjectInfo")
-mergeData("FLOSSmole", "tigProjects")
+if (FALSE) {
+  mergeData("FLOSSmole", "fc")
+  mergeData("FLOSSmole", "fsf")
+  mergeData("FLOSSmole", "gc")
+  mergeData("FLOSSmole", "lpd")
+  mergeData("FLOSSmole", "svProjectInfo")
+  mergeData("FLOSSmole", "tigProjects")
+}
 
 message("\n===== DATA MERGING SUCCESSFULLY COMPLETED.\n")
