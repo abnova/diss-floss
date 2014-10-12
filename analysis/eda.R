@@ -33,7 +33,9 @@ source(file.path(PRJ_HOME, "utils/factors.R"))
 source(file.path(PRJ_HOME, "utils/qq.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/utils.R"))
-source(file.path(PRJ_HOME, "utils/mixedDist.R"))
+# the following module will be integrated into "analysis/mixDist.R"
+#source(file.path(PRJ_HOME, "utils/mixedDist.R"))
+source(file.path(PRJ_HOME, "analysis/mixDist.R"))
 
 READY4EDA_DIR  <- file.path(PRJ_HOME, "data/ready4eda")
 READY4EDA_FILE <- "flossData" # default
@@ -247,6 +249,8 @@ performEDA <- function (df, indicator, colName, extraFun) {
   uniDescriptiveEDA(df, indicator, colName, extraFun)
   uniVisualEDA(df, indicator, colName, extraFun)
   # TODO: Integrate mixture analysis from 'sandbox'
+  if (is.numeric(df[[colName]]))
+    mixDistAnalysis(df, indicator, colName)
   #fitDistParam(data, indicator, colName, extraFun)
   #fitDistNonParam(data, indicator, colName, extraFun)
 }
