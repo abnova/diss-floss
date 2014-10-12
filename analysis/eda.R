@@ -252,12 +252,11 @@ performEDA <- function (df, indicator, colName, extraFun) {
   
   uniDescriptiveEDA(df, indicator, colName, extraFun)
   uniVisualEDA(df, indicator, colName, extraFun)
-  # TODO: Integrate mixture analysis from 'sandbox'
+
+  # mixture analysis and results visualization
   if (is.numeric(df[[colName]]) &&
         all(prop.table(table(df[[colName]])) < .1))
     mixDistAnalysis(df, indicator, colName)
-  #fitDistParam(data, indicator, colName, extraFun)
-  #fitDistNonParam(data, indicator, colName, extraFun)
 }
 
 

@@ -1,4 +1,4 @@
-# Don't clear R environment, since this module gets sourced
+# Don't clear R environment, since this module gets sourced?
 
 if (!suppressMessages(require(mclust))) install.packages('mclust')
 if (!suppressMessages(require(mixtools))) install.packages('mixtools')
@@ -15,13 +15,13 @@ set.seed(100) # for reproducibility
 mixDistAnalysis <- function (df, indicator, colName) {
   
   myData <- df[[colName]]
-  myData <- na.omit(myData)
   
   mix <- determineMixtures(myData)
   assessMixGoF(myData, mix)
   mixPlot <- visualizeMixtures(myData, mix, indicator, colName)
   
-  # knitr-related
+  # save mixture analysis results visualization
+  # plot for further access in knitr environment
   g_var <- paste0("mixPlot_", colName)
   assign(g_var, mixPlot, envir = .GlobalEnv)
   myPlot <- get(g_var, envir = .GlobalEnv)
