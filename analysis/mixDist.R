@@ -15,11 +15,19 @@ set.seed(100) # for reproducibility
 mixDistAnalysis <- function (df, indicator, colName) {
   
   myData <- df[[colName]]
+  myData <- na.omit(myData)
   
   mix <- determineMixtures(myData)
   assessMixGoF(myData, mix)
-  # visualizeMixtures(myData, mix, indicator, colName)
-  # TODO: integrate visualizing mixtures, based on "utils/mixedDist.R"
+  mixPlot <- visualizeMixtures(myData, mix, indicator, colName)
+  
+  # knitr-related
+  g_var <- paste0("mixPlot_", colName)
+  assign(g_var, mixPlot, envir = .GlobalEnv)
+  myPlot <- get(g_var, envir = .GlobalEnv)
+  myList <- list(myPlot)
+  names(myList) <- g_var
+  allPlots <<- c(allPlots, myList)
 }
 
 
@@ -37,7 +45,7 @@ determineMixtures <- function (myData) {
   
   # selecting the number of components
   
-  message("Determining mixture components ",
+  message("\nDetermining mixture components ",
           "by using model-based clustering...")
   
   mc <- mclustBIC(log(myData))
@@ -73,6 +81,15 @@ mix_plnorm <- function(q, mean, sd, lambda) {
 }
 
 
+# Count data values, converted from density,
+# for mixture of log-normals (any number)
+calc.components <- function (x, mix, comp.number, n, binwidth) {
+  
+  n * binwidth * mix$lambda[comp.number] *
+    dlnorm(x, mean = mix$mu[comp.number], sd = mix$sigma[comp.number])
+}
+
+
 assessMixGoF <- function (myData, mix) {
   
   message("Assessing the solution's goodness-of-fit (GoF)...\n")
@@ -86,11 +103,56 @@ assessMixGoF <- function (myData, mix) {
   # (in this case, D-value indicates less then 5% deviation
   #  between the data dstribution and a fitted mixture).
   # P-value being high enough indicates the same.
-  fit.devation <- ks.info$statistic * 100
+  fit.deviation <- ks.info$statistic * 100
+  fit.dev.str <- sprintf("%.2f", fit.deviation)
   if (ks.info$statistic < 0.05 || ks.info$p.value > 0.05)
     message("KS test confirmed a good fit of calculated mixture to ",
-            "the data distribution (", fit.deviation, "% of deviation).")
+            "the data distribution (", fit.dev.str, "% of deviation).")
   else
     message("KS test confirmed an absense of good fit of calculated mixture ",
-            "to the data distribution (", fit.deviation, "% of deviation).")
+            "to the data distribution (", fit.dev.str, "% of deviation).")
+}
+
+
+visualizeMixtures <- function (data, mix, indicator, colName) {
+  
+  title <- paste("Projects distribution across", colName, "range")
+  xLabel <- colName
+  
+  if (identical(colName, "Project Age"))
+    xLabel <- paste(colName, "(months)")
+  
+  breaks <- pretty(range(data), n = nclass.FD(data), min.n = 1)
+  bwidth <- (breaks[2] - breaks[1]) / 2
+  
+  # TODO: consider covering both original and log-transformed data
+  # in terms of plotting corresponding mixture distributions
+  #if (log) bwidth <- bwidth/100
+  
+  g <- ggplot(data.frame(x = data)) +
+    scale_fill_continuous("Number of\nprojects",
+                          low="#56B1F7", high="#132B43") + 
+    scale_x_continuous(xLabel) +
+    scale_y_continuous("Number of projects") +
+    ggtitle(label=title) +
+    geom_histogram(aes(x = x, y = ..count.., fill = ..count..),
+                   binwidth = bwidth)
+  
+  # we could select needed number of colors randomly:
+  #DISTRIB_COLORS <- sample(colors(), numComponents)
+  
+  # or, better, use a palette with more color differentiation:
+  numComponents <- length(mix$mu)
+  DISTRIB_COLORS <- brewer.pal(numComponents, "Set1")
+  
+  distComps <- lapply(seq(numComponents), function(i)
+    stat_function(fun = calc.components,
+                  arg = list(mix = mix, comp.number = i,
+                             length(data), bwidth),
+                  geom = "line", # use alpha=.5 for "polygon"
+                  #position = "identity",
+                  size = 1,
+                  color = DISTRIB_COLORS[i]))
+  print(g + distComps)
+  return (g + distComps)
 }

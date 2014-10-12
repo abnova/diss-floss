@@ -246,10 +246,15 @@ multiVisualEDA <- function (df, corrMat) {
 
 performEDA <- function (df, indicator, colName, extraFun) {
   
+  # Create a subset of the original data set,
+  # based on excluding missing values for the analyzed variable
+  df <- df[complete.cases(df[[colName]]), ]
+  
   uniDescriptiveEDA(df, indicator, colName, extraFun)
   uniVisualEDA(df, indicator, colName, extraFun)
   # TODO: Integrate mixture analysis from 'sandbox'
-  if (is.numeric(df[[colName]]))
+  if (is.numeric(df[[colName]]) &&
+        all(prop.table(table(df[[colName]])) < .1))
     mixDistAnalysis(df, indicator, colName)
   #fitDistParam(data, indicator, colName, extraFun)
   #fitDistNonParam(data, indicator, colName, extraFun)
@@ -293,7 +298,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   
   df <- df
   df$var <- df[[colName]]
-  #df <- na.omit(df)
+
   if (log) {
     if (any(is.na(df$var))) df$var <- 1
     if (any(df$var < 0)) df$var <- df$var + abs(min(df$var)) + 0.01
@@ -305,6 +310,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   
   title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
+  yLabel <- "Number of projects"
   
   if (identical(colName, "Project Age"))
     xLabel <- paste(xLabel, "(months)")
@@ -314,14 +320,24 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
     scale_x <-
       scale_x_continuous(xLabel,
                          trans = "log",
-                         #limit = c(1, upperLimit),
                          breaks = trans_breaks("log10", function(x) 10^x),
                          labels = prettyNum)
   } else {
     scale_x <-
       scale_x_continuous(xLabel,
-                         #limit = c(0, upperLimit),
-                         #breaks = trans_breaks("log10", function(x) 10^x),
+                         labels = prettyNum)
+  }
+  
+  if (kurtosi(df$var) > 10) {
+    yLabel <- paste(yLabel, "[Log]")
+    scale_y <-
+      scale_y_continuous(yLabel,
+                         trans = "log10",
+                         breaks = trans_breaks("log10", function(x) 10^x),
+                         labels = prettyNum)
+  } else {
+    scale_y <-
+      scale_y_continuous(yLabel,
                          labels = prettyNum)
   }
   
@@ -329,26 +345,17 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
     scale_fill_continuous("Number of\nprojects",
                           low = "#56B1F7", high = "#132B43") + 
     scale_x +
-    scale_y_continuous("Number of projects",
-                       #limit = c(1, upperLimit),
-                       #breaks = trans_breaks("log10", function(x) 10^x),
-                       labels = prettyNum) +
+    scale_y +
   ggtitle(label=title)
   
   breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
   bwidth <- (breaks[2] - breaks[1]) / 2
-  if (log) bwidth <- bwidth/100
+  if (log) bwidth <- bwidth / 100
   
-  if (is.na(bwidth)) bwidth <- 0.01
-  
-  # Use (..density..) * bwidth IF want to match y-range with kernel density
-  g <- g + geom_histogram(aes(fill = ..count..), # y = ..density..
-                          binwidth = bwidth, #0.01, #bwidth
+  g <- g + geom_histogram(aes(y = ..count.., fill = ..count..),
+                          binwidth = bwidth,
                           position = "identity")
   
-  # Overlay with transparent density plot
-  #g <- g + geom_density(alpha = .2, fill = "#FF6666")
-
   mean <- ifelse(log, mean(log(df$var)), mean(df$var))
   sd <- ifelse(log, sd(log(df$var)), sd(df$var))
   
@@ -383,7 +390,6 @@ plotDensity <- function (df, colName) {
   df <- df
   df$var <- df[[colName]]
   df$category <- factor(df[[colName]])
-  #df <- na.omit(df)
   
   title <- paste("Projects distribution across", colName,
                  "range (by category)")
@@ -415,7 +421,6 @@ plotBarChart <- function (df, colName) {
   SHOW_LEVELS <- 10
   df <- df
   df$var <- factor(df[[colName]])
-  #df <- na.omit(df)
   
   # sort factor levels by the frequency of levels
   df$var <- reorder(df$var, df$var, function(x) -length(x))
