@@ -246,8 +246,8 @@ multiVisualEDA <- function (df, corrMat) {
 
 performEDA <- function (df, indicator, colName, extraFun) {
   
-  # Create a subset of the original data set,
-  # based on excluding missing values for the analyzed variable
+  # Create a subset of the original data set
+  # by excluding missing values for the analyzed variable
   df <- df[complete.cases(df[[colName]]), ]
   
   uniDescriptiveEDA(df, indicator, colName, extraFun)
@@ -314,20 +314,26 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   if (identical(colName, "Project Age"))
     xLabel <- paste(xLabel, "(months)")
   
-  if (log) {
+  # check whether log transformation of data is requested
+  
+  if (log) {  # log-transform data and x-axis scale
     xLabel <- paste(xLabel, "[Log]")
     scale_x <-
       scale_x_continuous(xLabel,
                          trans = "log",
                          breaks = trans_breaks("log10", function(x) 10^x),
                          labels = prettyNum)
-  } else {
+  } else {  # no log transformation
     scale_x <-
       scale_x_continuous(xLabel,
                          labels = prettyNum)
   }
   
-  if (kurtosi(df$var) > 10) {
+  # assess kurtosis of the data distribution
+  
+  # if the distribution is is leptokurtic or platycurtic
+  # (excess curtosis) - log transform data and y-axis scale
+  if (abs(kurtosi(df$var)) > 10) {
     yLabel <- paste(yLabel, "[Log]")
     scale_y <-
       scale_y_continuous(yLabel,
