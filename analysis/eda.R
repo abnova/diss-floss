@@ -297,7 +297,8 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   
   df <- df
   df$var <- df[[colName]]
-
+  liftUp <- 0
+  
   if (log) {
     if (any(is.na(df$var))) df$var <- 1
     if (any(df$var < 0)) df$var <- df$var + abs(min(df$var)) + 0.01
@@ -334,6 +335,13 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   # if the distribution is is leptokurtic or platycurtic
   # (excess curtosis) - log transform data and y-axis scale
   if (abs(kurtosi(df$var)) > 10) {
+    
+    # preliminary transform count data to prevent negative values
+    # after log transformation of count data and y-axis scale
+    # ("lift up" problematic values to y=1 - adding a constant (1)
+    #  doesn't distort the shape of the count data distribution)
+    liftUp <- 1
+    
     yLabel <- paste(yLabel, "[Sqrt]")
     scale_y <-
       scale_y_continuous(yLabel,
@@ -357,7 +365,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   bwidth <- (breaks[2] - breaks[1]) / 2
   if (log) bwidth <- bwidth / 100
   
-  g <- g + geom_histogram(aes(y = ..count.., fill = ..count..),
+  g <- g + geom_histogram(aes(y = ..count..+1, fill = ..count..+1),
                           binwidth = bwidth,
                           position = "identity")
   
