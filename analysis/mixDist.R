@@ -95,8 +95,8 @@ assessMixGoF <- function (myData, mix) {
   message("Assessing the solution's goodness-of-fit (GoF)...\n")
   
   # use Kolmogorov-Smirnov (KS) test to assess GoF
-  ks.info <- ks.test(myData, mix_plnorm,
-                     mean = mix$mu, sd = mix$sigma, lambda = mix$lambda)
+  ks.info <- suppressWarnings(ks.test(myData, mix_plnorm,
+                     mean = mix$mu, sd = mix$sigma, lambda = mix$lambda))
   print(ks.info)
   
   # D-value being low enough indicates a good fit
@@ -107,10 +107,10 @@ assessMixGoF <- function (myData, mix) {
   fit.dev.str <- sprintf("%.2f", fit.deviation)
   if (ks.info$statistic < 0.05 || ks.info$p.value > 0.05)
     message("KS test confirmed a good fit of calculated mixture to ",
-            "the data distribution (", fit.dev.str, "% of deviation).")
+            "\nthe data distribution (", fit.dev.str, "% of deviation).")
   else
     message("KS test confirmed an absense of good fit of calculated mixture ",
-            "to the data distribution (", fit.dev.str, "% of deviation).")
+            "\nto the data distribution (", fit.dev.str, "% of deviation).")
 }
 
 

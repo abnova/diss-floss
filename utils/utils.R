@@ -1,3 +1,8 @@
+DEBUG <- FALSE
+
+DVAL_LIM <- 0.40
+PVAL_LIM <- 0.40
+
 # return value of an attribute of an object stored in a file
 
 getAttr <- function (attr, obj, file) 
@@ -9,9 +14,112 @@ getAttr <- function (attr, obj, file)
 
 
 # convert normal density to counts (for histogram overlaying plots);
-# supports log transformation, but is result the same as using dlnorm()???
+# supports log transformation, but result isn't the same as using dlnorm()
 dnorm.count <- function(x, mean = 0, sd = 1,
-                        log = FALSE, n = 1, binwidth = 1) {
+                        log = FALSE, n = 1, binwidth = 1,
+                        logScale = FALSE) {  # y-axis scale
   
-  n * binwidth * dnorm(x = x, mean = mean, sd = sd, log = log) 
+  #mult <- n
+  #if (logScale) mult <- log10(n + 1)
+
+  result <- n * binwidth * dnorm(x = x, mean = mean, sd = sd, log = log)
+  if (logScale)
+    result <- log10(result + 1)
+  
+  return (result)
+}
+
+
+dist.count <- function (x, distInfo, n, binwidth, logScale) {
+  
+  distName <- distInfo$name
+  distObj <- distInfo$obj[[1]]
+
+  if (distName == "normal") {
+    val <- dnorm(x, distObj$estimate[1], distObj$estimate[2])
+  } else if (distName == "exponential") {
+    val <- dexp(x, distObj$estimate[1])
+  } else if (distName == "gamma") {
+    val <- dgamma(x, distObj$estimate[1], distObj$estimate[2])
+  } else if (distName == "Poisson") {
+    val <- dpois(x, distObj$estimate)
+  } else if (distName == "weibull") {
+    val <- dweibull(x, distObj$estimate[1], distObj$estimate[2])
+  } else {
+    stop("Unknown distribution requested!")
+  }
+  
+  result <- n * binwidth * val
+  if (logScale)
+    result <- log10(result + 1)
+  
+  return (result)
+}
+
+
+findOptimalDist <- function (x) {
+  
+  if (!suppressMessages(require(MASS))) install.packages('MASS')
+  library(MASS)
+  
+  distList <- c("exponential", "gamma", "Poisson", "weibull")
+  distFuns <- c("dexp", "dgamma", "dpois", "dweibull")
+  fit <- ks.info <- c()
+  optimDist <- "No optimal distribution found"
+  
+  for (dist in distList) {
+
+    # determine optimal fit for the data distribution
+    fit[[dist]] <- fitdistr(x, dist)
+
+    # use Kolmogorov-Smirnov (KS) test to assess GoF
+    if (dist == "normal") {
+      ks.info[[dist]] <-
+        suppressWarnings(ks.test(x, pnorm,
+                                 fit[[dist]]$estimate[1],
+                                 fit[[dist]]$estimate[2]))
+      if (DEBUG) print(ks.info)
+    } else if (dist == "exponential") {
+      ks.info[[dist]] <-
+        suppressWarnings(ks.test(x, pexp,
+                                 fit[[dist]]$estimate[1]))
+      if (DEBUG) print(ks.info)
+    } else if (dist == "gamma") {
+      ks.info[[dist]] <-
+        suppressWarnings(ks.test(x, pgamma,
+                                 fit[[dist]]$estimate[1],
+                                 fit[[dist]]$estimate[2]))
+      if (DEBUG) print(ks.info)
+    } else if (dist == "Poisson") {
+      ks.info[[dist]] <-
+        suppressWarnings(ks.test(x, ppois,
+                                 fit[[dist]]$estimate[1]))
+      if (DEBUG) print(ks.info)
+    } else if (dist == "weibull") {
+      ks.info[[dist]] <-
+        suppressWarnings(ks.test(x, pweibull,
+                                 fit[[dist]]$estimate[1],
+                                 fit[[dist]]$estimate[2]))
+      if (DEBUG) print(ks.info)
+    } else {
+      error("Unknown distribution requested!")
+    }
+  }
+
+  optimStatIdx <- which.min(sapply(ks.info, `[[`, "statistic"))
+  optimPvalIdx <- which.max(sapply(ks.info, `[[`, "p.value"))
+  
+  fit.deviation <- ks.info[[optimStatIdx]]$statistic * 100
+  fit.dev.str <- sprintf("%.2f", fit.deviation)
+  if (ks.info[[optimStatIdx]]$statistic < DVAL_LIM ||
+        ks.info[[optimPvalIdx]]$p.value > PVAL_LIM) {
+    message("KS test confirmed a good fit of calculated mixture \nto ",
+            "the data distribution (", fit.dev.str, "% of deviation).")
+    optimDist <- distList[optimStatIdx]
+  }
+  else
+    message("KS test confirmed an absense of good fit of calculated mixture ",
+            "\nto the data distribution (", fit.dev.str, "% of deviation).")
+  
+  return (list(name=optimDist, obj=fit[optimStatIdx]))
 }

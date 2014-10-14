@@ -297,7 +297,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   
   df <- df
   df$var <- df[[colName]]
-  liftUp <- 0
+  yAxisLog <- FALSE
   
   if (log) {
     if (any(is.na(df$var))) df$var <- 1
@@ -307,7 +307,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
     # df$var <- log(df$var)
   }
   upperLimit <- max(df$var)
-  
+
   title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
   yLabel <- "Number of projects"
@@ -318,6 +318,10 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   # check whether log transformation of data is requested
   
   if (log) {  # log-transform data and x-axis scale
+    
+    # fit distribution
+    optimalDist <- findOptimalDist(log(df$var + 1))
+    
     xLabel <- paste(xLabel, "[Log]")
     scale_x <-
       scale_x_continuous(xLabel,
@@ -325,10 +329,18 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
                          breaks = trans_breaks("log10", function(x) 10^x),
                          labels = prettyNum)
   } else {  # no log transformation
+
+    # fit distribution
+    optimalDist <- findOptimalDist(df$var)
+    
     scale_x <-
       scale_x_continuous(xLabel,
                          labels = prettyNum)
   }
+  
+  breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
+  bwidth <- (breaks[2] - breaks[1]) / 2
+  if (log) bwidth <- bwidth / 100
   
   # assess kurtosis of the data distribution
   
@@ -336,22 +348,31 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   # (excess curtosis) - log transform data and y-axis scale
   if (abs(kurtosi(df$var)) > 10) {
     
-    # preliminary transform count data to prevent negative values
-    # after log transformation of count data and y-axis scale
-    # ("lift up" problematic values to y=1 - adding a constant (1)
-    #  doesn't distort the shape of the count data distribution)
-    liftUp <- 1
+    yAxisLog <- TRUE
     
-    yLabel <- paste(yLabel, "[Sqrt]")
+    # on-the-fly transform count data to prevent negative values
+    # during log transformation of count data and y-axis scale
+    
+    yLabel <- paste(yLabel, "[Log10]")
     scale_y <-
       scale_y_continuous(yLabel,
-                         trans = "sqrt",
-                         breaks = trans_breaks("log10", function(x) 10^x),
+                         #trans = "log10",
+                         #breaks = trans_breaks("log10", function(x) 10^x),
                          labels = prettyNum)
+
+    myHist <- geom_histogram(aes(y = log10(..count.. + 1),
+                                 fill = log10(..count.. + 1)),
+                             binwidth = bwidth,
+                             position = "identity")
   } else {
     scale_y <-
       scale_y_continuous(yLabel,
                          labels = prettyNum)
+
+    myHist <- geom_histogram(aes(y = ..count..,
+                                 fill = ..count..),
+                             binwidth = bwidth,
+                             position = "identity")
   }
   
   g <- ggplot(df, aes(x = var)) +
@@ -359,25 +380,18 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
                           low = "#56B1F7", high = "#132B43") + 
     scale_x +
     scale_y +
+    myHist +
   ggtitle(label=title)
-  
-  breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
-  bwidth <- (breaks[2] - breaks[1]) / 2
-  if (log) bwidth <- bwidth / 100
-  
-  g <- g + geom_histogram(aes(y = ..count..+1, fill = ..count..+1),
-                          binwidth = bwidth,
-                          position = "identity")
   
   mean <- ifelse(log, mean(log(df$var)), mean(df$var))
   sd <- ifelse(log, sd(log(df$var)), sd(df$var))
   
   # Overlay with density-like plot, based on data count
-  g <- g + stat_function(fun = dnorm.count, 
-                         args = list(mean = mean,
-                                     sd = sd,
+  g <- g + stat_function(fun = dist.count,
+                         args = list(distInfo = optimalDist,
                                      n = length(df$var),
-                                     binwidth = bwidth),
+                                     binwidth = bwidth,
+                                     logScale = yAxisLog),
                          color = "red")
   
   # Ignore NA values for mean
