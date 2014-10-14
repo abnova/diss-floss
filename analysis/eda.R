@@ -334,10 +334,10 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   # if the distribution is is leptokurtic or platycurtic
   # (excess curtosis) - log transform data and y-axis scale
   if (abs(kurtosi(df$var)) > 10) {
-    yLabel <- paste(yLabel, "[Log]")
+    yLabel <- paste(yLabel, "[Sqrt]")
     scale_y <-
       scale_y_continuous(yLabel,
-                         trans = "log10",
+                         trans = "sqrt",
                          breaks = trans_breaks("log10", function(x) 10^x),
                          labels = prettyNum)
   } else {
