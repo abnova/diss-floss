@@ -134,8 +134,9 @@ visualizeMixtures <- function (data, mix, indicator, colName) {
                           low="#56B1F7", high="#132B43") + 
     scale_x_continuous(xLabel) +
     scale_y_continuous("Number of projects") +
-    ggtitle(label=title) +
-    geom_histogram(aes(x = x, y = ..count.., fill = ..count..),
+    #ggtitle(label=title)
+    opts(title=title) +
+  geom_histogram(aes(x = x, y = ..count.., fill = ..count..),
                    binwidth = bwidth)
   
   # we could select needed number of colors randomly:

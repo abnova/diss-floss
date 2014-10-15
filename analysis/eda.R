@@ -381,7 +381,8 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
     scale_x +
     scale_y +
     myHist +
-  ggtitle(label=title)
+  #ggtitle(label=title)
+    opts(title=title)
   
   mean <- ifelse(log, mean(log(df$var)), mean(df$var))
   sd <- ifelse(log, sd(log(df$var)), sd(df$var))
@@ -468,7 +469,8 @@ plotBarChart <- function (df, colName) {
     scale_fill_discrete(colName) + 
     xlab(colName) +
     ylab("Number of projects") +
-    ggtitle(label=title)
+    #ggtitle(label=title)
+    opts(title=title)
   
   # display pre-calculated percentage on top of bars
   if (FALSE) {
@@ -520,7 +522,8 @@ ggQQplot <- function (df, colName) # argument: vector of numbers
     geom_abline(slope = slope, intercept = int) +
     scale_x_continuous("Theoretical Quantiles") +
     scale_y_continuous("Sample Quantiles") +
-    ggtitle(label=title)
+    #ggtitle(label=title)
+    opts(title=title)
   
   if (.Platform$GUI == "RStudio") print(g)
   
