@@ -1,4 +1,4 @@
-DEBUG <- FALSE
+DEBUG_KS <- FALSE
 
 DVAL_LIM <- 0.40
 PVAL_LIM <- 0.40
@@ -78,31 +78,31 @@ findOptimalDist <- function (x) {
         suppressWarnings(ks.test(x, pnorm,
                                  fit[[dist]]$estimate[1],
                                  fit[[dist]]$estimate[2]))
-      if (DEBUG) print(ks.info)
+      if (DEBUG_KS) print(ks.info)
     } else if (dist == "exponential") {
       ks.info[[dist]] <-
         suppressWarnings(ks.test(x, pexp,
                                  fit[[dist]]$estimate[1]))
-      if (DEBUG) print(ks.info)
+      if (DEBUG_KS) print(ks.info)
     } else if (dist == "gamma") {
       ks.info[[dist]] <-
         suppressWarnings(ks.test(x, pgamma,
                                  fit[[dist]]$estimate[1],
                                  fit[[dist]]$estimate[2]))
-      if (DEBUG) print(ks.info)
+      if (DEBUG_KS) print(ks.info)
     } else if (dist == "Poisson") {
       ks.info[[dist]] <-
         suppressWarnings(ks.test(x, ppois,
                                  fit[[dist]]$estimate[1]))
-      if (DEBUG) print(ks.info)
+      if (DEBUG_KS) print(ks.info)
     } else if (dist == "weibull") {
       ks.info[[dist]] <-
         suppressWarnings(ks.test(x, pweibull,
                                  fit[[dist]]$estimate[1],
                                  fit[[dist]]$estimate[2]))
-      if (DEBUG) print(ks.info)
+      if (DEBUG_KS) print(ks.info)
     } else {
-      error("Unknown distribution requested!")
+      stop("Unknown distribution requested!")
     }
   }
 
@@ -113,12 +113,12 @@ findOptimalDist <- function (x) {
   fit.dev.str <- sprintf("%.2f", fit.deviation)
   if (ks.info[[optimStatIdx]]$statistic < DVAL_LIM ||
         ks.info[[optimPvalIdx]]$p.value > PVAL_LIM) {
-    message("KS test confirmed a good fit of calculated mixture \nto ",
-            "the data distribution (", fit.dev.str, "% of deviation).")
+    message("\nKS test confirmed a good fit of calculated mixture\n",
+            "to the data distribution (", fit.dev.str, "% of deviation).")
     optimDist <- distList[optimStatIdx]
   }
   else
-    message("KS test confirmed an absense of good fit of calculated mixture ",
+    message("\nKS test confirmed an absense of good fit of calculated mixture",
             "\nto the data distribution (", fit.dev.str, "% of deviation).")
   
   return (list(name=optimDist, obj=fit[optimStatIdx]))

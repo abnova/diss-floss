@@ -6,6 +6,10 @@ if (!suppressMessages(require(mixtools))) install.packages('mixtools')
 library(mclust)
 library(mixtools)
 
+KNITR <<- isTRUE(getOption("knitr.in.progress"))
+
+source(file.path(PRJ_HOME, "utils/platform.R"))
+
 NUM_ITERATIONS <- 500
 CHANGE_RATE <- 0.01
 
@@ -97,7 +101,7 @@ assessMixGoF <- function (myData, mix) {
   # use Kolmogorov-Smirnov (KS) test to assess GoF
   ks.info <- suppressWarnings(ks.test(myData, mix_plnorm,
                      mean = mix$mu, sd = mix$sigma, lambda = mix$lambda))
-  print(ks.info)
+  #print(ks.info)
   
   # D-value being low enough indicates a good fit
   # (in this case, D-value indicates less then 5% deviation
@@ -106,10 +110,10 @@ assessMixGoF <- function (myData, mix) {
   fit.deviation <- ks.info$statistic * 100
   fit.dev.str <- sprintf("%.2f", fit.deviation)
   if (ks.info$statistic < 0.05 || ks.info$p.value > 0.05)
-    message("KS test confirmed a good fit of calculated mixture to ",
+    message("\nKS test confirmed a good fit of calculated mixture to ",
             "\nthe data distribution (", fit.dev.str, "% of deviation).")
   else
-    message("KS test confirmed an absense of good fit of calculated mixture ",
+    message("\nKS test confirmed an absense of good fit of calculated mixture ",
             "\nto the data distribution (", fit.dev.str, "% of deviation).")
 }
 
@@ -129,14 +133,20 @@ visualizeMixtures <- function (data, mix, indicator, colName) {
   # in terms of plotting corresponding mixture distributions
   #if (log) bwidth <- bwidth/100
   
+  # handle platform's version differences for 'ggplot2' API
+  if (compareVersion(GGPLOT2_VER, "0.9.1") == 1)  # later version
+    myTitle <- ggtitle(label=title)
+  else
+    myTitle <- opts(title=title)
+  
+  # build the plot
   g <- ggplot(data.frame(x = data)) +
     scale_fill_continuous("Number of\nprojects",
                           low="#56B1F7", high="#132B43") + 
     scale_x_continuous(xLabel) +
     scale_y_continuous("Number of projects") +
-    #ggtitle(label=title)
-    opts(title=title) +
-  geom_histogram(aes(x = x, y = ..count.., fill = ..count..),
+    myTitle +
+    geom_histogram(aes(x = x, y = ..count.., fill = ..count..),
                    binwidth = bwidth)
   
   # we could select needed number of colors randomly:
@@ -154,6 +164,14 @@ visualizeMixtures <- function (data, mix, indicator, colName) {
                   #position = "identity",
                   size = 1,
                   color = DISTRIB_COLORS[i]))
-  print(g + distComps)
+  
+  if (.Platform$GUI == "RStudio") print(g + distComps)
+  
+  if (!KNITR) {
+    edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
+    edaFile <- file.path(EDA_RESULTS_DIR, paste0(edaFile, "-mix", ".svg"))
+    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  }
+  
   return (g + distComps)
 }

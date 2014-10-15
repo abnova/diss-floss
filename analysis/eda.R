@@ -33,6 +33,7 @@ source(file.path(PRJ_HOME, "utils/factors.R"))
 source(file.path(PRJ_HOME, "utils/qq.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/utils.R"))
+source(file.path(PRJ_HOME, "utils/platform.R"))
 # the following module will be integrated into "analysis/mixDist.R"
 #source(file.path(PRJ_HOME, "utils/mixedDist.R"))
 source(file.path(PRJ_HOME, "analysis/mixDist.R"))
@@ -188,7 +189,7 @@ mvnTests <- function (df, indicators) {
 multiAnalyticalEDA <- function (df, indicators) {
   
   corrMat <- correlationAnalysis(df)
-  mvnTests(df)
+  if (R.version$major > 2) mvnTests(df)
   
   return (corrMat)
 }
@@ -375,19 +376,26 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
                              position = "identity")
   }
   
+  # handle platform's version differences for 'ggplot2' API
+  if (compareVersion(GGPLOT2_VER, "0.9.1") == 1)  # later version
+    myTitle <- ggtitle(label=title)
+  else
+    myTitle <- opts(title=title)
+
+  # build the plot
   g <- ggplot(df, aes(x = var)) +
     scale_fill_continuous("Number of\nprojects",
                           low = "#56B1F7", high = "#132B43") + 
     scale_x +
     scale_y +
     myHist +
-  #ggtitle(label=title)
-    opts(title=title)
+    myTitle
   
+  # log-transform data for mean/SD, if needed
   mean <- ifelse(log, mean(log(df$var)), mean(df$var))
   sd <- ifelse(log, sd(log(df$var)), sd(df$var))
   
-  # Overlay with density-like plot, based on data count
+  # overlay with density-like plot, based on data count
   g <- g + stat_function(fun = dist.count,
                          args = list(distInfo = optimalDist,
                                      n = length(df$var),
@@ -395,7 +403,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
                                      logScale = yAxisLog),
                          color = "red")
   
-  # Ignore NA values for mean
+  # ignore NA values for mean
   g <- g + geom_vline(aes(xintercept=mean(var, na.rm = TRUE)),
                       linetype = "longdash", color = "red")
   
@@ -463,14 +471,19 @@ plotBarChart <- function (df, colName) {
     dfTab$lab <- as.character(100 * dfTab$Freq / sum(dfTab$Freq))
   }
   
-  # df[!is.na(df$var), ]
+  # handle platform's version differences for 'ggplot2' API
+  if (compareVersion(GGPLOT2_VER, "0.9.1") == 1)  # later version
+    myTitle <- ggtitle(label=title)
+  else
+    myTitle <- opts(title=title)
+  
+  # build the plot
   g <- ggplot(df, aes(x=var, fill=var)) +
     geom_bar(stat="bin", position="identity") +
     scale_fill_discrete(colName) + 
     xlab(colName) +
     ylab("Number of projects") +
-    #ggtitle(label=title)
-    opts(title=title)
+    myTitle
   
   # display pre-calculated percentage on top of bars
   if (FALSE) {
@@ -507,6 +520,13 @@ ggQQplot <- function (df, colName) # argument: vector of numbers
   
   d <- data.frame(resids = vec)
   
+  # handle platform's version differences for 'ggplot2' API
+  if (compareVersion(GGPLOT2_VER, "0.9.1") == 1)  # later version
+    myTitle <- ggtitle(label=title)
+  else
+    myTitle <- opts(title=title)
+  
+  # build the plot
   g <- ggplot(d, aes(sample = resids)) +
     
     # Normal distribution function by default
@@ -522,8 +542,7 @@ ggQQplot <- function (df, colName) # argument: vector of numbers
     geom_abline(slope = slope, intercept = int) +
     scale_x_continuous("Theoretical Quantiles") +
     scale_y_continuous("Sample Quantiles") +
-    #ggtitle(label=title)
-    opts(title=title)
+    myTitle
   
   if (.Platform$GUI == "RStudio") print(g)
   
