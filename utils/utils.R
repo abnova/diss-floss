@@ -113,13 +113,15 @@ findOptimalDist <- function (x) {
   fit.dev.str <- sprintf("%.2f", fit.deviation)
   if (ks.info[[optimStatIdx]]$statistic < DVAL_LIM ||
         ks.info[[optimPvalIdx]]$p.value > PVAL_LIM) {
-    message("\nKS test confirmed a good fit of calculated mixture\n",
-            "to the data distribution (", fit.dev.str, "% of deviation).")
+    message("\nKS test confirmed a good fit to the data distribution (",
+            fit.dev.str, "% of deviation).")
     optimDist <- distList[optimStatIdx]
   }
   else
-    message("\nKS test confirmed an absense of good fit of calculated mixture",
+    message("\nKS test confirmed an absense of good fit",
             "\nto the data distribution (", fit.dev.str, "% of deviation).")
+
+  message("\nOptimal distribution determined: ", optimDist)
   
   return (list(name=optimDist, obj=fit[optimStatIdx]))
 }

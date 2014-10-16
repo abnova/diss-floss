@@ -51,6 +51,9 @@ DIST_FIT_COLOR <- "green" # ggplot2 line color for distrib. fitting
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
+DO_MIX_ANALYSIS <- FALSE
+DO_MULTI_VISUAL <- FALSE
+
 allPlots <- list()
 
 ## @knitr PerformEDA
@@ -257,7 +260,7 @@ performEDA <- function (df, indicator, colName, extraFun) {
   # mixture analysis and results visualization
   if (is.numeric(df[[colName]]) &&
         all(prop.table(table(df[[colName]])) < .1))
-    mixDistAnalysis(df, indicator, colName)
+    if (DO_MIX_ANALYSIS) mixDistAnalysis(df, indicator, colName)
 }
 
 
@@ -285,7 +288,7 @@ performMultiEDA <- function (flossData, dataSource, indicators) {
   # perform multivariate EDA
   multiDescriptiveEDA(flossData)
   corrMat <- multiAnalyticalEDA(flossData)
-  multiVisualEDA(flossData, corrMat$correlations)
+  if (DO_MULTI_VISUAL) multiVisualEDA(flossData, corrMat$correlations)
 }
 
 
@@ -301,7 +304,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   yAxisLog <- FALSE
   
   if (log) {
-    if (any(is.na(df$var))) df$var <- 1
+    #if (any(is.na(df$var))) df$var <- 1
     if (any(df$var < 0)) df$var <- df$var + abs(min(df$var)) + 0.01
     # instead of log transforming data directly,
     # we do that further via ggplot2's scales functionality
@@ -324,11 +327,11 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
     optimalDist <- findOptimalDist(log(df$var + 1))
     
     xLabel <- paste(xLabel, "[Log]")
-    scale_x <-
-      scale_x_continuous(xLabel,
-                         trans = "log",
-                         breaks = trans_breaks("log10", function(x) 10^x),
-                         labels = prettyNum)
+    scale_x <- scale_x_continuous(
+      xLabel, trans = "log",
+      breaks = trans_breaks('log', function(x) exp(x)),
+      labels = trans_format('log', math_format(.x)))
+    
   } else {  # no log transformation
 
     # fit distribution
