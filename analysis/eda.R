@@ -343,7 +343,18 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   # calculate optimal value for histogram's bin width
   breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
   bwidth <- (breaks[2] - breaks[1]) / 2
-  if (log) bwidth <- bwidth / 100
+  if (log) {
+    # Adjust bin width value, if needed, to compensate for
+    # x-axis scale log transformation (depends on data's IQR):
+    # divide by some heuristic-based numbers (two distinct cases).
+    # TODO: consider expressing divisor as product of 'bwidth' & constant,
+    # or a power of 10, or, likely better, a power of the data range.
+    if (bwidth > 1) bwidth <- bwidth / 100
+    else if (bwidth > 0.25) bwidth <- bwidth / 10
+  }
+  
+  print(bwidth)
+  
   #TODO: don't divide by 100, if bwidth is already small (heuristics)
   
   # assess kurtosis of the data distribution
