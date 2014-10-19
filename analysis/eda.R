@@ -324,7 +324,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   if (log) {  # log-transform data and x-axis scale
     
     # fit distribution
-    optimalDist <- findOptimalDist(log(df$var + 1))
+    optimalDist <- suppressWarnings(findOptimalDist(log(df$var + 1)))
     
     xLabel <- paste(xLabel, "[Log]")
     scale_x <- scale_x_continuous(
@@ -335,7 +335,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   } else {  # no log transformation
 
     # fit distribution
-    optimalDist <- findOptimalDist(df$var)
+    optimalDist <- suppressWarnings(findOptimalDist(df$var))
     
     scale_x <- scale_x_continuous(xLabel, labels = prettyNum)
   }
@@ -347,16 +347,10 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
     # Adjust bin width value, if needed, to compensate for
     # x-axis scale log transformation (depends on data's IQR):
     # divide by some heuristic-based numbers (two distinct cases).
-    # TODO: consider expressing divisor as product of 'bwidth' & constant,
-    # or a power of 10, or, likely better, a power of the data range.
     if (bwidth > 1) bwidth <- bwidth / 100
     else if (bwidth > 0.25) bwidth <- bwidth / 10
   }
-  
-  print(bwidth)
-  
-  #TODO: don't divide by 100, if bwidth is already small (heuristics)
-  
+
   # assess kurtosis of the data distribution
   
   # if the distribution is is leptokurtic or platycurtic
@@ -405,10 +399,6 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
     myHist +
     myTitle
   
-  # log-transform data for mean/SD, if needed
-  mean <- ifelse(log, mean(log(df$var)), mean(df$var))
-  sd <- ifelse(log, sd(log(df$var)), sd(df$var))
-  
   # overlay with density-like plot, based on data count
   g <- g + stat_function(fun = dist.count,
                          args = list(distInfo = optimalDist,
@@ -418,7 +408,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
                          color = "red")
   
   # ignore NA values for mean
-  g <- g + geom_vline(aes(xintercept=mean(var, na.rm = TRUE)),
+  g <- g + geom_vline(aes(xintercept = mean(var + 1)),
                       linetype = "longdash", color = "red")
   
   if (.Platform$GUI == "RStudio") print(g)

@@ -57,13 +57,14 @@ dist.count <- function (x, distInfo, n, binwidth, logScale) {
 }
 
 
+# TBD: Consider adding conditions for particular dist. functions
 findOptimalDist <- function (x) {
   
   if (!suppressMessages(require(MASS))) install.packages('MASS')
   library(MASS)
   
-  distList <- c("exponential", "gamma", "Poisson", "weibull")
-  distFuns <- c("dexp", "dgamma", "dpois", "dweibull")
+  distList <- c("exponential", "gamma", "Poisson", "weibull", "geometric")
+  distFuns <- c("dexp", "dgamma", "dpois", "dweibull", "dgeom")
   fit <- ks.info <- c()
   optimDist <- "No optimal distribution found"
   
@@ -98,6 +99,12 @@ findOptimalDist <- function (x) {
     } else if (dist == "weibull") {
       ks.info[[dist]] <-
         suppressWarnings(ks.test(x, pweibull,
+                                 fit[[dist]]$estimate[1],
+                                 fit[[dist]]$estimate[2]))
+      if (DEBUG_KS) print(ks.info)
+    } else if (dist == "geometric") {
+      ks.info[[dist]] <-
+        suppressWarnings(ks.test(x, pgeom,
                                  fit[[dist]]$estimate[1],
                                  fit[[dist]]$estimate[2]))
       if (DEBUG_KS) print(ks.info)
