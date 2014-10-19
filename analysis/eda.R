@@ -22,7 +22,7 @@ library(RColorBrewer)
 library(gridExtra)
 library(psych)
 library(polycor)
-library("GGally")
+library(GGally)
 
 ## @knitr PrepareEDA
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
@@ -53,6 +53,9 @@ DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 DO_MIX_ANALYSIS <- FALSE
 DO_MULTI_VISUAL <- FALSE
+
+GRADIENT_LOW  <- "#56B1F7"  # light blue color 
+GRADIENT_HIGH <- "#132B43"  # dark blue color
 
 allPlots <- list()
 
@@ -304,13 +307,10 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   yAxisLog <- FALSE
   
   if (log) {
-    #if (any(is.na(df$var))) df$var <- 1
     if (any(df$var < 0)) df$var <- df$var + abs(min(df$var)) + 0.01
     # instead of log transforming data directly,
-    # we do that further via ggplot2's scales functionality
-    # df$var <- log(df$var)
+    # we do that further via ggplot2's scales functionality (x-axis)
   }
-  upperLimit <- max(df$var)
 
   title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
@@ -337,14 +337,14 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
     # fit distribution
     optimalDist <- findOptimalDist(df$var)
     
-    scale_x <-
-      scale_x_continuous(xLabel,
-                         labels = prettyNum)
+    scale_x <- scale_x_continuous(xLabel, labels = prettyNum)
   }
-  
+
+  # calculate optimal value for histogram's bin width
   breaks <- pretty(range(df$var), n = nclass.FD(df$var), min.n = 1)
   bwidth <- (breaks[2] - breaks[1]) / 2
   if (log) bwidth <- bwidth / 100
+  #TODO: don't divide by 100, if bwidth is already small (heuristics)
   
   # assess kurtosis of the data distribution
   
@@ -360,7 +360,6 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
     yLabel <- paste(yLabel, "[Log10]")
     scale_y <-
       scale_y_continuous(yLabel,
-                         #trans = "log10",
                          #breaks = trans_breaks("log10", function(x) 10^x),
                          labels = prettyNum)
 
@@ -369,6 +368,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
                              binwidth = bwidth,
                              position = "identity")
   } else {
+    
     scale_y <-
       scale_y_continuous(yLabel,
                          labels = prettyNum)
@@ -388,7 +388,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   # build the plot
   g <- ggplot(df, aes(x = var)) +
     scale_fill_continuous("Number of\nprojects",
-                          low = "#56B1F7", high = "#132B43") + 
+                          low = GRADIENT_LOW, high = GRADIENT_HIGH) +
     scale_x +
     scale_y +
     myHist +
