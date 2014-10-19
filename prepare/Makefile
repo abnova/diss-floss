@@ -45,6 +45,7 @@ merge.done: merge.R
 	@$(RSCRIPT) $(R_OPTS) $<
 	@cp ../data/merged/SourceForge/Merged.rds ../data/ready4eda/flossData.rds
 	@cp ../data/merged/SourceForge/Merged.rds ../data/merged/flossData.rds
+	@cp ../data/merged/SourceForge/Merged.rds ../data/ready4efa/flossData.rds
 	@touch $@
 
 missing.done: missing.R merge.done

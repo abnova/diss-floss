@@ -79,10 +79,6 @@ sfDevLinks <- function (indicator, data) {
   # convert presence of Repo URL to integer
   data[["Repo URL"]] <- as.integer(data[["Repo URL"]] != "")
   
-  # TODO: this needs to be handled somewhere,
-  # as 'Amelia' cannot process this column
-  #data <- data[, !names(data) %in% c("Repo URL")]
-  
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   
@@ -290,7 +286,16 @@ sfSoftwareType <- function (indicator, data) {
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
   
-  data[["Software Type"]] <- factor(data[["Software Type"]])
+  data[["Software Type"]] <- factor(data[["Software Type"]],
+                                    ordered = TRUE)
+  levels(data[["Software Type"]]) <- 
+    list(General="Desktop", General="Games",
+         General="VoIP", General="Multimedia",
+         Special="Enterprise", Specialized="Financial",
+         System="Clustering", System="Databases", System="Hardware",
+         System="Networking", System="Security", System="Storage",
+         System="SysAdmin",
+         DevTools="Development")
   
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}

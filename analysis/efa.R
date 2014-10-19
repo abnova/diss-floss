@@ -35,6 +35,26 @@ ready4efaFile <- file.path(READY4EFA_DIR, fileName)
 message("\n\nLoading data...")
 flossData <- loadData(ready4efaFile)
 
+# due to very small amount of projects with "Non-OSI" licesnse
+# and their disapperance due to calculating correlations,
+# we don't include "License Category" into EFA (consider analyzing it
+# at later phases with inclusion of imputed data)
+
+# we also remove "Repo URL" due to injection of large # of NAs
+# due to limiting conditionsat the end of the merge process
+
+factors4Analysis <- c("Development Team Size", "Project Age",
+                      "License Restrictiveness", "Project Stage",
+                      "Software Type")
+flossData <- flossData[factors4Analysis]
+
+# first, calculate correlations for passing to FA functions
+
+# use hetcor() from 'polycor' package instead of corr.test()
+# in order to handle heterogenous data w/out conversion
+corr.info <- hetcor(flossData, use="pairwise.complete.obs",
+                    std.err = FALSE) # use $correlations just for corr
+
 # determine number of factors to extract
 message("\n\n*** Determining number of factors to extract...\n")
 
@@ -55,13 +75,13 @@ message("============================================\n")
 
 # parallel analysis suggests the
 # number of factors to extract
-fa.parallel(flossData, fm = "pa")
+fa.parallel(corr.info$correlations, fm = "pa")
 
 message("\n\nVery Simple Structure (VSS) analysis:")
 message("=====================================")
 
 # Velicer’s minimum average partial (MAP)
-VSS(flossData)
+VSS(corr.info$correlations)
 
 # To produce a scree plot (eigen values of a correlation matrix)
 # we could use here scree() and VSS.scree(), but we will use
@@ -73,8 +93,8 @@ message("============================================\n")
 # Run Parallel Analysis (PA) for numeric data and plot scree plot
 # (the same result could be produced by using mixed data PA method)
 numericPA <- PA(flossData,
-               percentiles = c(0.95, 0.99), nReplicates = 100,
-               type = "continuous", algorithm = "pearson")
+                percentiles = c(0.95, 0.99), nReplicates = 100,
+                type = "mixed", algorithm = "polycor")
 print(numericPA)
 
 message("\n\nProducing PA scree plot:")
@@ -103,7 +123,7 @@ message("FA, using principal axis method:")
 message("================================\n")
 
 # perform FA, using principal axis method
-fa(flossData, nfactors = 2, fm = "pa")
+fa(corr.info$correlations, nfactors = 2, fm = "pa")
 
 message("\n\nFA with 'varimax' rotation:")
 message("===========================\n")
@@ -132,7 +152,7 @@ schmid(flossData, nfactors = 2)
 message("\n\n\nFA with 'bi-factor' rotation:")
 message("=============================\n")
 
-fa(flossData, nfactors = 3, fm="pa",
+fa(corr.info$correlations, nfactors = 3, fm="pa",
    rotate = "bifactor", max.iter = 500)
 
 # Nowadays, ULS or ML is preferred to PA methods of FA
@@ -146,7 +166,7 @@ message("\n\n\nFA using ULS approach:")
 message("======================\n")
 
 # unweighted least squares is minres
-uls <- fa(flossData, 2, rotate = "varimax")
+uls <- fa(corr.info$correlations, 2, rotate = "varimax")
 
 # show the loadings sorted by absolute value
 print(uls,sort=TRUE)
@@ -155,7 +175,7 @@ message("\n\nFA using WLS approach:")
 message("======================\n")
 
 # weighted least squares
-wls <- fa(flossData, 2, fm = "wls")
+wls <- fa(corr.info$correlations, 2, fm = "wls")
 
 # show the loadings sorted by absolute value
 print(uls, sort = TRUE)
