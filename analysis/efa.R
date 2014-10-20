@@ -1,6 +1,8 @@
 # Start session with a clean R environment
 rm(list = ls(all.names = TRUE))
 
+##### PACKAGES #####
+
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(GPArotation))) 
   install.packages('GPArotation')
@@ -11,6 +13,8 @@ library(psych)
 library(GPArotation)
 library(pcaPA)
 library(ggplot2)
+
+##### SETUP #####
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
@@ -26,6 +30,8 @@ SCREE_PLOT_FILE <- "screePlot"
 RDS_EXT      <- ".rds"
 GRAPHICS_EXT <- ".svg"
 
+
+##### ANALYSIS #####
 
 message("\n\n===== PERFORMING EXPLORATORY FACTOR ANALYSIS (EFA) =====")
 
@@ -85,11 +91,16 @@ message("============================================\n")
 fa.pa.info <- fa.parallel(corr.info$correlations,
                           n.obs = numObs, fm = "pa")
 
+# extract number of factors from the PA result
+numFactors <- fa.pa.info$nfact
+
+
 message("\n\nVery Simple Structure (VSS) analysis:")
 message("=====================================")
 
 # Velicer’s minimum average partial (MAP)
 vss.info <- VSS(corr.info$correlations, n.obs = numObs, plot = FALSE)
+summary(vss.info)  # for more details, print object or str()
 
 # To produce a scree plot (eigen values of a correlation matrix)
 # we could use here scree() and VSS.scree(), but we will use
@@ -102,7 +113,8 @@ message("============================================\n")
 # (the same result could be produced by using mixed data PA method)
 numericPA <- PA(flossData,
                 percentiles = c(0.95, 0.99), nReplicates = 50,
-                type = "mixed", algorithm = "polycor")
+                type = "mixed", algorithm = "polycor",
+                use = "pairwise.complete.obs")
 print(numericPA)
 
 message("\n\nProducing PA scree plot:")
@@ -131,23 +143,28 @@ message("FA, using principal axis method:")
 message("================================\n")
 
 # perform FA, using principal axis method
-fa(corr.info$correlations, nfactors = 2, fm = "pa")
+fa(corr.info$correlations, n.obs = numObs,
+   nfactors = numFactors, fm = "pa")
 
-message("\n\nFA with 'varimax' rotation:")
+message("\n\nFA with 'promax' rotation:") # not varimax?
 message("===========================\n")
 
-message("Currently disabled.")
-# perform FA with 'varimax' rotation
-#promax.fa <- fa(flossData, nfactors = 2, fm = "pa",
-#                rotate = "promax")
-#print(promax.fa$Structure)
+#message("Currently disabled.")
+# perform FA with 'promax' rotation
+promax.fa <- fa(corr.info$correlations, n.obs = numObs,
+                nfactors = numFactors, fm = "pa",
+                rotate = "promax")
+print(promax.fa$Structure)
 
 message("\n\nFA with 'quartimin' rotation:")
 message("=============================\n")
 
 message("Currently disabled.")
+# due to error "3 factors are too many for 5 variables"
+
 # perform FA with 'quartimin' rotation
-#quartimin <- factanal(flossData, factors = 2,
+#quartimin <- factanal(corr.info$correlations, n.obs = numObs,
+#                      factors = numFactors,
 #                      rotation = "cfQ",
 #                      control = list(rotate = list(kappa = 0)))
 #print(quartimin, cutoff = 1e-05, digits = 2)
@@ -155,12 +172,18 @@ message("Currently disabled.")
 message("\n\nFA, using Schmid-Leiman transformation:")
 message("=======================================\n")
 
-schmid(flossData, nfactors = 2)
+message("Currently disabled.")
+# due to (error) message "maximum iteration exceeded"
+
+#schmid(corr.info$correlations, n.obs = numObs,
+#       nfactors = numFactors, fm = "pa")
+
 
 message("\n\n\nFA with 'bi-factor' rotation:")
 message("=============================\n")
 
-fa(corr.info$correlations, nfactors = 3, fm="pa",
+fa(corr.info$correlations, n.obs = numObs,
+   nfactors = numFactors, fm="pa",
    rotate = "bifactor", max.iter = 500)
 
 # Nowadays, ULS or ML is preferred to PA methods of FA
@@ -174,16 +197,18 @@ message("\n\n\nFA using ULS approach:")
 message("======================\n")
 
 # unweighted least squares is minres
-uls <- fa(corr.info$correlations, 2, rotate = "varimax")
+uls <- fa(corr.info$correlations, n.obs = numObs,
+          nfactors = numFactors, rotate = "varimax")
 
 # show the loadings sorted by absolute value
-print(uls,sort=TRUE)
+print(uls, sort=TRUE)
 
 message("\n\nFA using WLS approach:")
 message("======================\n")
 
 # weighted least squares
-wls <- fa(corr.info$correlations, 2, fm = "wls")
+wls <- fa(corr.info$correlations, n.obs = numObs,
+          nfactors = numFactors, fm = "wls")
 
 # show the loadings sorted by absolute value
 print(uls, sort = TRUE)
@@ -192,10 +217,12 @@ message("\n\nFA using ML approach:")
 message("=====================\n")
 
 message("Currently disabled.")
-# Due to: "Error in cov.wt(z) : 'x' must contain finite values only"
+# due to error "3 factors are too many for 5 variables"
 
 # compare with a ML solution using factanal
-#mle <- factanal(flossData, factors = 2)
-#factor.congruence(list(uls, wls, mle))
+#mle <- factanal(corr.info$correlations, n.obs = numObs,
+#                factors = numFactors)
+#print(factor.congruence(list(uls, wls, mle)))
 
-message("")
+message("\n===== EFA completed, results can be found ",
+        "in directory \"", EFA_RESULTS_DIR, "\"\n")
