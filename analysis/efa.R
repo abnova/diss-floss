@@ -15,6 +15,7 @@ library(ggplot2)
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
 source(file.path(PRJ_HOME, "utils/data.R"))
+source(file.path(PRJ_HOME, "utils/platform.R")) # for multi-core support
 
 READY4EFA_DIR  <- file.path(PRJ_HOME, "data/ready4efa")
 READY4EFA_FILE <- "flossData" # default
@@ -48,12 +49,18 @@ factors4Analysis <- c("Development Team Size", "Project Age",
                       "Software Type")
 flossData <- flossData[factors4Analysis]
 
+# sample the sample (use 1%) to reduce processing time
+flossData <- sampleDF(flossData, nrow(flossData) / 100)
+
 # first, calculate correlations for passing to FA functions
 
 # use hetcor() from 'polycor' package instead of corr.test()
 # in order to handle heterogenous data w/out conversion
 corr.info <- hetcor(flossData, use="pairwise.complete.obs",
-                    std.err = FALSE) # use $correlations just for corr
+                    std.err = TRUE) # use $correlations just for corr
+
+# extract number of observations for futher use in FA
+numObs <- floor(mean(corr.info$n[upper.tri(corr.info$n)]))
 
 # determine number of factors to extract
 message("\n\n*** Determining number of factors to extract...\n")
@@ -73,15 +80,16 @@ message("\n\n*** Determining number of factors to extract...\n")
 message("\nParallel Analysis (PA) - Method 1 ('psych'):")
 message("============================================\n")
 
-# parallel analysis suggests the
-# number of factors to extract
-fa.parallel(corr.info$correlations, fm = "pa")
+# parallel analysis suggests the number of factors to extract
+# (analytical alternative/complement to the scree plot solution)
+fa.pa.info <- fa.parallel(corr.info$correlations,
+                          n.obs = numObs, fm = "pa")
 
 message("\n\nVery Simple Structure (VSS) analysis:")
 message("=====================================")
 
 # Velicer’s minimum average partial (MAP)
-VSS(corr.info$correlations)
+vss.info <- VSS(corr.info$correlations, n.obs = numObs, plot = FALSE)
 
 # To produce a scree plot (eigen values of a correlation matrix)
 # we could use here scree() and VSS.scree(), but we will use
@@ -93,7 +101,7 @@ message("============================================\n")
 # Run Parallel Analysis (PA) for numeric data and plot scree plot
 # (the same result could be produced by using mixed data PA method)
 numericPA <- PA(flossData,
-                percentiles = c(0.95, 0.99), nReplicates = 100,
+                percentiles = c(0.95, 0.99), nReplicates = 50,
                 type = "mixed", algorithm = "polycor")
 print(numericPA)
 
