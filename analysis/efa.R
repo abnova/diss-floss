@@ -1,3 +1,21 @@
+# TODO: Add description and comments here
+
+# For more details on bi-factor EFA and Schmid-Leiman method, see:
+# http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3253271
+
+# References to support Parallel Analysis (PA):
+# ---------------------------------------------
+# Horn, J. L. (1965). A rationale and test for the number of factors
+# in factor analysis. Psychometrika, 30, 179–185.
+#
+# Glorfeld, L. W. (1995). An Improvement on Horn's Parallel Analysis
+# Methodology for Selecting the Correct Number of Factors to Retain.
+# Educational and Psychological Measurement, 55(3), 377–393.
+
+# See http://www.unt.edu/rss/class/Jon/R_SC/Module7/M7_PCAandFA.R
+# for an approach to do PA without displaying standard scree plots.
+
+
 # Start session with a clean R environment
 rm(list = ls(all.names = TRUE))
 
@@ -6,15 +24,17 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(GPArotation))) 
   install.packages('GPArotation')
-if (!suppressMessages(require(pcaPA))) install.packages('pcaPA')
+#if (!suppressMessages(require(pcaPA))) install.packages('pcaPA')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 
 library(psych)
 library(GPArotation)
-library(pcaPA)
+#library(pcaPA)
 library(ggplot2)
 
 ##### SETUP #####
+
+set.seed(100)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
@@ -29,6 +49,16 @@ SCREE_PLOT_FILE <- "screePlot"
 
 RDS_EXT      <- ".rds"
 GRAPHICS_EXT <- ".svg"
+
+
+# produce a rounded loadings matrix by setting loadings
+# with absolute value lower than a cut-off value (0.3) to zero
+roundLoadings <- function (fa.obj) {
+  
+  L <- fa.obj$loadings
+  L[abs(L) < .3] <- 0
+  return (L)  
+}
 
 
 ##### ANALYSIS #####
@@ -65,23 +95,14 @@ flossData <- sampleDF(flossData, nrow(flossData) / 100)
 corr.info <- hetcor(flossData, use="pairwise.complete.obs",
                     std.err = TRUE) # use $correlations just for corr
 
+message("\nCorrelations matrix:\n")
+print(corr.info, digits = 2)
+
 # extract number of observations for futher use in FA
 numObs <- floor(mean(corr.info$n[upper.tri(corr.info$n)]))
 
 # determine number of factors to extract
 message("\n\n*** Determining number of factors to extract...\n")
-
-# References to support Parallel Analysis (PA):
-# ---------------------------------------------
-# Horn, J. L. (1965). A rationale and test for the number of factors
-# in factor analysis. Psychometrika, 30, 179–185.
-#
-# Glorfeld, L. W. (1995). An Improvement on Horn's Parallel Analysis
-# Methodology for Selecting the Correct Number of Factors to Retain.
-# Educational and Psychological Measurement, 55(3), 377–393.
-
-# See http://www.unt.edu/rss/class/Jon/R_SC/Module7/M7_PCAandFA.R
-# for an approach to do PA without displaying standard scree plots.
 
 message("\nParallel Analysis (PA) - Method 1 ('psych'):")
 message("============================================\n")
@@ -94,6 +115,30 @@ fa.pa.info <- fa.parallel(corr.info$correlations,
 # extract number of factors from the PA result
 numFactors <- fa.pa.info$nfact
 
+message("\n\nProducing PA scree plot... ", appendLF = FALSE)
+
+screePlotData <- with(fa.pa.info,
+  data.frame(Eigen = c(fa.values, fa.sim),
+             Type = factor(rep(1:2, each = length(fa.values)),
+                           levels = 1:2, labels = c("Factor", "Simulated")),
+             Factor = rep(1:length(fa.values)))
+)
+
+g <- ggplot(screePlotData, aes(x = Factor, y = Eigen, color = Type)) +
+  geom_line() +
+  ggtitle(label = "Parallel analysis scree plot") +
+  xlab("Number of factors") + ylab("Factor eigenvalues")
+
+screePlot <- g + theme(aspect.ratio = 1)
+
+if (.Platform$GUI == "RStudio") {print(screePlot)}
+
+screePlotFile <- file.path(EFA_RESULTS_DIR,
+                           paste0(SCREE_PLOT_FILE, GRAPHICS_EXT))
+suppressMessages(ggsave(file = screePlotFile, plot = screePlot,
+                        width = 5, height = 5))
+message("Done.\n")
+
 
 message("\n\nVery Simple Structure (VSS) analysis:")
 message("=====================================")
@@ -102,6 +147,7 @@ message("=====================================")
 vss.info <- VSS(corr.info$correlations, n.obs = numObs, plot = FALSE)
 summary(vss.info)  # for more details, print object or str()
 
+
 # To produce a scree plot (eigen values of a correlation matrix)
 # we could use here scree() and VSS.scree(), but we will use
 # ggplot2-based scree plot functions from 'pcaPA' package.
@@ -109,39 +155,58 @@ summary(vss.info)  # for more details, print object or str()
 message("\nParallel Analysis (PA) - Method 2 ('pcaPA'):")
 message("============================================\n")
 
-# Run Parallel Analysis (PA) for numeric data and plot scree plot
-# (the same result could be produced by using mixed data PA method)
-numericPA <- PA(flossData,
-                percentiles = c(0.95, 0.99), nReplicates = 50,
-                type = "mixed", algorithm = "polycor",
-                use = "pairwise.complete.obs")
-print(numericPA)
+message("Disabled.")
 
-message("\n\nProducing PA scree plot:")
-message("========================")
+if (FALSE) {
+  
+  # Run Parallel Analysis (PA) for numeric data and plot scree plot
+  # (the same result could be produced by using mixed data PA method)
+  numericPA <- PA(flossData,
+                  percentiles = c(0.95, 0.99), nReplicates = 50,
+                  type = "mixed", algorithm = "polycor",
+                  use = "pairwise.complete.obs")
+  print(numericPA)
+  
+  per99Val <- subset(numericPA$percentiles, typeEigenValues == 99)$eigenValues
+  obsOrdEigenVal <- numericPA$observed$orderEigenValues
+  obsEigenVal <- numericPA$observed$eigenValues
+  
+  numFactorsPcaPA <- max(obsOrdEigenVal[obsEigenVal > per99Val])
+  message("\nNumber of factors, determined by PCA PA: ", numFactorsPcaPA)
+  
+  message("\n\nProducing PA scree plot... ", appendLF = FALSE)
+  
+  screePlot <- plot(numericPA, percentiles = c(0.95, 0.99),
+                    main = "Parallel analysis scree plot",
+                    xlab = "Number of factors",
+                    ylab = "Eigenvalues",
+                    groupLabel = "")
+  screePlot <- screePlot + theme(aspect.ratio = 1)
+  
+  if (.Platform$GUI == "RStudio") {print(screePlot)}
+  
+  screePlotFile <- file.path(EFA_RESULTS_DIR,
+                             paste0(SCREE_PLOT_FILE, GRAPHICS_EXT))
+  suppressMessages(ggsave(file = screePlotFile, plot = screePlot,
+                          width = 5, height = 5))
+  message("Done.\n")
+}
 
-screePlot <- plot(numericPA, percentiles = 0.99,
-                  main = "Parallel analysis scree plot",
-                  xlab = "Number of factors",
-                  ylab = "Eigenvalues",
-                  groupLabel = "")
-screePlot <- screePlot + theme(aspect.ratio = 1)
 
-if (.Platform$GUI == "RStudio") {print(screePlot)}
+# we don't need to compare anymore
+if (FALSE) {
+  
+  if (numFactors == numFactorsPcaPA) {
+    message("PA, using 'psych' and 'pcaPA' packages, suggest\n",
+            "the same number of factors to be extracted: ", numFactors)
+  } else {
+    message("Number of factors to be extracted, determined, ",
+            "using 'psych' and 'pcaPA' packages, differs:\n")
+    message("'psych': ", numFactors)
+    message("'pcaPA': ", numFactorsPcaPA)
+  }
+}
 
-screePlotFile <- file.path(EFA_RESULTS_DIR,
-                           paste0(SCREE_PLOT_FILE, GRAPHICS_EXT))
-suppressMessages(ggsave(file = screePlotFile, plot = screePlot,
-                        width = 5, height = 5))
-
-
-# TODO: automate passing determined number of factors - DONE
-
-# TODO: produce a rounded loadings matrix by setting loadings
-# with absolute value lower than a cut-off value (0.3) to zero
-
-# For more details on bi-factor EFA and Schmid-Leiman method, see:
-# http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3253271
 
 message("\n\n*** Performing factor analysis (FA)...\n\n")
 
@@ -151,7 +216,13 @@ message("================================\n")
 # perform FA, using principal axis method
 fa.pa <- fa(corr.info$correlations, n.obs = numObs,
             nfactors = numFactors, fm = "pa")
-print(summary(fa.pa))
+print(fa.pa)
+
+L <- roundLoadings(fa.pa)
+
+message("\nA rounded loadings matrix:")
+print(L)
+
 
 message("\n\nFA with 'promax' rotation:") # not varimax?
 message("===========================\n")
@@ -194,6 +265,12 @@ bi.fa <- fa(corr.info$correlations, n.obs = numObs,
             rotate = "bifactor", max.iter = 500)
 print(bi.fa, sort = TRUE)
 
+L <- roundLoadings(bi.fa)
+
+message("\nA rounded loadings matrix:")
+print(L)
+
+
 # Nowadays, ULS or ML is preferred to PA methods of FA:
 #
 # Flora DB, LaBrish C and Chalmers RP. (2012).
@@ -211,6 +288,12 @@ uls <- fa(corr.info$correlations, n.obs = numObs,
 # show the loadings sorted by absolute value
 print(uls, sort = TRUE)
 
+L <- roundLoadings(uls)
+
+message("\nA rounded loadings matrix:")
+print(L)
+
+
 message("\n\nFA using WLS approach:")
 message("======================\n")
 
@@ -219,7 +302,13 @@ wls <- fa(corr.info$correlations, n.obs = numObs,
           nfactors = numFactors, fm = "wls")
 
 # show the loadings sorted by absolute value
-print(uls, sort = TRUE)
+print(wls, sort = TRUE)
+
+L <- roundLoadings(wls)
+
+message("\nA rounded loadings matrix:")
+print(L)
+
 
 message("\n\nFA using ML approach:")
 message("=====================\n")
