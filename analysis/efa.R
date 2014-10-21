@@ -135,7 +135,13 @@ suppressMessages(ggsave(file = screePlotFile, plot = screePlot,
                         width = 5, height = 5))
 
 
-# TODO: automate passing determined number of factors
+# TODO: automate passing determined number of factors - DONE
+
+# TODO: produce a rounded loadings matrix by setting loadings
+# with absolute value lower than a cut-off value (0.3) to zero
+
+# For more details on bi-factor EFA and Schmid-Leiman method, see:
+# http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3253271
 
 message("\n\n*** Performing factor analysis (FA)...\n\n")
 
@@ -143,8 +149,9 @@ message("FA, using principal axis method:")
 message("================================\n")
 
 # perform FA, using principal axis method
-fa(corr.info$correlations, n.obs = numObs,
-   nfactors = numFactors, fm = "pa")
+fa.pa <- fa(corr.info$correlations, n.obs = numObs,
+            nfactors = numFactors, fm = "pa")
+print(summary(fa.pa))
 
 message("\n\nFA with 'promax' rotation:") # not varimax?
 message("===========================\n")
@@ -179,29 +186,30 @@ message("Currently disabled.")
 #       nfactors = numFactors, fm = "pa")
 
 
-message("\n\n\nFA with 'bi-factor' rotation:")
-message("=============================\n")
+message("\n\nFA with 'bi-factor' rotation:")
+message("============================\n")
 
-fa(corr.info$correlations, n.obs = numObs,
-   nfactors = numFactors, fm="pa",
-   rotate = "bifactor", max.iter = 500)
+bi.fa <- fa(corr.info$correlations, n.obs = numObs,
+            nfactors = numFactors, fm="pa",
+            rotate = "bifactor", max.iter = 500)
+print(bi.fa, sort = TRUE)
 
-# Nowadays, ULS or ML is preferred to PA methods of FA
-# References:
-# 1) Flora DB, LaBrish C and Chalmers RP. (2012).
+# Nowadays, ULS or ML is preferred to PA methods of FA:
+#
+# Flora DB, LaBrish C and Chalmers RP. (2012).
 # Old and new ideas for data screening and assumption testing
 # for exploratory and confirmatory factor analysis.
 # Front. Psychology 3:55. doi: 10.3389/fpsyg.2012.00055
 
-message("\n\n\nFA using ULS approach:")
-message("======================\n")
+message("\n\nFA using ULS approach:")
+message("=====================\n")
 
 # unweighted least squares is minres
 uls <- fa(corr.info$correlations, n.obs = numObs,
           nfactors = numFactors, rotate = "varimax")
 
 # show the loadings sorted by absolute value
-print(uls, sort=TRUE)
+print(uls, sort = TRUE)
 
 message("\n\nFA using WLS approach:")
 message("======================\n")
