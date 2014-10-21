@@ -12,6 +12,7 @@ if (!suppressMessages(require(BaylorEdPsych)))
 if (!suppressMessages(require(mvnmle))) install.packages('mvnmle')
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(MVN))) install.packages('MVN')
+if (!suppressMessages(require(parallel))) install.packages('parallel')
 
 # 'mice' is needed for determining missingness patterns & MI
 # 'MissMech' is needed for testing data for being MCAR

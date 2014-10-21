@@ -1,3 +1,7 @@
+if (!suppressMessages(require(parallel))) install.packages('parallel')
+library(parallel)
+
+
 packages <- installed.packages()
 
 if ("ggplot2" %in% packages) {
