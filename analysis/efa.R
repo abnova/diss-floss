@@ -15,6 +15,13 @@
 # See http://www.unt.edu/rss/class/Jon/R_SC/Module7/M7_PCAandFA.R
 # for an approach to do PA without displaying standard scree plots.
 
+# Nowadays, ULS or ML is preferred to PA methods of FA:
+#
+# Flora DB, LaBrish C and Chalmers RP. (2012).
+# Old and new ideas for data screening and assumption testing
+# for exploratory and confirmatory factor analysis.
+# Front. Psychology 3:55. doi: 10.3389/fpsyg.2012.00055
+
 
 # Start session with a clean R environment
 rm(list = ls(all.names = TRUE))
@@ -50,6 +57,8 @@ SCREE_PLOT_FILE <- "screePlot"
 RDS_EXT      <- ".rds"
 GRAPHICS_EXT <- ".svg"
 
+DEBUG <- FALSE
+
 
 # produce a rounded loadings matrix by setting loadings
 # with absolute value lower than a cut-off value (0.3) to zero
@@ -69,7 +78,7 @@ fileName <- paste0(READY4EFA_FILE, RDS_EXT)
 ready4efaFile <- file.path(READY4EFA_DIR, fileName)
 
 # load data
-message("\n\nLoading data...")
+message("\n\n*** Loading data...")
 flossData <- loadData(ready4efaFile)
 
 # due to very small amount of projects with "Non-OSI" licesnse
@@ -86,23 +95,27 @@ factors4Analysis <- c("Development Team Size", "Project Age",
 flossData <- flossData[factors4Analysis]
 
 # sample the sample (use 1%) to reduce processing time
-flossData <- sampleDF(flossData, nrow(flossData) / 100)
+#flossData <- sampleDF(flossData, nrow(flossData) / 100)
 
 # first, calculate correlations for passing to FA functions
 
 # use hetcor() from 'polycor' package instead of corr.test()
 # in order to handle heterogenous data w/out conversion
+message("\n*** Calculating correlations...")
 corr.info <- hetcor(flossData, use="pairwise.complete.obs",
                     std.err = TRUE) # use $correlations just for corr
 
-message("\nCorrelations matrix:\n")
-print(corr.info, digits = 2)
+if (DEBUG) {
+  message("\nCorrelations matrix:")
+  message("--------------------")
+  print(corr.info, digits = 2)
+}
 
 # extract number of observations for futher use in FA
 numObs <- floor(mean(corr.info$n[upper.tri(corr.info$n)]))
 
 # determine number of factors to extract
-message("\n\n*** Determining number of factors to extract...\n")
+message("\n*** Determining number of factors to extract...\n")
 
 message("\nParallel Analysis (PA) - Method 1 ('psych'):")
 message("============================================\n")
@@ -115,19 +128,20 @@ fa.pa.info <- fa.parallel(corr.info$correlations,
 # extract number of factors from the PA result
 numFactors <- fa.pa.info$nfact
 
-message("\n\nProducing PA scree plot... ", appendLF = FALSE)
+message("\nProducing PA scree plot... ", appendLF = FALSE)
 
 screePlotData <- with(fa.pa.info,
   data.frame(Eigen = c(fa.values, fa.sim),
-             Type = factor(rep(1:2, each = length(fa.values)),
-                           levels = 1:2, labels = c("Factor", "Simulated")),
+             Data = factor(rep(1:2, each = length(fa.values)),
+                           levels = 1:2,
+                           labels = c("Observed", "Simulated")),
              Factor = rep(1:length(fa.values)))
 )
 
-g <- ggplot(screePlotData, aes(x = Factor, y = Eigen, color = Type)) +
+g <- ggplot(screePlotData, aes(x = Factor, y = Eigen, color = Data)) +
   geom_line() +
-  ggtitle(label = "Parallel analysis scree plot") +
-  xlab("Number of factors") + ylab("Factor eigenvalues")
+  ggtitle(label = "EFA: Parallel analysis scree plot") +
+  xlab("Factor numbers") + ylab("Factor eigenvalues")
 
 screePlot <- g + theme(aspect.ratio = 1)
 
@@ -137,7 +151,7 @@ screePlotFile <- file.path(EFA_RESULTS_DIR,
                            paste0(SCREE_PLOT_FILE, GRAPHICS_EXT))
 suppressMessages(ggsave(file = screePlotFile, plot = screePlot,
                         width = 5, height = 5))
-message("Done.\n")
+message("Done.")
 
 
 message("\n\nVery Simple Structure (VSS) analysis:")
@@ -155,7 +169,7 @@ summary(vss.info)  # for more details, print object or str()
 message("\nParallel Analysis (PA) - Method 2 ('pcaPA'):")
 message("============================================\n")
 
-message("Disabled.")
+message("Currently disabled.")
 
 if (FALSE) {
   
@@ -193,7 +207,7 @@ if (FALSE) {
 }
 
 
-# we don't need to compare anymore
+# we don't need to compare anymore, as PCA PA is disabled
 if (FALSE) {
   
   if (numFactors == numFactorsPcaPA) {
@@ -216,15 +230,16 @@ message("================================\n")
 # perform FA, using principal axis method
 fa.pa <- fa(corr.info$correlations, n.obs = numObs,
             nfactors = numFactors, fm = "pa")
-print(fa.pa)
+if (DEBUG) print(fa.pa)
 
 L <- roundLoadings(fa.pa)
 
-message("\nA rounded loadings matrix:")
+message("\nRounded loadings matrix:")
+message("------------------------")
 print(L)
 
 
-message("\n\nFA with 'promax' rotation:") # not varimax?
+message("\n\nFA with 'promax' rotation:")
 message("===========================\n")
 
 #message("Currently disabled.")
@@ -232,7 +247,14 @@ message("===========================\n")
 promax.fa <- fa(corr.info$correlations, n.obs = numObs,
                 nfactors = numFactors, fm = "pa",
                 rotate = "promax")
-print(promax.fa$Structure)
+if (DEBUG) print(promax.fa)
+
+L <- roundLoadings(promax.fa)
+
+message("\nRounded loadings matrix:")
+message("------------------------")
+print(L)
+
 
 message("\n\nFA with 'quartimin' rotation:")
 message("=============================\n")
@@ -263,20 +285,14 @@ message("============================\n")
 bi.fa <- fa(corr.info$correlations, n.obs = numObs,
             nfactors = numFactors, fm="pa",
             rotate = "bifactor", max.iter = 500)
-print(bi.fa, sort = TRUE)
+if (DEBUG) print(bi.fa, sort = TRUE)
 
 L <- roundLoadings(bi.fa)
 
-message("\nA rounded loadings matrix:")
+message("\nRounded loadings matrix:")
+message("------------------------")
 print(L)
 
-
-# Nowadays, ULS or ML is preferred to PA methods of FA:
-#
-# Flora DB, LaBrish C and Chalmers RP. (2012).
-# Old and new ideas for data screening and assumption testing
-# for exploratory and confirmatory factor analysis.
-# Front. Psychology 3:55. doi: 10.3389/fpsyg.2012.00055
 
 message("\n\nFA using ULS approach:")
 message("=====================\n")
@@ -286,11 +302,12 @@ uls <- fa(corr.info$correlations, n.obs = numObs,
           nfactors = numFactors, rotate = "varimax")
 
 # show the loadings sorted by absolute value
-print(uls, sort = TRUE)
+if (DEBUG) print(uls, sort = TRUE)
 
 L <- roundLoadings(uls)
 
-message("\nA rounded loadings matrix:")
+message("\nRounded loadings matrix:")
+message("------------------------")
 print(L)
 
 
@@ -302,11 +319,12 @@ wls <- fa(corr.info$correlations, n.obs = numObs,
           nfactors = numFactors, fm = "wls")
 
 # show the loadings sorted by absolute value
-print(wls, sort = TRUE)
+if (DEBUG) print(wls, sort = TRUE)
 
 L <- roundLoadings(wls)
 
-message("\nA rounded loadings matrix:")
+message("\nRounded loadings matrix:")
+message("------------------------")
 print(L)
 
 
