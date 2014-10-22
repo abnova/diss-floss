@@ -24,10 +24,12 @@
 
 
 # Start session with a clean R environment
+## @knitr CleanEnv
 rm(list = ls(all.names = TRUE))
 
 ##### PACKAGES #####
 
+## @knitr LoadPackages
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(GPArotation))) 
   install.packages('GPArotation')
@@ -41,9 +43,12 @@ library(ggplot2)
 
 ##### SETUP #####
 
+## @knitr PrepareEFA
 set.seed(100)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+
+KNITR <<- isTRUE(getOption("knitr.in.progress"))
 
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R")) # for multi-core support
@@ -69,6 +74,8 @@ roundLoadings <- function (fa.obj) {
   return (L)  
 }
 
+
+## @knitr PerformEFA
 
 ##### ANALYSIS #####
 
@@ -96,6 +103,11 @@ flossData <- flossData[factors4Analysis]
 
 # sample the sample (use 1%) to reduce processing time
 #flossData <- sampleDF(flossData, nrow(flossData) / 100)
+
+# save name of the data set (seems redundant, but it will be useful,
+# when there will be more than one data set, i.e. 'pilot' and 'main')
+# [currently used for KNITR only]
+datasetName <- deparse(substitute(flossData))
 
 # first, calculate correlations for passing to FA functions
 
@@ -145,6 +157,11 @@ g <- ggplot(screePlotData, aes(x = Factor, y = Eigen, color = Data)) +
 
 screePlot <- g + theme(aspect.ratio = 1)
 
+if (KNITR) {
+  screePlot_var <- paste0("screePlot_", datasetName)
+  assign(screePlot_var, screePlot, envir = .GlobalEnv)
+}
+
 if (.Platform$GUI == "RStudio") {print(screePlot)}
 
 screePlotFile <- file.path(EFA_RESULTS_DIR,
@@ -159,7 +176,13 @@ message("=====================================")
 
 # Velicer’s minimum average partial (MAP)
 vss.info <- VSS(corr.info$correlations, n.obs = numObs, plot = FALSE)
-summary(vss.info)  # for more details, print object or str()
+vss.summ <- summary(vss.info)  # for more details, print object or str()
+
+# TODO: fix
+if (KNITR) {
+  vssInfo_var <- paste0("vssInfo_", datasetName)
+  assign(vssInfo_var, vss.summ, envir = .GlobalEnv)
+}
 
 
 # To produce a scree plot (eigen values of a correlation matrix)
