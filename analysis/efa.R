@@ -33,13 +33,20 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(GPArotation))) 
   install.packages('GPArotation')
+if (!suppressMessages(require(polycor))) install.packages('polycor')
 #if (!suppressMessages(require(pcaPA))) install.packages('pcaPA')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
+if (!suppressMessages(require(tables))) install.packages('tables')
+if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
 
 library(psych)
 library(GPArotation)
+library(polycor)
 #library(pcaPA)
 library(ggplot2)
+library(tables)
+library(Hmisc)
+
 
 ##### SETUP #####
 
@@ -69,9 +76,67 @@ DEBUG <- FALSE
 # with absolute value lower than a cut-off value (0.3) to zero
 roundLoadings <- function (fa.obj) {
   
-  L <- fa.obj$loadings
+  L <- as.matrix(fa.obj$loadings)
   L[abs(L) < .3] <- 0
   return (L)  
+}
+
+
+addHeader <- function(obj, newcol) {
+
+  a1 <- attr(obj, "colLabels")
+  a2 <- rbind(a1, a1)
+  a2[1, -1] <- newcol
+  attr(a2, "justification") <- rbind(attr(a1, "justification"),
+                                     attr(a1, "justification"))
+  attr(a2, "formats") <- rbind(attr(a1, "formats"), attr(a1, "formats"))
+  attr(obj, "colLabels") <- a2
+
+  return(obj)
+}
+
+
+genEFAresultsTable <- function (caption="EFA results summary",
+                                digits = 2) {
+  
+  fa.pa <- roundLoadings(fa.pa)
+  colnames(fa.pa) <- 
+    paste0("fa.pa", '_', colnames(fa.pa)) # deparse(substitute(fa.pa))
+  
+  fa.promax <- roundLoadings(fa.promax)
+  colnames(fa.promax) <- 
+    paste0("fa.promax", '_', colnames(fa.promax))
+  
+  fa.bi <- roundLoadings(fa.bi)
+  colnames(fa.bi) <- 
+    paste0("fa.bi", '_', colnames(fa.bi))
+  
+  fa.uls <- roundLoadings(fa.uls)
+  colnames(fa.uls) <- 
+    paste0("fa.uls", '_', colnames(fa.uls))
+  
+  fa.wls <- roundLoadings(fa.wls)
+  colnames(fa.wls) <- 
+    paste0("fa.wls", '_', colnames(fa.wls))
+  
+  efaResultsMatrix <- cbind(fa.pa, fa.promax, fa.bi, fa.uls, fa.wls)
+
+  print(efaResultsMatrix)
+  print(names(efaResultsMatrix))
+  #stop()
+
+  efaResultsTable <- as.tabular(efaResultsMatrix)
+  format(efaResultsTable, digits) # justification="n"
+  
+  efaResultsTable <- addHeader(efaResultsTable, c(c("PA", NA, NA),
+                               c("Promax1", NA, NA), c("Promax2", NA, NA),
+                               c("Promax3", NA, NA), c("Promax4", NA, NA)))
+  
+  # call to set settings
+  booktabs()
+  
+  # latex table printing
+  latex(efaResultsTable)
 }
 
 
@@ -178,10 +243,10 @@ message("=====================================")
 vss.info <- VSS(corr.info$correlations, n.obs = numObs, plot = FALSE)
 vss.summ <- summary(vss.info)  # for more details, print object or str()
 
-# TODO: fix
+# KNITR: do not forget to apply summary() or other functions to such objects
 if (KNITR) {
   vssInfo_var <- paste0("vssInfo_", datasetName)
-  assign(vssInfo_var, vss.summ, envir = .GlobalEnv)
+  assign(vssInfo_var, vss.info, envir = .GlobalEnv)
 }
 
 
@@ -267,12 +332,12 @@ message("===========================\n")
 
 #message("Currently disabled.")
 # perform FA with 'promax' rotation
-promax.fa <- fa(corr.info$correlations, n.obs = numObs,
+fa.promax <- fa(corr.info$correlations, n.obs = numObs,
                 nfactors = numFactors, fm = "pa",
                 rotate = "promax")
-if (DEBUG) print(promax.fa)
+if (DEBUG) print(fa.promax)
 
-L <- roundLoadings(promax.fa)
+L <- roundLoadings(fa.promax)
 
 message("\nRounded loadings matrix:")
 message("------------------------")
@@ -305,12 +370,12 @@ message("Currently disabled.")
 message("\n\nFA with 'bi-factor' rotation:")
 message("============================\n")
 
-bi.fa <- fa(corr.info$correlations, n.obs = numObs,
+fa.bi <- fa(corr.info$correlations, n.obs = numObs,
             nfactors = numFactors, fm="pa",
             rotate = "bifactor", max.iter = 500)
-if (DEBUG) print(bi.fa, sort = TRUE)
+if (DEBUG) print(fa.bi, sort = TRUE)
 
-L <- roundLoadings(bi.fa)
+L <- roundLoadings(fa.bi)
 
 message("\nRounded loadings matrix:")
 message("------------------------")
@@ -321,13 +386,13 @@ message("\n\nFA using ULS approach:")
 message("=====================\n")
 
 # unweighted least squares is minres
-uls <- fa(corr.info$correlations, n.obs = numObs,
-          nfactors = numFactors, rotate = "varimax")
+fa.uls <- fa(corr.info$correlations, n.obs = numObs,
+             nfactors = numFactors, rotate = "varimax")
 
 # show the loadings sorted by absolute value
-if (DEBUG) print(uls, sort = TRUE)
+if (DEBUG) print(fa.uls, sort = TRUE)
 
-L <- roundLoadings(uls)
+L <- roundLoadings(fa.uls)
 
 message("\nRounded loadings matrix:")
 message("------------------------")
@@ -338,13 +403,13 @@ message("\n\nFA using WLS approach:")
 message("======================\n")
 
 # weighted least squares
-wls <- fa(corr.info$correlations, n.obs = numObs,
-          nfactors = numFactors, fm = "wls")
+fa.wls <- fa(corr.info$correlations, n.obs = numObs,
+             nfactors = numFactors, fm = "wls")
 
 # show the loadings sorted by absolute value
-if (DEBUG) print(wls, sort = TRUE)
+if (DEBUG) print(fa.wls, sort = TRUE)
 
-L <- roundLoadings(wls)
+L <- roundLoadings(fa.wls)
 
 message("\nRounded loadings matrix:")
 message("------------------------")
@@ -361,6 +426,8 @@ message("Currently disabled.")
 #mle <- factanal(corr.info$correlations, n.obs = numObs,
 #                factors = numFactors)
 #print(factor.congruence(list(uls, wls, mle)))
+
+genEFAresultsTable()
 
 message("\n===== EFA completed, results can be found ",
         "in directory \"", EFA_RESULTS_DIR, "\"\n")
