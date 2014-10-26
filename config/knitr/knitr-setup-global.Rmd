@@ -10,7 +10,7 @@ library(xtable)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
-opts_knit$set(root.dir = PRJ_HOME) # '~/diss-floss/'
+opts_knit$set(root.dir = PRJ_HOME)
 opts_knit$set(progress = TRUE, verbose = TRUE)
 opts_knit$set(eval.after = "fig.cap")
 ```
@@ -34,7 +34,8 @@ opts_chunk$set(
   #out.width = '0.8\\textwidth',
   #fig.path = 'figures/',
   cache=FALSE,
-  cache.path='knitr-cache/'
+  cache.path = '~/diss-floss/knitr-cache/',
+  cache.extra = rand_seed
 )
 
 #options(markdown.HTML.stylesheet = "path/to/a/custom/style.css")
