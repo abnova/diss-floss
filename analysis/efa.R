@@ -82,22 +82,23 @@ roundLoadings <- function (fa.obj) {
 }
 
 
-addHeader <- function(obj, newcol) {
+addHeader <- function(obj, newcol, factorNames) {
 
   a1 <- attr(obj, "colLabels")
   a2 <- rbind(a1, a1)
-  a2[1, -1] <- newcol
+  a2[1, ] <- newcol
+  a2[2, ] <- factorNames
   attr(a2, "justification") <- rbind(attr(a1, "justification"),
                                      attr(a1, "justification"))
   attr(a2, "formats") <- rbind(attr(a1, "formats"), attr(a1, "formats"))
   attr(obj, "colLabels") <- a2
-
+  
   return(obj)
 }
 
 
 genEFAresultsTable <- function (caption="EFA results summary",
-                                digits = 2) {
+                                digits = 2, numFactors) {
   
   fa.pa <- roundLoadings(fa.pa)
   colnames(fa.pa) <- 
@@ -121,16 +122,26 @@ genEFAresultsTable <- function (caption="EFA results summary",
   
   efaResultsMatrix <- cbind(fa.pa, fa.promax, fa.bi, fa.uls, fa.wls)
 
-  print(efaResultsMatrix)
-  print(names(efaResultsMatrix))
-  #stop()
+  # round matrices' values and clear zeroes to present clear staructure
+  efaResultsMatrix <- round(efaResultsMatrix, digits)
+  efaResultsMatrix[efaResultsMatrix == 0] <- ""
+  efaResultsMatrix[efaResultsMatrix != ""] <- 
+    gsub("(0)(\\..*)", "\\2", efaResultsMatrix[efaResultsMatrix != ""])
 
+  
   efaResultsTable <- as.tabular(efaResultsMatrix)
   format(efaResultsTable, digits) # justification="n"
   
-  efaResultsTable <- addHeader(efaResultsTable, c(c("PA", NA, NA),
-                               c("Promax1", NA, NA), c("Promax2", NA, NA),
-                               c("Promax3", NA, NA), c("Promax4", NA, NA)))
+  methods <- c(c("Principal Axis", rep(NA, numFactors - 1)),
+               c("Promax", rep(NA, numFactors - 1)),
+               c("Bi-factor", rep(NA, numFactors - 1)),
+               c("ULS", rep(NA, numFactors - 1)),
+               c("WLS", rep(NA, numFactors - 1)))
+  
+  factorNames <- rep(as.character(1:numFactors),
+                     length(unique(methods)) - 1)
+  
+  efaResultsTable <- addHeader(efaResultsTable, methods, factorNames)
   
   # call to set settings
   booktabs()
@@ -427,7 +438,7 @@ message("Currently disabled.")
 #                factors = numFactors)
 #print(factor.congruence(list(uls, wls, mle)))
 
-genEFAresultsTable()
+genEFAresultsTable(numFactors = numFactors)
 
 message("\n===== EFA completed, results can be found ",
         "in directory \"", EFA_RESULTS_DIR, "\"\n")
