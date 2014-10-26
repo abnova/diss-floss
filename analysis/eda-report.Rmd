@@ -8,7 +8,9 @@ output:
     number_sections: yes
     toc: yes
     toc_depth: 3
-    lib_dir: figures/eda-report
+    #lib_dir: figures/eda-report
+    includes:
+      in_header: ~/diss-floss/config/diss-floss.sty
   md_document:
     toc: yes
     toc_depth: 3
