@@ -71,8 +71,9 @@ print(describe_flossData)
 And now let's see what output would be produced by 'xtable' package:
 
 ```{r edaReportSummary2, include=TRUE, results='asis', fig.cap='EDA Report'}
-print(xtable(describe_flossData, caption="flossData Summary",
-             digits=3),
-      comment = FALSE,
-      include.rownames = FALSE)
+print(genEDAdescStatTable(flossData))
+#print(xtable(describe_flossData, caption="flossData Summary",
+#             digits=3),
+#      comment = FALSE,
+#      include.rownames = FALSE)
 ```

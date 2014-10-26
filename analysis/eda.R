@@ -61,6 +61,33 @@ allPlots <- list()
 
 ## @knitr PerformEDA
 
+##### MISC FUNCTIONS #####
+
+genEDAdescStatTable <- function (df, caption="EDA descriptive statistics",
+                                 digits = 2) {
+  
+  df <- psych::describe(df)
+  
+  df <- round(df, digits)
+  
+  df$vars <- rownames(df)
+  colsToInclude <- c("vars", "n", "mean", "sd", "median",
+                     "min", "max", "skew", "kurtosis")
+  tableCols <- c("N", "Mean", "SD", "Median", "Min", "Max", "Skew", "Kurtosis")
+  
+  df <- df[, colsToInclude]
+  names(df) <- tableCols
+  
+  edaDescStatTable <- as.tabular(df)
+  
+  # call to set settings
+  #booktabs()
+  
+  # latex table printing
+  latex(edaDescStatTable)
+}
+
+
 ##### EDA CATEGORIES #####
 
 uniDescriptiveEDA <- function (df, var, colName, extraFun) {
@@ -133,11 +160,11 @@ multiDescriptiveEDA <- function (df) {
   
   if (KNITR) {
     describe_var <- paste0("describe_", datasetName)
-    assign(describe_var, describe(df), envir = .GlobalEnv)
+    assign(describe_var, psych::describe(df), envir = .GlobalEnv)
   } else {
     message("\nDecriptive statistics for '", datasetName, "':\n")
     # suppress "NAs introduced by coercion" warnings
-    suppressWarnings(print(describe(df)))
+    suppressWarnings(print(psych::describe(df)))
   }
 }
 
