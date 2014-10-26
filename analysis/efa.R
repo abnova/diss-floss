@@ -229,7 +229,8 @@ screePlotData <- with(fa.pa.info,
 g <- ggplot(screePlotData, aes(x = Factor, y = Eigen, color = Data)) +
   geom_line() +
   ggtitle(label = "EFA: Parallel analysis scree plot") +
-  xlab("Factor numbers") + ylab("Factor eigenvalues")
+  xlab("Factor numbers") + ylab("Factor eigenvalues") +
+  theme(title=element_text(size=10))
 
 screePlot <- g + theme(aspect.ratio = 1)
 
@@ -243,7 +244,7 @@ if (.Platform$GUI == "RStudio") {print(screePlot)}
 screePlotFile <- file.path(EFA_RESULTS_DIR,
                            paste0(SCREE_PLOT_FILE, GRAPHICS_EXT))
 suppressMessages(ggsave(file = screePlotFile, plot = screePlot,
-                        width = 5, height = 5))
+                        width = 4, height = 4))
 message("Done.")
 
 

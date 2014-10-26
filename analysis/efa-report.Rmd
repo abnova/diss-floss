@@ -73,3 +73,11 @@ And now let's see what output would be produced by 'xtable' package:
 #      include.rownames = FALSE)
 genEFAresultsTable(caption="EFA results summary", digits = 2, numFactors)
 ```
+
+And let's see the scree plot:
+
+```{r efaReportScreePlot, include=TRUE, fig.cap='EFA Report: Scree plot', fig.height=4, fig.width=4}
+# DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8)
+print("", quote = FALSE)
+print(screePlot_flossData)
+```
