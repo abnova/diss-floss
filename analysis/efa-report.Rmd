@@ -2,21 +2,23 @@
 title: "EFA Report"
 author: "Aleksandr Blekh"
 output:
+  pdf_document:
+    highlight: kate
+    keep_tex: yes
+    #lib_dir: figures/eda-report
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    includes:
+      in_header: ~/diss-floss/config/diss-floss.sty
+  md_document:
+    toc: yes
+    toc_depth: 3
   html_document:
     css: ~/diss-floss/config/knitr/markdown.css
     number_sections: yes
     theme: united
     toc: yes
-  md_document:
-    toc: yes
-    toc_depth: 3
-  pdf_document:
-    highlight: kate
-    keep_tex: yes
-    lib_dir: figures/eda-report
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
   word_document:
     fig_width: 6.5
     mainfont: Calibri
@@ -56,7 +58,7 @@ param3 <- 'TEST'
 # empty
 ```
 
-The SourceForge pilot data set consists of `r length(dir(file.path(TRANSFORM_DIR, "SourceForge")))` indicators. The following is the summary descriptive statistics of the data set.
+The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4EFA_DIR, "flossData.rds")))` indicators. The following is the summary descriptive statistics of the data set.
 
 ```{r efaReportSummary, include=TRUE, fig.cap='EFA Report'}
 print(summary(vssInfo_var))
@@ -69,5 +71,5 @@ And now let's see what output would be produced by 'xtable' package:
 #             digits=3),
 #      comment = FALSE,
 #      include.rownames = FALSE)
-genEFAresultsTable(caption="EFA results summary", digits = 2)
+genEFAresultsTable(caption="EFA results summary", digits = 2, numFactors)
 ```
