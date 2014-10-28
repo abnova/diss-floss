@@ -337,8 +337,9 @@ generateConfig <- function(configTemplate, configFile) {
   
   regexKeyValue <- '"_([^"]*)":"([^"]*)"'
   regexVariable <- "[$]{([[:alpha:]][[:alnum:].]*)}"
-  
-  cfgTmpl <- readLines(configTemplate)
+
+  # 'collapse' is needed to replace JSON's invalid \n's with spaces
+  cfgTmpl <- sprintf("%s", paste(readLines(configTemplate), collapse=" "))
   
   defns <- strapplyc(cfgTmpl, regexKeyValue, simplify = rbind)
   dict <- setNames(as.list(defns[, 2]), defns[, 1])
