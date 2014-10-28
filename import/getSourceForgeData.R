@@ -338,13 +338,15 @@ generateConfig <- function(configTemplate, configFile) {
   regexKeyValue <- '"_([^"]*)":"([^"]*)"'
   regexVariable <- "[$]{([[:alpha:]][[:alnum:].]*)}"
 
-  # 'collapse' is needed to replace JSON's invalid \n's with spaces
-  cfgTmpl <- sprintf("%s", paste(readLines(configTemplate), collapse=" "))
+  cfgTmpl <- readLines(configTemplate)
   
   defns <- strapplyc(cfgTmpl, regexKeyValue, simplify = rbind)
   dict <- setNames(as.list(defns[, 2]), defns[, 1])
   config <- gsubfn(regexVariable, dict, cfgTmpl)
   
+  # escape JSON's invalid '\n' characters - fix for 'jsonlite'
+  #config <- paste(config, collapse = paste0("\\", 'n'))
+  config <- paste(config, collapse = '')
   writeLines(config, con = configFile)
 }
 
