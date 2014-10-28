@@ -66,25 +66,28 @@ allPlots <- list()
 genEDAdescStatTable <- function (df, caption="EDA descriptive statistics",
                                  digits = 2) {
   
+  df <- df[, sapply(df, is.numeric)]
   df <- psych::describe(df)
   
-  df <- round(df, digits)
+  df <- as.data.frame(round(df, digits))
   
   df$vars <- rownames(df)
-  colsToInclude <- c("vars", "n", "mean", "sd", "median",
+  colsToInclude <- c("n", "mean", "sd", "median",
                      "min", "max", "skew", "kurtosis")
-  tableCols <- c("N", "Mean", "SD", "Median", "Min", "Max", "Skew", "Kurtosis")
+  tableCols <- c("N", "Mean", "SD", "Median",
+                 "Min", "Max", "Skew", "Kurtosis")
   
+  df <- df[-1, ]  # remove Project ID
   df <- df[, colsToInclude]
   names(df) <- tableCols
-  
+
   edaDescStatTable <- as.tabular(df)
   
   # call to set settings
-  #booktabs()
+  booktabs()
   
   # latex table printing
-  latex(edaDescStatTable)
+  latex(edaDescStatTable, mathmode = FALSE)
 }
 
 
