@@ -70,41 +70,23 @@ names(flossData) <- make.names(names(flossData))
 # [currently used for KNITR only]
 datasetName <- deparse(substitute(flossData))
 
+# log transform continuous data
+flossData["Project.Age"] <- log(flossData["Project.Age"])
+flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
 
 # ===
 
-if (FALSE) {
-  message("\nCovariance matrix:")
-  message("-------------------")
-  cov.info <- cov(flossData, use = "pairwise.complete.obs")
-  print(cov.info, digits = 2)
-}
-
-message("\n*** Calculating correlations...")
-corr.info <- hetcor(flossData, use="pairwise.complete.obs",
-                    std.err = TRUE)
-
-if (DEBUG) {
-  message("\nCorrelations matrix:")
-  message("--------------------")
-  print(corr.info, digits = 2)
-}
-
 # calculate standard deviation for each variable in the data set
-sdValues <- unlist(lapply(seq(length(names(flossData))),
-                          function(i) sd(flossData[[i]], na.rm = TRUE)))
-
-message("\nCovariance matrix:")
-message("-------------------")
-cov.info <- cor2cov(corr.info$correlations, sdValues)
-print(cov.info, digits = 2)
+# (was needed for cor2cov(), left for informative purposes)
+#sdValues <- unlist(lapply(seq(length(names(flossData))),
+#                          function(i) sd(flossData[[i]], na.rm = TRUE)))
 
 
 # specify the latent variable model
 
 model <- "
 
-# factor structure
+# factor structure (fix factors' loadings to 1)
 
 f1 =~ 1 * Development.Team.Size
 f2 =~ 1 * License.Restrictiveness
@@ -129,7 +111,7 @@ f2 ~~ f3
 message("\n*** Performing CFA of the model...")
 
 fit <- cfa(model, data = flossData, meanstructure = TRUE,
-           missing = "pairwise", estimator = "WLSMV")
+           missing = "pairwise", estimator = "DWLS") # WLSMV
 
 # output results
 summary(fit, fit.measures = TRUE, standardize = TRUE)
