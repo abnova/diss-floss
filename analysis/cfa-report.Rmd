@@ -1,0 +1,88 @@
+---
+title: "CFA Report"
+author: "Aleksandr Blekh"
+output:
+  pdf_document:
+    highlight: kate
+    keep_tex: yes
+    #lib_dir: figures/eda-report
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    includes:
+      in_header: ~/diss-floss/config/diss-floss.sty
+  md_document:
+    toc: yes
+    toc_depth: 3
+  html_document:
+    css: ~/diss-floss/config/knitr/markdown.css
+    number_sections: yes
+    theme: united
+    toc: yes
+  word_document:
+    fig_width: 6.5
+    mainfont: Calibri
+---
+
+The following report is dynamically generated and presents results of exploratory data analysis (EDA) for prepared (transformed) research data, located in directories under "data/transform".
+
+This EDA consists of performing both descriptive and visual exploratory analysis for single variables (univariate), as well as for relationships between variables (multivariate).
+
+```{r KnitrSetup, child='../config/knitr/knitr-setup-global.Rmd'}
+# empty
+```
+
+```{r ReadChunksEDA}
+read_chunk('cfa.R')
+```
+
+```{r CleanEnv}
+# empty
+```
+
+```{r ConfigReport}
+param1 <- TRUE
+param2 <- FALSE
+param3 <- 'TEST'
+```
+
+```{r LoadPackages}
+# empty
+```
+
+```{r PrepareCFA}
+# empty
+```
+
+```{r PerformCFA, cache=TRUE}
+# empty
+```
+
+The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4CFA_DIR, "flossData.rds")))` indicators. The following is the summary descriptive statistics of the data set.
+
+```{r cfaReportSummary, include=TRUE, fig.cap='CFA Report'}
+print(summary(cfaFit_flossData, fit.measures = TRUE, standardize = TRUE))
+```
+
+And now let's see what output would be produced by 'xtable' package:
+
+```{r cfaReportSummary2, include=TRUE, results='asis', fig.cap='CFA Results Summary'}
+#print(xtable(cfaTable_flossData, caption="CFA Results Summary",
+#             digits = 2),
+#      comment = FALSE,
+#      include.rownames = FALSE)
+```
+
+And now let's see what output would be produced by 'tables' package:
+
+```{r cfaReportSummary3, include=TRUE, results='asis', fig.cap='CFA Results Summary'}
+print(genCFAresultsTable())
+```
+
+And let's generate a nice CFA model figure:
+
+```{r cfaModelFigure, include=TRUE, fig.cap='CFA Model', fig.height=4, fig.width=4}
+# DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8)
+#print("", quote = FALSE)
+#print(screePlot_flossData)
+```

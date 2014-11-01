@@ -15,20 +15,23 @@ PREP_DIR = ../prepare
 PREP_DONE = $(PREP_DIR)/transform.done
 
 analysis: prepare \
+          eda \
           eda-section \
           eda-report \
-          efa-report \
           efa \
+          efa-report \
           cfa \
+          cfa-report \
           sem
 
 prepare: prepare.done
 eda: eda.done
 eda-section: eda-section-Rnw.done
 eda-report: eda-report-Rmd.done
-efa-report: efa-report-Rmd.done
 efa: efa.done
+efa-report: efa-report-Rmd.done
 cfa: cfa.done
+cfa-report: cfa-report-Rmd.done
 sem: sem.done
 
 prepare.done: $(PREP_DONE)
@@ -63,6 +66,10 @@ efa-report-Rmd.done: efa-report.Rmd efa.R prepare
 
 cfa.done: cfa.R efa
 	@$(RSCRIPT) $(R_OPTS) $<
+	@touch $@
+
+cfa-report-Rmd.done: cfa-report.Rmd cfa.R prepare
+	@$(RSCRIPT) -e 'library(rmarkdown); render("cfa-report.Rmd", intermediates_dir = NULL)'
 	@touch $@
 
 sem.done: sem.R cfa

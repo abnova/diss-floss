@@ -7,9 +7,13 @@ rm(list = ls(all.names = TRUE))
 ## @knitr LoadPackages
 if (!suppressMessages(require(polycor))) install.packages('polycor')
 if (!suppressMessages(require(lavaan))) install.packages('lavaan')
+if (!suppressMessages(require(tables))) install.packages('tables')
+if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
 
 library(polycor)
 library(lavaan)
+library(tables)
+library(Hmisc)
 
 
 ##### SETUP #####
@@ -25,7 +29,7 @@ source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
 
 READY4CFA_DIR  <- file.path(PRJ_HOME, "data/ready4cfa")
-READY4CFA_FILE <- "flossData" # default
+READY4CFA_FILE <- "flossData"
 
 CFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/cfa")
 
@@ -34,6 +38,24 @@ GRAPHICS_EXT <- ".svg"
 
 DEBUG <- TRUE
 
+
+genCFAresultsTable <- function (caption="CFA results summary",
+                                digits = 2) {
+  
+  cfaResultsTable <- as.tabular(cfa.table)
+  #cfaResultsTable <- 
+  #  tabular(~ Heading() * All(cfa.table, character = TRUE), data = cfa.table)
+  format(cfaResultsTable, digits)
+  
+  # call to set settings
+  booktabs()
+  
+  # latex table printing
+  latex(cfaResultsTable, rowname = NULL)
+}
+
+
+## @knitr PerformCFA
 
 ##### ANALYSIS #####
 
@@ -110,8 +132,24 @@ f2 ~~ f3
 # perform CFA
 message("\n*** Performing CFA of the model...")
 
-fit <- cfa(model, data = flossData, meanstructure = TRUE,
+cfa.fit <- cfa(model, data = flossData, meanstructure = TRUE,
            missing = "pairwise", estimator = "DWLS") # WLSMV
 
-# output results
-summary(fit, fit.measures = TRUE, standardize = TRUE)
+# KNITR: do not forget to apply summary() or other functions to such objects
+if (KNITR) {
+  cfaFit_var <- paste0("cfaFit_", datasetName)
+  assign(cfaFit_var, cfa.fit, envir = .GlobalEnv)
+} else {
+  # output results
+  summary(cfa.fit, fit.measures = TRUE, standardize = TRUE)
+}
+
+
+cfa.table <- 
+  parameterEstimates(cfa.fit, standardized = TRUE)[, c(1:3, 4:5, 11)]
+
+# not needed, as long as table gen. function directly accesses 'cfa.table'
+if (KNITR) {
+  cfaTable_var <- paste0("cfaTable_", datasetName)
+  assign(cfaTable_var, cfa.table, envir = .GlobalEnv)
+}
