@@ -61,7 +61,7 @@ param3 <- 'TEST'
 The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4EFA_DIR, "flossData.rds")))` indicators. The following is the summary descriptive statistics of the data set.
 
 ```{r efaReportSummary, include=TRUE, fig.cap='EFA Report'}
-print(summary(vssInfo_var))
+print(summary(vssInfo_flossData))
 ```
 
 And now let's see what output would be produced by 'xtable' package:
@@ -77,7 +77,8 @@ genEFAresultsTable(caption="EFA results summary", digits = 2, numFactors)
 And let's see the scree plot:
 
 ```{r efaReportScreePlot, include=TRUE, fig.cap='EFA Report: Scree plot', fig.height=4, fig.width=4}
-# DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8)
+# DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8)s
 print("", quote = FALSE)
+#cat("\n\n")
 print(screePlot_flossData)
 ```

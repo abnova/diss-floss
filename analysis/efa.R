@@ -102,7 +102,7 @@ genEFAresultsTable <- function (caption="EFA results summary",
   
   fa.pa <- roundLoadings(fa.pa)
   colnames(fa.pa) <- 
-    paste0("fa.pa", '_', colnames(fa.pa)) # deparse(substitute(fa.pa))
+    paste0("fa.pa", '_', colnames(fa.pa))
   
   fa.promax <- roundLoadings(fa.promax)
   colnames(fa.promax) <- 
@@ -128,9 +128,8 @@ genEFAresultsTable <- function (caption="EFA results summary",
   efaResultsMatrix[efaResultsMatrix != ""] <- 
     gsub("(0)(\\..*)", "\\2", efaResultsMatrix[efaResultsMatrix != ""])
 
-  
   efaResultsTable <- as.tabular(efaResultsMatrix)
-  format(efaResultsTable, digits) # justification="n"
+  format(efaResultsTable, digits)
   
   methods <- c(c("Principal Axis", rep(NA, numFactors - 1)),
                c("Promax", rep(NA, numFactors - 1)),
@@ -438,8 +437,6 @@ message("Currently disabled.")
 #mle <- factanal(corr.info$correlations, n.obs = numObs,
 #                factors = numFactors)
 #print(factor.congruence(list(uls, wls, mle)))
-
-genEFAresultsTable(numFactors = numFactors)
 
 message("\n===== EFA completed, results can be found ",
         "in directory \"", EFA_RESULTS_DIR, "\"\n")
