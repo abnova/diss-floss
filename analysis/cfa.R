@@ -31,6 +31,7 @@ KNITR <<- isTRUE(getOption("knitr.in.progress"))
 
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
+source(file.path(PRJ_HOME, "utils/qgraphtikz.R")) # fix for TikZ device
 
 READY4CFA_DIR  <- file.path(PRJ_HOME, "data/ready4cfa")
 READY4CFA_FILE <- "flossData"
@@ -46,18 +47,28 @@ DEBUG <- TRUE
 genCFAresultsTable <- function (caption="CFA results summary",
                                 digits = 2) {
   
-  cfaResultsTable <- as.tabular(cfa.table)
-  #cfaResultsTable <- 
-  #  tabular(~ Heading() * All(cfa.table, character = TRUE), data = cfa.table)
+  cfaResultsTable <- xtable(cfa.table)
+  print(cfaResultsTable, include.rownames = FALSE,
+        booktabs = TRUE, digits = digits, comment = FALSE)
+}
 
-  attr(attr(cfaResultsTable, "rowLabels"), "suppress") <- 1 # DOESN'T WORK!
-  format(cfaResultsTable, digits)
+
+# parameter 'latex' should be set to TRUE only for a call under KNITR
+
+genCFAmodelDiagram <- function (cfa.fit, latex = FALSE) {
   
-  # call to set settings
-  booktabs()
+  filetype <- ifelse(.Platform$GUI == "RStudio", "x11", "R")
   
-  # latex table printing
-  latex(cfaResultsTable, rowname = NULL) # 'rowname' param. DOESN'T WORK!
+  # produce CFA model diagram/figure, using 'semPlot' package
+  cfaModDiag <- semPaths(cfa.fit, whatLabels = "std",
+                         intercepts = FALSE, thresholds = FALSE,
+                         edge.label.cex = 1,
+                         filetype = filetype, standAlone = FALSE)
+  print(cfaModDiag)
+  
+  # fix for TikZ device (LaTeX output)
+  if (latex) qgraph.tikz(cfaModDiag, filename = "cfaModDiag",
+                         standAlone = FALSE)
 }
 
 
@@ -123,10 +134,12 @@ f3 =~ 1 * Project.Age + Software.Type
 # fix some variances/residual variances to zero
 # because < 3 indicators per latent variables
 
+# Changed from original specification due to lavaan not analyzing
+# categorical variables, so the following indicators were removed:
+# License.Restrictiveness, Project.Age, Software.Type
+
 Development.Team.Size ~~ 0 * Development.Team.Size
-License.Restrictiveness ~~ 0 * License.Restrictiveness
-Project.Age ~~ 0 * Project.Age
-Software.Type ~~ 0 * Software.Type
+f2 ~~ 1 * f2
 
 # covariances between the latent variables
 
@@ -139,7 +152,7 @@ f2 ~~ f3
 message("\n*** Performing CFA of the model...")
 
 cfa.fit <- cfa(model, data = flossData, meanstructure = TRUE,
-           missing = "pairwise", estimator = "DWLS") # WLSMV
+           missing = "pairwise", estimator = "WLSMV")
 
 # KNITR: do not forget to apply summary() or other functions to such objects
 if (KNITR) {
@@ -150,18 +163,16 @@ if (KNITR) {
   summary(cfa.fit, fit.measures = TRUE, standardize = TRUE)
 }
 
+# produce CFA model diagram and output it in RStudio environment
+genCFAmodelDiagram(cfa.fit)
 
-# produce CFA model diagram/figure, using 'semPlot' package
-cfaModDiag <- semPaths(cfa.fit, intercepts = FALSE)
-
-if (KNITR) {
-  cfaModDiag_var <- paste0("cfaModDiag_", datasetName)
-  assign(cfaModDiag_var, cfaModDiag, envir = .GlobalEnv)
-}
 
 # produce CFA results summary table
-cfa.table <- 
-  parameterEstimates(cfa.fit, standardized = TRUE)[, c(1:3, 4:5, 11)]
+#cfa.table <- 
+#  parameterEstimates(cfa.fit, standardized = TRUE)[, c(1:3, 4:5, 11)]
+
+cfa.table <- parameterEstimates(cfa.fit)[length(factors4Analysis), c(3, 4, 7)]
+cfa.note <- fitMeasures(cfa.fit)[c('chisq', 'df', 'pvalue', 'cfi', 'rmsea')]
 
 # not needed, as long as table gen. function directly accesses 'cfa.table'
 if (KNITR) {

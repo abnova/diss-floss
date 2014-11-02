@@ -61,28 +61,20 @@ param3 <- 'TEST'
 The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4CFA_DIR, "flossData.rds")))` indicators. The following is the summary descriptive statistics of the data set.
 
 ```{r cfaReportSummary, include=TRUE, fig.cap='CFA Report'}
-print(summary(cfaFit_flossData, fit.measures = TRUE, standardize = TRUE))
-```
-
-And now let's see what output would be produced by 'xtable' package:
-
-```{r cfaReportSummary2, include=TRUE, results='asis', fig.cap='CFA Results Summary'}
-#print(xtable(cfaTable_flossData, caption="CFA Results Summary",
-#             digits = 2),
-#      comment = FALSE,
-#      include.rownames = FALSE)
+summary(cfaFit_flossData, fit.measures = TRUE, standardize = TRUE)
 ```
 
 And now let's see what output would be produced by 'tables' package:
 
 ```{r cfaReportSummary3, include=TRUE, results='asis', fig.cap='CFA Results Summary'}
-print(genCFAresultsTable())
+genCFAresultsTable()
 ```
 
 And let's generate a nice CFA model figure:
 
-```{r cfaModelFigure, include=TRUE, fig.cap='CFA Model', fig.height=4, fig.width=4}
+```{r cfaModelFigure, include=FALSE, results='asis', fig.cap='CFA Model', fig.height=4, fig.width=4}
 # DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8)
-#print("", quote = FALSE)
-#print(screePlot_flossData)
+genCFAmodelDiagram(cfaFit_flossData, latex = TRUE)
 ```
+
+\input{cfaModDiag.tex}

@@ -4,3 +4,4 @@
 *.gz
 figures
 knitr-cache
+*-tikzDictionary
