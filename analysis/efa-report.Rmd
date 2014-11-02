@@ -82,3 +82,10 @@ print("", quote = FALSE)
 #cat("\n\n")
 print(screePlot_flossData)
 ```
+
+And now let's see what output would be produced by 'xtable' package:
+
+```{r efaResultsDiagram, include=TRUE, results='asis', fig.cap='EFA Results Diagram', fig.show='hold'}
+genEFAresultsDiagram(faPA_flossData, latex = TRUE)
+genEFAresultsDiagram(faPromax_flossData, latex = TRUE)
+```

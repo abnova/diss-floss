@@ -38,6 +38,7 @@ if (!suppressMessages(require(polycor))) install.packages('polycor')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 if (!suppressMessages(require(tables))) install.packages('tables')
 if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
+if (!suppressMessages(require(qgraph))) install.packages('qgraph')
 
 library(psych)
 library(GPArotation)
@@ -46,6 +47,7 @@ library(polycor)
 library(ggplot2)
 library(tables)
 library(Hmisc)
+library(qgraph)
 
 
 ##### SETUP #####
@@ -147,6 +149,25 @@ genEFAresultsTable <- function (caption="EFA results summary",
   
   # latex table printing
   latex(efaResultsTable)
+}
+
+
+# parameter 'latex' should be set to TRUE only for a call under KNITR
+
+genEFAresultsDiagram <- function (fa.obj, latex = FALSE) {
+  
+  print(deparse(substitute(fa.obj))); print(str(fa.obj))
+  standAlone <- FALSE
+  filetype <- ifelse(.Platform$GUI == "RStudio", "x11", "R")
+
+  # redefine output to LaTeX
+  if (latex) filetype <- "tex"
+  
+  # defaults to 'circular' layout
+  qgraph(fa.obj$loadings, filetype = filetype, standAlone = standAlone)
+  
+  # alternative 'groups' layout
+  #qgraph(fa.obj$loadings, layout = "groups")
 }
 
 
@@ -337,6 +358,11 @@ message("\nRounded loadings matrix:")
 message("------------------------")
 print(L)
 
+if (KNITR) {
+  faPA_var <- paste0("faPA_", datasetName)
+  assign(faPA_var, fa.pa, envir = .GlobalEnv)
+}
+
 
 message("\n\nFA with 'promax' rotation:")
 message("===========================\n")
@@ -353,6 +379,11 @@ L <- roundLoadings(fa.promax)
 message("\nRounded loadings matrix:")
 message("------------------------")
 print(L)
+
+if (KNITR) {
+  faPromax_var <- paste0("faPromax_", datasetName)
+  assign(faPromax_var, fa.promax, envir = .GlobalEnv)
+}
 
 
 message("\n\nFA with 'quartimin' rotation:")
@@ -437,6 +468,21 @@ message("Currently disabled.")
 #mle <- factanal(corr.info$correlations, n.obs = numObs,
 #                factors = numFactors)
 #print(factor.congruence(list(uls, wls, mle)))
+
+
+# generate EFA diagrams and output them in RStudio 'Plots' panel
+
+# TODO: check if other 'graph' values make more sense (req. corr. matrix):
+# "association" (default), "concentration", "factorial", "sig", "sig2"
+
+# TODO: Consider whether it's better to pass diag. vec. & loop inside
+
+# vector of EFA objects, for which diagrams should be produced
+diagrams <- c(fa.pa, fa.promax, fa.bi, fa.uls, fa.wls)
+
+# produce all requested diagrams
+for (diag in diagrams) genEFAresultsDiagram(diag)
+
 
 message("\n===== EFA completed, results can be found ",
         "in directory \"", EFA_RESULTS_DIR, "\"\n")
