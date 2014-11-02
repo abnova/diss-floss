@@ -9,11 +9,15 @@ if (!suppressMessages(require(polycor))) install.packages('polycor')
 if (!suppressMessages(require(lavaan))) install.packages('lavaan')
 if (!suppressMessages(require(tables))) install.packages('tables')
 if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
+if (!suppressMessages(require(qgraph))) install.packages('semPlot')
+if (!suppressMessages(require(qgraph))) install.packages('qgraph') # for 'semPlot'
 
 library(polycor)
 library(lavaan)
 library(tables)
 library(Hmisc)
+library(semPlot)
+library(qgraph)
 
 
 ##### SETUP #####
@@ -45,13 +49,15 @@ genCFAresultsTable <- function (caption="CFA results summary",
   cfaResultsTable <- as.tabular(cfa.table)
   #cfaResultsTable <- 
   #  tabular(~ Heading() * All(cfa.table, character = TRUE), data = cfa.table)
+
+  attr(attr(cfaResultsTable, "rowLabels"), "suppress") <- 1 # DOESN'T WORK!
   format(cfaResultsTable, digits)
   
   # call to set settings
   booktabs()
   
   # latex table printing
-  latex(cfaResultsTable, rowname = NULL)
+  latex(cfaResultsTable, rowname = NULL) # 'rowname' param. DOESN'T WORK!
 }
 
 
@@ -145,6 +151,15 @@ if (KNITR) {
 }
 
 
+# produce CFA model diagram/figure, using 'semPlot' package
+cfaModDiag <- semPaths(cfa.fit, intercepts = FALSE)
+
+if (KNITR) {
+  cfaModDiag_var <- paste0("cfaModDiag_", datasetName)
+  assign(cfaModDiag_var, cfaModDiag, envir = .GlobalEnv)
+}
+
+# produce CFA results summary table
 cfa.table <- 
   parameterEstimates(cfa.fit, standardized = TRUE)[, c(1:3, 4:5, 11)]
 
