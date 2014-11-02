@@ -478,7 +478,7 @@ message("Currently disabled.")
 # TODO: Consider whether it's better to pass diag. vec. & loop inside
 
 # vector of EFA objects, for which diagrams should be produced
-diagrams <- c(fa.pa, fa.promax, fa.bi, fa.uls, fa.wls)
+diagrams <- list(fa.pa, fa.promax, fa.bi, fa.uls, fa.wls)
 
 # produce all requested diagrams
 for (diag in diagrams) genEFAresultsDiagram(diag)
