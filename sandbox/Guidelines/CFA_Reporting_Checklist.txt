@@ -1,0 +1,41 @@
+CFA Reporting Guidelines Checklist
+----------------------------------
+
+Source: Jackson, D. L., Gillaspy Jr., J. A., & Purc-Stephenson, R. (2009). Reporting practices in confirmatory factor analysis: An overview and some recommendations. Psychological Methods, 14(1), 6-23. doi:http://dx.doi.org/10.1037/a0014694
+
+Theoretical Formulation & Data Collection
+___ Theoretical/empirical justification of models tested
+___ Number and type of models tested (correlated, orthogonal, hierarchical, etc.)
+___ Specification of models tested (explicit relationships between observed and latent variables)
+___ Graphic representation of models tested
+___ Sample characteristics (justification, sampling method, sample size)
+___ Identification of equivalent and theoretically alternative models
+___ Specification of model identifiably (can models be tested)?
+
+Data Preparation
+___ Screening for univariate and multivariate normality and outliers
+___ Analysis of missing data and method for addressing
+___ Scale of observed variables (nominal, ordinal, interval, ratio; range of values)
+___ Description of data transformations (include parceling)
+
+Analysis Decisions
+___ Type of matrix analyzed (covariance, correlation, etc.)
+___ Matrix included or available upon request
+___ Estimation procedure and justification given normality assessment (ML, S-B ML, WLS, etc.)
+___ Scale of latent variables
+___ Software and version
+
+Model Evaluation
+___ Inclusion of multiple fit indices (e.g., X2, df, p; RMSEA, CFI, TLI, etc.)
+
+___ Justification and specification of cutoff values for fit indices
+___ Parameter estimates (factor pattern coefficients, error variances, factor correlations, R2)
+___ Specification of standardized or unstandardized parameter estimates
+___ Standard errors or confidence intervals of parameter estimates
+___ Examination of residual matrix
+___ Description of model modification (if any)
+___ Description of model cross-validation (in any)
+
+Discussion of Model
+___ Specification of final model/discussion of equivalent models
+___ Study limitations and implications for theory and further research
