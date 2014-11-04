@@ -3,6 +3,8 @@ title: "EFA Report"
 author: "Aleksandr Blekh"
 output:
   pdf_document:
+    fig_caption: yes
+    fig_crop: no
     highlight: kate
     keep_tex: yes
     #lib_dir: figures/eda-report
@@ -73,7 +75,7 @@ genEFAresultsTable(caption="EFA results summary", digits = 2, numFactors)
 Let's see the factors scree plot:
 
 ```{r efaReportScreePlot, include=TRUE, fig.cap='EFA Report: Scree plot', fig.height=4, fig.width=4}
-# DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8)s
+# DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8) -- TODO: update when 1.8 will be released
 print("", quote = FALSE)
 #cat("\n\n")
 print(screePlot_flossData)
@@ -81,9 +83,11 @@ print(screePlot_flossData)
 
 And now let's take a look at some EFA diagrams:
 
-```{r efaResultsDiagram, include=TRUE, results='asis', fig.cap='EFA Results Diagrams', fig.show='hold', fig.height=3.5, fig.width=3.5}
+`r diagLegend <- "DTS - Development Team Size; PrA - Project Age; LcR - License Restrictiveness; PrS - Project Size; SfT - Software Type"`
+
+```{r efaResultsDiagram, include=TRUE, results='asis', fig.cap='EFA Results Diagrams', fig.show='hold', fig.height=3.5, fig.width=3.5, fig.subcap=diagLegend}
 genEFAresultsDiagram(faPA_flossData, latex = TRUE)
-genEFAresultsDiagram(faPromax_flossData, latex = TRUE)
+#genEFAresultsDiagram(faPromax_flossData, latex = TRUE)
 ```
 
 ```{r efaResultsDiagram2, include=TRUE, results='asis', fig.cap='EFA Results Diagrams (continued)', fig.show='hold', fig.height=3.5, fig.width=3.5}

@@ -13,6 +13,10 @@ PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 opts_knit$set(root.dir = PRJ_HOME)
 opts_knit$set(progress = TRUE, verbose = TRUE)
 opts_knit$set(eval.after = "fig.cap")
+
+# attempt to set margins for EFA diagrams, but pref. to use 'qgraph' / mar()
+# B/L/T/R = 5.1 / 4.1 / 4.1 / 2.1
+#opts_knit$set(global.pars = par(mar=c(10, 10, 10, 7)))
 ```
 
 

@@ -39,6 +39,7 @@ if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 if (!suppressMessages(require(tables))) install.packages('tables')
 if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
 if (!suppressMessages(require(qgraph))) install.packages('qgraph')
+if (!suppressMessages(require(RColorBrewer))) install.packages('RColorBrewer')
 
 library(psych)
 library(GPArotation)
@@ -48,6 +49,7 @@ library(ggplot2)
 library(tables)
 library(Hmisc)
 library(qgraph)
+library(RColorBrewer)
 
 
 ##### SETUP #####
@@ -162,8 +164,23 @@ genEFAresultsDiagram <- function (fa.obj, latex = FALSE) {
   # redefine output to LaTeX
   if (latex) filetype <- "tex"
   
+  # specify groups to produce factors and indicators circles
+  factors <- apply(abs(fa.obj$loadings), 1, which.max)
+  faGroups <- vector("list", length(unique(factors)))
+  
+  #names(faGroups) <- paste0("f", 1:length(unique(factors)))
+  #attr(faGroups, "dimnames") <- paste0("f", 1:length(unique(factors)))
+  
+  for(i in 1:length(factors))
+    faGroups[[factors[i]]] <- c(faGroups[[factors[i]]], i)
+  
+  # change the color palette
+  colPalette <- brewer.pal(5, "Pastel1")[1:length(unique(factors))]
+  
   # defaults to 'circular' layout
-  qgraph(fa.obj$loadings, filetype = filetype, standAlone = standAlone)
+  qgraph(fa.obj$loadings, groups = faGroups, colors = colPalette,
+         filetype = filetype, standAlone = standAlone,
+         mar = c(2.5, 2.5, 2.5, 2.5)) # B/L/T/R
   
   # alternative 'groups' layout
   #qgraph(fa.obj$loadings, layout = "groups")
