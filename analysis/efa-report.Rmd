@@ -64,17 +64,13 @@ The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4EFA_D
 print(summary(vssInfo_flossData))
 ```
 
-And now let's see what output would be produced by 'xtable' package:
+And now let's take a look at the EFA results summary table:
 
 ```{r efaReportSummary2, include=TRUE, results='asis', fig.cap='EDA Report'}
-#print(xtable(describe_flossData, caption="flossData Summary",
-#             digits=3),
-#      comment = FALSE,
-#      include.rownames = FALSE)
 genEFAresultsTable(caption="EFA results summary", digits = 2, numFactors)
 ```
 
-And let's see the scree plot:
+Let's see the factors scree plot:
 
 ```{r efaReportScreePlot, include=TRUE, fig.cap='EFA Report: Scree plot', fig.height=4, fig.width=4}
 # DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8)s
@@ -83,9 +79,18 @@ print("", quote = FALSE)
 print(screePlot_flossData)
 ```
 
-And now let's see what output would be produced by 'xtable' package:
+And now let's take a look at some EFA diagrams:
 
-```{r efaResultsDiagram, include=TRUE, results='asis', fig.cap='EFA Results Diagram', fig.show='hold'}
+```{r efaResultsDiagram, include=TRUE, results='asis', fig.cap='EFA Results Diagrams', fig.show='hold', fig.height=3.5, fig.width=3.5}
 genEFAresultsDiagram(faPA_flossData, latex = TRUE)
 genEFAresultsDiagram(faPromax_flossData, latex = TRUE)
+```
+
+```{r efaResultsDiagram2, include=TRUE, results='asis', fig.cap='EFA Results Diagrams (continued)', fig.show='hold', fig.height=3.5, fig.width=3.5}
+genEFAresultsDiagram(faBi_flossData, latex = TRUE)
+```
+
+```{r efaResultsDiagram3, include=TRUE, results='asis', fig.cap='EFA Results Diagrams (continued)', fig.show='hold', fig.height=3.5, fig.width=3.5}
+genEFAresultsDiagram(faULS_flossData, latex = TRUE)
+genEFAresultsDiagram(faWLS_flossData, latex = TRUE)
 ```

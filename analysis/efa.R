@@ -156,7 +156,6 @@ genEFAresultsTable <- function (caption="EFA results summary",
 
 genEFAresultsDiagram <- function (fa.obj, latex = FALSE) {
   
-  print(deparse(substitute(fa.obj))); print(str(fa.obj))
   standAlone <- FALSE
   filetype <- ifelse(.Platform$GUI == "RStudio", "x11", "R")
 
@@ -419,6 +418,12 @@ if (DEBUG) print(fa.bi, sort = TRUE)
 
 L <- roundLoadings(fa.bi)
 
+if (KNITR) {
+  faBi_var <- paste0("faBi_", datasetName)
+  assign(faBi_var, fa.bi, envir = .GlobalEnv)
+}
+
+
 message("\nRounded loadings matrix:")
 message("------------------------")
 print(L)
@@ -436,6 +441,12 @@ if (DEBUG) print(fa.uls, sort = TRUE)
 
 L <- roundLoadings(fa.uls)
 
+if (KNITR) {
+  faULS_var <- paste0("faULS_", datasetName)
+  assign(faULS_var, fa.uls, envir = .GlobalEnv)
+}
+
+
 message("\nRounded loadings matrix:")
 message("------------------------")
 print(L)
@@ -452,6 +463,12 @@ fa.wls <- fa(corr.info$correlations, n.obs = numObs,
 if (DEBUG) print(fa.wls, sort = TRUE)
 
 L <- roundLoadings(fa.wls)
+
+if (KNITR) {
+  faWLS_var <- paste0("faWLS_", datasetName)
+  assign(faWLS_var, fa.wls, envir = .GlobalEnv)
+}
+
 
 message("\nRounded loadings matrix:")
 message("------------------------")
