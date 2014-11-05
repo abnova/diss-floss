@@ -62,14 +62,14 @@ param3 <- 'TEST'
 
 The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4EFA_DIR, "flossData.rds")))` indicators. The following is the summary descriptive statistics of the data set.
 
-```{r efaReportSummary, include=TRUE, fig.cap='EFA Report'}
+```{r efaReportVssSummary, include=TRUE, results='markup'}
 summary(vssInfo_flossData)
 ```
 
-And now let's take a look at the EFA results summary table:
+And now let's take a look at the EFA results summary, presented in Table \ref{tab:efaResults}:
 
-```{r efaReportSummary2, include=TRUE, results='asis', fig.cap='EDA Report'}
-genEFAresultsTable(caption="EFA results summary", digits=2, numFactors)
+```{r efaReportSummaryTable, include=TRUE, results='asis'}
+genEFAresultsTable(caption="EFA parallel analysis scree plot", digits=2, numFactors)
 ```
 
 Let's see the factors scree plot:
@@ -83,7 +83,7 @@ And now let's take a look at some EFA diagrams:
 
 `r diagLegend <- "DTS - Development Team Size; PrA - Project Age; LcR - License Restrictiveness; PrS - Project Size; SfT - Software Type"`
 
-```{r efaResultsDiagram, include=TRUE, results='asis', fig.cap='EFA Results Diagrams', fig.show='hold', fig.subcap=diagLegend}
+```{r efaReportDiagram, include=TRUE, results='asis', fig.cap='EFA Results Diagrams', fig.show='hold', fig.subcap=diagLegend}
 genEFAresultsDiagram(faPA_flossData, latex = TRUE)
 #genEFAresultsDiagram(faPromax_flossData, latex = TRUE)
 ```

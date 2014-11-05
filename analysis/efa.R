@@ -151,24 +151,17 @@ genEFAresultsTable <- function (caption = "EFA results summary",
   # add custom header (multicolumn format)
   efaResultsTable <- addHeader(efaResultsTable, methods, factorNames)
   
+  # set the caption (specific for 'tables' package)
+  latexCap <- paste0("\\caption{", caption, ".}\\\\", "\n",
+                     "\\toprule",
+                     "\\label{tab:efaResults}")
+  
   # set tabular settings
   booktabs()
   
-  # generate LaTeX caption (not needed, as latex() has corresponding options)
-  #latexCaption <- paste0("\\caption{", caption, "}\\\\   \\toprule")
-  #latex(efaResultsTable, options = list(toprule = latexCaption))
-  
-  # output LaTeX table (TODO: caption still doesn't appear)
-  latex(efaResultsTable, caption = caption, caption.loc = "bottom",
-        ctable = TRUE)
-  
-  # attempt to use "tabular -> R object -> xtable" approach
-  if (FALSE) {
-    latexEfaResultsTable <- latex(efaResultsTable)
-    xtabEfaResultsTable <- xtable(latexEfaResultsTable, caption = caption)
-    print(xtabEfaResultsTable, booktabs = TRUE,
-          digits = digits, comment = FALSE)
-  }
+  # output LaTeX table
+  latex(efaResultsTable, options = list(tabular = "longtable",
+                                        toprule = latexCap))
 }
 
 
@@ -196,7 +189,8 @@ genEFAresultsDiagram <- function (fa.obj, latex = FALSE) {
   colPalette <- brewer.pal(5, "Pastel1")[1:length(unique(factors))]
   
   # defaults to 'circular' layout
-  qgraph(fa.obj$loadings, groups = faGroups, colors = colPalette,
+  qgraph(fa.obj$loadings, groups = faGroups,
+         colors = colPalette, bg = "grey90",
          filetype = filetype, standAlone = standAlone,
          mar = c(2.5, 2.5, 2.5, 2.5)) # B/L/T/R
   
@@ -282,9 +276,9 @@ screePlotData <- with(fa.pa.info,
 
 g <- ggplot(screePlotData, aes(x = Factor, y = Eigen, color = Data)) +
   geom_line() +
-  ggtitle(label = "EFA: Parallel analysis scree plot") +
   xlab("Factor numbers") + ylab("Factor eigenvalues") +
   theme(title = element_text(size = 10),
+        legend.position = "top",
         plot.margin = unit(c(1, 1, 1, 1), "mm"))
 
 screePlot <- g + theme(aspect.ratio = 1 / PHI)
