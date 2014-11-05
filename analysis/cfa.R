@@ -47,9 +47,26 @@ DEBUG <- TRUE
 genCFAresultsTable <- function (caption="CFA results summary",
                                 digits = 2) {
   
+  fit.info <- fitMeasures(cfa.fit)[c('chisq', 'df', 'pvalue', 'cfi', 'rmsea')]
+  
+  cfa.table <- cfa.prettyprint(cfa.fit, digits = digits)
+  numCols <- ncol(cfa.table)
+  cfa.table <- cbind(cfa.table, "", "")
+  colnames(cfa.table)[numCols + 1:2] <- c(" ", " ")
+  
+  numRows <- nrow(cfa.table); lines2Add <- 2
+  cfa.table <- rbind(cfa.table, "1"="", "2"="")
+  rownames(cfa.table)[numRows + 1:2] <- c("CFA fit measures", " ")
+  
+  horLines <- c(c(-1, 0, numRows), numRows + lines2Add)
+  cfa.table[numRows + 1, ] <- names(fit.info)
+  cfa.table[numRows + 2, ] <- round(fit.info, digits = digits)
+  
   cfaResultsTable <- xtable(cfa.table, caption = caption)
   print(cfaResultsTable, booktabs = TRUE,
-        digits = digits, comment = FALSE)
+        digits = digits, comment = FALSE,
+        caption.placement = "top",
+        hline.after = horLines)
 }
 
 
@@ -204,13 +221,7 @@ genCFAmodelDiagram(cfa.fit)
 
 
 # produce CFA results summary table
-#cfa.table <- 
-#  parameterEstimates(cfa.fit, standardized = TRUE)[, c(1:3, 4:5, 11)]
-
-#cfa.table <- parameterEstimates(cfa.fit)[length(factors4Analysis), c(3, 4, 7)]
-#cfa.note <- fitMeasures(cfa.fit)[c('chisq', 'df', 'pvalue', 'cfi', 'rmsea')]
-
-cfa.table <- cfa.prettyprint(cfa.fit)
+cfa.table <- genCFAresultsTable()
 
 # not needed, as long as table gen. function directly accesses 'cfa.table'
 if (KNITR) {
