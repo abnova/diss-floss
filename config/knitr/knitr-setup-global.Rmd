@@ -10,6 +10,8 @@ library(xtable)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
+source(file.path(PRJ_HOME, "utils/graphics.R")) # for golden ratio
+
 opts_knit$set(root.dir = PRJ_HOME)
 opts_knit$set(progress = TRUE, verbose = TRUE)
 opts_knit$set(eval.after = "fig.cap")
@@ -31,13 +33,12 @@ opts_chunk$set(
   error = TRUE,
   message = TRUE,
   tidy = FALSE,
-  comment=NA,
-  #fig.width = 5,
-  #fig.height = 4,
+  comment = NA,
+  fig.width = PHI * opts_chunk$get("fig.height"),
   #fig.align = 'center',
   #out.width = '0.8\\textwidth',
   #fig.path = 'figures/',
-  cache=FALSE,
+  cache = FALSE,
   cache.path = '~/diss-floss/knitr-cache/',
   cache.extra = rand_seed
 )
