@@ -1,3 +1,8 @@
+
+# golden ratio: mostly to use its inverse for plots' aspect ratio
+PHI <- 1.618
+
+
 #
 # Redefine ggplot2::qplot() to print the graphics object
 # in order to actually produce output in non-interactive mode
