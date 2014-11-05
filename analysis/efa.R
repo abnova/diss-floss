@@ -63,6 +63,7 @@ KNITR <<- isTRUE(getOption("knitr.in.progress"))
 
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R")) # for multi-core support
+source(file.path(PRJ_HOME, "utils/graphics.R")) # for golden ratio
 
 READY4EFA_DIR  <- file.path(PRJ_HOME, "data/ready4efa")
 READY4EFA_FILE <- "flossData" # default
@@ -97,11 +98,11 @@ addHeader <- function(obj, newcol, factorNames) {
   attr(a2, "formats") <- rbind(attr(a1, "formats"), attr(a1, "formats"))
   attr(obj, "colLabels") <- a2
   
-  return(obj)
+  return (obj)
 }
 
 
-genEFAresultsTable <- function (caption="EFA results summary",
+genEFAresultsTable <- function (caption = "EFA results summary",
                                 digits = 2, numFactors) {
   
   fa.pa <- roundLoadings(fa.pa)
@@ -132,25 +133,42 @@ genEFAresultsTable <- function (caption="EFA results summary",
   efaResultsMatrix[efaResultsMatrix != ""] <- 
     gsub("(0)(\\..*)", "\\2", efaResultsMatrix[efaResultsMatrix != ""])
 
+  # convert to 'tabular' object (using 'tables' package)
   efaResultsTable <- as.tabular(efaResultsMatrix)
   format(efaResultsTable, digits)
   
+  # specify labels for FA methods
   methods <- c(c("Principal Axis", rep(NA, numFactors - 1)),
                c("Promax", rep(NA, numFactors - 1)),
                c("Bi-factor", rep(NA, numFactors - 1)),
                c("ULS", rep(NA, numFactors - 1)),
                c("WLS", rep(NA, numFactors - 1)))
   
+  # generate factor names
   factorNames <- rep(as.character(1:numFactors),
                      length(unique(methods)) - 1)
   
+  # add custom header (multicolumn format)
   efaResultsTable <- addHeader(efaResultsTable, methods, factorNames)
   
-  # call to set settings
+  # set tabular settings
   booktabs()
   
-  # latex table printing
-  latex(efaResultsTable)
+  # generate LaTeX caption (not needed, as latex() has corresponding options)
+  #latexCaption <- paste0("\\caption{", caption, "}\\\\   \\toprule")
+  #latex(efaResultsTable, options = list(toprule = latexCaption))
+  
+  # output LaTeX table (TODO: caption still doesn't appear)
+  latex(efaResultsTable, caption = caption, caption.loc = "bottom",
+        ctable = TRUE)
+  
+  # attempt to use "tabular -> R object -> xtable" approach
+  if (FALSE) {
+    latexEfaResultsTable <- latex(efaResultsTable)
+    xtabEfaResultsTable <- xtable(latexEfaResultsTable, caption = caption)
+    print(xtabEfaResultsTable, booktabs = TRUE,
+          digits = digits, comment = FALSE)
+  }
 }
 
 
@@ -266,9 +284,10 @@ g <- ggplot(screePlotData, aes(x = Factor, y = Eigen, color = Data)) +
   geom_line() +
   ggtitle(label = "EFA: Parallel analysis scree plot") +
   xlab("Factor numbers") + ylab("Factor eigenvalues") +
-  theme(title=element_text(size=10))
+  theme(title = element_text(size = 10),
+        plot.margin = unit(c(1, 1, 1, 1), "mm"))
 
-screePlot <- g + theme(aspect.ratio = 1)
+screePlot <- g + theme(aspect.ratio = 1 / PHI)
 
 if (KNITR) {
   screePlot_var <- paste0("screePlot_", datasetName)
@@ -289,12 +308,13 @@ message("=====================================")
 
 # Velicer’s minimum average partial (MAP)
 vss.info <- VSS(corr.info$correlations, n.obs = numObs, plot = FALSE)
-vss.summ <- summary(vss.info)  # for more details, print object or str()
 
 # KNITR: do not forget to apply summary() or other functions to such objects
 if (KNITR) {
   vssInfo_var <- paste0("vssInfo_", datasetName)
   assign(vssInfo_var, vss.info, envir = .GlobalEnv)
+} else {
+  vss.summ <- summary(vss.info)  # for more details, print object or str()
 }
 
 
