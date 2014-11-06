@@ -8,6 +8,7 @@ rm(list = ls(all.names = TRUE))
 if (!suppressMessages(require(polycor))) install.packages('polycor')
 if (!suppressMessages(require(lavaan))) install.packages('lavaan')
 if (!suppressMessages(require(tables))) install.packages('tables')
+if (!suppressMessages(require(xtable))) install.packages('xtable')
 if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
 if (!suppressMessages(require(qgraph))) install.packages('semPlot')
 if (!suppressMessages(require(qgraph))) install.packages('qgraph') # for 'semPlot'
@@ -15,6 +16,7 @@ if (!suppressMessages(require(qgraph))) install.packages('qgraph') # for 'semPlo
 library(polycor)
 library(lavaan)
 library(tables)
+library(xtable)
 library(Hmisc)
 library(semPlot)
 library(qgraph)

@@ -1,16 +1,16 @@
 <!--- Global (project-wide) options for 'knitr' --->
 
-<!--- Set knitr's working directory to the project's home directory --->
-
-```{r KnitrPackageSetup, echo=FALSE}
+```{r KnitrPackageSetup, cache=FALSE, include=FALSE}
+# echo=FALSE
 
 if (!suppressMessages(require(knitr))) install.packages('knitr')
 library(knitr)
-library(xtable)
 
-PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
-source(file.path(PRJ_HOME, "utils/graphics.R")) # for golden ratio
+source(file.path(PRJ_HOME, "utils/graphics.R")) # golden ratio
+
+read_chunk(file.path(PRJ_HOME, "config/knitr/hooks/outputLines.R")) # hook
 
 opts_knit$set(root.dir = PRJ_HOME)
 opts_knit$set(progress = TRUE, verbose = TRUE)
