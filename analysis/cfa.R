@@ -60,7 +60,8 @@ genCFAresultsTable <- function (caption="CFA results summary",
   cfa.table <- cbind(cfa.table, "", "")
   colnames(cfa.table)[numCols + 1:2] <- c(" ", " ")
   
-  numRows <- nrow(cfa.table); lines2Add <- 2
+  numRows <- nrow(cfa.table)
+  lines2Add <- 2
   cfa.table <- rbind(cfa.table, "1"="", "2"="")
   rownames(cfa.table)[numRows + 1:2] <- c("CFA fit measures", " ")
   
@@ -68,11 +69,27 @@ genCFAresultsTable <- function (caption="CFA results summary",
   cfa.table[numRows + 1, ] <- names(fit.info)
   cfa.table[numRows + 2, ] <- round(fit.info, digits = digits)
   
+  # table note/comment (decided to implement it as a part of caption)
+  if (FALSE) {
+    tabNote <- list()
+    tabNote$pos <- list()
+    tabNote$pos[[1]] <- c(nrow(cfa.table))
+    tabNote$command <- paste0("Standard errors are shown in parentheses.",
+                              "\\linebreak",
+                              "* indicates significant results at 5% level.")
+    #horLines <- c(horLines, horLines + 1)
+  }
+  
+  #comment <- paste("Standard errors are shown in parentheses.",
+  #                 "* indicates significant results at 5% level.")
+  #caption <- paste(caption, comment)
+  
   cfaResultsTable <- xtable(cfa.table, caption = caption)
   print(cfaResultsTable, booktabs = TRUE,
         digits = digits, comment = FALSE,
         caption.placement = "top",
         hline.after = horLines,
+        #add.to.row = tabNote,
         sanitize.text.function = function(x) x)
 }
 
