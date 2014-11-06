@@ -179,23 +179,17 @@ genEFAresultsDiagram <- function (fa.obj, latex = FALSE) {
   factors <- apply(abs(fa.obj$loadings), 1, which.max)
   faGroups <- vector("list", length(unique(factors)))
   
-  #names(faGroups) <- paste0("f", 1:length(unique(factors)))
-  #attr(faGroups, "dimnames") <- paste0("f", 1:length(unique(factors)))
-  
   for(i in 1:length(factors))
     faGroups[[factors[i]]] <- c(faGroups[[factors[i]]], i)
   
-  # change the color palette
+  # change color palette
   colPalette <- brewer.pal(5, "Pastel1")[1:length(unique(factors))]
   
-  # defaults to 'circular' layout
+  # 'qgraph' defaults to 'circular' layout (alternative: 'groups')
   qgraph(fa.obj$loadings, groups = faGroups,
          colors = colPalette, bg = "grey90",
          filetype = filetype, standAlone = standAlone,
          mar = c(2.5, 2.5, 2.5, 2.5)) # B/L/T/R
-  
-  # alternative 'groups' layout
-  #qgraph(fa.obj$loadings, layout = "groups")
 }
 
 

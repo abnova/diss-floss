@@ -49,9 +49,13 @@ DEBUG <- TRUE
 genCFAresultsTable <- function (caption="CFA results summary",
                                 digits = 2) {
   
-  fit.info <- fitMeasures(cfa.fit)[c('chisq', 'df', 'pvalue', 'cfi', 'rmsea')]
+  fit.info <-
+    fitMeasures(cfa.fit)[c('chisq', 'df', 'pvalue', 'cfi', 'rmsea')]
   
-  cfa.table <- cfa.prettyprint(cfa.fit, digits = digits)
+  # customize labels for fit measures
+  names(fit.info) <- c("$\\chi^{2}$", "df", "p", "CFI", "RMSEA")
+  
+  cfa.table <- cfaPrettyPrint(cfa.fit, digits = digits)
   numCols <- ncol(cfa.table)
   cfa.table <- cbind(cfa.table, "", "")
   colnames(cfa.table)[numCols + 1:2] <- c(" ", " ")
@@ -68,7 +72,8 @@ genCFAresultsTable <- function (caption="CFA results summary",
   print(cfaResultsTable, booktabs = TRUE,
         digits = digits, comment = FALSE,
         caption.placement = "top",
-        hline.after = horLines)
+        hline.after = horLines,
+        sanitize.text.function = function(x) x)
 }
 
 
@@ -92,7 +97,7 @@ genCFAmodelDiagram <- function (cfa.fit, latex = FALSE) {
 }
 
 
-cfa.prettyprint <- function(object, digits = getOption("digits")) {
+cfaPrettyPrint <- function(object, digits = getOption("digits")) {
   x <- parameterEstimates(object)
   lv <- unique(subset(x, op == "=~")$lhs)
   indicators <- unique(subset(x, op == "=~")$rhs)
