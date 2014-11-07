@@ -185,8 +185,22 @@ genEFAresultsDiagram <- function (fa.obj, latex = FALSE) {
   # change color palette
   colPalette <- brewer.pal(5, "Pastel1")[1:length(unique(factors))]
   
+  # prepare tooltips vector
+  #tooltips <- c(unlist(attr(fa.obj$loadings, "dimnames")[1]), # indicator names
+  #              unlist(attr(fa.obj$loadings, "dimnames")[2])) # factor names
+  
+  # TODO: re-arrange indicator names to match qgraph's ordering
+  # (seems to be based on indicator loadings values)
+
+  # TEMP
+  tooltips <- c("Development Team Size", "License Restrictiveness",
+                "Project Age", "Project Stage", "Software Type",
+                "Factor 1", "Factor 2", "Factor 3")
+  
   # 'qgraph' defaults to 'circular' layout (alternative: 'groups')
   qgraph(fa.obj$loadings, groups = faGroups,
+         edge.labels = TRUE,
+         #tooltips = tooltips,
          colors = colPalette, bg = "grey90",
          filetype = filetype, standAlone = standAlone,
          mar = c(2.5, 2.5, 2.5, 2.5)) # B/L/T/R
