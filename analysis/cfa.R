@@ -12,6 +12,7 @@ if (!suppressMessages(require(xtable))) install.packages('xtable')
 if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
 if (!suppressMessages(require(qgraph))) install.packages('semPlot')
 if (!suppressMessages(require(qgraph))) install.packages('qgraph') # for 'semPlot'
+if (!suppressMessages(require(RColorBrewer))) install.packages('RColorBrewer')
 
 library(polycor)
 library(lavaan)
@@ -20,6 +21,7 @@ library(xtable)
 library(Hmisc)
 library(semPlot)
 library(qgraph)
+library(RColorBrewer)
 
 
 ##### SETUP #####
@@ -103,17 +105,38 @@ genCFAmodelDiagram <- function (cfa.fit, latex = FALSE) {
   # produce CFA model diagram/figure, using 'semPlot' package
   cfaModDiag <- semPaths(cfa.fit, whatLabels = "std",
                          intercepts = FALSE, thresholds = FALSE,
-                         edge.label.cex = 1,
+                         rotation = 4,    # H: factors on the right
+                         #nCharNodes = 0, # 0 disables abbreviation
+                         #label.cex = 5,
+                         #vsize = 20,     # node size
+                         edge.label.cex = 1.25,  # 1 is default
+                         curve = 2,
+                         curvature = 1.2,
+                         sizeMan = 10,
+                         sizeLat = 10,
+                         sizeInt = 10,
                          filetype = filetype, standAlone = FALSE)
-  print(cfaModDiag)
+  
+  if (filetype == "x11") print(cfaModDiag)  # to output in RStudio
+  
+  numFactors <- length(grep("f[[:digit:]]",
+                            unique(parameterEstimates(cfa.fit)$lhs),
+                            value = TRUE, ignore.case = TRUE))
+  
+  # change color palette
+  colPalette <- brewer.pal(5, "Pastel1")[1:numFactors]
   
   # fix for TikZ device (LaTeX output)
   if (latex) qgraph.tikz(cfaModDiag, filename = "cfaModDiag",
-                         width = 7, height = 4, curveShape = -0.5,
+                         colors = colPalette, bg = "grey90",
+                         width = 7, height = 4, # curveShape = -0.5,
                          standAlone = FALSE)
 }
 
 
+# Extracts loadings and LV covariances from lavaan's CFA fit object.
+# Returns corresponding matrix with values as character strings.
+# Significance (*'s) and standard errors are reported (in parentheses).
 cfaPrettyPrint <- function(object, digits = getOption("digits")) {
   
   x <- parameterEstimates(object)
@@ -141,8 +164,8 @@ cfaPrettyPrint <- function(object, digits = getOption("digits")) {
                          dimnames = list(indicators, lv))
   
   for (i in seq_along(lv)) {
-    tmp <- subset(x,
-                  lhs == lv[i] & op == "=~")[, c("rhs", "est", "se", "pvalue")]
+    tmp <- subset(x, lhs == lv[i] & op == "=~")
+    tmp <- tmp[, c("rhs", "est", "se", "pvalue")]
     vals <- with(tmp,
                  sprintf("%0.2f%s (%0.2f)", est,
                          symnum(pvalue,

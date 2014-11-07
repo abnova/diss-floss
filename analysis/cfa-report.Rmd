@@ -78,7 +78,8 @@ genCFAmodelDiagram(cfaFit_flossData, latex = TRUE)
 ```
 
 \begin{figure}
-\centering
-\input{cfaModDiag.tex}
-\caption{CFA model diagram.}
+  \centering
+  \input{cfaModDiag.tex}
+  \caption{CFA model diagram.}
+  \label{fig:cfaModelDiagram}
 \end{figure}
