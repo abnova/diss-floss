@@ -115,17 +115,20 @@ genCFAmodelDiagram <- function (cfa.fit, latex = FALSE) {
 
 
 cfaPrettyPrint <- function(object, digits = getOption("digits")) {
+  
   x <- parameterEstimates(object)
   lv <- unique(subset(x, op == "=~")$lhs)
   indicators <- unique(subset(x, op == "=~")$rhs)
   lv.covs <- subset(x, lhs %in% lv & rhs %in% lv & op == "~~")
-  lv.covmat <- matrix(numeric(0), nrow = length(lv), ncol = length(lv),
+  lv.covmat <- matrix(numeric(0),
+                      nrow = length(lv), ncol = length(lv),
                       dimnames = list(lv, lv))
   
   for (i in seq_along(lv)) {
     for (i2 in seq_along(lv)) {
-      tmp <- unique(na.omit(c(subset(lv.covs, lhs == lv[i] & rhs == lv[i2])$est,
-                              subset(lv.covs, lhs == lv[i2] & rhs == lv[i])$est)))
+      tmp <-
+        unique(na.omit(c(subset(lv.covs, lhs == lv[i] & rhs == lv[i2])$est,
+                         subset(lv.covs, lhs == lv[i2] & rhs == lv[i])$est)))
       lv.covmat[i, i2] <- tmp
       lv.covmat[i2, i] <- tmp
     }
@@ -133,14 +136,19 @@ cfaPrettyPrint <- function(object, digits = getOption("digits")) {
   
   lv.covmat[] <- as.character(round(lv.covmat, digits))
   
-  loadings.mat <- matrix("", nrow = length(indicators), ncol = length(lv),
+  loadings.mat <- matrix("",
+                         nrow = length(indicators), ncol = length(lv),
                          dimnames = list(indicators, lv))
   
   for (i in seq_along(lv)) {
-    tmp <- subset(x, lhs == lv[i] & op == "=~")[, c("rhs", "est", "se", "pvalue")]
-    vals <- with(tmp, sprintf("%0.2f%s (%0.2f)", est,
-                              symnum(pvalue, cutpoints = c(0, .001, .01, .05, 1), symbols = c("***", "**", "*", ""), na = ""),
-                              se))
+    tmp <- subset(x,
+                  lhs == lv[i] & op == "=~")[, c("rhs", "est", "se", "pvalue")]
+    vals <- with(tmp,
+                 sprintf("%0.2f%s (%0.2f)", est,
+                         symnum(pvalue,
+                                cutpoints = c(0, .001, .01, .05, 1),
+                                symbols = c("***", "**", "*", ""), na = ""),
+                         se))
     
     loadings.mat[tmp$rhs, i] <- vals
   }
