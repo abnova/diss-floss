@@ -49,3 +49,8 @@ opts_chunk$set(
 #warningChunks<- FALSE
 #options(width = 120)  # so the output is 50% wider than the default
 ```
+
+\definecolor{greyBackground}{rgb}{0.90, 0.90, 0.90}
+\definecolor{lightblue}{rgb}{0.94, 0.97, 1.0}
+
+\lstset{backgroundcolor=\color{greyBackground}}

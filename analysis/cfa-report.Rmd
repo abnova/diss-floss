@@ -60,9 +60,13 @@ param3 <- 'TEST'
 
 The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4CFA_DIR, "flossData.rds")))` indicators. The following is the summary descriptive statistics of the data set.
 
-```{r cfaReportSummary, include=TRUE, output.lines=1:34}
+\begin{lstlisting}
+
+```{r cfaReportSummary, include=TRUE, background='grey90', output.lines=1:34}
 summary(cfaFit_flossData, fit.measures = TRUE, standardize = TRUE)
 ```
+
+\end{lstlisting}
 
 And now let's see what output would be produced by 'tables' package, as shown in Table \ref{cfaResultsTable}:
 
