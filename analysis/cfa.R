@@ -107,19 +107,23 @@ genCFAmodelDiagram <- function (cfa.fit, latex = FALSE) {
   filetype <- ifelse(.Platform$GUI == "RStudio", "x11", "R")
   
   # produce CFA model diagram/figure, using 'semPlot' package
-  cfaModDiag <- semPaths(cfa.fit, whatLabels = "std",
-                         intercepts = FALSE, thresholds = FALSE,
-                         rotation = 4,    # H: factors on the right
-                         #nCharNodes = 0, # 0 disables abbreviation
-                         #label.cex = 5,
-                         #vsize = 20,     # node size
-                         edge.label.cex = 1.25,  # 1 is default
-                         curve = 2,
-                         curvature = 1.2,
-                         sizeMan = 10,
-                         sizeLat = 10,
-                         sizeInt = 10,
-                         filetype = filetype, standAlone = FALSE)
+  cfaModDiag <-
+    semPaths(cfa.fit, whatLabels = "std",
+             intercepts = FALSE, thresholds = FALSE,
+             rotation = 4,    # H: factors on the right
+             #nCharNodes = 0, # 0 disables abbreviation
+             #label.cex = 5,
+             #vsize = 20,     # node size
+             edge.label.cex = 1.25,  # 1 is default
+             curve = 2,
+             curvature = 1.2,
+             sizeMan = 10,
+             sizeLat = 10,
+             sizeInt = 10,
+             filetype = filetype, standAlone = FALSE,
+             color = list(lat = rgb(245, 253, 118, maxColorValue = 255), 
+                          man = rgb(155, 253, 175, maxColorValue = 255)),
+             bg = "grey90")
   
   numFactors <- length(grep("f[[:digit:]]",
                             unique(parameterEstimates(cfa.fit)$lhs),
