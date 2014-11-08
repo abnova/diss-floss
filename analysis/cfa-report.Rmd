@@ -64,7 +64,7 @@ The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4CFA_D
 summary(cfaFit_flossData, fit.measures = TRUE, standardize = TRUE)
 ```
 
-And now let's see what output would be produced by 'tables' package:
+And now let's see what output would be produced by 'tables' package, as shown in Table \ref{cfaResultsTable}:
 
 ```{r cfaReportSummary3, include=TRUE, results='asis', fig.cap='CFA Results Summary'}
 genCFAresultsTable()

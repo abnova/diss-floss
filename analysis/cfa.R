@@ -87,7 +87,8 @@ genCFAresultsTable <- function (caption = "CFA results summary",
   #caption <- paste(caption, comment)
   
   # generate 'xtable' object from CFA fit object
-  cfaResultsTable <- xtable(cfa.table, caption = caption)
+  cfaResultsTable <- xtable(cfa.table, caption = caption,
+                            label = "cfaResultsTable")
   
   # output 'xtable' in requested format (LaTeX or HTML code)
   print(cfaResultsTable, type = type, file = file,
