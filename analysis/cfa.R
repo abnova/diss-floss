@@ -45,11 +45,11 @@ CFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/cfa")
 RDS_EXT      <- ".rds"
 GRAPHICS_EXT <- ".svg"
 
-DEBUG <- TRUE
+DEBUG <- FALSE
 
 
-genCFAresultsTable <- function (caption="CFA results summary",
-                                digits = 2) {
+genCFAresultsTable <- function (caption = "CFA results summary",
+                                type = "latex", file = "", digits = 2) {
   
   fit.info <-
     fitMeasures(cfa.fit)[c('chisq', 'df', 'pvalue', 'cfi', 'rmsea')]
@@ -86,9 +86,12 @@ genCFAresultsTable <- function (caption="CFA results summary",
   #                 "* indicates significant results at 5% level.")
   #caption <- paste(caption, comment)
   
+  # generate 'xtable' object from CFA fit object
   cfaResultsTable <- xtable(cfa.table, caption = caption)
-  print(cfaResultsTable, booktabs = TRUE,
-        digits = digits, comment = FALSE,
+  
+  # output 'xtable' in requested format (LaTeX or HTML code)
+  print(cfaResultsTable, type = type, file = file,
+        booktabs = TRUE, digits = digits, comment = FALSE,
         caption.placement = "top",
         hline.after = horLines,
         #add.to.row = tabNote,
@@ -116,8 +119,6 @@ genCFAmodelDiagram <- function (cfa.fit, latex = FALSE) {
                          sizeLat = 10,
                          sizeInt = 10,
                          filetype = filetype, standAlone = FALSE)
-  
-  if (filetype == "x11") print(cfaModDiag)  # to output in RStudio
   
   numFactors <- length(grep("f[[:digit:]]",
                             unique(parameterEstimates(cfa.fit)$lhs),
@@ -259,8 +260,15 @@ f2 ~~ f3
 # perform CFA
 message("\n*** Performing CFA of the model...")
 
-cfa.fit <- cfa(model, data = flossData, meanstructure = TRUE,
-           missing = "pairwise", estimator = "WLSMV")
+if (DEBUG) {
+  cfa.fit <- cfa(model, data = flossData, meanstructure = TRUE,
+                 missing = "pairwise", estimator = "WLSMV")
+} else {
+  cfa.fit <- suppressWarnings(
+    cfa(model, data = flossData, meanstructure = TRUE,
+                 missing = "pairwise", estimator = "WLSMV")
+    )
+}
 
 # KNITR: do not forget to apply summary() or other functions to such objects
 if (KNITR) {
@@ -275,8 +283,16 @@ if (KNITR) {
 genCFAmodelDiagram(cfa.fit)
 
 
+# determine output format, based on runtime environment
+tab.format <- ifelse(.Platform$GUI == "RStudio", "html", "latex")
+file <- ifelse(.Platform$GUI == "RStudio", tempfile(fileext = ".html"), "")
+
 # produce CFA results summary table
-cfa.table <- genCFAresultsTable()
+cfa.table <- genCFAresultsTable(file = file, type = tab.format)
+
+# preview HTML table, if in RStudio
+if (tab.format == "html") rstudio::viewer(file)
+
 
 # not needed, as long as table gen. function directly accesses 'cfa.table'
 if (KNITR) {
