@@ -75,18 +75,23 @@ print(genEDAdescStatsTable(flossData, label = "edaDescStats"))
 ```
 
 ```{r getBarCharts}
-barCharts <- grep("barchart_", ls(), value = TRUE)
-split <- strsplit(barCharts, "barchart_")
-bcRefs <- split[[seq(split)]][2]
-
-bcAllRefs <- c()
-for (i in seq(bcRefs)) bcAllRefs <- c(bcAllRefs, bcRefs[[i]][2])
-refStr <- sapply(bcAllRefs, function (x) {paste0("\ref{fig:", x, "}")})
-refStr <- paste("\ref{fig:} and \ref{fig:}")
+bcRefStr <- genObjRefs("fig", "barchart_")
 ```
 
-In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in Figures \ref{fig:} and \ref{fig:} below.
+In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in `r bcRefStr$str` below.
 
-```{r outputBarCharts, include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='EDA: Barcharts'}
-for (g in barCharts) print(g)
+```{r DynamicChunk}
+chunkText <- "
+\\`\\`\\`{r {{name}}, include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='EDA: Barcharts'}
+#for (g in bcRefStr$objs) print(get(g))
+print(get({{name}}))
+\\`\\`\\`
+"
+for (x in bcRefStr$obj) knit_expand(text = chunkText, name = x)
+```
+
+In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in the tables below.
+
+```{r NonDynamicChunk, include=TRUE, results='asis', fig.height=4, fig.width=5, fig.cap='EDA: Barcharts'}
+for (g in bcRefStr$objs) print(get(g))
 ```
