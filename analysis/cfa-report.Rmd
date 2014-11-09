@@ -68,6 +68,14 @@ summary(cfaFit_flossData, fit.measures = TRUE, standardize = TRUE)
 
 \end{lstlisting}
 
+Let's see how equations work:
+
+$$ \sum_{i=1}^{n} \{ y_{i} - \hat{\mu}_{i} \}^2 $$
+
+Another one:
+
+$$ \sum_{i=1}^{n} \{ y_{i} - \hat{\mu}_{i} \}^2 $$
+
 And now let's see what output would be produced by 'tables' package, as shown in Table \ref{cfaResultsTable}:
 
 ```{r cfaReportSummary3, include=TRUE, results='asis', fig.cap='CFA Results Summary'}

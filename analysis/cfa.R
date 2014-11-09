@@ -96,7 +96,8 @@ genCFAresultsTable <- function (caption = "CFA results summary",
         caption.placement = "top",
         hline.after = horLines,
         #add.to.row = tabNote,
-        sanitize.text.function = function(x) x)
+        sanitize.text.function = function(x) x,
+        math.style.negative = FALSE)
 }
 
 
