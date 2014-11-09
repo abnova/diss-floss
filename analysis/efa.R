@@ -102,7 +102,8 @@ addHeader <- function(obj, newcol, factorNames) {
 }
 
 
-genEFAresultsTable <- function (caption = "EFA results summary",
+genEFAresultsTable <- function (label = "efaResults",
+                                caption = "EFA results summary",
                                 digits = 2, numFactors) {
   
   fa.pa <- roundLoadings(fa.pa)
@@ -154,7 +155,7 @@ genEFAresultsTable <- function (caption = "EFA results summary",
   # set the caption (specific for 'tables' package)
   latexCap <- paste0("\\caption{", caption, ".}\\\\", "\n",
                      "\\toprule",
-                     "\\label{tab:efaResults}")
+                     "\\label{tab:", label, "}")
   
   # set tabular settings
   booktabs()
