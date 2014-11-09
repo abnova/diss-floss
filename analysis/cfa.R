@@ -214,7 +214,7 @@ factors4Analysis <- c("Development Team Size", "Project Age",
 flossData <- flossData[factors4Analysis]
 
 # convert names (temp)
-names(flossData) <- make.names(names(flossData))
+#names(flossData) <- make.names(names(flossData)) #TODO: test & remove
 
 # sample the sample (use 1%) to reduce processing time
 #flossData <- sampleDF(flossData, nrow(flossData) / 100)

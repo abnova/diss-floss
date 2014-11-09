@@ -38,8 +38,6 @@ source(file.path(PRJ_HOME, "utils/qq.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/utils.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
-# the following module will be integrated into "analysis/mixDist.R"
-#source(file.path(PRJ_HOME, "utils/mixedDist.R"))
 source(file.path(PRJ_HOME, "analysis/mixDist.R"))
 
 READY4EDA_DIR  <- file.path(PRJ_HOME, "data/ready4eda")
@@ -82,7 +80,7 @@ genEDAdescStatsTable <- function (df, label = "edaDescStats",
   tableCols <- c("N", "Mean", "SD", "Median",
                  "Min", "Max", "Skew", "Kurtosis")
   
-  df <- df[-1, ]  # remove Project ID
+  df <- df[-1, ]  # remove Project.ID
   df <- df[, colsToInclude]
   names(df) <- tableCols
 
@@ -221,8 +219,8 @@ multiDescriptiveEDA <- function (df) {
 
 correlationAnalysis <- function (df) {
   
-  names(df) <- make.names(names(df))
-
+  #names(df) <- make.names(names(df))  #TODO: test & remove
+  
   # due to very small amount of projects with "Non-OSI" licesnse
   # and their disapperance due to calculating correlations,
   # we remove this indicator from EDA (consider analyzing it
@@ -280,8 +278,8 @@ multiAnalyticalEDA <- function (df, indicators) {
 
 multiVisualEDA <- function (df, corrMat) {
 
-  names(df) <- make.names(names(df))
-
+  #names(df) <- make.names(names(df))  #TODO: test & remove
+  
   # log transform continuous data
   df["Project.Age"] <- log(df["Project.Age"])
   df["Development.Team.Size"] <- log(df["Development.Team.Size"])

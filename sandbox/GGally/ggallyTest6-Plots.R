@@ -20,7 +20,7 @@ message("\nLoading data...")
 df <- loadData(mergedFile)
 
 # make column names syntactically valid
-names(df) <- make.names(names(df))
+#names(df) <- make.names(names(df))  #TODO: test & remove
 
 # select columns
 df2 <- df[, c("Project.Age", "Development.Team.Size", "User.Community.Size",

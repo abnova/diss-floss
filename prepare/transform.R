@@ -5,7 +5,7 @@ if (!suppressMessages(require(RCurl))) install.packages('RCurl')
 
 library(RCurl)
 
-PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
 CACHE_DIR <- file.path(PRJ_HOME, "cache")
 TRANSFORM_DIR <- file.path(PRJ_HOME, "data/transformed")
@@ -22,7 +22,13 @@ transformResult <- function (dataSource, indicator, handler = NULL) {
   fileName <- paste0(indicator, RDS_EXT)
   cacheFile <- file.path(CACHE_DIR, dataSource, fileName)
   transformFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
-  
+
+  # single point for making syntactically valid R names
+  df <- readRDS(cacheFile)
+  names(df) <- make.names(names(df))
+  saveRDS(df, cacheFile)
+
+  # copy data files that doesn't require transformation
   if (is.null(handler)) {
     if (DEBUG) message("Copying data '", indicator, "' ...",
                        appendLF = FALSE)
@@ -77,7 +83,7 @@ sfDevLinks <- function (indicator, data) {
                      appendLF = FALSE)
   
   # convert presence of Repo URL to integer
-  data[["Repo URL"]] <- as.integer(data[["Repo URL"]] != "")
+  data[["Repo.URL"]] <- as.integer(data[["Repo.URL"]] != "")
   
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
@@ -91,14 +97,14 @@ sfProjectAge <- function (indicator, data) {
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
 
-  transformColumn <- as.numeric(unlist(data["Registration Time"]))
-  regTime <- as.POSIXct(transformColumn, origin="1970-01-01")
+  transformColumn <- as.numeric(unlist(data["Registration.Time"]))
+  regTime <- as.POSIXct(transformColumn, origin = "1970-01-01")
   prjAge <- difftime(Sys.Date(), as.Date(regTime), units = "weeks")
-  data[["Project Age"]] <- as.numeric(round(prjAge)) / 4 # in months
+  data[["Project.Age"]] <- as.numeric(round(prjAge)) / 4 # in months
   
   # now we can delete the source column
-  if ("Registration Time" %in% names(data))
-    data <- data[setdiff(names(data), "Registration Time")]  
+  if ("Registration.Time" %in% names(data))
+    data <- data[setdiff(names(data), "Registration.Time")]  
 
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
@@ -145,14 +151,14 @@ sfProjectLicense <- function (indicator, data) {
       gplv3='Unknown', educom='Unknown', adaptive='Unknown',
       datagrid='Unknown', public102='Unknown')
   
-  data[["License Restrictiveness"]] <- 
-    factor(classification[as.character(data[["Project License"]])],
+  data[["License.Restrictiveness"]] <- 
+    factor(classification[as.character(data[["Project.License"]])],
            ordered = TRUE,
            levels = c("Highly Restrictive", "Restrictive",
                       "Permissive")) # set definite order
   
-  data[["Project License"]] <- factor(data[["Project License"]])
-  levels(data[["Project License"]]) <- 
+  data[["Project.License"]] <- factor(data[["Project.License"]])
+  levels(data[["Project.License"]]) <- 
     list(LGPL="lgpl", BSD="bsd", GPL="gpl", Website="website",
          ZLib="zlib", Public="public", Other="other", IBMCPL="ibmcpl",
          RPL="rpl", MPL11="mpl11", MIT="mit", AFL="afl",
@@ -182,13 +188,13 @@ sfProjectLicense <- function (indicator, data) {
          GPL3="gplv3", EDUCOM="educom", Adaptive="adaptive",
          EUDataGrid="datagrid", Lucent102="public102")
   
-  data[["License Category"]] <- factor(data[["License Category"]])
-  levels(data[["License Category"]]) <- 
+  data[["License.Category"]] <- factor(data[["License.Category"]])
+  levels(data[["License.Category"]]) <- 
     list(OSI="osi", Other="license", CCAL="ccal")
   
   classification <- c(OSI="OSI", Other="Non-OSI", CCAL="Non-OSI")
-  data[["License Category"]] <- 
-    factor(classification[as.character(data[["License Category"]])],
+  data[["License.Category"]] <- 
+    factor(classification[as.character(data[["License.Category"]])],
            ordered = TRUE,
            levels = c("OSI", "Non-OSI")) # set definite order
   
@@ -209,13 +215,13 @@ sfPrjMaturity <- function (indicator, data) {
       beta='Alpha/Beta', production='Stable', mature='Mature',
       inactive='Inactive')
   
-  data[["Project Stage"]] <- 
-    factor(classification[as.character(data[["Development Stage"]])],
+  data[["Project.Stage"]] <- 
+    factor(classification[as.character(data[["Development.Stage"]])],
            ordered = TRUE,
            levels = c("Alpha/Beta", "Stable", "Mature", "Inactive"))
   
-  data[["Development Stage"]] <- factor(data[["Development Stage"]])
-  levels(data[["Development Stage"]]) <- 
+  data[["Development.Stage"]] <- factor(data[["Development.Stage"]])
+  levels(data[["Development.Stage"]]) <- 
     list(Planning="planning", Pre.Alpha="prealpha", Alpha="alpha",
          Beta="beta", Production="production", Mature="mature",
          Inactive="inactive")
@@ -232,10 +238,10 @@ sfDevTeamSize <- function (indicator, data) {
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
   
-  var <- data[["Development Team Size"]]
+  var <- data[["Development.Team.Size"]]
   
   # convert data type from 'character' to 'numeric'
-  data[["Development Team Size"]] <- as.numeric(var)
+  data[["Development.Team.Size"]] <- as.numeric(var)
   
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
@@ -250,8 +256,8 @@ sfUserCommunitySize <- function (indicator, data) {
                      appendLF = FALSE)
 
   # convert User Community Size from character to integer
-  data[["User Community Size"]] <- 
-    as.integer(data[["User Community Size"]])
+  data[["User.Community.Size"]] <- 
+    as.integer(data[["User.Community.Size"]])
   
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
@@ -267,12 +273,12 @@ sfDevSupport <- function (indicator, data) {
   
   # convert data type from character to integer
   # suppress "NAs introduced by coercion" warnings
-  data[["Preferred Support Type"]] <- 
-    suppressWarnings(as.integer(data[["Preferred Support Type"]]))
+  data[["Preferred.Support.Type"]] <- 
+    suppressWarnings(as.integer(data[["Preferred.Support.Type"]]))
   
   # recode Preferred Support Type: 6 to 1, other (1) to 0
-  data[["Preferred Support Type"]] <- 
-    ifelse(data[["Preferred Support Type"]] == 6, 1, 0)
+  data[["Preferred.Support.Type"]] <- 
+    ifelse(data[["Preferred.Support.Type"]] == 6, 1, 0)
   
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
@@ -286,9 +292,9 @@ sfSoftwareType <- function (indicator, data) {
   if (DEBUG) message("Transforming '", indicator, "' ...",
                      appendLF = FALSE)
   
-  data[["Software Type"]] <- factor(data[["Software Type"]],
+  data[["Software.Type"]] <- factor(data[["Software.Type"]],
                                     ordered = TRUE)
-  levels(data[["Software Type"]]) <- 
+  levels(data[["Software.Type"]]) <- 
     list(General="Desktop", General="Games",
          General="VoIP", General="Multimedia",
          Special="Enterprise", Specialized="Financial",

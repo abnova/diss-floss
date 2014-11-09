@@ -38,7 +38,7 @@ mergeDataSets <- function (datasets, prefix = "",
   flossData <<- data.frame()
   
   if (prefix == "")
-    mergeBy <- "Project ID"
+    mergeBy <- "Project.ID"
   else {
     # lookup a column to merge data by
     index <- match(prefix , commonColumn$prefix)
@@ -49,10 +49,10 @@ mergeDataSets <- function (datasets, prefix = "",
     
     flossData <<- data.frame(dataSets[[1]][1])
     
-    # merge all loaded datasets by common column ("Project ID")
+    # merge all loaded datasets by common column ("Project.ID")
     silent <- lapply(seq(2, length(dataSets)),
                      function(i) {merge(flossData, dataSets[[1]][i],
-                                        by = "Project ID",
+                                        by = "Project.ID",
                                         all = TRUE)})
   }
   
@@ -60,13 +60,13 @@ mergeDataSets <- function (datasets, prefix = "",
   lapplyMerge2 <- function (dataSets) {
     
     pids <- which(sapply(dataSets,
-                         FUN=function(x) {'Project ID' %in% names(x)}))
+                         FUN=function(x) {'Project.ID' %in% names(x)}))
     
     flossData <<- dataSets[[pids[1]]]
     
     for (id in pids[2:length(pids)]) {
       flossData <- merge(flossData, dataSets[[id]],
-                         by='Project ID', all = TRUE)
+                         by='Project.ID', all = TRUE)
     }
   }
   
@@ -74,7 +74,7 @@ mergeDataSets <- function (datasets, prefix = "",
   reduceMerge <- function (dataSets) {
     
     flossData <<- Reduce(function(...) 
-      merge(..., by.x = "row.names", by.y = "Project ID", all = TRUE),
+      merge(..., by.x = "row.names", by.y = "Project.ID", all = TRUE),
       dataSets)
   }
   
@@ -82,7 +82,7 @@ mergeDataSets <- function (datasets, prefix = "",
   # http://r.789695.n4.nabble.com/merge-multiple-data-frames-tt4331089.html#a4333772
   reduceMerge <- function (dataSets) {
     
-    mergeAll <- function(..., by = "Project ID", all = TRUE) {
+    mergeAll <- function(..., by = "Project.ID", all = TRUE) {
       dotArgs <- list(...)
       dotNames <- lapply(dotArgs, names)
       repNames <- Reduce(intersect, dotNames)
@@ -147,11 +147,11 @@ mergeDataSets <- function (datasets, prefix = "",
       install.packages('data.table')
     library(data.table)
     
-    flossData <<- data.table(dataSets[[1]], key="Project ID")
+    flossData <<- data.table(dataSets[[1]], key="Project.ID")
     
     for (id in 2:length(dataSets)) {
       flossData <<- merge(flossData, data.table(dataSets[[id]]),
-                         by='Project ID') # , all = TRUE
+                         by='Project.ID') # , all = TRUE
     }
   }
   
@@ -163,7 +163,7 @@ mergeDataSets <- function (datasets, prefix = "",
       install.packages('data.table')
     library(data.table)
     
-    DT <- data.table(dataSets[[1]], key="Project ID")
+    DT <- data.table(dataSets[[1]], key="Project.ID")
     flossData <<- lapply(dataSets[[1]][-1], function(x) DT[.(x)])
   }
 
@@ -231,7 +231,7 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
     }
     
     flossData <- 
-      flossData[flossData[["Development Team Size"]] <= outLim_DevTeamSize, ]
+      flossData[flossData[["Development.Team.Size"]] <= outLim_DevTeamSize, ]
   }
   
   # verify the data frame structure
