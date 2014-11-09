@@ -13,6 +13,8 @@ if (!suppressMessages(require(gridExtra))) install.packages('gridExtra')
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(polycor))) install.packages('polycor')
 if (!suppressMessages(require(GGally))) install.packages('GGally')
+if (!suppressMessages(require(tables))) install.packages('tables')
+if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
 
 library(RCurl)
 library(stringr)
@@ -23,6 +25,8 @@ library(gridExtra)
 library(psych)
 library(polycor)
 library(GGally)
+library(tables)
+library(Hmisc)
 
 ## @knitr PrepareEDA
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
@@ -63,8 +67,9 @@ allPlots <- list()
 
 ##### MISC FUNCTIONS #####
 
-genEDAdescStatTable <- function (df, caption="EDA descriptive statistics",
-                                 digits = 2) {
+genEDAdescStatsTable <- function (df, label = "edaDescStats",
+                                  caption = "EDA descriptive statistics",
+                                  digits = 2) {
   
   df <- df[, sapply(df, is.numeric)]
   df <- psych::describe(df)
@@ -81,13 +86,21 @@ genEDAdescStatTable <- function (df, caption="EDA descriptive statistics",
   df <- df[, colsToInclude]
   names(df) <- tableCols
 
-  edaDescStatTable <- as.tabular(df)
+  edaDescStatsTable <- as.tabular(df)
   
-  # call to set settings
+  # set the caption (specific for 'tables' package)
+  latexCap <- paste0("\\caption{", caption, ".}\\\\", "\n",
+                     "\\toprule",
+                     "\\label{tab:", label, "}")
+  
+  # set tabular settings
   booktabs()
   
-  # latex table printing
-  latex(edaDescStatTable, mathmode = FALSE)
+  # output LaTeX table
+  latex(edaDescStatsTable,
+        mathmode = FALSE, # output dash instead of LaTeX minus sign character
+        options = list(tabular = "longtable",
+                       toprule = latexCap))
 }
 
 
