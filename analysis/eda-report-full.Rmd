@@ -81,17 +81,31 @@ bcRefStr <- genObjRefs("fig", "barchart_")
 In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in `r bcRefStr$str` below.
 
 ```{r DynamicChunk}
-chunkText <- "
-\\`\\`\\`{r {{name}}, include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='EDA: Barcharts'}
-#for (g in bcRefStr$objs) print(get(g))
-print(get({{name}}))
-\\`\\`\\`
-"
-for (x in bcRefStr$obj) knit_expand(text = chunkText, name = x)
+chunkName <- "sub('\\\\.', '_', {{name}})"
+chunkHeader <- paste("```{r", chunkName, ",")
+chunkOptions <- "include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='EDA'}"
+chunkHeaderFull <- paste(chunkHeader, chunkOptions)
+chunkBody <- "print(get(deparse(substitute({{name}}))))"
+
+chunkText <- c(chunkHeaderFull, chunkBody, "```")
+
+figReportParts <- lapply(bcRefStr$obj, function (x) knit_expand(text = chunkText, name = x))
 ```
 
-In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in the tables below.
+`r knit(text = unlist(figReportParts))`
 
-```{r NonDynamicChunk, include=TRUE, results='asis', fig.height=4, fig.width=5, fig.cap='EDA: Barcharts'}
+In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in the figures below.
+
+```{r NonDynamicChunk, include=FALSE, results='asis', fig.height=4, fig.width=5, fig.cap='EDA: Barcharts'}
 for (g in bcRefStr$objs) print(get(g))
+```
+
+```{r FigChunkTemplate}
+figChunkText <- "```{r NonDynamicChunk-{{gObjName}}, include=TRUE, results='asis', fig.height=4, fig.width=5, fig.cap='EDA: Barcharts'}
+print(get({{gObjName}}))
+```"
+```
+
+```{r FigChunkControl, include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='EDA: Barcharts'}
+for (g in bcRefStr$objs) knit_expand(text = figChunkText, gObjName = g)
 ```
