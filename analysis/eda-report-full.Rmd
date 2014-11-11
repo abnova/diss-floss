@@ -80,16 +80,18 @@ bcRefStr <- genObjRefs("fig", "barchart_")
 
 In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in `r bcRefStr$str` below.
 
-```{r DynamicChunk}
-chunkName <- "sub('\\\\.', '_', {{name}})"
-chunkHeader <- paste("```{r", chunkName, ",")
+```{r DynamicChunk, message=TRUE}
+chunkName <- "{{name2}}"
+chunkHeader <- paste0("```{r ", chunkName, ",")
 chunkOptions <- "include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='EDA'}"
 chunkHeaderFull <- paste(chunkHeader, chunkOptions)
-chunkBody <- "print(get(deparse(substitute({{name}}))))"
+chunkBody <- "print(get('{{name}}'))"
 
-chunkText <- c(chunkHeaderFull, chunkBody, "```")
+latexObjLabel <- paste0("\n", "cat('\\\\label{", bcRefStr$objType, ":{{name}}", "}')")
 
-figReportParts <- lapply(bcRefStr$obj, function (x) knit_expand(text = chunkText, name = x))
+chunkText <- c(chunkHeaderFull, chunkBody, latexObjLabel, "```")
+
+figReportParts <- lapply(bcRefStr$objs, function (x) knit_expand(text = chunkText, name = x, name2 = gsub('\\.', '_', x), varName = strsplit(x, bcRefStr$objTypePrefix)[[1]][2]))
 ```
 
 `r knit(text = unlist(figReportParts))`

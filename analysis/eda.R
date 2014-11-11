@@ -110,7 +110,8 @@ genObjRefs <- function (objType, objTypePrefix) {
     stop(paste("No objects of type", objTypePrefix, "found!"))
   
   split <- strsplit(objs, objTypePrefix)
-  objRefs <- split[[seq(split)]][2]
+  objRefs <- sapply(split, `[[`, 2)
+  #objRefs <- split[[seq(split)]][2]
   
   objAllRefs <- c()
   for (i in seq(objRefs)) objAllRefs <- c(objAllRefs, objRefs[[i]])
@@ -129,10 +130,11 @@ genObjRefs <- function (objType, objTypePrefix) {
     else if (length(refStr) > 2) colFlag <- ", "
     
     refStrTemp <- paste(refStr[-length(refStr)], collapse = colFlag)
-    refStrFinal <- paste(figWord, refStrTemp, " and ", refStr[length(refStr)])
+    refStrFinal <- paste(objWord, refStrTemp, " and ", refStr[length(refStr)])
   }
   
-  list(objs = objs, str = refStrFinal)
+  list(objs = objs, str = refStrFinal,
+       objType = objType, objTypePrefix = objTypePrefix)
 }
 
 
