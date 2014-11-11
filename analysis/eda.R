@@ -254,7 +254,7 @@ mvnTests <- function (df, indicators) {
   flossDataTest[factorCols] <- lapply(flossDataTest[factorCols], as.integer)
   
   flossDataTest <-
-    flossDataTest[setdiff(names(flossDataTest), "License Category")]
+    flossDataTest[setdiff(names(flossDataTest), "License.Category")]
   
   mvn.result <- MVN::mardiaTest(flossDataTest, cov = TRUE, qqplot = FALSE)
   print(mvn.result)
@@ -360,7 +360,7 @@ performMultiEDA <- function (flossData, dataSource, indicators) {
   flossData <- flossData[, analysisCols]
   
   # remove projects with level 'Inactive' from further analysis
-  pmFactor <- as.name(flossData[["Project Stage"]])
+  pmFactor <- as.name(flossData[["Project.Stage"]])
   levels(pmFactor)[nlevels(pmFactor)] <- NA
   
   # perform multivariate EDA
@@ -391,7 +391,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   xLabel <- colName
   yLabel <- "Number of projects"
   
-  if (identical(colName, "Project Age"))
+  if (identical(colName, "Project.Age"))
     xLabel <- paste(xLabel, "(months)")
   
   # check whether log transformation of data is requested
@@ -654,8 +654,8 @@ flossData <- loadData(ready4edaFile)
 # construct list of indicators & corresponding extra functions
 sfIndicators <- c("prjAge", "devTeamSize",
                   "prjLicense", "prjMaturity")
-sfColumnNames <- c("Project Age", "Development Team Size",
-                   "Project License", "Project Stage")
+sfColumnNames <- c("Project.Age", "Development.Team.Size",
+                   "Project.License", "Project.Stage")
 sfExtraFun <- list("projectAge", "devTeamSize",
                    "projectLicense", "projectMaturity")
 
@@ -683,15 +683,15 @@ dataSourcesList <- c("SourceForge")  # TODO: add "FLOSSmole", when ready
 
 # sets of indicators for multivariate EDA per data source
 indicators <- c()
-indicators[["SourceForge"]] <- c("Project Age",
-                                 "Project License",
-                                 "License Category",
-                                 "License Restrictiveness",
-                                 "Development Stage",
-                                 "Project Stage",
-                                 "Development Team Size",
-                                 "User Community Size",
-                                 "Software Type")
+indicators[["SourceForge"]] <- c(#"Project.Age",
+                                 "Project.License",
+                                 "License.Category",
+                                 "License.Restrictiveness",
+                                 "Development.Stage",
+                                 "Project.Stage",
+                                 "Development.Team.Size",
+                                 "User.Community.Size",
+                                 "Software.Type")
 
 indicators[["FLOSSmole"]] <- c()
 

@@ -344,7 +344,7 @@ indicators <- c(); transforms <- list()
 
 # ===== SourceForge segment initialization =====
 
-indicators[["SourceForge"]] <- c("prjAge",
+indicators[["SourceForge"]] <- c(#"prjAge",
                                  "prjLicense",
                                  "prjMaturity",
                                  "devLinks",
@@ -355,7 +355,7 @@ indicators[["SourceForge"]] <- c("prjAge",
                                  "pubRoadmap",
                                  "dmProcess")
 
-transforms[["SourceForge"]] <- list(sfProjectAge,
+transforms[["SourceForge"]] <- list(#sfProjectAge,
                                     sfProjectLicense,
                                     sfPrjMaturity,
                                     sfDevLinks,
