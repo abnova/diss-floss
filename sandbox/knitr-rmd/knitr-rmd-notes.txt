@@ -1,0 +1,24 @@
+KNITR:
+======
+
+knit_hooks$set(roundFrame = function(before, options, envir) {
+  if (before) { 
+    name = paste(options$fig.path, options$label, sep = '')
+    return(paste('\\begin{mdframed}[roundcorner=7pt] \n \\includegraphics{', name, '} \n \\end{mdframed} \n', sep = ''))
+  } })
+
+
+LATEX:
+======
+
+\begin{figure}
+\centering
+\includegraphics{./eda-report-full_files/figure-latex/barchart_Project_License-1.pdf}
+\caption{Project.License\label{fig:Project.License}}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{./eda-report-full_files/figure-latex/barchart_Project_Stage-1.pdf}
+\caption{Project.Stage\label{fig:Project.Stage}}
+\end{figure}

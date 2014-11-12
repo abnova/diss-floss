@@ -3,14 +3,14 @@ title: "EDA Report"
 author: "Aleksandr Blekh"
 output:
   pdf_document:
+    fig_caption: yes
     highlight: kate
+    includes:
+      in_header: ~/diss-floss/config/diss-floss.sty
     keep_tex: yes
     number_sections: no
     toc: no
     toc_depth: 3
-    #lib_dir: figures/eda-report
-    includes:
-      in_header: ~/diss-floss/config/diss-floss.sty
   md_document:
     toc: yes
     toc_depth: 3
@@ -21,7 +21,6 @@ output:
     toc: yes
   word_document:
     fig_width: 6.5
-    mainfont: Calibri
 ---
 
 Following standard research methodology approach, prior to the core phases of data analysis (CFA and SEM, for this study), an exploratory data analysis (EDA) was performed. Please note, that exploratory factor analysis (EFA), while also exploratory in nature, corresponds to further phase of this study and, thus, the corresponding section is located outside of the current one. Since both pilot and main data sets are identical parts of the same randomly selected data set and all further statistical analysis had to be performed, using either of the two, the EDA was performed, using only the pilot data set.
@@ -80,16 +79,26 @@ bcRefStr <- genObjRefs("fig", "barchart_")
 
 In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in `r bcRefStr$str` below.
 
-```{r DynamicChunk, message=TRUE}
+```{r DynamicChunk, results='asis'}
 chunkName <- "{{name2}}"
 chunkHeader <- paste0("```{r ", chunkName, ",")
-chunkOptions <- "include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='EDA'}"
+chunkOptions <- "include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='{{varName}}', fig.env='figure'}"
 chunkHeaderFull <- paste(chunkHeader, chunkOptions)
 chunkBody <- "print(get('{{name}}'))"
 
-latexObjLabel <- paste0("\n", "cat('\\\\label{", bcRefStr$objType, ":{{name}}", "}')")
+latexFigEnvBegin <- paste0("\n", "cat('\\\\begin{figure}')")
+latexFigEnvEnd <- paste0("\n", "cat('\\\\end{figure}')")
+latexFigCenter <- paste0("\n", "cat('\\\\centering')")
 
-chunkText <- c(chunkHeaderFull, chunkBody, latexObjLabel, "```")
+#latexObjLabel <- paste0("\n", "cat('\\\\label{", bcRefStr$objType, ":{{varName}}", "}')")
+
+latexObjLabel <- paste0("\n", "cat('\\\\caption{\\\\ ", "{{varName}}\\\\label{", bcRefStr$objType, ":{{varName}}", "}}')")
+
+chunkText <- c(chunkHeaderFull,
+               latexFigEnvBegin, latexFigCenter,
+               chunkBody,
+               latexObjLabel, latexFigEnvEnd,
+               "```")
 
 figReportParts <- lapply(bcRefStr$objs, function (x) knit_expand(text = chunkText, name = x, name2 = gsub('\\.', '_', x), varName = strsplit(x, bcRefStr$objTypePrefix)[[1]][2]))
 ```

@@ -53,6 +53,7 @@ eda-report-Rmd.done: eda-report.Rmd eda.R prepare
 eda-report-Rnw.done: eda-report.Rnw eda.R prepare
 	@$(RSCRIPT) -e 'library(knitr); knit("eda-report.Rnw")'
 	@pdflatex eda-report.tex
+	@pdflatex eda-report.tex
 	@rm -f eda-report.tex eda-report.log eda-report.aux
 	@touch $@
 
@@ -81,6 +82,9 @@ sem.done: sem.R cfa
 # remove intermediate files
 clean:
 	rm -f *.svg *.pdf .Rout
+
+clean-latex:
+	rm -f *.aux *.out *.log
 
 clean-svg:
 	rm -f *.svg

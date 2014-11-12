@@ -1,5 +1,6 @@
 *.svg
 *.pdf
+*.docx
 *.tex
 *.gz
 figures
