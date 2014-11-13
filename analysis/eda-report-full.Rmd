@@ -80,34 +80,22 @@ bcRefStr <- genObjRefs("fig", "barchart_")
 In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in `r bcRefStr$str` below.
 
 ```{r DynamicChunk, message=TRUE}
+
+latexObjLabel <- paste0("{{caption}}", "\\\\label{", bcRefStr$objType, ":{{varName}}", "}")
+
 chunkName <- "{{name2}}"
 chunkHeader <- paste0("```{r ", chunkName, ",")
-chunkOptions <- "include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='{{varName}}'"
+chunkOptions <- paste0("include=TRUE, results='asis', fig.height=3.5, fig.width=7, fig.cap='", latexObjLabel, "'")
 chunkHeaderFull <- paste(chunkHeader, chunkOptions, "}")
 chunkBody <- "print(get('{{name}}'))"
 
-latexFigEnvBegin <- "cat('\\\\begin{figure}')"
-latexFigEnvEnd <- "cat('\\\\end{figure}')"
-latexFigCenter <- "cat('\\\\centering')"
-
-#latexObjLabel <- paste0("cat('\\\\label{", bcRefStr$objType, ":{{varName}}", "}')")
-
-latexObjLabel <- paste0("cat('\\\\caption{\\\\ ", "{{varName}}\\\\label{", bcRefStr$objType, ":{{varName}}", "}}')\n")
-
 chunkText <- c(chunkHeaderFull,
-               latexFigEnvBegin, latexFigCenter,
                chunkBody,
-               latexObjLabel, latexFigEnvEnd,
                "```", "\n")
 
-figReportParts <- lapply(bcRefStr$objs, function (x) knit_expand(text = chunkText, name = x, name2 = gsub('\\.', '_', x), varName = strsplit(x, bcRefStr$objTypePrefix)[[1]][2]))
+figures <- lapply(bcRefStr$objs, function (x) knit_expand(text = chunkText, name = x, name2 = gsub('\\.', '_', x), varName = strsplit(x, bcRefStr$objTypePrefix)[[1]][2], caption = attr(get(x), 'title')))
 ```
 
-#`r message(str(figReportParts))`
-`r knit(text = unlist(figReportParts))`
+`r knit(text = unlist(figures))`
 
-In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in the figures below.
-
-```{r NonDynamicChunk, include=TRUE, results='asis', fig.height=4, fig.width=5, fig.cap='EDA: Barcharts'}
-for (g in bcRefStr$objs) print(get(g))
-```
+TODO: More narrative and more visual artifacts.

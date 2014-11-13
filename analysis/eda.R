@@ -473,8 +473,7 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
                           low = GRADIENT_LOW, high = GRADIENT_HIGH) +
     scale_x +
     scale_y +
-    myHist +
-    myTitle
+    myHist
   
   # overlay with density-like plot, based on data count
   g <- g + stat_function(fun = dist.count,
@@ -487,6 +486,9 @@ plotHistogram <- function (df, colName, log = FALSE, print = TRUE) {
   # ignore NA values for mean
   g <- g + geom_vline(aes(xintercept = mean(var + 1)),
                       linetype = "longdash", color = "red")
+  
+  # title will be saved as & extracted from an attribute (for fig. caption)
+  attr(g, "title") <- title
   
   if (.Platform$GUI == "RStudio") print(g)
   
@@ -518,6 +520,9 @@ plotDensity <- function (df, colName) {
   g <- ggplot(df, aes(x=var, fill=var)) +
     geom_density(aes(y=..count..), 
                  binwidth=bwidth, position="identity")
+  
+  # title will be saved as & extracted from an attribute (for fig. caption)
+  attr(g, "title") <- title
   
   if (.Platform$GUI == "RStudio") print(g)
   
@@ -563,8 +568,7 @@ plotBarChart <- function (df, colName) {
     geom_bar(stat="bin", position="identity") +
     scale_fill_discrete(colName) + 
     xlab(colName) +
-    ylab("Number of projects") +
-    myTitle
+    ylab("Number of projects")
   
   # display pre-calculated percentage on top of bars
   if (FALSE) {
@@ -574,6 +578,9 @@ plotBarChart <- function (df, colName) {
             axis.title.x=element_blank(),legend.title=element_blank(),
             axis.title.y=element_blank())  
   }
+  
+  # title will be saved as & extracted from an attribute (for fig. caption)
+  attr(g, "title") <- title
   
   if (.Platform$GUI == "RStudio") print(g)
   
@@ -622,8 +629,10 @@ ggQQplot <- function (df, colName) # argument: vector of numbers
     
     geom_abline(slope = slope, intercept = int) +
     scale_x_continuous("Theoretical Quantiles") +
-    scale_y_continuous("Sample Quantiles") +
-    myTitle
+    scale_y_continuous("Sample Quantiles")
+  
+  # title will be saved as & extracted from an attribute (for fig. caption)
+  attr(g, "title") <- title
   
   if (.Platform$GUI == "RStudio") print(g)
   
