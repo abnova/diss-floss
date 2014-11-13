@@ -39,6 +39,7 @@ source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/utils.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
 source(file.path(PRJ_HOME, "analysis/mixDist.R"))
+source(file.path(PRJ_HOME, "utils/knit.R"))
 
 READY4EDA_DIR  <- file.path(PRJ_HOME, "data/ready4eda")
 READY4EDA_FILE <- "flossData" # default

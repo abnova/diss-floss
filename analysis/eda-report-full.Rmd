@@ -73,29 +73,28 @@ print(describe_flossData)
 print(genEDAdescStatsTable(flossData, label = "edaDescStats"))
 ```
 
-```{r getBarCharts}
-bcRefStr <- genObjRefs("fig", "barchart_")
+```{r getBarChartsInfo}
+refInfo <- genObjRefs("fig", "barchart_")
 ```
 
-In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts and - for continuous (binned) data - histograms, as shown in `r bcRefStr$str` below.
+In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts, as shown in `r refInfo$str` below.
 
-```{r DynamicChunk, message=TRUE}
-
-latexObjLabel <- paste0("{{caption}}", "\\\\label{", bcRefStr$objType, ":{{varName}}", "}")
-
-chunkName <- "{{name2}}"
-chunkHeader <- paste0("```{r ", chunkName, ",")
-chunkOptions <- paste0("include=TRUE, results='asis', fig.height=3.5, fig.width=7, fig.cap='", latexObjLabel, "'")
-chunkHeaderFull <- paste(chunkHeader, chunkOptions, "}")
-chunkBody <- "print(get('{{name}}'))"
-
-chunkText <- c(chunkHeaderFull,
-               chunkBody,
-               "```", "\n")
-
-figures <- lapply(bcRefStr$objs, function (x) knit_expand(text = chunkText, name = x, name2 = gsub('\\.', '_', x), varName = strsplit(x, bcRefStr$objTypePrefix)[[1]][2], caption = attr(get(x), 'title')))
+```{r barchartDynamicChunk, message=TRUE}
+barchartChunks <- genDynChunks(refInfo)
 ```
 
-`r knit(text = unlist(figures))`
+`r knit(text = barchartChunks)`
+
+```{r getHistogramsInfo}
+refInfo <- genObjRefs("fig", "histogram_")
+```
+
+Visual overview for continuous (binned) data is presented by histograms in the following `r refInfo$str`.
+
+```{r historgramsDynamicChunk, message=TRUE}
+histChunks <- genDynChunks(refInfo)
+```
+
+`r knit(text = histChunks)`
 
 TODO: More narrative and more visual artifacts.
