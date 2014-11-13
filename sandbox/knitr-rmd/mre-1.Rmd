@@ -17,9 +17,10 @@ opts_chunk$set(comment=NA, warning=FALSE, message=FALSE, echo=FALSE, tidy=FALSE)
 ```
 
 ```{r Preparation, results='hide'}
+library(ggplot2)
 
-g1 <- plot(cars)
-g2 <- plot(iris$Sepal.Length)
+g1 <- qplot(mpg, wt, data=mtcars)
+g2 <- qplot(mpg, hp, data=mtcars)
 
 myPlots <- list(g1, g2)
 
@@ -30,22 +31,17 @@ bcRefStr <- list("objType" = "fig",
 
 
 ```{r DynamicChunk, include=FALSE}
+
+latexObjLabel <- paste0("{{name}}\\\\label{", bcRefStr$objType, ":{{name}}", "}")
+
 chunkName <- "{{name}}"
 chunkHeader <- paste0("```{r ", chunkName, ", ")
-chunkOptions <- "include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='{{name}}'"
+chunkOptions <- paste0("include=TRUE, results='asis', fig.height=4, fig.width=4, fig.cap='", latexObjLabel, "'")
 chunkHeaderFull <- paste0(chunkHeader, chunkOptions, "}")
 chunkBody <- "print(get('{{name}}'))"
 
-latexFigEnvBegin <- "cat('\\\\begin{figure}')"
-latexFigEnvEnd <- "cat('\\\\end{figure}')"
-latexFigCenter <- "cat('\\\\centering')"
-
-latexObjLabel <- paste0("cat('\\\\caption{\\\\ ", "{{name}}\\\\label{", bcRefStr$objType, ":{{name}}", "}}')")
-
 chunkText <- c(chunkHeaderFull,
-               latexFigEnvBegin, latexFigCenter,
                chunkBody,
-               latexObjLabel, latexFigEnvEnd,
                "```", "\n")
 
 figReportParts <- lapply(bcRefStr$objs, function (x) knit_expand(text = chunkText, name = x))
