@@ -84,7 +84,7 @@ dsPrefix <- ""
 blacklist <- c()
 
 DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
-DEBUG2 <- FALSE
+DEBUG2 <- TRUE ##temp (TODO: switch to FALSE)
 
 cookiesFile <- "cookies.txt"
 
@@ -174,6 +174,10 @@ srdaRequestData <- function (requestURL, select, from, where, sep, sql) {
   # for simple polling of results file in srdaGetData() function
   beforeDate <- url.exists(RESULTS_URL, .header=TRUE)["Last-Modified"]
   beforeDate <<- strptime(beforeDate, "%a, %d %b %Y %X", tz="GMT")
+
+  ##temp
+  # fix due to fast server, responding within the same second as request
+  #Sys.sleep(1)
   
   #if (DEBUG2) {print(select); print(from); print(where)}
   
@@ -214,7 +218,8 @@ srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
   
   debug2saved <- DEBUG2
   
-  if (NUM_ROWS_RQ) DEBUG2 <<- FALSE
+  ##temp (TODO: uncomment)
+  #if (NUM_ROWS_RQ) DEBUG2 <<- FALSE
   
   if (DEBUG2) message("Waiting for results ... ", appendLF = FALSE)
   
@@ -222,6 +227,7 @@ srdaGetData <- function (NUM_ROWS_RQ = FALSE) {
   repeat {
     afterDate <- url.exists(RESULTS_URL, .header=TRUE)["Last-Modified"]
     afterDate <-  strptime(afterDate, "%a, %d %b %Y %X", tz="GMT")
+
     delta <- difftime(afterDate, beforeDate, units = "secs")
     if (as.numeric(delta) != 0) { # file modified, results are ready
       if (DEBUG2) message(" Ready!\n")
@@ -457,7 +463,7 @@ getSourceForgeData <- function (row, config) { # dataFrame
   
   # Convert (tokenize) SQL request into parts
   rq <- srdaConvertRequest(request)
-  
+
   REPLACE_CLAUSE <- "" #temp
   rq$select <- paste(rq$select, REPLACE_CLAUSE)
   
