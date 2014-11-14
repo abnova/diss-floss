@@ -2,7 +2,10 @@
 rm(list = ls(all.names = TRUE))
 
 if (!suppressMessages(require(plspm))) install.packages('plspm')
+if (!suppressMessages(require(mice))) install.packages('mice')
+
 library(plspm)
+library(mice)
 
 set.seed(100)
 
@@ -15,10 +18,10 @@ source(file.path(PRJ_HOME, "utils/platform.R"))
 source(file.path(PRJ_HOME, "utils/qgraphtikz.R")) # fix for TikZ device
 source(file.path(PRJ_HOME, "utils/factors.R"))
 
-READY4CFA_DIR  <- file.path(PRJ_HOME, "data/ready4cfa")
-READY4CFA_FILE <- "flossData"
+READY4SEM_DIR  <- file.path(PRJ_HOME, "data/ready4sem")
+READY4SEM_FILE <- "flossData"
 
-CFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/cfa")
+SEM_RESULTS_DIR <- file.path(PRJ_HOME, "results/sem")
 
 RDS_EXT      <- ".rds"
 GRAPHICS_EXT <- ".svg"
@@ -32,15 +35,17 @@ DEBUG <- FALSE
 
 message("\n\n===== PERFORMING STRUCTURED EQUATION MODELING (SEM-PLS) =====")
 
-fileName <- paste0(READY4CFA_FILE, RDS_EXT)
-ready4cfaFile <- file.path(READY4CFA_DIR, fileName)
+fileName <- paste0(READY4SEM_FILE, RDS_EXT)
+ready4semFile <- file.path(READY4SEM_DIR, fileName)
 
 # load data
 message("\n\n*** Loading data...")
-flossData <- loadData(ready4cfaFile)
+flossData <- loadData(ready4semFile)
 
-# handle missing data
 flossData <- na.omit(flossData)
+
+# select imputed dataset
+#flossData <- complete(flossData, 1)
 
 # temp
 names(flossData) <- make.names(names(flossData))
@@ -53,9 +58,12 @@ names(flossData) <- make.names(names(flossData))
 # we also remove "Repo URL" due to injection of large # of NAs
 # due to limiting conditionsat the end of the merge process
 
-factors4analysis <- c("Development.Team.Size", # "Project Age",
-                      "License.Restrictiveness", "Project.Stage",
-                      "Software.Type")
+#factors4analysis <- c("Development.Team.Size", # "Project Age",
+#                      "License.Restrictiveness", "Project.Stage",
+#                      "Software.Type")
+factors4analysis <- c("Project.License", "License.Restrictiveness",
+                      "Development.Stage", "Project.Maturity",
+                      "User.Community.Size")
 flossData <- flossData[, factors4analysis]
 
 # convert names (temp)
@@ -71,18 +79,18 @@ datasetName <- deparse(substitute(flossData))
 
 # log transform continuous data
 #flossData["Project.Age"] <- log(flossData["Project.Age"])
-flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
+#flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
 
 
 ###
 
-# rows of the path matrix
-Governance  <- c(0, 0) # 0, 0, 0
-#Sponsorship <- c(0, 0, 0)
-Success     <- c(1, 0) # 1, 1, 0
+# rows of the path matrix (inner model)
+Governance  <- c(1, 0, 0)
+Sponsorship <- c(1, 0, 0)
+Success     <- c(1, 1, 0)
 
 # inner model matrix
-successPath <- rbind(Governance, Success) # Sponsorship, 
+successPath <- rbind(Governance, Sponsorship, Success) 
 
 # add column names
 colnames(successPath) <- rownames(successPath)
@@ -90,18 +98,18 @@ colnames(successPath) <- rownames(successPath)
 # blocks of indicators (outer model)
 #successBlocks <- list(2:3, 4) # 5:8, 9:12
 
-depVar <- "Development.Team.Size"  # "User.Community.Size"
+depVar <- "User.Community.Size"
+
+blockGovernance <- c("Project.License", "License.Restrictiveness")
+blockSponsorship <- c("Development.Stage", "Project.Maturity")
+blockSuccess <- depVar
 
 # new list of blocks (with names of variables)
-successBlocks <- list(setdiff(factors4analysis, depVar), c(depVar))
+successBlocks <- list(blockGovernance, blockSponsorship, blockSuccess)
 
 # vector of modes (reflective)
-successModes <- rep("A", 2) # 3
+successModes <- rep("A", 3)
 
-# keep only the necessary columns, dropping the rest
-#keepCols <- c("Repo URL", "Project License",
-#              "License Restrictiveness", "User Community Size")
-#flossData <- flossData[, keepCols, drop = FALSE]
 
 # convert factors to numeric values
 # convert factors to integers via as.numeric.factor() ["factors.R"]
@@ -111,22 +119,22 @@ if (FALSE)
 for (x in factors4analysis)
   flossData[[x]] <- as.integer(flossData[[x]])
 
+if (FALSE)
 for (x in factors4analysis)
   flossData[[x]] <- as.numeric.factor(flossData[[x]])
 
-print(str(flossData))
+#print(str(flossData))
 
 
 # specify measurement scale for manifest variables
-successScales <- list(c("ord", "ord", "ord"), c("num"))
+#successScales <- list(c("ord", "ord", "ord"), c("num"))
 
 
 # run plspm analysis
 successPLS <- plspm(flossData,
                     successPath,
                     successBlocks,
-                    modes = successModes,
-                    scaling = successScales)
+                    modes = successModes) # scaling = successScales
 
 # 4.2. Handling PLS-PM Results
 
@@ -152,21 +160,8 @@ print(subset(successPLS$outer_model, block == "Defense"))
 gWeights <- plot(successPLS, what = "weights")
 print(gWeights)
 
-# add two more columns NGCH and NGCA
-#spainfoot$NGCH = -1 * spainfoot$GCH
-#spainfoot$NGCA = -1 * spainfoot$GCA
-
-# check column names
-print(names(flossData))
-
-# new list of blocks (with column positions of variables)
-newBlocksPos <- list(1:4, c(15,16,7,8), 9:12)
-
-# new list of blocks (with names of variables)
-newBlocksStr <- list(
-  c("GSH", "GSA", "SSH", "SSA"),
-  c("NGCH", "NGCA", "CSH", "CSA"),
-  c("WMH", "WMA", "LWR", "LRWL"))
+# potential model's adjustment
+newBlocksStr <- successBlocks
 
 # re-apply plspm
 #successPLS <- plspm(flossData,
