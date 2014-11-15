@@ -3,9 +3,19 @@ rm(list = ls(all.names = TRUE))
 
 if (!suppressMessages(require(plspm))) install.packages('plspm')
 if (!suppressMessages(require(mice))) install.packages('mice')
+if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
+if (!suppressMessages(require(RColorBrewer)))
+  install.packages('RColorBrewer')
+if (!suppressMessages(require(reshape))) install.packages('reshape')
 
 library(plspm)
 library(mice)
+library(ggplot2)
+library(RColorBrewer)
+library(reshape)
+
+
+##### PREPARATION & DEFINITIONS #####
 
 set.seed(100)
 
@@ -26,14 +36,19 @@ SEM_RESULTS_DIR <- file.path(PRJ_HOME, "results/sem")
 RDS_EXT      <- ".rds"
 GRAPHICS_EXT <- ".svg"
 
+COLOR_PALETTE <- brewer.pal(8, "Set2") # "Accent" is also good
+
+GGPLOT2_PALETTE_FILL <- scale_fill_manual(values = COLOR_PALETTE)
+GGPLOT2_PALETTE_LINE <- scale_color_manual(values = COLOR_PALETTE)
+
 DEBUG <- FALSE
 
 
-## @knitr PerformCFA
+## @knitr PerformSEM
 
 ##### ANALYSIS #####
 
-message("\n\n===== PERFORMING STRUCTURED EQUATION MODELING (SEM-PLS) =====")
+message("\n\n===== STRUCTURED EQUATION MODELING (SEM-PLS) ANALYSIS =====")
 
 fileName <- paste0(READY4SEM_FILE, RDS_EXT)
 ready4semFile <- file.path(READY4SEM_DIR, fileName)
@@ -77,26 +92,29 @@ flossData <- flossData[, factors4analysis]
 # [currently used for KNITR only]
 datasetName <- deparse(substitute(flossData))
 
+#message("\n\n*** Transforming data...")
 # log transform continuous data
 #flossData["Project.Age"] <- log(flossData["Project.Age"])
 #flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
 
 
-###
+# Initial model specification
+##########################################################
 
-# rows of the path matrix (inner model)
+message("\n\n*** Building model...")
+
+# define rows of the path matrix (for inner model)
 Governance  <- c(1, 0, 0)
 Sponsorship <- c(1, 0, 0)
 Success     <- c(1, 1, 0)
 
-# inner model matrix
+# build the inner model matrix
 successPath <- rbind(Governance, Sponsorship, Success) 
 
 # add column names
 colnames(successPath) <- rownames(successPath)
 
-# blocks of indicators (outer model)
-#successBlocks <- list(2:3, 4) # 5:8, 9:12
+# specify blocks of indicators (outer model), using variable names
 
 depVar <- "User.Community.Size"
 
@@ -104,13 +122,13 @@ blockGovernance <- c("Project.License", "License.Restrictiveness")
 blockSponsorship <- c("Development.Stage", "Project.Maturity")
 blockSuccess <- depVar
 
-# new list of blocks (with names of variables)
+# build list of blocks (outer model)
 successBlocks <- list(blockGovernance, blockSponsorship, blockSuccess)
 
-# vector of modes (reflective)
+# specify model's vector of modes ('A' is reflective)
 successModes <- rep("A", 3)
 
-
+##temp - begin
 # convert factors to numeric values
 # convert factors to integers via as.numeric.factor() ["factors.R"]
 # the above doesn't work - however, as.integer() works just fine
@@ -124,27 +142,34 @@ for (x in factors4analysis)
   flossData[[x]] <- as.numeric.factor(flossData[[x]])
 
 #print(str(flossData))
-
+##temp - end
 
 # specify measurement scale for manifest variables
 #successScales <- list(c("ord", "ord", "ord"), c("num"))
 
+message("\n\n*** Running PLS-PM analysis...")
 
-# run plspm analysis
+# run PLS-PM analysis
 successPLS <- plspm(flossData,
                     successPath,
                     successBlocks,
                     modes = successModes) # scaling = successScales
 
-# 4.2. Handling PLS-PM Results
 
-# what's in foot_pls?
+# 4.2. Handling PLS-PM Results
+##########################################################
+
+message("\n\n*** SEM-PLS analysis results:\n")
+
+# contents of the results object
 print(successPLS)
 
 # summarized results
 print(summary(successPLS))
 
+
 # 4.3. Measurement Model Assessment: Reflective Indicators
+##########################################################
 
 # plotting loadings
 gLoadings <- plot(successPLS, what = "loadings")
@@ -153,45 +178,45 @@ print(gLoadings)
 # outer model results (in a matrix way, unlike tabular in summary())
 print(successPLS$outer_model)
 
-# Defense outer model results
-print(subset(successPLS$outer_model, block == "Defense"))
+# Governance outer model results
+print(subset(successPLS$outer_model, block == "Governance"))
 
 # plotting weights
 gWeights <- plot(successPLS, what = "weights")
 print(gWeights)
 
-# potential model's adjustment
-newBlocksStr <- successBlocks
+# TODO: potential model's modifications/adjustments HERE
+modSuccessBlocks <- successBlocks
 
-# re-apply plspm
-#successPLS <- plspm(flossData,
-#                    successPath, newBlocksStr,
-#                    modes = successModes)
+# TODO: if made adjustments, uncomment below to re-estimate the model(s)
+#modSuccessPLS <- plspm(flossData,
+#                       successPath, modSuccessBlocks,
+#                       modes = successModes)
 
-# plot loadings
-gLoadings2 <- plot(successPLS, "loadings")
-print(gLoadings2)
+# plot modified model's loadings
+#gModLoadings <- plot(modSuccessPLS, "loadings")
+#print(gModLoadings)
 
 # unidimensionality - better results
-print(successPLS$unidim)
+#print(modSuccessPLS$unidim)
 
 # loadings and communalities
-print(successPLS$outer_model)
+#print(modSuccessPLS$outer_model)
 
 # cross-loadings
-print(successPLS$crossloadings)
+#print(modSuccessPLS$crossloadings)
 
-# load ggplot2 and reshape
-library(ggplot2)
-library(reshape)
 
-# reshape crossloadings data.frame for ggplot
-xloads = melt(successPLS$crossloadings, id.vars = c("name", "block"),
-              variable_name = "LV")
+### The following visual output is for the original model
+### (update, if analysis of several models is performed).
 
-# bar-charts of crossloadings by block
-ggplot(data = xloads,
-       aes(x = name, y = value, fill = block)) +
+# reshape crossloadings data frame for ggplot2
+xloads <- melt(successPLS$crossloadings, id.vars = c("name", "block"),
+               variable_name = "LV")
+
+# barcharts of crossloadings by block
+gCrossLoadBlocks <- ggplot(data = xloads,
+                           aes(x = name, y = value, fill = block)) +
   
   # add horizontal reference lines
   geom_hline(yintercept = 0, color = "gray75") +
@@ -200,22 +225,30 @@ ggplot(data = xloads,
   # indicate the use of car-charts
   geom_bar(stat = 'identity', position = 'dodge') +
   
-  # panel display (i.e. faceting)
+  # panel display (faceting)
   facet_wrap(block ~ LV) +
   
-  # tweaking some grahical elements
+  # tweaking some graphical elements
   theme(axis.text.x = element_text(angle = 90),
         line = element_blank(),
         plot.title = element_text(size = 12)) +
   
   # add title
-  ggtitle("Crossloadings")
+  ggtitle("Crossloadings") +
+  
+  # change color palette
+  GGPLOT2_PALETTE_FILL + GGPLOT2_PALETTE_LINE
+
+# display the crossloadings barchart panel
+print(gCrossLoadBlocks)
 
 
 # 4.4. Measurement Model Assessment: Formative Indicators
+##########################################################
 
 
 # 4.5. Structural Model Assessment
+##########################################################
 
 # inner model
 print(successPLS$inner_model)
@@ -229,13 +262,20 @@ print(successPLS$inner_summary[, "R2", drop = FALSE])
 # GoF index
 print(successPLS$gof)
 
-# 4.6. Validation
 
-# running bootstrap validation (200 samples)
-successVal <- plspm(flossData, successPath, newBlocksStr,
+# 4.6. Validation
+##########################################################
+
+message("\n\n*** Performing bootstrap validation...")
+
+# running bootstrap validation (100 samples)
+successVal <- plspm(flossData, successPath, successBlocks,
                     modes = successModes,
-                    boot.val = TRUE, br = 200)
+                    boot.val = TRUE, br = 100)
 
 
 # bootstrap results
 print(successVal$boot)
+
+message("\n===== SEM-PLS analysis completed, results can be found ",
+        "in directory \"", SEM_RESULTS_DIR, "\"\n")
