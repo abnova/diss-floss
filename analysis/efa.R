@@ -217,6 +217,11 @@ message("\n\n===== PERFORMING EXPLORATORY FACTOR ANALYSIS (EFA) =====")
 fileName <- paste0(READY4EFA_FILE, RDS_EXT)
 ready4efaFile <- file.path(READY4EFA_DIR, fileName)
 
+# Create results directory, if it doesn't exist
+if (!file.exists(EFA_RESULTS_DIR)) {
+  dir.create(EFA_RESULTS_DIR, recursive = TRUE, showWarnings = FALSE)
+}
+
 # load data
 message("\n\n*** Loading data...")
 flossData <- loadData(ready4efaFile)

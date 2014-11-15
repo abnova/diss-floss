@@ -53,6 +53,11 @@ message("\n\n===== STRUCTURED EQUATION MODELING (SEM-PLS) ANALYSIS =====")
 fileName <- paste0(READY4SEM_FILE, RDS_EXT)
 ready4semFile <- file.path(READY4SEM_DIR, fileName)
 
+# Create results directory, if it doesn't exist
+if (!file.exists(SEM_RESULTS_DIR)) {
+  dir.create(SEM_RESULTS_DIR, recursive = TRUE, showWarnings = FALSE)
+}
+
 # load data
 message("\n\n*** Loading data...")
 flossData <- loadData(ready4semFile)

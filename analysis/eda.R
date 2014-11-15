@@ -659,6 +659,11 @@ message("\n===== Starting Exploratory Data Analysis (EDA)...")
 fileName <- paste0(READY4EDA_FILE, RDS_EXT)
 ready4edaFile <- file.path(READY4EDA_DIR, fileName)
 
+# Create results directory, if it doesn't exist
+if (!file.exists(EDA_RESULTS_DIR)) {
+  dir.create(EDA_RESULTS_DIR, recursive = TRUE, showWarnings = FALSE)
+}
+
 # load data
 message("\nLoading data...")
 flossData <- loadData(ready4edaFile)

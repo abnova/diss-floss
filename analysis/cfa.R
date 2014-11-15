@@ -196,6 +196,11 @@ message("\n\n===== PERFORMING CONFIRMATORY FACTOR ANALYSIS (CFA) =====")
 fileName <- paste0(READY4CFA_FILE, RDS_EXT)
 ready4cfaFile <- file.path(READY4CFA_DIR, fileName)
 
+# Create results directory, if it doesn't exist
+if (!file.exists(CFA_RESULTS_DIR)) {
+  dir.create(CFA_RESULTS_DIR, recursive = TRUE, showWarnings = FALSE)
+}
+
 # load data
 message("\n\n*** Loading data...")
 flossData <- loadData(ready4cfaFile)
