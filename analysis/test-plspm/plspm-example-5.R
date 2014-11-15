@@ -4,7 +4,8 @@ if (!suppressMessages(require(plspm))) install.packages('plspm')
 library(plspm)
 
 # read data file
-education <- read.csv("education.csv", header = TRUE, row.names = 1)
+education <- read.csv("~/diss-floss/analysis/test-plspm/education.csv",
+                      header = TRUE, row.names = 1)
 
 # how many rows and columns?
 print(dim(education))
