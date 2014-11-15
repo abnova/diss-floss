@@ -1,3 +1,7 @@
+# ===== TODO: =====
+# consider producing outer/inner model diagram figures,
+# using 'semPlot' package (see semPaths() functon's use in CFA module)
+
 # Start session with a clean R environment
 rm(list = ls(all.names = TRUE))
 
@@ -35,6 +39,8 @@ SEM_RESULTS_DIR <- file.path(PRJ_HOME, "results/sem")
 
 RDS_EXT      <- ".rds"
 GRAPHICS_EXT <- ".svg"
+
+LOADINGS_THRESHOLD <- 0.7  # minimum value for acceptable loadings
 
 COLOR_PALETTE <- brewer.pal(8, "Set2") # "Accent" is also good
 
@@ -183,6 +189,27 @@ print(gLoadings)
 # outer model results (in a matrix way, unlike tabular in summary())
 print(successPLS$outer_model)
 
+# display barchart of loadings with threshold value line
+
+gLoadingsBarChart <- ggplot(data = successPLS$outer_model,
+                            aes(x = name, y = loading, fill = block)) +
+  
+  geom_bar(stat = 'identity', position = 'dodge') +
+  
+  # threshold line (to emphasize acceptable loadings)
+  geom_hline(yintercept = LOADINGS_THRESHOLD, color = 'red') +
+  
+  # rotate x-axis labels
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black")) +
+  
+  # add title
+  ggtitle("Barchart of Loadings") #+
+  
+  # change color palette
+  #GGPLOT2_PALETTE_FILL + GGPLOT2_PALETTE_LINE
+
+print(gLoadingsBarChart)
+
 # Governance outer model results
 print(subset(successPLS$outer_model, block == "Governance"))
 
@@ -233,14 +260,14 @@ gCrossLoadBlocks <- ggplot(data = xloads,
   # panel display (faceting)
   facet_wrap(block ~ LV) +
   
-  # tweaking some graphical elements
-  theme(axis.text.x = element_text(angle = 90),
+  # tweak some graphical elements
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black"),
         line = element_blank(),
         plot.title = element_text(size = 12)) +
   
   # add title
   ggtitle("Crossloadings") +
-  
+
   # change color palette
   GGPLOT2_PALETTE_FILL + GGPLOT2_PALETTE_LINE
 
@@ -258,6 +285,9 @@ print(gCrossLoadBlocks)
 # inner model
 print(successPLS$inner_model)
 
+# matrix of path coefficients
+print(successPLS$path_coefs)
+
 # inner model summary
 print(successPLS$inner_summary)
 
@@ -266,6 +296,49 @@ print(successPLS$inner_summary[, "R2", drop = FALSE])
 
 # GoF index
 print(successPLS$gof)
+
+# matrix with values based on path coeffs
+arrow_lwd <- 10 * round(successPLS$path_coefs, 2)
+
+# visual: SEM path diagram (inner model)
+plot(successPLS, arr.lwd = arrow_lwd)  # arr.pos = 
+
+
+## Effects Analysis
+
+# effects summary (don't use summary() here)
+print(successPLS$effects)
+
+# select effects ('active' rows)
+activeRows <- na.omit(successPLS$effects[successPLS$effects[, -1] != 0, ])
+activeRows <- as.integer(rownames(activeRows))
+
+# 'active' effects in matrix format
+path_effs <- as.matrix(successPLS$effects[activeRows, -1])
+
+# add rownames to path_effs
+rownames(path_effs) <- successPLS$effects[activeRows, 1]
+
+# active effects summary
+print(path_effs)
+
+# visual: LV effects diagram
+# TODO: convert to ggplot2 version, rotate x-axis labels, etc.
+
+# setting margin size
+op <- par(mar = c(8, 3, 1, 0.5))
+# barplots of total effects (direct + indirect)
+barplot(t(path_effs), border = NA, col = c("#9E9AC8", "#DADAEB"),
+        las = 2, cex.names = 0.8, cex.axis = 0.8,
+        legend = c("Direct", "Indirect"),
+        args.legend = list(x = "top", ncol = 2, border = NA,
+                           bty = "n", title = "Effects"))
+# resetting default margins
+par(op)
+
+
+# move inner model summary here?
+# move GoF here?
 
 
 # 4.6. Validation
