@@ -213,13 +213,10 @@ flossData <- loadData(ready4cfaFile)
 # we also remove "Repo URL" due to injection of large # of NAs
 # due to limiting conditionsat the end of the merge process
 
-factors4Analysis <- c("Development Team Size", "Project Age",
-                      "License Restrictiveness", "Project Stage",
-                      "Software Type")
-flossData <- flossData[factors4Analysis]
-
-# convert names (temp)
-#names(flossData) <- make.names(names(flossData)) #TODO: test & remove
+factors4analysis <- c("Development.Team.Size", "Project.Age",
+                      "License.Restrictiveness", "Project.Stage",
+                      "Software.Type")
+flossData <- flossData[factors4analysis]  # TODO: [, factors4analysis] ?????
 
 # sample the sample (use 1%) to reduce processing time
 #flossData <- sampleDF(flossData, nrow(flossData) / 100)

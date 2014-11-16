@@ -123,7 +123,7 @@ visualizeMixtures <- function (data, mix, indicator, colName) {
   title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
   
-  if (identical(colName, "Project Age"))
+  if (identical(colName, "Project.Age"))
     xLabel <- paste(colName, "(months)")
   
   breaks <- pretty(range(data), n = nclass.FD(data), min.n = 1)

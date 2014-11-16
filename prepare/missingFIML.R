@@ -26,13 +26,13 @@ message("\nAnalyzing data...")
 
 # select columns for analysis by their names
 #columns4analysis <- c(8, 11, 12, 13, 15, 16, 17)
-columns4analysis <- c("Development Team Size",
-                      "Project Age",
-                      "Project License",
-                      "License Restrictiveness",
-                      "Project Maturity",
-                      #"Software Type",
-                      "User Community Size")
+columns4analysis <- c("Development.Team.Size",
+                      "Project.Age",
+                      "Project.License",
+                      "License.Restrictiveness",
+                      "Project.Maturity",
+                      #"Software.Type",
+                      "User.Community.Size")
 
 cols4analysisNew <- c("team.size", "prj.age", "license", "restrict",
                       "maturity",

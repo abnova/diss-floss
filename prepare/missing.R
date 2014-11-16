@@ -35,23 +35,24 @@ PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/factors.R"))
+source(file.path(PRJ_HOME, "utils/platform.R"))
 
 # Initially file was copied manually from "merged/SourceForge".
 # Currently it is copied as a part of Makefile's merge rule.
 # Implementing automatic data merging across all data sources
 # should take care of this step (TODO).
 MERGED_DIR <- file.path(PRJ_HOME, "data/merged")
-MERGED_FILE <- "flossData" # default
+MERGED_FILE <- "flossData"
 RDS_EXT <- ".rds"
 
 IMPUTED_DIR <- file.path(PRJ_HOME, "data/imputed")
-IMPUTED_FILE <- "flossDataImputed" # default
+IMPUTED_FILE <- "flossDataImputed"
 
 DEBUG <- FALSE
 
-NUM_CORES <- detectCores() # for parallel processing
+NUM_CORES <- getOption("mc.cores")  # for parallel processing
 
-NUM_IMPUTATIONS <- 5 # minimum recommended # of imputations
+NUM_IMPUTATIONS <- 5  # minimum recommended number of imputations
 
 
 # additional transformations needed for data testing
@@ -59,17 +60,19 @@ prepareForMI <- function (data) {
 
   # convert factors to integers via as.numeric.factor() ["factors.R"]
   # the above doesn't work - however, as.integer() works just fine
-  data[["Project License"]] <- 
-    as.integer(data[["Project License"]])
-  data[["License Category"]] <- 
-    as.integer(data[["License Category"]])
-  data[["License Restrictiveness"]] <- 
-    as.integer(data[["License Restrictiveness"]])
-  data[["Development Stage"]] <- 
-    as.integer(data[["Development Stage"]])
-  data[["Project Stage"]] <- 
-    as.integer(data[["Project Stage"]])
-
+  data[["Project.License"]] <- 
+    as.integer(data[["Project.License"]])
+  data[["License.Category"]] <- 
+    as.integer(data[["License.Category"]])
+  data[["License.Restrictiveness"]] <- 
+    as.integer(data[["License.Restrictiveness"]])
+  data[["Development.Stage"]] <- 
+    as.integer(data[["Development.Stage"]])
+  data[["Project.Stage"]] <- 
+    as.integer(data[["Project.Stage"]])
+  data[["User.Community.Size"]] <- 
+    as.integer(data[["User.Community.Size"]])
+  
   return (data)
 }
 
@@ -86,16 +89,16 @@ message("\nLoading data...")
 flossData <- loadData(mergedFile)
 
 # use only (numeric) columns of our interest
-flossData <- flossData[c("Repo URL",
-                         "Project License",
-                         "License Category",
-                         "License Restrictiveness",
-                         "Development Stage",
-                         "Project Stage",
-                         "User Community Size")]
+flossData <- flossData[c("Repo.URL",
+                         "Project.License",
+                         "License.Category",
+                         "License.Restrictiveness",
+                         "Development.Stage",
+                         "Project.Stage",
+                         "User.Community.Size")]
 
 # temp fix for limited dataset - comment out/remove for full dataset
-flossData[["Repo URL"]] <- NULL
+flossData[["Repo.URL"]] <- NULL
 
 # additional transformations for MVN & MCAR testing
 flossDataTest <- prepareForMI(flossData)

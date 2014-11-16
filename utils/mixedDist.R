@@ -36,7 +36,7 @@ plotMixedDist <- function (data, mix.info, numComponents,
   title <- paste("Projects distribution across", colName, "range")
   xLabel <- colName
   
-  if (identical(colName, "Project Age"))
+  if (identical(colName, "Project.Age"))
     xLabel <- paste(colName, "(months)")
   
   #df <- data

@@ -234,9 +234,9 @@ flossData <- loadData(ready4efaFile)
 # we also remove "Repo URL" due to injection of large # of NAs
 # due to limiting conditionsat the end of the merge process
 
-factors4Analysis <- c("Development Team Size", "Project Age",
-                      "License Restrictiveness", "Project Stage",
-                      "Software Type")
+factors4Analysis <- c("Development.Team.Size", "Project.Age",
+                      "License.Restrictiveness", "Project.Stage",
+                      "Software.Type")
 flossData <- flossData[factors4Analysis]
 
 # sample the sample (use 1%) to reduce processing time
