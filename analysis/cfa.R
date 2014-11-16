@@ -216,7 +216,7 @@ flossData <- loadData(ready4cfaFile)
 factors4analysis <- c("Development.Team.Size", "Project.Age",
                       "License.Restrictiveness", "Project.Stage",
                       "Software.Type")
-flossData <- flossData[factors4analysis]  # TODO: [, factors4analysis] ?????
+flossData <- flossData[, factors4analysis]
 
 # sample the sample (use 1%) to reduce processing time
 #flossData <- sampleDF(flossData, nrow(flossData) / 100)
