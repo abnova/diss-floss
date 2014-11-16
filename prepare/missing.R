@@ -13,6 +13,10 @@ if (!suppressMessages(require(mvnmle))) install.packages('mvnmle')
 if (!suppressMessages(require(psych))) install.packages('psych')
 if (!suppressMessages(require(MVN))) install.packages('MVN')
 if (!suppressMessages(require(parallel))) install.packages('parallel')
+if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
+if (!suppressMessages(require(RColorBrewer)))
+  install.packages('RColorBrewer')
+if (!suppressMessages(require(Amelia))) install.packages('Amelia')
 
 # 'mice' is needed for determining missingness patterns & MI
 # 'MissMech' is needed for testing data for being MCAR
@@ -27,6 +31,10 @@ library(mvnmle)
 library(psych)
 library(MVN)
 library(parallel)
+library(ggplot2)
+library(RColorBrewer)
+library(Amelia)
+
 
 RNG_SEED <- 100
 set.seed(RNG_SEED) # for reproducibility
@@ -62,16 +70,10 @@ prepareForMI <- function (data) {
   # the above doesn't work - however, as.integer() works just fine
   data[["Project.License"]] <- 
     as.integer(data[["Project.License"]])
-  data[["License.Category"]] <- 
-    as.integer(data[["License.Category"]])
   data[["License.Restrictiveness"]] <- 
     as.integer(data[["License.Restrictiveness"]])
-  data[["Development.Stage"]] <- 
-    as.integer(data[["Development.Stage"]])
   data[["Project.Stage"]] <- 
     as.integer(data[["Project.Stage"]])
-  data[["User.Community.Size"]] <- 
-    as.integer(data[["User.Community.Size"]])
   
   return (data)
 }
@@ -89,11 +91,12 @@ message("\nLoading data...")
 flossData <- loadData(mergedFile)
 
 # use only (numeric) columns of our interest
+# 'License.Category' doesn't vary, so it is excluded
 flossData <- flossData[c("Repo.URL",
+                         "Project.Age",
+                         "Development.Team.Size",
                          "Project.License",
-                         "License.Category",
                          "License.Restrictiveness",
-                         "Development.Stage",
                          "Project.Stage",
                          "User.Community.Size")]
 
@@ -123,6 +126,44 @@ print(mvn.result)
 # data without restrictions of being MVN and being MCAR.
 
 
+# ===== VIZ =====
+
+# TODO: loop through all variables
+
+# visualizes multiple imputation (MI) results
+vizIMresults <- function (obj) {
+  
+  # for categorical variables use one of the barchart types
+  
+  # convert IM results into "long" format
+  objLong <- complete(obj, "long")
+  
+  # visualize difference between imputations via barchart
+  g1 <- ggplot(objLong, aes(x=License.Restrictiveness)) +
+    geom_bar() + facet_wrap(~ .imp)
+  
+  # visualize difference between imputations via stacked barchart
+  g2 <- ggplot(objLong, aes(License.Restrictiveness, fill=.imp)) +
+    geom_bar()
+  
+  
+  # for continuous variables
+  
+  # log transform continuous data
+  objLong["Project.Age"] <- log(objLong["Project.Age"])
+  objLong["Development.Team.Size"] <- log(objLong["Development.Team.Size"])
+  objLong["User.Community.Size"] <- log(objLong["User.Community.Size"])
+  
+  # visualize difference between imputations via boxplots
+  g3 <- ggplot(objLong, aes(factor(.imp), User.Community.Size)) +
+    geom_boxplot()
+  
+  print(g1)
+  print(g2)
+  print(g3)
+}
+
+
 # ===== ANALYSIS =====
 
 
@@ -131,10 +172,19 @@ print(mvn.result)
 message("\nAnalyzing missingness patterns...\n")
 print(mice::md.pattern(flossData))
 
+# consider creating a heatmap of the md.pattern() return values
+# OR using 'MissingDataGUI' package (https://github.com/chxy/MissingDataGUI),
+# which is based on 'ggplot2' and is able to create panel displays
+
+# the following method ('Amelia') doesn't produce nice results
+# visualize missingness of the dataset
+#missmap(flossData, main = "Missingness Map")
+
+
 message("\nTesting data for being MCAR...\n")
 
 # test MCAR using 'MissMech' package
-TestMCARNormality(prepareForMI(flossData[sample(nrow(flossData), 1000),]))
+TestMCARNormality(prepareForMI(flossData[sample(nrow(flossData), 10000), ]))
 
 # let's also test, using 'BaylorEdPsych' package;
 # set index condition to all rows that contain at least some data
@@ -151,7 +201,7 @@ print(mcar.little[c("chi.square", "df", "p.value")])
 message("\nPerforming Multiple Imputation (MI)...", appendLF = DEBUG)
 
 # remove "Project License" column, as this data doesn't require MI
-flossData <- flossData[setdiff(names(flossData), "Project License")]
+flossData <- flossData[setdiff(names(flossData), "Project.License")]
 
 # perform multiple imputation, using 'mice'
 
@@ -230,6 +280,9 @@ if (!file.exists(IMPUTED_DIR))
 fileName <- paste0(IMPUTED_FILE, RDS_EXT)
 imputedFile <- file.path(IMPUTED_DIR, fileName)
 saveRDS(imputedCombined, imputedFile)
+
+# visualize MI results
+vizIMresults(imputedCombined)
 
 message("Done.")
 
