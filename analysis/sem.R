@@ -42,7 +42,7 @@ GRAPHICS_EXT <- ".svg"
 
 LOADINGS_THRESHOLD <- 0.7  # minimum value for acceptable loadings
 
-COLOR_PALETTE <- brewer.pal(8, "Set2") # "Accent" is also good
+COLOR_PALETTE <- brewer.pal(8, "Set2") # OR "Accent"
 
 GGPLOT2_PALETTE_FILL <- scale_fill_manual(values = COLOR_PALETTE)
 GGPLOT2_PALETTE_LINE <- scale_color_manual(values = COLOR_PALETTE)
@@ -68,13 +68,8 @@ if (!file.exists(SEM_RESULTS_DIR)) {
 message("\n\n*** Loading data...")
 flossData <- loadData(ready4semFile)
 
-flossData <- na.omit(flossData)
-
 # select imputed dataset
-#flossData <- complete(flossData, 1)
-
-# temp
-names(flossData) <- make.names(names(flossData))
+flossData <- mice::complete(flossData, 1)
 
 # due to very small amount of projects with "Non-OSI" licesnse
 # and their disapperance due to calculating correlations,
@@ -82,18 +77,22 @@ names(flossData) <- make.names(names(flossData))
 # at later phases with inclusion of imputed data)
 
 # we also remove "Repo URL" due to injection of large # of NAs
-# due to limiting conditionsat the end of the merge process
+# due to limiting conditions at the end of the merge process
 
-#factors4analysis <- c("Development.Team.Size", # "Project Age",
-#                      "License.Restrictiveness", "Project.Stage",
-#                      "Software.Type")
-factors4analysis <- c("Project.License", "License.Restrictiveness",
-                      "Development.Stage", "Project.Maturity",
+# consider using "Use.Wiki" and "Use.Forum"
+# after transforming their values from character to integer
+
+## DEBUG
+#print(str(flossData)); stop()
+
+# "Project.Stage" is used instead of "Project.Maturity" (Dev.Stage ???)
+# "Project.License" is excluded from analysis, as it's unordered factor
+# "License.Category" is included (TEMP?) to increase number of indicators
+factors4analysis <- c("License.Category", "License.Restrictiveness",
+                      "Development.Stage", "Project.Stage",
+                      "Project.Age", "Development.Team.Size",
                       "User.Community.Size")
 flossData <- flossData[, factors4analysis]
-
-# convert names (temp)
-#names(flossData) <- make.names(names(flossData)) #TODO: test & remove
 
 # sample the sample (use 1%) to reduce processing time
 #flossData <- sampleDF(flossData, nrow(flossData) / 100)
@@ -103,10 +102,12 @@ flossData <- flossData[, factors4analysis]
 # [currently used for KNITR only]
 datasetName <- deparse(substitute(flossData))
 
-#message("\n\n*** Transforming data...")
+
+message("\n\n*** Transforming data...")
+
 # log transform continuous data
-#flossData["Project.Age"] <- log(flossData["Project.Age"])
-#flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
+flossData["Project.Age"] <- log(flossData["Project.Age"])
+flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
 
 
 # Initial model specification
@@ -129,8 +130,11 @@ colnames(successPath) <- rownames(successPath)
 
 depVar <- "User.Community.Size"
 
-blockGovernance <- c("Project.License", "License.Restrictiveness")
-blockSponsorship <- c("Development.Stage", "Project.Maturity")
+blockGovernance <- c("License.Category", "License.Restrictiveness")
+blockSponsorship <- c("Development.Stage", "Project.Stage",
+                      "Development.Team.Size")
+# TODO
+#blockControl <- c("Development.Team.Size")
 blockSuccess <- depVar
 
 # build list of blocks (outer model)

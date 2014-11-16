@@ -13,12 +13,16 @@ R_OPTS=--no-save --no-restore --verbose
 IMPORT_DIR = ../import
 IMPORT_DONE = $(IMPORT_DIR)/sf.done
 
-prepare: import \
-         transform \
-         cleanup \
+#prepare: import \
+#         transform \
+#         cleanup \
+#         merge \
+#         missing \
+#         sample
+
+prepare: transform \
          merge \
-         missing \
-         sample
+         missing
 
 import: import.done
 transform: transform.done
@@ -44,19 +48,20 @@ cleanup.done: cleanup.R transform.done
 merge.done: merge.R
 	@$(RSCRIPT) $(R_OPTS) $<
 	@cp ../data/merged/SourceForge/Merged.rds ../data/ready4eda/flossData.rds
-	@cp ../data/merged/SourceForge/Merged.rds ../data/merged/flossData.rds
 	@cp ../data/merged/SourceForge/Merged.rds ../data/ready4efa/flossData.rds
 	@touch $@
 
 missing.done: missing.R merge.done
 	@$(RSCRIPT) $(R_OPTS) $<
+	@cp ../data/imputed/flossDataImputed.rds ../data/ready4cfa/flossData.rds
+	@cp ../data/imputed/flossDataImputed.rds ../data/ready4sem/flossData.rds
 	@touch $@
 
 sample.done: sample.R missing.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
-.PHONY: import transform cleanup merge sample clean
+.PHONY: import transform missing cleanup merge sample clean
 
 # remove intermediate files
 clean:

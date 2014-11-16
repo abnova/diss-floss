@@ -222,8 +222,6 @@ multiDescriptiveEDA <- function (df) {
 
 correlationAnalysis <- function (df) {
   
-  #names(df) <- make.names(names(df))  #TODO: test & remove
-  
   # due to very small amount of projects with "Non-OSI" licesnse
   # and their disapperance due to calculating correlations,
   # we remove this indicator from EDA (consider analyzing it
@@ -281,8 +279,6 @@ multiAnalyticalEDA <- function (df, indicators) {
 
 multiVisualEDA <- function (df, corrMat) {
 
-  #names(df) <- make.names(names(df))  #TODO: test & remove
-  
   # log transform continuous data
   df["Project.Age"] <- log(df["Project.Age"])
   df["Development.Team.Size"] <- log(df["Development.Team.Size"])
@@ -700,7 +696,7 @@ dataSourcesList <- c("SourceForge")  # TODO: add "FLOSSmole", when ready
 
 # sets of indicators for multivariate EDA per data source
 indicators <- c()
-indicators[["SourceForge"]] <- c(#"Project.Age",
+indicators[["SourceForge"]] <- c("Project.Age",
                                  "Project.License",
                                  "License.Category",
                                  "License.Restrictiveness",
