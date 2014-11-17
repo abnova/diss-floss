@@ -51,10 +51,14 @@ source(file.path(PRJ_HOME, "utils/platform.R"))
 # should take care of this step (TODO).
 MERGED_DIR <- file.path(PRJ_HOME, "data/merged")
 MERGED_FILE <- "flossData"
-RDS_EXT <- ".rds"
+
+RDS_EXT      <- ".rds"
+GRAPHICS_EXT <- ".svg"
 
 IMPUTED_DIR <- file.path(PRJ_HOME, "data/imputed")
 IMPUTED_FILE <- "flossDataImputed"
+
+EDA_RESULTS_DIR <- file.path(PRJ_HOME, "results/eda")
 
 DEBUG <- FALSE
 
@@ -131,36 +135,46 @@ print(mvn.result)
 # TODO: loop through all variables
 
 # visualizes multiple imputation (MI) results
-vizIMresults <- function (obj) {
+vizMIresults <- function (obj) {
   
-  # for categorical variables use one of the barchart types
+  # for categorical variables, use one of the barchart types
   
-  # convert IM results into "long" format
+  # convert MI results into "long" format
   objLong <- complete(obj, "long")
   
   # visualize difference between imputations via barchart
-  g1 <- ggplot(objLong, aes(x=License.Restrictiveness)) +
+  gImpBarChart <- ggplot(objLong, aes(x = License.Restrictiveness)) +
     geom_bar() + facet_wrap(~ .imp)
   
   # visualize difference between imputations via stacked barchart
-  g2 <- ggplot(objLong, aes(License.Restrictiveness, fill=.imp)) +
+  gImpStacked <- ggplot(objLong, aes(License.Restrictiveness, fill = .imp)) +
     geom_bar()
   
   
-  # for continuous variables
-  
-  # log transform continuous data
-  objLong["Project.Age"] <- log(objLong["Project.Age"])
-  objLong["Development.Team.Size"] <- log(objLong["Development.Team.Size"])
-  objLong["User.Community.Size"] <- log(objLong["User.Community.Size"])
+  # for continuous variables, use boxplots or density plots
   
   # visualize difference between imputations via boxplots
-  g3 <- ggplot(objLong, aes(factor(.imp), User.Community.Size)) +
+  gImpBoxPlot <- ggplot(objLong, aes(factor(.imp), User.Community.Size)) +
     geom_boxplot()
   
-  print(g1)
-  print(g2)
-  print(g3)
+  # display visualizations in RStudio's Plots pane (tab)
+  if (.Platform$GUI == "RStudio") {
+    print(gImpBarChart)
+    print(gImpStacked)
+    print(gImpBoxPlot)
+  }
+  
+  impPlots <- list(gImpBarChart, gImpStacked, gImpBoxPlot)
+  #fileNames <- lapply(impPlots, function(x) deparse(substitute(x))) HOWTO ???
+  fileNames <- list("gImpBarChart", "gImpStacked", "gImpBoxPlot")
+  
+  # save visualizations to separate files
+  for (i in seq.int(impPlots)) {
+    plotFile <- file.path(EDA_RESULTS_DIR,
+                          paste0(fileNames[[i]], GRAPHICS_EXT))
+    suppressMessages(ggsave(file = plotFile, plot = impPlots[[i]],
+                            width = 4, height = 4))
+  }
 }
 
 
@@ -194,6 +208,14 @@ mcar.little <-
 
 message("\n\n")
 print(mcar.little[c("chi.square", "df", "p.value")])
+
+
+message("\n\n*** Transforming data...")
+
+# log transform continuous data
+flossData["Project.Age"] <- log(flossData["Project.Age"])
+flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
+flossData["User.Community.Size"] <- log(flossData["User.Community.Size"])
 
 
 # ===== HANDLE MISSING VALUES =====
@@ -282,7 +304,7 @@ imputedFile <- file.path(IMPUTED_DIR, fileName)
 saveRDS(imputedCombined, imputedFile)
 
 # visualize MI results
-vizIMresults(imputedCombined)
+vizMIresults(imputedCombined)
 
 message("Done.")
 

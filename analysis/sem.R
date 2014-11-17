@@ -111,14 +111,6 @@ if (FALSE) {
     factor(flossData[["Project.Stage"]], ordered = FALSE)
 }
 
-# log transform continuous data
-print(any(is.na(flossData))); stop()
-
-flossData["Project.Age"] <- log(flossData["Project.Age"])
-flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
-flossData["User.Community.Size"] <- log(flossData["User.Community.Size"])
-
-print(any(is.na(flossData))); stop()
 
 # Initial model specification
 ##########################################################
