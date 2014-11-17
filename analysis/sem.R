@@ -68,9 +68,6 @@ if (!file.exists(SEM_RESULTS_DIR)) {
 message("\n\n*** Loading data...")
 flossData <- loadData(ready4semFile)
 
-# select imputed dataset
-flossData <- mice::complete(flossData, 1)
-
 # due to very small amount of projects with "Non-OSI" licesnse
 # and their disapperance due to calculating correlations,
 # we don't include "License Category" into EFA (consider analyzing it
@@ -82,20 +79,15 @@ flossData <- mice::complete(flossData, 1)
 # consider using "Use.Wiki" and "Use.Forum"
 # after transforming their values from character to integer
 
-## DEBUG
-#print(str(flossData)); stop()
+# select imputed dataset
+flossData <- mice::complete(flossData, 1)
 
 # "Project.Stage" is used instead of "Project.Maturity" (Dev.Stage ???)
 # "Project.License" is excluded from analysis, as it's unordered factor
-# "License.Category" is included (TEMP?) to increase number of indicators
-factors4analysis <- c("License.Category", "License.Restrictiveness",
-                      "Development.Stage", "Project.Stage",
+factors4analysis <- c("License.Restrictiveness", "Project.Stage",
                       "Project.Age", "Development.Team.Size",
                       "User.Community.Size")
 flossData <- flossData[, factors4analysis]
-
-# sample the sample (use 1%) to reduce processing time
-#flossData <- sampleDF(flossData, nrow(flossData) / 100)
 
 # save name of the data set (seems redundant, but it will be useful,
 # when there will be more than one data set, i.e. 'pilot' and 'main')
@@ -105,10 +97,28 @@ datasetName <- deparse(substitute(flossData))
 
 message("\n\n*** Transforming data...")
 
+# convert to unordered factors
+
+flossData[["License.Restrictiveness"]] <- 
+  as.integer(flossData[["License.Restrictiveness"]])
+flossData[["Project.Stage"]] <- 
+  as.integer(flossData[["Project.Stage"]])
+
+if (FALSE) {
+  flossData[["License.Restrictiveness"]] <-
+    factor(flossData[["License.Restrictiveness"]], ordered = FALSE)
+  flossData[["Project.Stage"]] <-
+    factor(flossData[["Project.Stage"]], ordered = FALSE)
+}
+
 # log transform continuous data
+print(any(is.na(flossData))); stop()
+
 flossData["Project.Age"] <- log(flossData["Project.Age"])
 flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
+flossData["User.Community.Size"] <- log(flossData["User.Community.Size"])
 
+print(any(is.na(flossData))); stop()
 
 # Initial model specification
 ##########################################################
@@ -130,9 +140,8 @@ colnames(successPath) <- rownames(successPath)
 
 depVar <- "User.Community.Size"
 
-blockGovernance <- c("License.Category", "License.Restrictiveness")
-blockSponsorship <- c("Development.Stage", "Project.Stage",
-                      "Development.Team.Size")
+blockGovernance <- c("License.Restrictiveness", "Project.Age")
+blockSponsorship <- c("Project.Stage", "Development.Team.Size")
 # TODO
 #blockControl <- c("Development.Team.Size")
 blockSuccess <- depVar
@@ -160,7 +169,7 @@ for (x in factors4analysis)
 ##temp - end
 
 # specify measurement scale for manifest variables
-#successScales <- list(c("ord", "ord", "ord"), c("num"))
+successScales <- list(c("ord", "num"), c("ord", "num"), c("num"))
 
 message("\n\n*** Running PLS-PM analysis...")
 
@@ -168,7 +177,8 @@ message("\n\n*** Running PLS-PM analysis...")
 successPLS <- plspm(flossData,
                     successPath,
                     successBlocks,
-                    modes = successModes) # scaling = successScales
+                    modes = successModes,
+                    maxiter = 500) # scaling = successScales
 
 
 # 4.2. Handling PLS-PM Results
