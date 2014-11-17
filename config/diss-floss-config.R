@@ -1,0 +1,62 @@
+# ---------------------------------------------------------------------------
+# Project-wide configuration file for general options (On/Off, single values)
+# ---------------------------------------------------------------------------
+
+# project's directories
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
+
+CACHE_DIR       <- file.path(PRJ_HOME, "cache")
+TRANSFORMED_DIR <- file.path(PRJ_HOME, "data/transformed")
+
+READY4EDA_DIR  <- file.path(PRJ_HOME, "data/ready4eda")
+READY4EDA_FILE <- "flossData"
+
+# Initially file was copied manually from "merged/SourceForge".
+# Currently it is copied as a part of Makefile's merge rule.
+# Implementing automatic data merging across all data sources
+# should take care of this step (TODO).
+MERGED_DIR  <- file.path(PRJ_HOME, "data/merged")
+MERGED_FILE <- "flossData"
+
+IMPUTED_DIR  <- file.path(PRJ_HOME, "data/imputed")
+IMPUTED_FILE <- "flossDataImputed"
+
+READY4EFA_DIR  <- file.path(PRJ_HOME, "data/ready4efa")
+READY4EFA_FILE <- "flossData"
+
+READY4CFA_DIR  <- file.path(PRJ_HOME, "data/ready4cfa")
+READY4CFA_FILE <- "flossData"
+
+READY4SEM_DIR  <- file.path(PRJ_HOME, "data/ready4sem")
+READY4SEM_FILE <- "flossData"
+
+EDA_RESULTS_DIR <- file.path(PRJ_HOME, "results/eda")
+EFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/efa")
+CFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/cfa")
+SEM_RESULTS_DIR <- file.path(PRJ_HOME, "results/sem")
+
+
+# analysis control - EDA
+DO_MIX_ANALYSIS <- TRUE
+DO_MULTI_VISUAL <- TRUE
+
+
+# reproducibility
+RNG_SEED <- 100
+set.seed(RNG_SEED)
+
+# debugging settings
+DEBUG <- TRUE    # some debug information
+DEBUG2 <- FALSE  # more detailed debug information
+
+# environment settings
+R_ENV_FILE <- "~/.Renviron"
+
+# file-related settings
+RDATA_EXT <- ".RData"
+RDS_EXT <- ".rds"
+
+GRAPHICS_EXT <- ".svg"  # default format for saving plots
+
+# knitr-related
+KNITR <<- isTRUE(getOption("knitr.in.progress"))

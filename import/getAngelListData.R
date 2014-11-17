@@ -24,20 +24,16 @@ if (JO) {
 }
 
 
-PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/debug.R"))
 
 # AngelList APIs endpoint URL for FLOSS startups
 # ('Market' tag = '1', 'FLOSS' tag = '59')
 API_ENDPOINT_URL <- "http://api.angel.co/1/tags/59/startups"
 
-RDS_EXT <- ".rds"
-
-#TODO: consider passing this via CL args
 RDATA_DIR <- file.path(PRJ_HOME, "cache/AngelList")
-
-DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 
 getNumPages <- function () {

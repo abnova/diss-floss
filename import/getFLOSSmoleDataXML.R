@@ -11,8 +11,9 @@ if (!suppressMessages(require(XML))) install.packages('XML')
 library(RCurl)
 library(XML)
 
-PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/debug.R"))
 
 #warnings(file = "./FLOSSmole.warn.log")
@@ -37,13 +38,8 @@ repos <- data.frame(code = REPO_CODE, year = REPO_YEAR,
                     stringsAsFactors = FALSE)
 
 BZIP_EXT  <- ".txt\\.bz2"
-RDATA_EXT <- ".RData"
-RDS_EXT <- ".rds"
 
-#TODO: consider passing this via CL args
-RDATA_DIR <- file.path(PRJ_HOME, "../cache/FLOSSmole")
-
-DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
+RDATA_DIR <- file.path(PRJ_HOME, "cache/FLOSSmole")
 
 
 importRepoFiles <- function(repos, row) {

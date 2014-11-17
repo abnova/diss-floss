@@ -35,33 +35,17 @@ library(ggplot2)
 library(RColorBrewer)
 library(Amelia)
 
-
-RNG_SEED <- 100
-set.seed(RNG_SEED) # for reproducibility
-
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/factors.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
 
-# Initially file was copied manually from "merged/SourceForge".
-# Currently it is copied as a part of Makefile's merge rule.
-# Implementing automatic data merging across all data sources
-# should take care of this step (TODO).
-MERGED_DIR <- file.path(PRJ_HOME, "data/merged")
-MERGED_FILE <- "flossData"
+DEBUG <- FALSE  # local setting
 
-RDS_EXT      <- ".rds"
-GRAPHICS_EXT <- ".svg"
-
-IMPUTED_DIR <- file.path(PRJ_HOME, "data/imputed")
-IMPUTED_FILE <- "flossDataImputed"
-
-EDA_RESULTS_DIR <- file.path(PRJ_HOME, "results/eda")
-
-DEBUG <- FALSE
-
+# consider moving to project's config, if used in multiple modules
+# (disadvantage: would require loading 'parallel' project-wide, so TBD)
 NUM_CORES <- getOption("mc.cores")  # for parallel processing
 
 NUM_IMPUTATIONS <- 5  # minimum recommended number of imputations

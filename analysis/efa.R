@@ -55,26 +55,17 @@ library(RColorBrewer)
 ##### SETUP #####
 
 ## @knitr PrepareEFA
-set.seed(100)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
 
-KNITR <<- isTRUE(getOption("knitr.in.progress"))
-
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R")) # for multi-core support
 source(file.path(PRJ_HOME, "utils/graphics.R")) # for golden ratio
 
-READY4EFA_DIR  <- file.path(PRJ_HOME, "data/ready4efa")
-READY4EFA_FILE <- "flossData" # default
-
-EFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/efa")
 SCREE_PLOT_FILE <- "screePlot"
 
-RDS_EXT      <- ".rds"
-GRAPHICS_EXT <- ".svg"
-
-DEBUG <- FALSE
+DEBUG <- FALSE  # local setting
 
 
 # produce a rounded loadings matrix by setting loadings

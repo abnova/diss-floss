@@ -30,9 +30,8 @@ PRJ_HOME  <- Sys.getenv("DISS_FLOSS_HOME")
 SRDA_USER <- Sys.getenv("SRDA_USER")
 SRDA_PASS <- Sys.getenv("SRDA_PASS")
 
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/string.R"))
-#source("../utils/utils.R")
-#source("../utils/debug.R")
 
 skipped <<- 0 # counter for # of times the script skipped processing
 
@@ -69,22 +68,15 @@ SPECIFY_PROJECT_ID_RANGE <<- TRUE # depends on 'resultSize' config. attr.
 PID_LOW <- 1
 PID_HIGH <<- 0 # auto-initialized by 'resultSize' config. attribute
 
-RDATA_EXT <- ".RData"
-RDS_EXT <- ".rds"
-
 #TODO: consider passing this via CL args
 RDATA_DIR <- file.path(PRJ_HOME, "cache/SourceForge")
 
-R_ENV_FILE <- "~/.Renviron"
 envVarFound <- FALSE
 
 # Data source prefix (to construct data object names)
 dsPrefix <- ""
 
 blacklist <- c()
-
-DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
-DEBUG2 <- TRUE ##temp (TODO: switch to FALSE)
 
 cookiesFile <- "cookies.txt"
 

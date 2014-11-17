@@ -38,7 +38,7 @@ prepare.done: $(PREP_DONE)
 	@cd $(PREP_DIR) && $(MAKE) transform
 	@touch $@
 
-eda.done: eda.R prepare
+eda.done: eda.R prepare.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
@@ -57,7 +57,7 @@ eda-report-Rnw.done: eda-report.Rnw eda.R prepare
 	@rm -f eda-report.tex eda-report.log eda-report.aux
 	@touch $@
 
-efa.done: efa.R eda
+efa.done: efa.R eda.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
@@ -65,7 +65,7 @@ efa-report-Rmd.done: efa-report.Rmd efa.R prepare
 	@$(RSCRIPT) -e 'library(rmarkdown); render("efa-report.Rmd", intermediates_dir = NULL)'
 	@touch $@
 
-cfa.done: cfa.R efa
+cfa.done: cfa.R efa.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 
@@ -73,7 +73,7 @@ cfa-report-Rmd.done: cfa-report.Rmd cfa.R prepare
 	@$(RSCRIPT) -e 'library(rmarkdown); render("cfa-report.Rmd", intermediates_dir = NULL)'
 	@touch $@
 
-sem.done: sem.R cfa
+sem.done: sem.R cfa.done
 	@$(RSCRIPT) $(R_OPTS) $<
 	@touch $@
 

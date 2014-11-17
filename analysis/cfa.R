@@ -27,25 +27,15 @@ library(RColorBrewer)
 ##### SETUP #####
 
 ## @knitr PrepareCFA
-set.seed(100)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
-KNITR <<- isTRUE(getOption("knitr.in.progress"))
-
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
 source(file.path(PRJ_HOME, "utils/qgraphtikz.R")) # fix for TikZ device
 
-READY4CFA_DIR  <- file.path(PRJ_HOME, "data/ready4cfa")
-READY4CFA_FILE <- "flossData"
-
-CFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/cfa")
-
-RDS_EXT      <- ".rds"
-GRAPHICS_EXT <- ".svg"
-
-DEBUG <- FALSE
+DEBUG <- FALSE  # local setting
 
 
 genCFAresultsTable <- function (caption = "CFA results summary",

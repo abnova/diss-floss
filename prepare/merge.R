@@ -11,6 +11,7 @@ PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 # prevents "Error: invalid multibyte string at '<b5>Backu'" & similar
 invisible(Sys.setlocale('LC_ALL', 'C'))
 
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 
 # SRDA internal codes 
@@ -18,12 +19,6 @@ PRJ_INACTIVE_ <- 21
 
 # default values for limits, etc.
 TEAM_SIZE <- 100
-
-DEBUG <- TRUE
-
-TRANDFORMED_DIR <- file.path(PRJ_HOME, "data/transformed")
-MERGED_DIR      <- file.path(PRJ_HOME, "data/merged")
-RDS_EXT <- ".rds"
 
 commonColumn <- data.frame(
   prefix  = c("fc",         "fsf",      "gc",        "lpd",
@@ -195,7 +190,7 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
   if (DEBUG) msg <- paste0(msg, '\n')
   message(msg)
   
-  transformedDir <- file.path(TRANDFORMED_DIR, dataSource)
+  transformedDir <- file.path(TRANSFORMED_DIR, dataSource)
   mergedDir <- file.path(MERGED_DIR, dataSource)
   if (!file.exists(mergedDir))
     dir.create(mergedDir, recursive = TRUE)

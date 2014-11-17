@@ -21,24 +21,13 @@ library(reshape)
 
 ##### PREPARATION & DEFINITIONS #####
 
-set.seed(100)
-
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
-KNITR <<- isTRUE(getOption("knitr.in.progress"))
-
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
 source(file.path(PRJ_HOME, "utils/qgraphtikz.R")) # fix for TikZ device
 source(file.path(PRJ_HOME, "utils/factors.R"))
-
-READY4SEM_DIR  <- file.path(PRJ_HOME, "data/ready4sem")
-READY4SEM_FILE <- "flossData"
-
-SEM_RESULTS_DIR <- file.path(PRJ_HOME, "results/sem")
-
-RDS_EXT      <- ".rds"
-GRAPHICS_EXT <- ".svg"
 
 LOADINGS_THRESHOLD <- 0.7  # minimum value for acceptable loadings
 
@@ -47,7 +36,7 @@ COLOR_PALETTE <- brewer.pal(8, "Set2") # OR "Accent"
 GGPLOT2_PALETTE_FILL <- scale_fill_manual(values = COLOR_PALETTE)
 GGPLOT2_PALETTE_LINE <- scale_color_manual(values = COLOR_PALETTE)
 
-DEBUG <- FALSE
+DEBUG <- FALSE  # local setting
 
 
 ## @knitr PerformSEM

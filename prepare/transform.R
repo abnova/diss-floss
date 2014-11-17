@@ -7,12 +7,7 @@ library(RCurl)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
-CACHE_DIR <- file.path(PRJ_HOME, "cache")
-TRANSFORM_DIR <- file.path(PRJ_HOME, "data/transformed")
-RDS_EXT <- ".rds"
-
-DEBUG <- TRUE  # TODO: retrieve debug flag via CL arguments
-DEBUG2 <- TRUE # output more detailed debug information
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 
 
 ##### GENERIC TRANSFORMATION FUNCTION #####
@@ -21,7 +16,7 @@ transformResult <- function (dataSource, indicator, handler = NULL) {
   
   fileName <- paste0(indicator, RDS_EXT)
   cacheFile <- file.path(CACHE_DIR, dataSource, fileName)
-  transformFile <- file.path(TRANSFORM_DIR, dataSource, fileName)
+  transformFile <- file.path(TRANSFORMED_DIR, dataSource, fileName)
 
   # single point for making syntactically valid R names
   df <- readRDS(cacheFile)
@@ -399,7 +394,7 @@ for (dataSource in dataSourcesList) {
   
   # TBD here - transform result data types as specified in config.
   
-  transformDir <- file.path(TRANSFORM_DIR, dataSource)
+  transformDir <- file.path(TRANSFORMED_DIR, dataSource)
   if (!file.exists(transformDir))
     dir.create(transformDir, recursive = TRUE)
   

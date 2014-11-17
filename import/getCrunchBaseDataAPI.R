@@ -19,8 +19,9 @@ library(RCurl)
 library(jsonlite)
 library(plyr)
 
-PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME") # getwd()
+PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/debug.R"))
 
 # Limit per CB APIs v.1 documentation
@@ -32,8 +33,6 @@ CB_FLOSS_DATA <- "http://api.angel.co/1/tags/59/startups"
 
 CB_API_SEARCH_URL <- "http://api.crunchbase.com/v/1/search.js"
 
-RDS_EXT <- ".rds"
-
 #TODO: consider passing this via CL args
 RDATA_DIR <- file.path(PRJ_HOME, "cache/CrunchBase")
 
@@ -44,8 +43,6 @@ firstPage <<- TRUE
 # Another solution would be to create a custom environment
 # (for details see: http://rpubs.com/chrisbrunsdon/local)
 totalPages <<- 0
-
-DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
 
 
 #' getDataPaginated

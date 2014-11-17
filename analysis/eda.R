@@ -31,8 +31,7 @@ library(Hmisc)
 ## @knitr PrepareEDA
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
-KNITR <<- isTRUE(getOption("knitr.in.progress"))
-
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/factors.R"))
 source(file.path(PRJ_HOME, "utils/qq.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
@@ -41,26 +40,13 @@ source(file.path(PRJ_HOME, "utils/platform.R"))
 source(file.path(PRJ_HOME, "analysis/mixDist.R"))
 source(file.path(PRJ_HOME, "utils/knit.R"))
 
-READY4EDA_DIR  <- file.path(PRJ_HOME, "data/ready4eda")
-READY4EDA_FILE <- "flossData" # default
-RDS_EXT <- ".rds"
-
-# temporary, until implementing EDA for single data file
-TRANSFORM_DIR <- file.path(PRJ_HOME, "data/transformed")
-
-EDA_RESULTS_DIR <- file.path(PRJ_HOME, "results/eda")
-
 DIST_FIT_COLOR <- "green" # ggplot2 line color for distrib. fitting
-
-DEBUG <- TRUE # TODO: retrieve debug flag via CL arguments
-
-DO_MIX_ANALYSIS <- FALSE
-DO_MULTI_VISUAL <- FALSE
 
 GRADIENT_LOW  <- "#56B1F7"  # light blue color 
 GRADIENT_HIGH <- "#132B43"  # dark blue color
 
 allPlots <- list()
+
 
 ## @knitr PerformEDA
 
@@ -311,17 +297,18 @@ multiVisualEDA <- function (df, corrMat) {
   
   # print customized plot
   print(g1)
-  stop("Intended stop!")
   
-  # Plot with 'Project.Stage' as color (should be a factor)
-  # (this plot doesn't seem to be very informative, but...)
-  g2 <- ggpairs(df, title = "Pairwise Scatterplots",
-                lower=list(continuous = "smooth", params = c(color = "blue")),
-                upper=list(params = list(corSize = 6)),
-                diag=list(continuous = "bar", params = c(color = "blue")), 
-                axisLabels = "show",
-                color = "Project.Stage")
-  print(g2)
+  if (FALSE) {
+    # Plot with 'Project.Stage' as color (should be a factor)
+    # (this plot doesn't seem to be very informative, but...)
+    g2 <- ggpairs(df, title = "Pairwise Scatterplots",
+                  lower=list(continuous = "smooth", params = c(color = "blue")),
+                  upper=list(params = list(corSize = 6)),
+                  diag=list(continuous = "bar", params = c(color = "blue")), 
+                  axisLabels = "show",
+                  color = "Project.Stage")
+    print(g2)
+  }
 }
 
 
