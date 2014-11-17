@@ -49,11 +49,11 @@ merge.done: merge.R
 	@$(RSCRIPT) $(R_OPTS) $<
 	@cp ../data/merged/SourceForge/Merged.rds ../data/ready4eda/flossData.rds
 	@cp ../data/merged/SourceForge/Merged.rds ../data/ready4efa/flossData.rds
+	@cp ../data/merged/SourceForge/Merged.rds ../data/ready4cfa/flossData.rds
 	@touch $@
 
 missing.done: missing.R merge.done
 	@$(RSCRIPT) $(R_OPTS) $<
-	@cp ../data/imputed/flossDataImputed.rds ../data/ready4cfa/flossData.rds
 	@cp ../data/imputed/flossDataImputed.rds ../data/ready4sem/flossData.rds
 	@touch $@
 

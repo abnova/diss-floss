@@ -13,6 +13,7 @@ if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
 if (!suppressMessages(require(qgraph))) install.packages('semPlot')
 if (!suppressMessages(require(qgraph))) install.packages('qgraph') # for 'semPlot'
 if (!suppressMessages(require(RColorBrewer))) install.packages('RColorBrewer')
+if (!suppressMessages(require(mice))) install.packages('mice')
 
 library(polycor)
 library(lavaan)
@@ -22,6 +23,7 @@ library(Hmisc)
 library(semPlot)
 library(qgraph)
 library(RColorBrewer)
+library(mice)
 
 
 ##### SETUP #####
@@ -81,13 +83,16 @@ genCFAresultsTable <- function (caption = "CFA results summary",
                             label = "cfaResultsTable")
   
   # output 'xtable' in requested format (LaTeX or HTML code)
-  print(cfaResultsTable, type = type, file = file,
-        booktabs = TRUE, digits = digits, comment = FALSE,
-        caption.placement = "top",
-        hline.after = horLines,
-        #add.to.row = tabNote,
-        sanitize.text.function = function(x) x,
-        math.style.negative = FALSE)
+  table <- capture.output(
+    print(cfaResultsTable, type = type, file = file,
+          booktabs = TRUE, digits = digits, comment = FALSE,
+          caption.placement = "top",
+          hline.after = horLines,
+          #add.to.row = tabNote,
+          sanitize.text.function = function(x) x,
+          math.style.negative = FALSE)
+  )
+  table
 }
 
 
@@ -195,13 +200,16 @@ if (!file.exists(CFA_RESULTS_DIR)) {
 message("\n\n*** Loading data...")
 flossData <- loadData(ready4cfaFile)
 
+# select imputed dataset - TODO: clarify! imputed vs transformed/merged?
+#flossData <- mice::complete(flossData, 1)
+
 # due to very small amount of projects with "Non-OSI" licesnse
 # and their disapperance due to calculating correlations,
 # we don't include "License Category" into EFA (consider analyzing it
 # at later phases with inclusion of imputed data)
 
 # we also remove "Repo URL" due to injection of large # of NAs
-# due to limiting conditionsat the end of the merge process
+# due to limiting conditions at the end of the merge process
 
 factors4analysis <- c("Development.Team.Size", "Project.Age",
                       "License.Restrictiveness", "Project.Stage",
@@ -256,7 +264,7 @@ f2 ~~ f3
 "
 
 # perform CFA
-message("\n*** Performing CFA of the model...")
+message("\n*** Performing CFA of the model...\n")
 
 if (DEBUG) {
   cfa.fit <- cfa(model, data = flossData, meanstructure = TRUE,
