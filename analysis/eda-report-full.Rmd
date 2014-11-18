@@ -103,8 +103,8 @@ mixpChunks <- genDynChunks(mixpRefInfo)
 
 General overview of the pilot data set is presented by summary _plot matrix_ in the following `r pmatRefInfo$str`.
 
-```{r plotmatrixDynamicChunk, message=TRUE}
-pmatChunks <- genDynChunks(pmatRefInfo)
+```{r plotmatrixDynamicChunk}
+pmatChunks <- genDynChunks(pmatRefInfo, fig.height=11, fig.width=11)
 ```
 `r knit(text = pmatChunks)`
 

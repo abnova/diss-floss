@@ -3,6 +3,14 @@ DEBUG_KS <- FALSE
 DVAL_LIM <- 0.40
 PVAL_LIM <- 0.40
 
+
+# return character representation of a specified argument of a function 'fun'
+getArgValue <- function (fun, argName) {
+
+  argValue <- as.character(as.list(fun)[[argName]])
+}
+
+
 # return value of an attribute of an object stored in a file
 
 getAttr <- function (attr, obj, file) 

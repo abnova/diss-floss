@@ -190,7 +190,8 @@ uniVisualEDA <- function (df, var, colName, extraFun) {
 
 multiDescriptiveEDA <- function (df) {
   
-  datasetName <- deparse(substitute(df))
+  # extract the dataset name from actual function call
+  datasetName <- getArgValue(match.call(), "df")
   
   # it's possible to customize describe()'s output as follows:
   # describe(mtcars)[, c(2, 3, 4, 5, 8, 9)]
@@ -274,7 +275,7 @@ multiVisualEDA <- function (df, corrMat) {
   df <- df[setdiff(names(df), "License.Category")]
   
   gPlotMatrix <- ggpairs(
-    df, title = "Plot Matrix",
+    df, title = "",
     lower = list(continuous = "smooth", combo = "box", discrete = "ratio",
                  params = c(color = "blue")),
     upper = list(params = list(corSize = 6), combo = ""),
@@ -309,19 +310,23 @@ multiVisualEDA <- function (df, corrMat) {
                            index[i, 1], index[i, 2])
   }
   
+  # title will be saved as & extracted from an attribute (for fig. caption)
+  attr(gPlotMatrix, "title") <- "Plot matrix (summary visual overview)"
+  
   # display customized plot in RStudio Plots pane
   if (.Platform$GUI == "RStudio") print(gPlotMatrix)
   
   if (KNITR) {  # export plot object for knitr report
-    
-    datasetName <- deparse(substitute(df))
-    g_var <- paste0("plotmatrix_", datasetName)
+
+    # extract the dataset name from actual function call
+    datasetName <- getArgValue(match.call(), "df")
+
+    g_var <- paste0("plotmatrix_", "pmat_", datasetName)
     assign(g_var, gPlotMatrix, envir = .GlobalEnv)
     
   } else {  # save plot object into a file
     
-    fPlotMatrix <- deparse(substitute(gPlotMatrix))
-    fPlotMatrix <- file.path(EDA_RESULTS_DIR, paste0(fPlotMatrix, ".svg"))
+    fPlotMatrix <- file.path(EDA_RESULTS_DIR, paste0("gPlotMatrix", ".svg"))
     svg(fPlotMatrix, height = 7, width = 7)
     print(gPlotMatrix)
     dev.off()

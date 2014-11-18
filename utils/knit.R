@@ -4,13 +4,20 @@
 # Currently supports figures only,
 # as tables generation is context- and target-specific (TBD).
 
-genDynChunks <- function (refInfo, multi = FALSE, hold = TRUE) {
+genDynChunks <- function (refInfo, multi = FALSE, hold = TRUE,
+                          fig.height, fig.width) {
+  
+  figOptions <- ""
   
   latexObjLabel <- paste0("{{caption}}", "\\\\label{", refInfo$objType, ":{{varName}}", "}")
   
   chunkName <- "{{name2}}"
   chunkHeader <- paste0("```{r ", chunkName, ",")
-  chunkOptions <- paste0("include=TRUE, results='asis', fig.height=3.5, fig.width=7, fig.cap='", latexObjLabel, "'")
+  
+  if (!(missing(fig.height) && missing(fig.width)))
+    figOptions <- paste0("fig.height=", fig.height, ", fig.width=", fig.width)
+  
+  chunkOptions <- paste0("include=TRUE, results='asis', ", figOptions, ", fig.cap='", latexObjLabel, "'")
   chunkHeaderFull <- paste(chunkHeader, chunkOptions, "}")
   chunkBody <- "print(get('{{name}}'))"
   

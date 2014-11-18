@@ -6,8 +6,7 @@ if (!suppressMessages(require(mixtools))) install.packages('mixtools')
 library(mclust)
 library(mixtools)
 
-KNITR <<- isTRUE(getOption("knitr.in.progress"))
-
+source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
 
 NUM_ITERATIONS <- 500
@@ -24,7 +23,7 @@ mixDistAnalysis <- function (df, indicator, colName) {
   assessMixGoF(myData, mix)
   gMixPlot <- visualizeMixtures(myData, mix, indicator, colName)
 
-  g_var <- paste0("mixPlot_", colName)
+  g_var <- paste0("mixplot_", "mp_", colName)
   
   # save mixture analysis results visualization
   
@@ -43,7 +42,6 @@ mixDistAnalysis <- function (df, indicator, colName) {
     print(gMixPlot)
     dev.off()
   }
-  
 }
 
 
@@ -132,7 +130,8 @@ assessMixGoF <- function (myData, mix) {
 
 visualizeMixtures <- function (data, mix, indicator, colName) {
   
-  title <- paste("Projects distribution across", colName, "range")
+  title <- paste("Projects distribution across", colName,
+                 "range (mixture analysis)")
   xLabel <- colName
   
   if (identical(colName, "Project.Age"))
@@ -157,7 +156,6 @@ visualizeMixtures <- function (data, mix, indicator, colName) {
                           low="#56B1F7", high="#132B43") + 
     scale_x_continuous(xLabel) +
     scale_y_continuous("Number of projects") +
-    myTitle +
     geom_histogram(aes(x = x, y = ..count.., fill = ..count..),
                    binwidth = bwidth)
   
@@ -177,7 +175,9 @@ visualizeMixtures <- function (data, mix, indicator, colName) {
                   size = 1,
                   color = DISTRIB_COLORS[i]))
   
-  if (.Platform$GUI == "RStudio") print(g + distComps)
+  g <- g + distComps
+  
+  if (.Platform$GUI == "RStudio") print(g)
   
   if (!KNITR) {
     edaFile <- str_replace_all(string=colName, pattern=" ", repl="")
@@ -185,5 +185,8 @@ visualizeMixtures <- function (data, mix, indicator, colName) {
     suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
   }
   
-  return (g + distComps)
+  # title will be saved as & extracted from an attribute (for fig. caption)
+  attr(g, "title") <- myTitle
+  
+  return (g)
 }
