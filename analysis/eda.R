@@ -273,13 +273,27 @@ multiVisualEDA <- function (df, corrMat) {
   # drop this indicator to match dimensions of the hetcor()'s results
   df <- df[setdiff(names(df), "License.Category")]
   
-  g1 <- ggpairs(df, title = "Pairwise Scatterplots",
-                lower=list(continuous = "smooth", combo="box",
-                           discrete="ratio", params = c(colour = "blue")),
-                upper=list(params = list(corSize = 6), combo=""),
-                diag=list(continuous = "bar", params = c(colour = "blue")),
-                axisLabels = "show")
+  gPlotMatrix <- ggpairs(
+    df, title = "Plot Matrix",
+    lower = list(continuous = "smooth", combo = "box", discrete = "ratio",
+                 params = c(color = "blue")),
+    upper = list(params = list(corSize = 6), combo = ""),
+    diag = list(continuous = "bar", params = c(colour = "blue")),
+    axisLabels = "show"
+  )
 
+  # Customization options (TBD, low priority):
+  # 1. extract plot object / getPlot(), apply theme() to it, put back
+  # 2. Redefine GGally::ggally_diagAxis() in global env.
+  # 3. use "params" in ggpairs() for lower triangle definition (FAIL)
+  
+  if (FALSE)
+  # rotate x- and y-axis labels & y-axis title; move them away from axes
+  gPlotMatrix <- gPlotMatrix +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, color = "black"),
+          axis.text.y = element_text(angle = 45, vjust = 1, color = "black"),
+          axis.title.y = element_text(angle = 45, vjust = 1, color = "black"))
+  
   # generate custom panels with corr. coefficients from hetcor()
   
   # index of upper triangle rows and columns
@@ -288,15 +302,23 @@ multiVisualEDA <- function (df, corrMat) {
   
   # loop through upper triangle and replace
   for (i in 1:nrow(index)) {
-    g1 <- putPlot(g1,
-                  ggally_text(sprintf("Corr:\n%0.2f",
-                                      corrMat[index[i, 1],
-                                              index[i, 2]])),
-                  index[i, 1], index[i, 2])
+    gPlotMatrix <- putPlot(gPlotMatrix,
+                           ggally_text(sprintf("Corr:\n%0.2f",
+                                               corrMat[index[i, 1],
+                                                       index[i, 2]])),
+                           index[i, 1], index[i, 2])
   }
   
-  # print customized plot
-  print(g1)
+  # print and/or save customized plot
+  if (.Platform$GUI == "RStudio") print(gPlotMatrix)
+  
+  if (!KNITR) {
+    fPlotMatrix <- deparse(substitute(gPlotMatrix))
+    fPlotMatrix <- file.path(EDA_RESULTS_DIR, paste0(fPlotMatrix, ".svg"))
+    svg(fPlotMatrix, height = 7, width = 7)
+    print(gPlotMatrix)
+    dev.off()
+  }
   
   if (FALSE) {
     # Plot with 'Project.Stage' as color (should be a factor)
