@@ -67,51 +67,66 @@ prepareForMI <- function (data) {
 }
 
 
-message("\n===== HANDLING MISSING VALUES =====")
+# Test data for multivariate normality, using 'MVN' package
+mvnTests <- function (flossDataTest) {
+  
+  message("\nTesting data for multivariate normality...\n")
+  
+  flossDataTest <- sampleDF(flossDataTest, 1000)
+  
+  mvn.result <- MVN::mardiaTest(flossDataTest, cov = TRUE, qqplot = FALSE)
+  print(mvn.result)
+  
+  mvn.result <- MVN::hzTest(flossDataTest, cov = TRUE, qqplot = FALSE)
+  print(mvn.result)
+  
+  mvn.result <- MVN::roystonTest(flossDataTest, qqplot = FALSE)
+  print(mvn.result)
+}
 
-# ===== PREPARATION =====
 
-fileName <- paste0(MERGED_FILE, RDS_EXT)
-mergedFile <- file.path(MERGED_DIR, fileName)
+missPatterns <- function (flossData) {
+  
+  message("\nAnalyzing missingness patterns...\n")
+  print(mice::md.pattern(flossData))
+  
+  # consider creating a heatmap of the md.pattern() return values
+  # OR using 'MissingDataGUI' package (https://github.com/chxy/MissingDataGUI),
+  # which is based on 'ggplot2' and is able to create panel displays
+  
+  # the following method ('Amelia') doesn't produce nice results
+  # visualize missingness of the dataset
+  #missmap(flossData, main = "Missingness Map")
+}
 
-# load data
-message("\nLoading data...")
-flossData <- loadData(mergedFile)
 
-# use only (numeric) columns of our interest
-# 'License.Category' doesn't vary, so it is excluded
-flossData <- flossData[c("Repo.URL",
-                         "Project.Age",
-                         "Development.Team.Size",
-                         "Project.License",
-                         "License.Restrictiveness",
-                         "Project.Stage",
-                         "User.Community.Size")]
+testMCAR <- function (flossData) {
+  
+  message("\nTesting data for being MCAR...\n")
+  
+  # test MCAR using 'MissMech' package
+  TestMCARNormality(prepareForMI(flossData[sample(nrow(flossData), 10000), ]))
+  
+  # let's also test, using 'BaylorEdPsych' package;
+  # set index condition to all rows that contain at least some data
+  # (partial missingness)
+  mcar.little <- 
+    LittleMCAR(flossData[rowSums(is.na(flossData)) < ncol(flossData),])
+  
+  message("\n\n")
+  print(mcar.little[c("chi.square", "df", "p.value")])
+}
 
-# temp fix for limited dataset - comment out/remove for full dataset
-flossData[["Repo.URL"]] <- NULL
 
-# additional transformations for MVN & MCAR testing
-flossDataTest <- prepareForMI(flossData)
-
-# Test for multivariate normality, using 'MVN' package
-message("\nTesting data for multivariate normality...\n")
-
-flossDataTest <- sampleDF(flossDataTest, 1000)
-
-mvn.result <- MVN::mardiaTest(flossDataTest, cov = TRUE, qqplot = FALSE)
-print(mvn.result)
-
-mvn.result <- MVN::hzTest(flossDataTest, cov = TRUE, qqplot = FALSE)
-print(mvn.result)
-
-mvn.result <- MVN::roystonTest(flossDataTest, qqplot = FALSE)
-print(mvn.result)
-
-# Results show that the data is not multivariate normal. Therefore,
-# we cannot use Amelia to perform MI, as it requires MV normality.
-# However, we can use 'mice' package to perform MI, as it handles
-# data without restrictions of being MVN and being MCAR.
+transformData <- function (flossData) {
+  
+  message("\n\n*** Transforming data...")
+  
+  # log transform continuous data
+  flossData["Project.Age"] <- log(flossData["Project.Age"])
+  flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
+  flossData["User.Community.Size"] <- log(flossData["User.Community.Size"])
+}
 
 
 # ===== VIZ =====
@@ -162,136 +177,186 @@ vizMIresults <- function (obj) {
 }
 
 
+# MAIN: perform multiple imputation, using 'mice'
+performMI <- function (flossData) {
+  
+  message("\nPerforming Multiple Imputation (MI)...", appendLF = DEBUG)
+  
+  # remove "Project License" column, as this data doesn't require MI
+  flossData <- flossData[setdiff(names(flossData), "Project.License")]
+  
+  # perform multiple imputation, using 'mice'
+  
+  # first, remove totally missing data, leaving partially missing
+  part.miss.index <- rowSums(is.na(flossData)) < ncol(flossData)
+  
+  # subset the data to those rows with at least some data (part.miss)
+  flossData2 <- flossData[part.miss.index, ]
+  
+  # a matrix of ones, used to indicate which variables predict which
+  # in the multiple imputation
+  pmat <- matrix(1, nrow = ncol(flossData2), ncol = ncol(flossData2))
+  
+  # never predict a variable from itself
+  diag(pmat) <- 0
+  
+  # make other modifications, as needed, here,
+  # so that some variables are not predicted,
+  # or that some variables do not predict
+  # (for details, see the JSS article or ?mice)
+  
+  
+  # the methods should match the order of
+  # variables in your data
+  # use norm for continuous variables
+  # use polr for ordered variables (like
+  #   1, 2, 3, 4, or low, med, high type variables)
+  #   note for ordered variables they must be ordered factors
+  #   factor(1:3, ordered = TRUE)
+  # for binary variables (like 0/1, yes/no)
+  #   use logreg, again the variables should be
+  #   factors (but they do not have to be ordered factors)
+  #   factor(0:1)
+  
+  # empty character vector
+  mi.methods <- rep("", ncol(flossData2))
+  
+  # replace first with norm for continuous
+  mi.methods[unlist(mclapply(flossData2,
+                             function(x) is.integer(x) | is.numeric(x),
+                             mc.cores = NUM_CORES))] <- "norm"
+  
+  # now replace factors with logreg, note that ordered factors are factors
+  # so this is not specific to binary
+  #mi.methods[unlist(lapply(flossData2, is.factor))] <- "logreg"
+  
+  # use polytomous logistic regression, as we have factors with > 2 levels
+  mi.methods[unlist(lapply(flossData2, is.factor))] <- "polyreg" # "fastpmm"
+  
+  # now replace ordered factors (a subset of factors) with polr
+  mi.methods[unlist(lapply(flossData2, is.ordered))] <- "polr"
+  
+  # perform MI, using parallel processing on all available cores
+  imputed <- mclapply(seq_len(NUM_CORES), function(i) {
+    mice(flossData2, m = NUM_IMPUTATIONS %/% NUM_CORES + 1,
+         method = mi.methods, predictorMatrix = pmat,
+         seed = RNG_SEED + i)
+  })
+  
+  msg <- ifelse(DEBUG, "\n", "")
+  message(paste0(msg, "Completed.\n"))
+  
+  if (DEBUG) print(str(imputedData))
+  
+  # combine separate imputations into a single one
+  imputedCombined <- imputed[[1]]
+  for (i in seq.int(2, length(imputed), 1))
+    imputedCombined <- ibind(imputedCombined, imputed[[i]])
+  
+  return (imputedCombined)
+}
+
+
+# save imputed data for further analysis (CFA/SEM)
+saveImputedData <- function (imputedCombined) {
+  
+  message("\nSaving imputed data... ", appendLF = FALSE)
+  
+  if (!file.exists(IMPUTED_DIR))
+    dir.create(IMPUTED_DIR, recursive = TRUE)
+  
+  # save imputed data to a separate directory
+  fileName <- paste0(IMPUTED_FILE, RDS_EXT)
+  imputedFile <- file.path(IMPUTED_DIR, fileName)
+  saveRDS(imputedCombined, imputedFile)
+  
+  message("Done.")
+}
+
+
+message("\n===== HANDLING MISSING VALUES =====")
+
+# ===== PREPARATION =====
+
+fileName <- paste0(MERGED_FILE, RDS_EXT)
+mergedFile <- file.path(MERGED_DIR, fileName)
+
+# load data
+message("\nLoading data...")
+flossData <- loadData(mergedFile)
+
+# use only (numeric) columns of our interest
+# 'License.Category' doesn't vary, so it is excluded
+flossData <- flossData[c("Repo.URL",
+                         "Project.Age",
+                         "Development.Team.Size",
+                         "Project.License",
+                         "License.Restrictiveness",
+                         "Project.Stage",
+                         "User.Community.Size")]
+
+# temp fix for limited dataset - comment out/remove for full dataset
+flossData[["Repo.URL"]] <- NULL
+
+
+# ===== PREPARATION =====
+
+# additional transformations for MVN & MCAR testing
+flossDataTest <- prepareForMI(flossData)
+
+# test for multivariate normality (MVN)
+mvnResult <- mvnTests(flossDataTest)
+
+# Results show that the data is not multivariate normal. Therefore,
+# we cannot use Amelia to perform MI, as it requires MV normality.
+# However, we can use 'mice' package to perform MI, as it handles
+# data without restrictions of being MVN and being MCAR.
+
 # ===== ANALYSIS =====
 
-
-# First, determine the missingness patterns
-# (amount of missingness across observations and variables)
-message("\nAnalyzing missingness patterns...\n")
-print(mice::md.pattern(flossData))
-
-# consider creating a heatmap of the md.pattern() return values
-# OR using 'MissingDataGUI' package (https://github.com/chxy/MissingDataGUI),
-# which is based on 'ggplot2' and is able to create panel displays
-
-# the following method ('Amelia') doesn't produce nice results
-# visualize missingness of the dataset
-#missmap(flossData, main = "Missingness Map")
-
-
-message("\nTesting data for being MCAR...\n")
-
-# test MCAR using 'MissMech' package
-TestMCARNormality(prepareForMI(flossData[sample(nrow(flossData), 10000), ]))
-
-# let's also test, using 'BaylorEdPsych' package;
-# set index condition to all rows that contain at least some data
-# (partial missingness)
-mcar.little <- 
-  LittleMCAR(flossData[rowSums(is.na(flossData)) < ncol(flossData),])
-
-message("\n\n")
-print(mcar.little[c("chi.square", "df", "p.value")])
-
-
-message("\n\n*** Transforming data...")
-
-# log transform continuous data
-flossData["Project.Age"] <- log(flossData["Project.Age"])
-flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
-flossData["User.Community.Size"] <- log(flossData["User.Community.Size"])
+if (DO_MISSING_ANALYSIS) {
+  
+  # First, determine the missingness patterns
+  # (amount of missingness across observations and variables)
+  missPatterns(flossData)
+  
+  # test data for being MCAR
+  testMCAR(flossData)
+  
+  # transform data prior to MI (log)
+  transformData(flossData)
+}
 
 
 # ===== HANDLE MISSING VALUES =====
 
-message("\nPerforming Multiple Imputation (MI)...", appendLF = DEBUG)
-
-# remove "Project License" column, as this data doesn't require MI
-flossData <- flossData[setdiff(names(flossData), "Project.License")]
-
-# perform multiple imputation, using 'mice'
-
-# first, remove totally missing data, leaving partially missing
-part.miss.index <- rowSums(is.na(flossData)) < ncol(flossData)
-
-# subset the data to those rows with at least some data (part.miss)
-flossData2 <- flossData[part.miss.index, ]
-
-# a matrix of ones, used to indicate which variables predict which
-# in the multiple imputation
-pmat <- matrix(1, nrow = ncol(flossData2), ncol = ncol(flossData2))
-
-# never predict a variable from itself
-diag(pmat) <- 0
-
-# make other modifications, as needed, here,
-# so that some variables are not predicted,
-# or that some variables do not predict
-# (for details, see the JSS article or ?mice)
+if (DO_MISSING_MAIN_MI) {
+  
+  # perform multiple imputation, using 'mice'
+  imputedCombined <- performMI(flossData)
+  
+  # save imputed data for further analysis (CFA/SEM)
+  saveImputedData(imputedCombined)
+}
 
 
-# the methods should match the order of
-# variables in your data
-# use norm for continuous variables
-# use polr for ordered variables (like
-#   1, 2, 3, 4, or low, med, high type variables)
-#   note for ordered variables they must be ordered factors
-#   factor(1:3, ordered = TRUE)
-# for binary variables (like 0/1, yes/no)
-#   use logreg, again the variables should be
-#   factors (but they do not have to be ordered factors)
-#   factor(0:1)
-
-# empty character vector
-mi.methods <- rep("", ncol(flossData2))
-
-# replace first with norm for continuous
-mi.methods[unlist(mclapply(flossData2,
-                           function(x) is.integer(x) | is.numeric(x),
-                           mc.cores = NUM_CORES))] <- "norm"
-
-# now replace factors with logreg, note that ordered factors are factors
-# so this is not specific to binary
-#mi.methods[unlist(lapply(flossData2, is.factor))] <- "logreg"
-
-# use polytomous logistic regression, as we have factors with > 2 levels
-mi.methods[unlist(lapply(flossData2, is.factor))] <- "polyreg" # "fastpmm"
-
-# now replace ordered factors (a subset of factors) with polr
-mi.methods[unlist(lapply(flossData2, is.ordered))] <- "polr"
-
-# perform MI, using parallel processing on all available cores
-imputed <- mclapply(seq_len(NUM_CORES), function(i) {
-  mice(flossData2, m = NUM_IMPUTATIONS %/% NUM_CORES + 1,
-                     method = mi.methods, predictorMatrix = pmat,
-                     seed = RNG_SEED + i)
-})
-
-msg <- ifelse(DEBUG, "\n", "")
-message(paste0(msg, "Completed.\n"))
-
-if (DEBUG) print(str(imputedData))
-
-# combine separate imputations into a single one
-imputedCombined <- imputed[[1]]
-for (i in seq.int(2, length(imputed), 1))
-  imputedCombined <- ibind(imputedCombined, imputed[[i]])
-
-message("\nSaving imputed data... ", appendLF = FALSE)
-
-if (!file.exists(IMPUTED_DIR))
-  dir.create(IMPUTED_DIR, recursive = TRUE)
-
-# save imputed data to a separate directory
-fileName <- paste0(IMPUTED_FILE, RDS_EXT)
-imputedFile <- file.path(IMPUTED_DIR, fileName)
-saveRDS(imputedCombined, imputedFile)
-
-# visualize MI results
-vizMIresults(imputedCombined)
-
-message("Done.")
-
-##### TODO: analyze results? In a later phase (pre-CFA/SEM).
+if (DO_MISSING_VIZ_MI) {
+  
+  # retrieve imputed data, if MI is currently disabled
+  if (!DO_MISSING_MAIN_MI) {
+    
+    fileName <- paste0(IMPUTED_FILE, RDS_EXT)
+    imputedFile <- file.path(IMPUTED_DIR, fileName)
+    
+    if (!file.exists(imputedFile))
+      stop("Cannot find imputed data, ",
+           "please enable MI in config and run again!")
+    
+    imputedCombined <- readRDS(imputedFile)
+  }
+  
+  # visualize MI results
+  vizMIresults(imputedCombined)
+}
 
 message("")

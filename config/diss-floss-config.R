@@ -36,7 +36,12 @@ CFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/cfa")
 SEM_RESULTS_DIR <- file.path(PRJ_HOME, "results/sem")
 
 
-# analysis control - EDA
+# nissing data analysis control
+DO_MISSING_ANALYSIS <- FALSE
+DO_MISSING_MAIN_MI  <- FALSE
+DO_MISSING_VIZ_MI   <- TRUE
+
+# EDA analysis control
 DO_MIX_ANALYSIS <- TRUE
 DO_MULTI_VISUAL <- TRUE
 
