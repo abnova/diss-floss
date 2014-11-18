@@ -63,7 +63,7 @@ param3 <- 'TEST'
 
 ### Data Screening
 
-Descriptive statistics. The SourceForge pilot data set consists of `r length(dir(file.path(TRANSFORM_DIR, "SourceForge")))` indicators. The descriptive statistics of the pilot data set, including measures of central tendency (_mean, median_), position (_minimum, maximum, quantiles_), dispersion (_variance, standard deviation, range and interquartile range_) and shape (_modality, skewness and kurtosis_), is summarized in Table \ref{tab:edaDescStats} below.
+Descriptive statistics. The SourceForge pilot data set consists of `r length(dir(file.path(TRANSFORMED_DIR, "SourceForge")))` indicators. The descriptive statistics of the pilot data set, including measures of central tendency (_mean, median_), position (_minimum, maximum, quantiles_), dispersion (_variance, standard deviation, range and interquartile range_) and shape (_modality, skewness and kurtosis_), is summarized in Table \ref{tab:edaDescStats} below.
 
 ```{r edaReportSummary, include=FALSE, fig.cap='EDA Report'}
 print(describe_flossData)
@@ -73,28 +73,39 @@ print(describe_flossData)
 print(genEDAdescStatsTable(flossData, label = "edaDescStats"))
 ```
 
-```{r getBarChartsInfo}
-refInfo <- genObjRefs("fig", "barchart_")
+```{r getRefInfo}
+bcRefInfo <- genObjRefs("fig", "barchart_")
+histRefInfo <- genObjRefs("fig", "histogram_")
+mixpRefInfo <- genObjRefs("fig", "mixplot_")
+pmatRefInfo <- genObjRefs("fig", "plotmatrix_")
 ```
 
-In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts, as shown in `r refInfo$str` below.
+In order to gain some understanding about _data patterns_, the data set’s discrete measures were summarized via _frequency tables_ (containing frequency scores across categorical variables), which can be found in Appendix TODO, as well as visually, using bar charts, as shown in `r bcRefInfo$str` below.
 
-```{r barchartDynamicChunk, message=TRUE}
-barchartChunks <- genDynChunks(refInfo)
+```{r barchartsDynamicChunk, message=TRUE}
+barchartChunks <- genDynChunks(bcRefInfo)
 ```
-
 `r knit(text = barchartChunks)`
 
-```{r getHistogramsInfo}
-refInfo <- genObjRefs("fig", "histogram_")
-```
-
-Visual overview for continuous (binned) data is presented by histograms in the following `r refInfo$str`.
+Visual overview for continuous (binned) data is presented by histograms in the following `r histRefInfo$str`.
 
 ```{r historgramsDynamicChunk, message=TRUE}
-histChunks <- genDynChunks(refInfo)
+histChunks <- genDynChunks(histRefInfo)
 ```
-
 `r knit(text = histChunks)`
+
+Results of mixture analysis of the pilot data set are presented by histograms with overlay fitted curves in the following `r mixpRefInfo$str`.
+
+```{r mixPlotDynamicChunk, message=TRUE}
+mixpChunks <- genDynChunks(mixpRefInfo)
+```
+`r knit(text = mixpChunks)`
+
+General overview of the pilot data set is presented by summary _plot matrix_ in the following `r pmatRefInfo$str`.
+
+```{r plotmatrixDynamicChunk, message=TRUE}
+pmatChunks <- genDynChunks(pmatRefInfo)
+```
+`r knit(text = pmatChunks)`
 
 TODO: More narrative and more visual artifacts.

@@ -309,10 +309,17 @@ multiVisualEDA <- function (df, corrMat) {
                            index[i, 1], index[i, 2])
   }
   
-  # print and/or save customized plot
+  # display customized plot in RStudio Plots pane
   if (.Platform$GUI == "RStudio") print(gPlotMatrix)
   
-  if (!KNITR) {
+  if (KNITR) {  # export plot object for knitr report
+    
+    datasetName <- deparse(substitute(df))
+    g_var <- paste0("plotmatrix_", datasetName)
+    assign(g_var, gPlotMatrix, envir = .GlobalEnv)
+    
+  } else {  # save plot object into a file
+    
     fPlotMatrix <- deparse(substitute(gPlotMatrix))
     fPlotMatrix <- file.path(EDA_RESULTS_DIR, paste0(fPlotMatrix, ".svg"))
     svg(fPlotMatrix, height = 7, width = 7)

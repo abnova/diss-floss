@@ -22,16 +22,28 @@ mixDistAnalysis <- function (df, indicator, colName) {
   
   mix <- determineMixtures(myData)
   assessMixGoF(myData, mix)
-  mixPlot <- visualizeMixtures(myData, mix, indicator, colName)
+  gMixPlot <- visualizeMixtures(myData, mix, indicator, colName)
+
+  g_var <- paste0("mixPlot_", colName)
   
   # save mixture analysis results visualization
-  # plot for further access in knitr environment
-  g_var <- paste0("mixPlot_", colName)
-  assign(g_var, mixPlot, envir = .GlobalEnv)
-  myPlot <- get(g_var, envir = .GlobalEnv)
-  myList <- list(myPlot)
-  names(myList) <- g_var
-  allPlots <<- c(allPlots, myList)
+  
+  if (KNITR) {  # export plot object for knitr report
+    
+    assign(g_var, gMixPlot, envir = .GlobalEnv)
+    myPlot <- get(g_var, envir = .GlobalEnv)
+    myList <- list(myPlot)
+    names(myList) <- g_var
+    allPlots <<- c(allPlots, myList)
+    
+  } else {  # save plot object into a file
+    
+    fMixPlot <- file.path(EDA_RESULTS_DIR, paste0(g_var, ".svg"))
+    svg(fMixPlot, height = 7, width = 7)
+    print(gMixPlot)
+    dev.off()
+  }
+  
 }
 
 
