@@ -128,3 +128,7 @@ sanitize <- function(str) {
                  result, fixed = TRUE)
   return(result)
 }
+
+
+# TBD, for now will use pandoc.table()
+#print.pander <- function (x, ...) UseMethod("pander")

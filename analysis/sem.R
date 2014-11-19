@@ -3,23 +3,29 @@
 # using 'semPlot' package (see semPaths() functon's use in CFA module)
 
 # Start session with a clean R environment
+## @knitr CleanEnv
 rm(list = ls(all.names = TRUE))
 
+## @knitr LoadPackages
 if (!suppressMessages(require(plspm))) install.packages('plspm')
 if (!suppressMessages(require(mice))) install.packages('mice')
 if (!suppressMessages(require(ggplot2))) install.packages('ggplot2')
 if (!suppressMessages(require(RColorBrewer)))
   install.packages('RColorBrewer')
 if (!suppressMessages(require(reshape))) install.packages('reshape')
+if (!suppressMessages(require(pander))) install.packages('pander')
 
 library(plspm)
 library(mice)
 library(ggplot2)
 library(RColorBrewer)
 library(reshape)
+library(pander)
 
 
 ##### PREPARATION & DEFINITIONS #####
+
+## @knitr PrepareSEM
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
@@ -28,6 +34,7 @@ source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
 source(file.path(PRJ_HOME, "utils/qgraphtikz.R")) # fix for TikZ device
 source(file.path(PRJ_HOME, "utils/factors.R"))
+source(file.path(PRJ_HOME, "utils/knit.R"))
 
 LOADINGS_THRESHOLD <- 0.7  # minimum value for acceptable loadings
 
@@ -39,9 +46,30 @@ GGPLOT2_PALETTE_LINE <- scale_color_manual(values = COLOR_PALETTE)
 DEBUG <- FALSE  # local setting
 
 
-## @knitr PerformSEM
+##### MISC FUNCTIONS #####
+
+
+# generate R Markdown table with results of SEM analysis
+genSEMtable <- function (obj, type, caption, label, format = "latex") {
+  
+  # if LaTeX, add label to the caption for cross-referencing
+  if (format == "latex")
+    caption <- paste0(caption, "\\label{tab:", label, "}")
+  
+  # set the caption, but don't re-use for next table(s)
+  set.caption(caption, permanent = FALSE)
+  
+  # don't split tables
+  panderOptions("table.split.table", Inf)
+  
+  # create table in R Markdown format
+  pandoc.table(obj)  # more flexible alternative: pander()
+}
+
 
 ##### ANALYSIS #####
+
+## @knitr PerformSEM
 
 message("\n\n===== STRUCTURED EQUATION MODELING (SEM-PLS) ANALYSIS =====")
 
@@ -158,8 +186,7 @@ message("\n\n*** Running PLS-PM analysis...")
 successPLS <- plspm(flossData,
                     successPath,
                     successBlocks,
-                    modes = successModes,
-                    maxiter = 500) # scaling = successScales
+                    modes = successModes) # scaling = successScales
 
 
 # 4.2. Handling PLS-PM Results
@@ -296,7 +323,7 @@ print(successPLS$gof)
 arrow_lwd <- 10 * round(successPLS$path_coefs, 2)
 
 # visual: SEM path diagram (inner model)
-plot(successPLS, arr.lwd = arrow_lwd)  # arr.pos = 
+plot(successPLS, arr.lwd = arrow_lwd)
 
 
 ## Effects Analysis
