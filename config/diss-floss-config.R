@@ -46,6 +46,10 @@ DO_MIX_ANALYSIS <- TRUE
 DO_MULTI_VISUAL <- TRUE
 
 
+# SEM analysis control
+DO_SEM_BOOT <- FALSE
+
+
 # reproducibility
 RNG_SEED <- 100
 set.seed(RNG_SEED)

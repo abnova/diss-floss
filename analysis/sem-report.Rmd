@@ -69,11 +69,40 @@ Descriptive statistics. The SourceForge pilot data set consists of `r length(dir
 genSEMtable(summary(successPLS), type = "1", caption = "SEM results summary", label = "semResultsTable1")
 ```
 
-```{r getRefInfo}
-#bcRefInfo <- genObjRefs("fig", "barchart_")
-#histRefInfo <- genObjRefs("fig", "histogram_")
-#mixpRefInfo <- genObjRefs("fig", "mixplot_")
-#pmatRefInfo <- genObjRefs("fig", "plotmatrix_")
+A visual presentation of SEM results includes various types of graphical output. In particular, factor loadings are visually presented in Figure \ref{fig:semLoadingsDiagram}. Discussion continues.
+
+`r loadDiag <- genSEMfigure(gLoadDiag, caption = "SEM: Loadings diagram", label = "semLoadingsDiagram")`
+
+```{r semLoadingsDiag, include=TRUE, results='asis', fig.cap=loadDiag$caption}
+plot(plspm_flossData, what = "loadings")
+```
+
+`r lowLoadingsIndicators <- "License.Restrictiveness and Project.Stage"`
+
+Barchart of loadings, shown in Figure \ref{fig:semLoadingsBarChart}, presents information in relation to the threshold value (`r LOADINGS_THRESHOLD`) and grouped by latent factors (blocks). As we see, loadings for _`r lowLoadingsIndicators`_ are insufficient for this data set and original SEM model.
+
+`r loadBarChart <- genSEMfigure(gLoadBarChart, caption = "SEM: Barchart of loadings", label = "semLoadingsBarChart")`
+
+```{r semLoadingsBChart, include=TRUE, results='asis', fig.cap=loadBarChart$caption}
+print(loadBarChart$plot)
+```
+
+A diagram with estimated factor weights is presented in Figure \ref{fig:semWeightsDiagram}. Discussion continues.
+
+`r weightsDiag <- genSEMfigure(gLoadDiag, caption = "SEM: Weights diagram", label = "semWeightsDiagram")`
+
+```{r semWeightsDiag, include=TRUE, results='asis', fig.cap=weightsDiag$caption}
+plot(plspm_flossData, what = "weights")
+```
+
+crossLoadBlocks_
+
+Chart, shown in Figure \ref{fig:semCrossLoadBlocks}, presents cross-loadings between indicators, grouped by latent factors (blocks). As we see, TBD.
+
+`r crossLoadBlocks <- genSEMfigure(gCrossLoadBlocks, caption = "SEM: Barchart of cross-loadings by factors", label = "semCrossLoadBlocks")`
+
+```{r semCrossLoadBlocksChart, include=TRUE, results='asis', fig.cap=crossLoadBlocks$caption}
+print(crossLoadBlocks$plot)
 ```
 
 TODO: More narrative and more visual artifacts.

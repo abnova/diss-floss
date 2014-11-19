@@ -34,6 +34,7 @@ source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
 source(file.path(PRJ_HOME, "utils/qgraphtikz.R")) # fix for TikZ device
 source(file.path(PRJ_HOME, "utils/factors.R"))
+source(file.path(PRJ_HOME, "utils/graphics.R")) # for golden ratio
 source(file.path(PRJ_HOME, "utils/knit.R"))
 
 LOADINGS_THRESHOLD <- 0.7  # minimum value for acceptable loadings
@@ -64,6 +65,17 @@ genSEMtable <- function (obj, type, caption, label, format = "latex") {
   
   # create table in R Markdown format
   pandoc.table(obj)  # more flexible alternative: pander()
+}
+
+
+# generate R Markdown table with results of SEM analysis
+genSEMfigure <- function (obj, caption, label) {
+  
+  # add label to the caption for cross-referencing
+  caption <- paste0(caption, "\\label{fig:", label, "}")
+  
+  # return both caption/label and plot in a list
+  list(caption = caption, plot = obj)
 }
 
 
@@ -204,40 +216,58 @@ print(summary(successPLS))
 # 4.3. Measurement Model Assessment: Reflective Indicators
 ##########################################################
 
+
 # plotting loadings
-gLoadings <- plot(successPLS, what = "loadings")
-print(gLoadings)
+gLoadDiag <- plot(successPLS, what = "loadings")
+
+# Not needed, since we have to call plot() method in .Rmd
+if (KNITR) {
+  plspm_var <- paste0("plspm_", datasetName)
+  assign(plspm_var, successPLS, envir = .GlobalEnv)
+}
+
 
 # outer model results (in a matrix way, unlike tabular in summary())
 print(successPLS$outer_model)
 
+
 # display barchart of loadings with threshold value line
 
-gLoadingsBarChart <- ggplot(data = successPLS$outer_model,
-                            aes(x = name, y = loading, fill = block)) +
+gLoadBarChart <- ggplot(data = successPLS$outer_model,
+                        aes(x = name, y = loading, fill = block)) +
+  
+  labs(x = "Indicator", y = "Loading") +
+  scale_fill_discrete("Factors") +
   
   geom_bar(stat = 'identity', position = 'dodge') +
   
   # threshold line (to emphasize acceptable loadings)
   geom_hline(yintercept = LOADINGS_THRESHOLD, color = 'red') +
   
-  # rotate x-axis labels
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black")) +
-  
-  # add title
-  ggtitle("Barchart of Loadings") #+
-  
-  # change color palette
-  #GGPLOT2_PALETTE_FILL + GGPLOT2_PALETTE_LINE
+  # rotate x-axis labels, move axes titles and set optimal aspect ratio
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black"),
+        axis.title.x = element_text(vjust = -0.5, color = "black"),
+        axis.title.y = element_text(vjust = 0.5, color = "black"),
+        aspect.ratio = 1 / PHI) +
 
-print(gLoadingsBarChart)
+  # change color palette
+  GGPLOT2_PALETTE_FILL + GGPLOT2_PALETTE_LINE
+
+
+if (KNITR) {
+  gLoadBarChart_var <- paste0("loadBarChart_", datasetName)
+  assign(gLoadBarChart_var, gLoadBarChart, envir = .GlobalEnv)
+}
+
+if (.Platform$GUI == "RStudio") {print(gLoadBarChart)}
+
 
 # Governance outer model results
 print(subset(successPLS$outer_model, block == "Governance"))
 
 # plotting weights
 gWeights <- plot(successPLS, what = "weights")
-print(gWeights)
+
 
 # TODO: potential model's modifications/adjustments HERE
 modSuccessBlocks <- successBlocks
@@ -282,19 +312,30 @@ gCrossLoadBlocks <- ggplot(data = xloads,
   # panel display (faceting)
   facet_wrap(block ~ LV) +
   
-  # tweak some graphical elements
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black"),
-        line = element_blank(),
-        plot.title = element_text(size = 12)) +
+  # rotate x-axis labels, move axes titles and set optimal aspect ratio
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, color = "black"),
+        axis.title.x = element_text(vjust = -0.5, color = "black"),
+        axis.title.y = element_text(vjust = 0.5, color = "black")
+        #line = element_blank(),
+        #plot.title = element_text(size = 12),
+        #aspect.ratio = 1 / PHI
+        ) +
   
-  # add title
-  ggtitle("Crossloadings") +
-
+  # tweak some graphical elements
+#  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black"),
+#        line = element_blank(),
+#        plot.title = element_text(size = 12)) +
+  
   # change color palette
   GGPLOT2_PALETTE_FILL + GGPLOT2_PALETTE_LINE
 
+if (KNITR) {
+  gCrossLoadBlocks_var <- paste0("crossLoadBlocks_", datasetName)
+  assign(gCrossLoadBlocks_var, gCrossLoadBlocks, envir = .GlobalEnv)
+}
+
 # display the crossloadings barchart panel
-print(gCrossLoadBlocks)
+if (.Platform$GUI == "RStudio") {print(gCrossLoadBlocks)}
 
 
 # 4.4. Measurement Model Assessment: Formative Indicators
@@ -366,16 +407,19 @@ par(op)
 # 4.6. Validation
 ##########################################################
 
-message("\n\n*** Performing bootstrap validation...")
-
-# running bootstrap validation (100 samples)
-successVal <- plspm(flossData, successPath, successBlocks,
-                    modes = successModes,
-                    boot.val = TRUE, br = 100)
-
-
-# bootstrap results
-print(successVal$boot)
+if (DO_SEM_BOOT) {
+  
+  message("\n\n*** Performing bootstrap validation...")
+  
+  # running bootstrap validation (100 samples)
+  successVal <- plspm(flossData, successPath, successBlocks,
+                      modes = successModes,
+                      boot.val = TRUE, br = 100)
+  
+  
+  # bootstrap results
+  print(successVal$boot)
+}
 
 message("\n===== SEM-PLS analysis completed, results can be found ",
         "in directory \"", SEM_RESULTS_DIR, "\"\n")
