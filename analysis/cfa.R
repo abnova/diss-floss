@@ -36,12 +36,14 @@ source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R"))
 source(file.path(PRJ_HOME, "utils/qgraphtikz.R")) # fix for TikZ device
+source(file.path(PRJ_HOME, "utils/knit.R"))
 
 DEBUG <- FALSE  # local setting
 
 
 genCFAresultsTable <- function (caption = "CFA results summary",
-                                type = "latex", file = "", digits = 2) {
+                                type = "latex", file = "",
+                                digits = 2, label = "cfaResultsTable") {
   
   fit.info <-
     fitMeasures(cfa.fit)[c('chisq', 'df', 'pvalue', 'cfi', 'rmsea')]
@@ -79,11 +81,10 @@ genCFAresultsTable <- function (caption = "CFA results summary",
   #caption <- paste(caption, comment)
   
   # generate 'xtable' object from CFA fit object
-  cfaResultsTable <- xtable(cfa.table, caption = caption,
-                            label = "cfaResultsTable")
+  cfaResultsTable <- xtable(cfa.table, caption = caption, label = label)
   
   # output 'xtable' in requested format (LaTeX or HTML code)
-  table <- capture.output(
+  if (KNITR)
     print(cfaResultsTable, type = type, file = file,
           booktabs = TRUE, digits = digits, comment = FALSE,
           caption.placement = "top",
@@ -91,14 +92,26 @@ genCFAresultsTable <- function (caption = "CFA results summary",
           #add.to.row = tabNote,
           sanitize.text.function = function(x) x,
           math.style.negative = FALSE)
-  )
-  table
+  else {
+    table <- capture.output(
+      print(cfaResultsTable, type = type, file = file,
+            booktabs = TRUE, digits = digits, comment = FALSE,
+            caption.placement = "top",
+            hline.after = horLines,
+            #add.to.row = tabNote,
+            sanitize.text.function = function(x) x,
+            math.style.negative = FALSE)
+    )
+    table
+  }
 }
 
 
 # parameter 'latex' should be set to TRUE only for a call under KNITR
 
-genCFAmodelDiagram <- function (cfa.fit, latex = FALSE) {
+genCFAmodelDiagram <- function (cfa.fit, latex = FALSE,
+                                caption = "CFA model diagram",
+                                label = "cfaModelDiagram") {
   
   filetype <- ifelse(.Platform$GUI == "RStudio", "x11", "R")
   
@@ -128,11 +141,27 @@ genCFAmodelDiagram <- function (cfa.fit, latex = FALSE) {
   # change color palette
   colPalette <- brewer.pal(5, "Pastel1")[1:numFactors]
   
+  diagFile <- "cfaModDiag"
+    
   # fix for TikZ device (LaTeX output)
-  if (latex) qgraph.tikz(cfaModDiag, filename = "cfaModDiag",
-                         colors = colPalette, bg = "grey90",
-                         width = 7, height = 4, # curveShape = -0.5,
-                         standAlone = FALSE)
+  if (latex)
+    cfaDiag <- qgraph.tikz(cfaModDiag, filename = diagFile,
+                           colors = colPalette, bg = "grey90",
+                           width = 7, height = 4, # curveShape = -0.5,
+                           standAlone = FALSE)
+  
+  if (FALSE)  # TBD - WHY DOESN'T WORK ???
+  if (latex) {
+    latexOut <- paste("\\begin{figure}",
+                      "\\centering",
+                      "\\input{", diagFile, "}",
+                      "\\caption{", caption, "}",
+                      "\\label{", label, "}",
+                      "\\end{figure}", sep = "\n")
+    print(sanitize(latexOut))
+  }
+  
+  return (invisible(cfaDiag))
 }
 
 

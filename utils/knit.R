@@ -107,3 +107,24 @@ genObjRefs <- function (objType, objTypePrefix) {
   list(objs = objs, str = refStrFinal,
        objType = objType, objTypePrefix = objTypePrefix)
 }
+
+
+sanitize <- function(str) {
+  result <- str
+  result <- gsub("\\\\", "SANITIZE.BACKSLASH", result)
+  result <- gsub("$", "\\$", result, fixed = TRUE)
+  result <- gsub(">", "$>$", result, fixed = TRUE)
+  result <- gsub("<", "$<$", result, fixed = TRUE)
+  result <- gsub("|", "$|$", result, fixed = TRUE)
+  result <- gsub("{", "\\{", result, fixed = TRUE)
+  result <- gsub("}", "\\}", result, fixed = TRUE)
+  result <- gsub("%", "\\%", result, fixed = TRUE)
+  result <- gsub("&", "\\&", result, fixed = TRUE)
+  result <- gsub("_", "\\_", result, fixed = TRUE)
+  result <- gsub("#", "\\#", result, fixed = TRUE)
+  result <- gsub("^", "\\verb|^|", result, fixed = TRUE)
+  result <- gsub("~", "\\~{}", result, fixed = TRUE)
+  result <- gsub("SANITIZE.BACKSLASH", "$\\backslash$", 
+                 result, fixed = TRUE)
+  return(result)
+}

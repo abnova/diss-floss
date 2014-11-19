@@ -79,19 +79,19 @@ $$ \sum_{i=1}^{n} \{ y_{i} - \hat{\mu}_{i} \}^2 $$
 And now let's see what output would be produced by 'tables' package, as shown in Table \ref{cfaResultsTable}:
 
 ```{r cfaReportSummary3, include=TRUE, results='asis', fig.cap='CFA Results Summary'}
-genCFAresultsTable()
+genCFAresultsTable(label = "cfaResultsTable")
 ```
 
-And let's generate a nice CFA model figure:
+Results of CFA in a form of a model diagram are presented in Figure \ref{fig:cfaModelDiagram}:
 
 ```{r cfaModelFigure, include=FALSE, results='asis', fig.cap='CFA Model', fig.height=4, fig.width=4}
 # DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8)
-genCFAmodelDiagram(cfaFit_flossData, latex = TRUE)
+genCFAmodelDiagram(cfaFit_flossData, latex = TRUE, caption = "CFA model diagram", label = "cfaModelDiagram")
 ```
 
 \begin{figure}
   \centering
   \input{cfaModDiag.tex}
-  \caption{CFA model diagram.}
+  \caption{CFA model diagram}
   \label{fig:cfaModelDiagram}
 \end{figure}
