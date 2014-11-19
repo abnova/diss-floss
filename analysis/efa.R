@@ -62,6 +62,7 @@ source(file.path(PRJ_HOME, "config/diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/data.R"))
 source(file.path(PRJ_HOME, "utils/platform.R")) # for multi-core support
 source(file.path(PRJ_HOME, "utils/graphics.R")) # for golden ratio
+source(file.path(PRJ_HOME, "utils/knit.R"))
 
 SCREE_PLOT_FILE <- "screePlot"
 

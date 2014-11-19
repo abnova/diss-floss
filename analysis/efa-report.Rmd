@@ -60,6 +60,13 @@ param3 <- 'TEST'
 # empty
 ```
 
+```{r getRefInfo}
+#bcRefInfo <- genObjRefs("fig", "barchart_")
+#histRefInfo <- genObjRefs("fig", "histogram_")
+#mixpRefInfo <- genObjRefs("fig", "mixplot_")
+#pmatRefInfo <- genObjRefs("fig", "plotmatrix_")
+```
+
 The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4EFA_DIR, "flossData.rds")))` indicators. The following is the summary descriptive statistics of the data set.
 
 ```{r efaReportVssSummary, include=TRUE, results='markup'}
@@ -69,23 +76,26 @@ summary(vssInfo_flossData)
 And now let's take a look at the EFA results summary, presented in Table \ref{tab:efaResults}:
 
 ```{r efaReportSummaryTable, include=TRUE, results='asis'}
-genEFAresultsTable(caption="EFA parallel analysis scree plot", digits=2, numFactors)
+genEFAresultsTable(caption="EFA parallel analysis scree plot", digits=2, numFactors=numFactors)
 ```
 
-Let's see the factors scree plot:
+The factors scree plot, produced as part of EFA, is shown in Figure \ref{fig:efaResultsScreePlot}:
 
-```{r efaReportScreePlot, include=TRUE, fig.cap='EFA Report: Scree plot'}
+```{r efaReportScreePlot, include=TRUE, fig.cap='EFA Results: Scree plot\\label{fig:efaResultsScreePlot}'}
 # DO NOT ADD fig.align='center' option before the issue #626 is not fixed (tentative fix revision: knitr 1.8) -- TODO: update when 1.8 will be released
 print(screePlot_flossData)
 ```
 
-And now let's take a look at some EFA diagrams:
+Results of EFA are visualized in a form of diagrams and are presented in Figure \ref{fig:efaResultsDiagram} below:
 
 `r diagLegend <- "DTS - Development Team Size; PrA - Project Age; LcR - License Restrictiveness; PrS - Project Size; SfT - Software Type"`
 
-```{r efaReportDiagram, include=TRUE, results='asis', fig.cap='EFA Results Diagrams', fig.show='hold', fig.subcap=diagLegend}
+```{r efaReportDiagram, include=TRUE, results='asis', fig.cap='EFA Results: Diagrams\\label{fig:efaResultsDiagram}', fig.show='hold', fig.subcap=diagLegend}
 genEFAresultsDiagram(faPA_flossData, latex = TRUE)
 #genEFAresultsDiagram(faPromax_flossData, latex = TRUE)
+#genEFAresultsDiagram(faBi_flossData, latex = TRUE)
+#genEFAresultsDiagram(faULS_flossData, latex = TRUE)
+#genEFAresultsDiagram(faWLS_flossData, latex = TRUE)
 ```
 
 ```{r efaResultsDiagram2, include=FALSE, results='asis', fig.cap='EFA Results Diagrams (continued)', fig.show='hold', fig.height=3.5, fig.width=3.5}
