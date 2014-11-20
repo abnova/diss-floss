@@ -95,8 +95,6 @@ A diagram with estimated factor weights is presented in Figure \ref{fig:semWeigh
 plot(plspm_flossData, what = "weights")
 ```
 
-crossLoadBlocks_
-
 Chart, shown in Figure \ref{fig:semCrossLoadBlocks}, presents cross-loadings between indicators, grouped by latent factors (blocks). As we see, TBD.
 
 `r crossLoadBlocks <- genSEMfigure(gCrossLoadBlocks, caption = "SEM: Barchart of cross-loadings by factors", label = "semCrossLoadBlocks")`
