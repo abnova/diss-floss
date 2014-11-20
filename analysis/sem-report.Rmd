@@ -71,7 +71,7 @@ genSEMtable(summary(successPLS), type = "1", caption = "SEM results summary", la
 
 A visual presentation of SEM results includes various types of graphical output. In particular, factor loadings are visually presented in Figure \ref{fig:semLoadingsDiagram}. Discussion continues.
 
-`r loadDiag <- genSEMfigure(gLoadDiag, caption = "SEM: Loadings diagram", label = "semLoadingsDiagram")`
+`r loadDiag <- genSEMfigure(plspm_flossData, caption = "SEM: Loadings diagram", label = "semLoadingsDiagram")`
 
 ```{r semLoadingsDiag, include=TRUE, results='asis', fig.cap=loadDiag$caption}
 plot(plspm_flossData, what = "loadings")
