@@ -1,0 +1,130 @@
+\documentclass[man]{apa6} % man for manuscript format, jou for journal format, doc for standard LaTeX document format
+\usepackage[natbibapa]{apacite} % Divine intervention help you if you need to use a different citation package.
+\usepackage[american]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{csquotes}
+
+\usepackage{url}   % this allows us to cite URLs in the text
+\usepackage{graphicx}   % allows for graphic to float when doing jou or doc style
+\usepackage{verbatim}   % allows us to use \begin{comment} environment
+\usepackage{caption}
+%\usepackage{lscape}
+\usepackage{pdflscape}
+
+\title{Minimal Working Example of RStudio-Friendly Knitr and apa6 Files}
+\shorttitle{Knitr and apa6}
+
+% Based off of code provided in a question by Melvin Roest on tex.stackexchange.com
+% (http://tex.stackexchange.com/questions/176745/strange-knitr-behavior-with-apa6-class-manuscript)
+\author{Author Name}
+\affiliation{Department of Intellectual Inquiry \\ Carnegie Mellon University}
+
+% apa6 uses different calls for more than one author, example
+
+%\twoauthors{Student T. Stat}{Committee:}
+%\twoaffiliations{Department of Wheat-Based Yeast Products \\ Carnegie Mellon University}{Advisor Awesome (chair), Committe Member 2, Committee Member 3}
+
+%\rightheader{knitr and apa6} % for jou format
+\leftheader{LastName}
+
+\authornote{Acknowledgements here. Because you know you didn't do this alone.}
+\note{\today}
+
+\journal{} %\journal{Fictional Journal of Awesome} % for jou format
+\volume{} %\volume{5,1,5-10}% Volume, number, pages; typeset in the top left header in jou and doc modes, underneath the content of %\journal
+
+\keywords{minimal working example, manuscript, apa6}
+
+\abstract{Abstract here. 95 words left.}
+
+\ccoppy{} %\ccoppy{Copyright notice, etc.; typeset in the top right header of page 1 (jou and doc modes only)}
+
+\begin{document}
+
+\maketitle
+
+<<setup, include=FALSE, cache=FALSE>>=
+#library(knitr)
+
+# set working directories
+analysis.directory <- "C:/.../data_analysis/"
+jul2014.data.directory <- "C:/.../data/data_JUL/"
+output.directory <- "C:/.../manuscript/"
+setwd(output.directory)
+
+# set global chunk options, put figures into folder
+opts_chunk$set(fig.path='figures/figure-', fig.align='center', fig.show='hold')
+options(replace.assign=TRUE,width=75)
+
+# save workspace image, if you want
+#the.date <- format(Sys.time(), "%b%d%Y")
+#save.image(file=paste0("homework01-",the.date,".RData")
+@
+
+<<load_data, include=FALSE, cache=TRUE>>=
+require(ggplot2)
+#require(plyr)
+
+# load datasets here
+#setwd(jul2014.data.directory)
+#my.df <- read.table(filename)
+#setwd(output.directory)
+@
+
+\section{Introduction}
+
+Using \texttt{knitr} \cite{knitr2013} and \LaTeX \cite{lamport1986latex}, we can run analyses in R, and output them as PDFs through \LaTeX, using the \texttt{apa6} class, as well as APA 6th edition-compliant references.
+
+Extra notes about \TeX to Microsoft Word conversions available at: \url{http://www.tug.org/pracjourn/2012-1/beitzel/beitzel.pdf}
+
+\section{Methods} 
+
+\subsection{Participants}
+Ate chocolate.
+
+\subsection{Stimuli}
+Ate more chocolate.
+
+\subsection{Procedure}
+Acquired stomachaches.
+
+\section{Results}
+
+Some results are blue. See Figure \ref{fig:examplefig}.
+
+% FIGURE 1: Figure 1 Example
+\begin{figure}
+\begin{center}
+\caption{An example figure generated using R code, placed in a knitr chunk. Switch between "man" and "doc" or "jou" modes to watch this figure be placed nearby or at the end of the document.}
+\label{fig:examplefig}
+<<samplefigure, include=TRUE,echo=FALSE,cache=TRUE,fig.width=7,fig.height=5,out.width='0.75\\textwidth'>>=
+# note: I use fig.width, fig.height, and out.width to resize figures the way I want them. Your mileage may vary.
+
+sample.n <- 100; x <- c(1:sample.n)/2; y <- x + rnorm(sample.n,0,2)
+df.a <- data.frame(y=y,x=x,treat=factor(rep(c(0,1),each=(sample.n/2)),
+                   labels=c("control","treatment")))
+a.lmfit.t0 <- lm(y ~ x, data=subset(df.a,treat=="control"))
+a.lmfit.t1 <- lm(y ~ x, data=subset(df.a,treat=="treatment"))
+ggplot(df.a,aes(x=x,y=y,group=treat)) + geom_point(aes(shape=treat),
+  size = 4) + scale_shape_manual(values=c(19,1)) + ggtitle(
+  "No T effect") + geom_abline(intercept=coef(a.lmfit.t0)[1],
+  slope=coef(a.lmfit.t0)[2],col="red",linetype="dashed",lwd=1) + geom_abline(
+  intercept=coef(a.lmfit.t1)[1],slope=coef(a.lmfit.t1)[2],
+  col="blue",linetype="solid",lwd=0.5)
+@
+\end{center}
+\end{figure} 
+
+Also, you can still print code chunks:
+<<codechunk, include=FALSE,echo=TRUE,cache=TRUE>>=
+x <- 3
+y <- 4
+print(x + y)
+@
+
+\section{General Discussion}
+
+\bibliographystyle{apacite}
+\bibliography{references}
+
+\end{document}
