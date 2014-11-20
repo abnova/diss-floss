@@ -111,11 +111,16 @@ flossData <- loadData(ready4semFile)
 # select imputed dataset
 flossData <- mice::complete(flossData, 1)
 
-# "Project.Stage" is used instead of "Project.Maturity" (Dev.Stage ???)
-# "Project.License" is excluded from analysis, as it's unordered factor
-factors4analysis <- c("License.Restrictiveness", "Project.Stage",
-                      "Project.Age", "Development.Team.Size",
-                      "User.Community.Size")
+# NOTES on model structure and indicators availability:
+# -----------------------------------------------------
+# Currently, a second-order factor "Project.Maturity" is used in lieu of
+# the "Sponsorship" factor (TODO: consider indicators for "Sponsorship").
+
+# "Project.License" is excluded from analysis, as it's unordered factor.
+
+factors4analysis <- c("License.Category", "License.Restrictiveness",
+                      "Project.Age", "Project.Stage",
+                      "Development.Team.Size", "User.Community.Size")
 flossData <- flossData[, factors4analysis]
 
 # save name of the data set (seems redundant, but it will be useful,
@@ -127,18 +132,14 @@ datasetName <- deparse(substitute(flossData))
 message("\n\n*** Transforming data...")
 
 # convert to unordered factors
+# (factor(..., ordered = FALSE) DOESN'T work here)
 
+flossData[["License.Category"]] <- 
+  as.integer(flossData[["License.Category"]])
 flossData[["License.Restrictiveness"]] <- 
   as.integer(flossData[["License.Restrictiveness"]])
 flossData[["Project.Stage"]] <- 
   as.integer(flossData[["Project.Stage"]])
-
-if (FALSE) {
-  flossData[["License.Restrictiveness"]] <-
-    factor(flossData[["License.Restrictiveness"]], ordered = FALSE)
-  flossData[["Project.Stage"]] <-
-    factor(flossData[["Project.Stage"]], ordered = FALSE)
-}
 
 
 # Initial model specification
@@ -159,13 +160,9 @@ colnames(successPath) <- rownames(successPath)
 
 # specify blocks of indicators (outer model), using variable names
 
-depVar <- "User.Community.Size"
-
-blockGovernance <- c("License.Restrictiveness", "Project.Age")
-blockSponsorship <- c("Project.Stage", "Development.Team.Size")
-# TODO
-#blockControl <- c("Development.Team.Size")
-blockSuccess <- depVar
+blockGovernance  <- c("License.Category", "License.Restrictiveness")
+blockSponsorship <- c("Project.Age", "Project.Stage")
+blockSuccess     <- c("Development.Team.Size", "User.Community.Size")
 
 # build list of blocks (outer model)
 successBlocks <- list(blockGovernance, blockSponsorship, blockSuccess)
@@ -173,21 +170,6 @@ successBlocks <- list(blockGovernance, blockSponsorship, blockSuccess)
 # specify model's vector of modes ('A' is reflective)
 successModes <- rep("A", 3)
 
-##temp - begin
-# convert factors to numeric values
-# convert factors to integers via as.numeric.factor() ["factors.R"]
-# the above doesn't work - however, as.integer() works just fine
-
-if (FALSE)
-for (x in factors4analysis)
-  flossData[[x]] <- as.integer(flossData[[x]])
-
-if (FALSE)
-for (x in factors4analysis)
-  flossData[[x]] <- as.numeric.factor(flossData[[x]])
-
-#print(str(flossData))
-##temp - end
 
 # specify measurement scale for manifest variables
 successScales <- list(c("ord", "num"), c("ord", "num"), c("num"))

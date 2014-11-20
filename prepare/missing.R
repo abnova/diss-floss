@@ -58,6 +58,8 @@ prepareForMI <- function (data) {
   # the above doesn't work - however, as.integer() works just fine
   data[["Project.License"]] <- 
     as.integer(data[["Project.License"]])
+  data[["License.Category"]] <- 
+    as.integer(data[["License.Category"]])
   data[["License.Restrictiveness"]] <- 
     as.integer(data[["License.Restrictiveness"]])
   data[["Project.Stage"]] <- 
@@ -285,12 +287,12 @@ mergedFile <- file.path(MERGED_DIR, fileName)
 message("\nLoading data...")
 flossData <- loadData(mergedFile)
 
-# use only (numeric) columns of our interest
-# 'License.Category' doesn't vary, so it is excluded
+# select the columns of interest
 flossData <- flossData[c("Repo.URL",
                          "Project.Age",
                          "Development.Team.Size",
                          "Project.License",
+                         "License.Category",
                          "License.Restrictiveness",
                          "Project.Stage",
                          "User.Community.Size")]
@@ -305,7 +307,10 @@ flossData[["Repo.URL"]] <- NULL
 flossDataTest <- prepareForMI(flossData)
 
 # test for multivariate normality (MVN)
-mvnResult <- mvnTests(flossDataTest)
+# 'License.Category' doesn't vary, when sampled,
+# so it is excluded here (just for MVN tests, not for MI)
+mvnResult <- mvnTests(flossDataTest[setdiff(names(flossDataTest),
+                                            "License.Category")])
 
 # Results show that the data is not multivariate normal. Therefore,
 # we cannot use Amelia to perform MI, as it requires MV normality.
