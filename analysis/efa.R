@@ -145,7 +145,7 @@ genEFAresultsTable <- function (label = "efaResults",
   efaResultsTable <- addHeader(efaResultsTable, methods, factorNames)
   
   # set the caption (specific for 'tables' package)
-  latexCap <- paste0("\\caption{", caption, ".}\\\\", "\n",
+  latexCap <- paste0("\\caption{", caption, "}\\\\", "\n",
                      "\\toprule",
                      "\\label{tab:", label, "}")
   

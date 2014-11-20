@@ -76,7 +76,7 @@ summary(vssInfo_flossData)
 And now let's take a look at the EFA results summary, presented in Table \ref{tab:efaResults}:
 
 ```{r efaReportSummaryTable, include=TRUE, results='asis'}
-genEFAresultsTable(caption="EFA parallel analysis scree plot", digits=2, numFactors=numFactors)
+genEFAresultsTable(caption="EFA Results: Summary by rotation method", digits=2, numFactors=numFactors)
 ```
 
 The factors scree plot, produced as part of EFA, is shown in Figure \ref{fig:efaResultsScreePlot}:
@@ -90,7 +90,7 @@ Results of EFA are visualized in a form of diagrams and are presented in Figure 
 
 `r diagLegend <- "DTS - Development Team Size; PrA - Project Age; LcR - License Restrictiveness; PrS - Project Size; SfT - Software Type"`
 
-```{r efaReportDiagram, include=TRUE, results='asis', fig.cap='EFA Results: Diagrams\\label{fig:efaResultsDiagram}', fig.show='hold', fig.subcap=diagLegend}
+```{r efaReportDiagram, include=TRUE, results='asis', fig.cap='EFA Results: Model diagram\\label{fig:efaResultsDiagram}', fig.show='hold', fig.subcap=diagLegend}
 genEFAresultsDiagram(faPA_flossData, latex = TRUE)
 #genEFAresultsDiagram(faPromax_flossData, latex = TRUE)
 #genEFAresultsDiagram(faBi_flossData, latex = TRUE)
