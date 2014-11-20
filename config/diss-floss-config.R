@@ -36,6 +36,10 @@ CFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/cfa")
 SEM_RESULTS_DIR <- file.path(PRJ_HOME, "results/sem")
 
 
+# manuscript's body vs. appendix control
+DO_APPENDIX = FALSE
+
+
 # nissing data analysis control
 DO_MISSING_ANALYSIS <- FALSE
 DO_MISSING_MAIN_MI  <- FALSE

@@ -158,45 +158,83 @@ genEFAresultsTable <- function (label = "efaResults",
 }
 
 
+getBestEFAmodel <- function (models) {
+
+  # compare determined EFA models (factor structure) to find the best-fitted one
+  tli.info <- sapply(models, '[[', "TLI")
+  chi.info <- sapply(models, '[[', "chi")
+  fit.info <- sapply(models, '[[', "fit")
+  
+  tli.best <- which.max(tli.info)
+  chi.best <- which.min(chi.info)
+  fit.best <- which.min(fit.info)
+  
+  results <- round(rbind(tli.info, chi.info, fit.info), digits = 2)
+  if (DEBUG) print(results)
+  
+  # currently use 'fit' as the ultimate model comparison criterion
+  if (!KNITR) {
+    print("Model comparison results in the following best-fitted model:\n")
+    print(summary(models[[fit.best]]))
+  }
+  
+  return (models[fit.best])
+}
+
+
+# TODO: implement when will have time (rows: fit indices, cols: rot. methods)
+genEFAcomparisonTable <- function (label = "efaResults",
+                                caption = "EFA results summary",
+                                digits = 2, numFactors) {
+  
+}
+
+
 # parameter 'latex' should be set to TRUE only for a call under KNITR
 
-genEFAresultsDiagram <- function (fa.obj, latex = FALSE) {
+genEFAresultsDiagram <- function (models, best.fit = FALSE, latex = FALSE) {
   
-  standAlone <- FALSE
-  filetype <- ifelse(.Platform$GUI == "RStudio", "x11", "R")
-
-  # redefine output to LaTeX
-  if (latex) filetype <- "tex"
+  if (best.fit)
+    models <- getBestEFAmodel(models)
   
-  # specify groups to produce factors and indicators circles
-  factors <- apply(abs(fa.obj$loadings), 1, which.max)
-  faGroups <- vector("list", length(unique(factors)))
+  for (fa.obj in models) {
+    
+    standAlone <- FALSE
+    filetype <- ifelse(.Platform$GUI == "RStudio", "x11", "R")
+    
+    # redefine output to LaTeX
+    if (latex) filetype <- "tex"
   
-  for(i in 1:length(factors))
-    faGroups[[factors[i]]] <- c(faGroups[[factors[i]]], i)
-  
-  # change color palette
-  colPalette <- brewer.pal(5, "Pastel1")[1:length(unique(factors))]
-  
-  # prepare tooltips vector
-  #tooltips <- c(unlist(attr(fa.obj$loadings, "dimnames")[1]), # indicator names
-  #              unlist(attr(fa.obj$loadings, "dimnames")[2])) # factor names
-  
-  # TODO: re-arrange indicator names to match qgraph's ordering
-  # (seems to be based on indicator loadings values)
-
-  # TEMP
-  tooltips <- c("Development Team Size", "License Restrictiveness",
-                "Project Age", "Project Stage", "Software Type",
-                "Factor 1", "Factor 2", "Factor 3")
-  
-  # 'qgraph' defaults to 'circular' layout (alternative: 'groups')
-  qgraph(fa.obj$loadings, groups = faGroups,
-         edge.labels = TRUE,
-         #tooltips = tooltips,
-         colors = colPalette, bg = "grey90",
-         filetype = filetype, standAlone = standAlone,
-         mar = c(2.5, 2.5, 2.5, 2.5)) # B/L/T/R
+    # specify groups to produce factors and indicators circles
+    factors <- apply(abs(fa.obj$loadings), 1, which.max)
+    faGroups <- vector("list", length(unique(factors)))
+    
+    for(i in 1:length(factors))
+      faGroups[[factors[i]]] <- c(faGroups[[factors[i]]], i)
+    
+    # change color palette
+    colPalette <- brewer.pal(5, "Pastel1")[1:length(unique(factors))]
+    
+    # prepare tooltips vector
+    #tooltips <- c(unlist(attr(fa.obj$loadings, "dimnames")[1]), # indicator names
+    #              unlist(attr(fa.obj$loadings, "dimnames")[2])) # factor names
+    
+    # TODO: re-arrange indicator names to match qgraph's ordering
+    # (seems to be based on indicator loadings values)
+    
+    # TEMP
+    tooltips <- c("Development Team Size", "License Restrictiveness",
+                  "Project Age", "Project Stage", "Software Type",
+                  "Factor 1", "Factor 2", "Factor 3")
+    
+    # 'qgraph' defaults to 'circular' layout (alternative: 'groups')
+    qgraph(fa.obj$loadings, groups = faGroups,
+           edge.labels = TRUE,
+           #tooltips = tooltips,
+           colors = colPalette, bg = "grey90",
+           filetype = filetype, standAlone = standAlone,
+           mar = c(2.5, 2.5, 2.5, 2.5)) # B/L/T/R
+  }
 }
 
 
@@ -531,11 +569,17 @@ message("Currently disabled.")
 
 # TODO: Consider whether it's better to pass diag. vec. & loop inside
 
-# vector of EFA objects, for which diagrams should be produced
-diagrams <- list(fa.pa, fa.promax, fa.bi, fa.uls, fa.wls)
+# list of EFA models, for which diagrams/comparison should be produced
+efaModels <- list(fa.pa, fa.promax, fa.bi, fa.uls, fa.wls)
 
-# produce all requested diagrams
-for (diag in diagrams) genEFAresultsDiagram(diag)
+# produce all requested diagrams (for appendix)
+genEFAresultsDiagram(efaModels)
+
+# determine the best-fitted EFA model
+getBestEFAmodel(efaModels)
+
+# produce the best-fitted diagram (for manuscript's body)
+genEFAresultsDiagram(efaModels, TRUE)
 
 
 message("\n===== EFA completed, results can be found ",
