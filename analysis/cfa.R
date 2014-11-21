@@ -217,8 +217,8 @@ cfaPrettyPrint <- function(object, digits = getOption("digits")) {
 
 message("\n\n===== PERFORMING CONFIRMATORY FACTOR ANALYSIS (CFA) =====")
 
-fileName <- paste0(READY4CFA_FILE, RDS_EXT)
-ready4cfaFile <- file.path(READY4CFA_DIR, fileName)
+fileName <- paste0(IMPUTED_FILE, RDS_EXT)
+ready4cfaFile <- file.path(IMPUTED_DIR, fileName)
 
 # Create results directory, if it doesn't exist
 if (!file.exists(CFA_RESULTS_DIR)) {
@@ -229,20 +229,21 @@ if (!file.exists(CFA_RESULTS_DIR)) {
 message("\n\n*** Loading data...")
 flossData <- loadData(ready4cfaFile)
 
-# select imputed dataset - TODO: clarify! imputed vs transformed/merged?
-#flossData <- mice::complete(flossData, 1)
+# select imputed dataset
+flossData <- mice::complete(flossData, 1)
 
 # due to very small amount of projects with "Non-OSI" licesnse
 # and their disapperance due to calculating correlations,
 # we don't include "License Category" into EFA (consider analyzing it
 # at later phases with inclusion of imputed data)
+# NOT TRUE ANYMORE, as we use imputed data
 
 # we also remove "Repo URL" due to injection of large # of NAs
 # due to limiting conditions at the end of the merge process
 
-factors4analysis <- c("Development.Team.Size", "Project.Age",
-                      "License.Restrictiveness", "Project.Stage",
-                      "Software.Type")
+factors4analysis <- c("Development.Team.Size", "User.Community.Size",
+                      "License.Restrictiveness", "License.Category",
+                      "Project.Age", "Project.Stage")
 flossData <- flossData[, factors4analysis]
 
 # sample the sample (use 1%) to reduce processing time
@@ -253,9 +254,20 @@ flossData <- flossData[, factors4analysis]
 # [currently used for KNITR only]
 datasetName <- deparse(substitute(flossData))
 
-# log transform continuous data
+# log transform continuous data to normalize
 flossData["Project.Age"] <- log(flossData["Project.Age"])
 flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
+
+# exclude outliers
+flossData <- 
+  subset(flossData,
+         User.Community.Size > quantile(flossData$User.Community.Size, probs = .005) &
+           User.Community.Size < quantile(flossData$User.Community.Size, probs = .995))
+
+# rescale some variables as lavaan is not very happy if the
+# variance of different variables are too different
+flossData$User.Community.Size <- flossData$User.Community.Size / 10000 # 0
+#flossData$Project.Age <- flossData$Project.Age / 10
 
 # ===
 
@@ -271,19 +283,15 @@ model <- "
 
 # factor structure (fix factors' loadings to 1)
 
-f1 =~ 1 * Development.Team.Size
-f2 =~ 1 * License.Restrictiveness
-f3 =~ 1 * Project.Age + Software.Type
+f1 =~ 1 * Development.Team.Size + User.Community.Size
+f2 =~ 1 * License.Restrictiveness + License.Category
+f3 =~ 1 * Project.Age + Project.Stage
 
-# fix some variances/residual variances to zero
-# because < 3 indicators per latent variables
+# variances (fix one variances to one)
 
-# Changed from original specification due to lavaan not analyzing
-# categorical variables, so the following indicators were removed:
-# License.Restrictiveness, Project.Age, Software.Type
-
-Development.Team.Size ~~ 0 * Development.Team.Size
-f2 ~~ 1 * f2
+f1 ~~ f1
+f2 ~~ 1 * f2 
+f3 ~~ f3
 
 # covariances between the latent variables
 
@@ -297,11 +305,11 @@ message("\n*** Performing CFA of the model...\n")
 
 if (DEBUG) {
   cfa.fit <- cfa(model, data = flossData, meanstructure = TRUE,
-                 missing = "pairwise", estimator = "WLSMV")
+                 estimator = "WLSMV")
 } else {
   cfa.fit <- suppressWarnings(
     cfa(model, data = flossData, meanstructure = TRUE,
-                 missing = "pairwise", estimator = "WLSMV")
+                 estimator = "WLSMV")
     )
 }
 
