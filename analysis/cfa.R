@@ -161,7 +161,7 @@ genCFAmodelDiagram <- function (cfa.fit, latex = FALSE,
     print(sanitize(latexOut))
   }
   
-  return (invisible(cfaDiag))
+  if (latex) return (invisible(cfaDiag))
 }
 
 
