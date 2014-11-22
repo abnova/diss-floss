@@ -15,7 +15,7 @@ genDynChunks <- function (refInfo, multi = FALSE, hold = TRUE,
   chunkHeader <- paste0("```{r ", chunkName, ",")
   
   if (!(missing(fig.height) && missing(fig.width)))
-    figOptions <- paste0("fig.height=", fig.height, ", fig.width=", fig.width)
+    figOptions <- paste0("fig.height=myScale*", fig.height, ", fig.width=myScale*", fig.width)
   
   chunkOptions <- paste0("include=TRUE, results='asis', ", figOptions, ", fig.cap='", latexObjLabel, "'")
   chunkHeaderFull <- paste(chunkHeader, chunkOptions, "}")
@@ -40,7 +40,9 @@ genEDAdescStatsTable <- function (df, label = "edaDescStats",
                                   caption = "EDA descriptive statistics",
                                   digits = 2) {
   
-  df <- df[, sapply(df, is.numeric)]
+  is.numericORfactor <- function (x) { is.numeric(x) || is.factor(x) }
+  
+  df <- df[, sapply(df, is.numericORfactor)]
   df <- psych::describe(df)
   
   df <- as.data.frame(round(df, digits))

@@ -73,3 +73,6 @@ GRAPHICS_EXT <- ".svg"  # default format for saving plots
 
 # knitr-related
 KNITR <<- isTRUE(getOption("knitr.in.progress"))
+
+myDPI  <<- 300
+myScale <<- 1

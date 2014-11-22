@@ -8,6 +8,7 @@ library(knitr)
 
 PRJ_HOME <- Sys.getenv("DISS_FLOSS_HOME")
 
+source(file.path(PRJ_HOME, "config//diss-floss-config.R"))
 source(file.path(PRJ_HOME, "utils/graphics.R")) # golden ratio
 
 read_chunk(file.path(PRJ_HOME, "config/knitr/hooks/outputLines.R")) # hook
@@ -35,6 +36,7 @@ opts_chunk$set(
   tidy = FALSE,
   comment = NA,
   fig.width = PHI * opts_chunk$get("fig.height"),
+  dpi = myDPI,
   #fig.align = 'center',
   #out.width = '0.8\\textwidth',
   #fig.path = 'figures/',
