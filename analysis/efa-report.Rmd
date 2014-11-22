@@ -6,13 +6,12 @@ output:
     fig_caption: yes
     fig_crop: no
     highlight: kate
+    includes:
+      in_header: ~/diss-floss/config/diss-floss.sty
     keep_tex: yes
-    #lib_dir: figures/eda-report
     number_sections: yes
     toc: yes
     toc_depth: 3
-    includes:
-      in_header: ~/diss-floss/config/diss-floss.sty
   md_document:
     toc: yes
     toc_depth: 3
@@ -23,7 +22,6 @@ output:
     toc: yes
   word_document:
     fig_width: 6.5
-    mainfont: Calibri
 ---
 
 The following report is dynamically generated and presents results of exploratory data analysis (EDA) for prepared (transformed) research data, located in directories under "data/transform".
