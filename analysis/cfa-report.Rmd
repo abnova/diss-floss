@@ -4,13 +4,12 @@ author: "Aleksandr Blekh"
 output:
   pdf_document:
     highlight: kate
+    includes:
+      in_header: ~/diss-floss/config/diss-floss.sty
     keep_tex: yes
-    #lib_dir: figures/eda-report
     number_sections: yes
     toc: yes
     toc_depth: 3
-    includes:
-      in_header: ~/diss-floss/config/diss-floss.sty
   md_document:
     toc: yes
     toc_depth: 3
@@ -21,7 +20,6 @@ output:
     toc: yes
   word_document:
     fig_width: 6.5
-    mainfont: Calibri
 ---
 
 The following report is dynamically generated and presents results of exploratory data analysis (EDA) for prepared (transformed) research data, located in directories under "data/transform".
@@ -41,6 +39,7 @@ read_chunk('cfa.R')
 ```
 
 ```{r ConfigReport}
+outFmt <- opts_knit$get('out.format')
 param1 <- TRUE
 param2 <- FALSE
 param3 <- 'TEST'
@@ -79,6 +78,8 @@ $$ \sum_{i=1}^{n} \{ y_{i} - \hat{\mu}_{i} \}^2 $$
 And now let's see what output would be produced by 'tables' package, as shown in Table \ref{cfaResultsTable}:
 
 ```{r cfaReportSummary3, include=TRUE, results='asis', fig.cap='CFA Results Summary'}
+#if (outFmt == 'word_document') fileType <- 'msword'
+#genCFAresultsTable(label = "cfaResultsTable", type = fileType)
 genCFAresultsTable(label = "cfaResultsTable")
 ```
 

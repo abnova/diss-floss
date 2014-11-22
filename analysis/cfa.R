@@ -13,6 +13,7 @@ if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
 if (!suppressMessages(require(qgraph))) install.packages('semPlot')
 if (!suppressMessages(require(qgraph))) install.packages('qgraph') # for 'semPlot'
 if (!suppressMessages(require(RColorBrewer))) install.packages('RColorBrewer')
+if (!suppressMessages(require(pander))) install.packages('pander')
 if (!suppressMessages(require(mice))) install.packages('mice')
 
 library(polycor)
@@ -23,6 +24,7 @@ library(Hmisc)
 library(semPlot)
 library(qgraph)
 library(RColorBrewer)
+library(pander)
 library(mice)
 
 
@@ -64,6 +66,10 @@ genCFAresultsTable <- function (caption = "CFA results summary",
   horLines <- c(c(-1, 0, numRows), numRows + lines2Add)
   cfa.table[numRows + 1, ] <- names(fit.info)
   cfa.table[numRows + 2, ] <- round(fit.info, digits = digits)
+
+  if (type == 'msword') {
+    return (pandoc.table(cfa.table))
+  }
   
   # table note/comment (decided to implement it as a part of caption)
   if (FALSE) {
