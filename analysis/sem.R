@@ -188,11 +188,11 @@ successPLS <- plspm(flossData,
 
 message("\n\n*** SEM-PLS analysis results:\n")
 
-# contents of the results object
-print(successPLS)
+# contents of the results object (what's available)
+if (DEBUG) print(successPLS)
 
 # summarized results
-print(summary(successPLS))
+print(summary(successPLS), digits = DIGITS)
 
 
 # 4.3. Measurement Model Assessment: Reflective Indicators
@@ -210,7 +210,7 @@ if (KNITR) {
 
 
 # outer model results (in a matrix way, unlike tabular in summary())
-print(successPLS$outer_model)
+print(successPLS$outer_model, digits = DIGITS)
 
 
 # display barchart of loadings with threshold value line
@@ -245,7 +245,7 @@ if (.Platform$GUI == "RStudio") {print(gLoadBarChart)}
 
 
 # Governance outer model results
-print(subset(successPLS$outer_model, block == "Governance"))
+#print(subset(successPLS$outer_model, block == "Governance"))
 
 # plotting weights
 gWeights <- plot(successPLS, what = "weights")
@@ -328,19 +328,19 @@ if (.Platform$GUI == "RStudio") {print(gCrossLoadBlocks)}
 ##########################################################
 
 # inner model
-print(successPLS$inner_model)
+print(successPLS$inner_model, digits = DIGITS)
 
 # matrix of path coefficients
-print(successPLS$path_coefs)
+print(successPLS$path_coefs, digits = DIGITS)
 
 # inner model summary
-print(successPLS$inner_summary)
+print(successPLS$inner_summary, digits = DIGITS)
 
 # select R2
-print(successPLS$inner_summary[, "R2", drop = FALSE])
+print(successPLS$inner_summary[, "R2", drop = FALSE], digits = DIGITS)
 
 # GoF index
-print(successPLS$gof)
+print(successPLS$gof, digits = DIGITS)
 
 # matrix with values based on path coeffs
 arrow_lwd <- 10 * round(successPLS$path_coefs, 2)
@@ -352,7 +352,7 @@ plot(successPLS, arr.lwd = arrow_lwd)
 ## Effects Analysis
 
 # effects summary (don't use summary() here)
-print(successPLS$effects)
+print(successPLS$effects, digits = DIGITS)
 
 # select effects ('active' rows)
 activeRows <- na.omit(successPLS$effects[successPLS$effects[, -1] != 0, ])
@@ -365,7 +365,7 @@ path_effs <- as.matrix(successPLS$effects[activeRows, -1])
 rownames(path_effs) <- successPLS$effects[activeRows, 1]
 
 # active effects summary
-print(path_effs)
+print(path_effs, digits = DIGITS)
 
 # visual: LV effects diagram
 # TODO: convert to ggplot2 version, rotate x-axis labels, etc.
@@ -400,8 +400,8 @@ if (DO_SEM_BOOT) {
   
   
   # bootstrap results
-  print(successVal$boot)
+  print(successVal$boot, digits = DIGITS)
 }
 
-message("\n===== SEM-PLS analysis completed, results can be found ",
+message("\n===== SEM-PLS analysis completed, results are ",
         "in directory \"", SEM_RESULTS_DIR, "\"\n")

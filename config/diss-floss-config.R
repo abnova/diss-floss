@@ -40,6 +40,10 @@ SEM_RESULTS_DIR <- file.path(PRJ_HOME, "results/sem")
 DO_APPENDIX = FALSE
 
 
+# general statistical control
+DIGITS <- 2
+
+
 # nissing data analysis control
 DO_MISSING_ANALYSIS <- FALSE
 DO_MISSING_MAIN_MI  <- FALSE
