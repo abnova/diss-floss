@@ -206,7 +206,8 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
 
   # exclude inactive projects
   if (dataSource == "SourceForge")
-    flossData <- flossData[flossData[["Active"]] != PRJ_INACTIVE_, ]
+    flossData <- flossData[is.na(flossData[["Active"]]) | 
+                             flossData[["Active"]] != PRJ_INACTIVE_, ]
 
   # exclude outliers
   if (dataSource == "SourceForge") {
@@ -226,7 +227,8 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
     }
     
     flossData <- 
-      flossData[flossData[["Development.Team.Size"]] <= outLim_DevTeamSize, ]
+      flossData[is.na(flossData[["Development.Team.Size"]]) | 
+                  flossData[["Development.Team.Size"]] <= outLim_DevTeamSize, ]
   }
   
   # verify the data frame structure
