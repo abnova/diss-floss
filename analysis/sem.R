@@ -119,6 +119,7 @@ flossData <- mice::complete(flossData, 1)
 # "Project.License" is excluded from analysis, as it's unordered factor.
 
 factors4analysis <- c("License.Category", "License.Restrictiveness",
+                      "Preferred.Support.Type", "Preferred.Support.Resource",
                       "Project.Age", "Project.Stage",
                       "Development.Team.Size", "User.Community.Size")
 flossData <- flossData[, factors4analysis]
@@ -140,6 +141,10 @@ flossData[["License.Restrictiveness"]] <-
   as.integer(flossData[["License.Restrictiveness"]])
 flossData[["Project.Stage"]] <- 
   as.integer(flossData[["Project.Stage"]])
+flossData[["Preferred.Support.Type"]] <- 
+  as.integer(flossData[["Preferred.Support.Type"]])
+flossData[["Preferred.Support.Resource"]] <- 
+  as.integer(flossData[["Preferred.Support.Resource"]])
 
 
 # Initial model specification
@@ -147,28 +152,40 @@ flossData[["Project.Stage"]] <-
 
 message("\n\n*** Building model...")
 
-# define rows of the path matrix (for inner model)
-Governance  <- c(1, 0, 0)
-Sponsorship <- c(1, 0, 0)
-Success     <- c(1, 1, 0)
+# define rows of the path matrix (for inner model) - no mediation
+Governance   <- c(0, 0, 0, 0)
+Sponsorship  <- c(0, 0, 0, 0)
+Maturity     <- c(0, 0, 0, 0)
+Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
+
+# TODO: change layout (function?)
+
+# define rows of the path matrix (for inner model) - mediation
+Governance   <- c(0, 0, 0, 0)
+Sponsorship  <- c(1, 0, 0, 0)  # GOV affects SPON
+Maturity     <- c(0, 0, 0, 0)
+Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
 
 # build the inner model matrix
-successPath <- rbind(Governance, Sponsorship, Success) 
+successPath <- rbind(Governance, Sponsorship, Maturity, Success)
 
-# add column names
-colnames(successPath) <- rownames(successPath)
+# add column/row names
+colnames(successPath) <- rownames(successPath) <-
+  c("Governance", "Sponsorship", "Maturity", "Success")
 
 # specify blocks of indicators (outer model), using variable names
 
-blockGovernance  <- c("License.Category", "License.Restrictiveness")
-blockSponsorship <- c("Project.Age", "Project.Stage")
-blockSuccess     <- c("Development.Team.Size", "User.Community.Size")
+blockGovernance   <- c("License.Category", "License.Restrictiveness")
+blockSponsorship  <- c("Preferred.Support.Type", "Preferred.Support.Resource")
+blockMaturity     <- c("Project.Age", "Project.Stage")
+blockSuccess      <- c("Development.Team.Size", "User.Community.Size")
 
 # build list of blocks (outer model)
-successBlocks <- list(blockGovernance, blockSponsorship, blockSuccess)
+successBlocks <- list(blockGovernance, blockSponsorship,
+                      blockMaturity, blockSuccess)
 
 # specify model's vector of modes ('A' is reflective)
-successModes <- rep("A", 3)
+successModes <- rep("A", 4)
 
 
 # specify measurement scale for manifest variables
@@ -200,7 +217,8 @@ print(summary(successPLS), digits = DIGITS)
 
 
 # plotting loadings
-gLoadDiag <- plot(successPLS, what = "loadings")
+gLoadDiag <- plot(successPLS, what = "loadings",
+                  box.prop = 2, box.cex = 1.5, cex.txt = 1.2)
 
 # Not needed, since we have to call plot() method in .Rmd
 if (KNITR) {
@@ -248,7 +266,8 @@ if (.Platform$GUI == "RStudio") {print(gLoadBarChart)}
 #print(subset(successPLS$outer_model, block == "Governance"))
 
 # plotting weights
-gWeights <- plot(successPLS, what = "weights")
+gWeights <- plot(successPLS, what = "weights",
+                 box.prop = 2, box.cex = 1.5, cex.txt = 1.2)
 
 
 # TODO: potential model's modifications/adjustments HERE
@@ -402,6 +421,7 @@ if (DO_SEM_BOOT) {
   # bootstrap results
   print(successVal$boot, digits = DIGITS)
 }
+
 
 message("\n===== SEM-PLS analysis completed, results are ",
         "in directory \"", SEM_RESULTS_DIR, "\"\n")
