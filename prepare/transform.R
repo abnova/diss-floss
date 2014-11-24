@@ -275,6 +275,22 @@ sfDevSupport <- function (indicator, data) {
   data[["Preferred.Support.Type"]] <- 
     ifelse(data[["Preferred.Support.Type"]] == 6, 1, 0)
   
+  # recode Preferred Support Resource: empty to 0, non-empty to 1
+  # contains a workaround due to unknown nature of received data
+
+  data[["Preferred.Support.Resource"]] <- 
+    ifelse(nchar(data[["Preferred.Support.Resource"]]) == 0, 0, 1)
+  
+  data[["Preferred.Support.Resource"]] <- 
+    suppressWarnings(as.integer(data[["Preferred.Support.Resource"]]))
+  
+  # convert to factors
+  data[["Preferred.Support.Type"]] <- 
+    factor(data[["Preferred.Support.Type"]], ordered = TRUE)
+  
+  data[["Preferred.Support.Resource"]] <- 
+    factor(data[["Preferred.Support.Resource"]], ordered = TRUE)
+  
   if (DEBUG) message(" Done.")
   if (DEBUG2) {message(""); print(summary(data)); message("")}
   
