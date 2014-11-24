@@ -152,19 +152,25 @@ flossData[["Preferred.Support.Resource"]] <-
 
 message("\n\n*** Building model...")
 
-# define rows of the path matrix (for inner model) - no mediation
-Governance   <- c(0, 0, 0, 0)
-Sponsorship  <- c(0, 0, 0, 0)
-Maturity     <- c(0, 0, 0, 0)
-Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
+modelTypeSEM <- "no-mediation" # TODO: consider moving to main config. file
 
-# TODO: change layout (function?)
+if (modelTypeSEM == "mediation") {
+  
+  # define rows of the path matrix (for inner model) - mediation
+  Governance   <- c(0, 0, 0, 0)
+  Sponsorship  <- c(1, 0, 0, 0)  # GOV affects SPON
+  Maturity     <- c(0, 0, 0, 0)
+  Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
+  
+} else {
+  
+  # define rows of the path matrix (for inner model) - no mediation
+  Governance   <- c(0, 0, 0, 0)
+  Sponsorship  <- c(0, 0, 0, 0)
+  Maturity     <- c(0, 0, 0, 0)
+  Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
+}
 
-# define rows of the path matrix (for inner model) - mediation
-Governance   <- c(0, 0, 0, 0)
-Sponsorship  <- c(1, 0, 0, 0)  # GOV affects SPON
-Maturity     <- c(0, 0, 0, 0)
-Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
 
 # build the inner model matrix
 successPath <- rbind(Governance, Sponsorship, Maturity, Success)
