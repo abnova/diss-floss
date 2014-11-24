@@ -46,7 +46,7 @@ DIGITS <- 2
 
 # nissing data analysis control
 DO_MISSING_ANALYSIS <- FALSE
-DO_MISSING_MAIN_MI  <- FALSE
+DO_MISSING_MAIN_MI  <- TRUE
 DO_MISSING_VIZ_MI   <- TRUE
 
 # EDA analysis control

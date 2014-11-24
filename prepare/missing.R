@@ -48,7 +48,7 @@ DEBUG <- FALSE  # local setting
 # (disadvantage: would require loading 'parallel' project-wide, so TBD)
 NUM_CORES <- getOption("mc.cores")  # for parallel processing
 
-NUM_IMPUTATIONS <- 5  # minimum recommended number of imputations
+NUM_IMPUTATIONS <- 1  # minimum recommended number of imputations
 
 
 # additional transformations needed for data testing
@@ -128,6 +128,8 @@ transformData <- function (flossData) {
   flossData["Project.Age"] <- log(flossData["Project.Age"])
   flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
   flossData["User.Community.Size"] <- log(flossData["User.Community.Size"])
+  
+  return (flossData)
 }
 
 
@@ -188,7 +190,11 @@ performMI <- function (flossData) {
   flossData <- flossData[setdiff(names(flossData), "Project.License")]
   
   # perform multiple imputation, using 'mice'
-  
+
+  # TODO:
+  # 1) move the following line to merge and 
+  # 2) remove projects with low amount of info (optional; TBD)
+  # 3) sample after that 20%
   # first, remove totally missing data, leaving partially missing
   part.miss.index <- rowSums(is.na(flossData)) < ncol(flossData)
   
@@ -201,6 +207,14 @@ performMI <- function (flossData) {
   
   # never predict a variable from itself
   diag(pmat) <- 0
+
+  # TODO: Test and, if all works OK, remove the overlapIdx code
+  # don't allow variables with partial value overlap
+  # to predict themselves
+  
+  #overlapIdx1 <- which(colnames(flossData2) == "Preferred.Support.Type")
+  #overlapIdx2 <- which(colnames(flossData2) == "Preferred.Support.Resource")
+  #pmat[c(overlapIdx1, overlapIdx2), c(overlapIdx1, overlapIdx2)] <- 0
   
   # make other modifications, as needed, here,
   # so that some variables are not predicted,
@@ -295,6 +309,8 @@ flossData <- flossData[c("Repo.URL",
                          "License.Category",
                          "License.Restrictiveness",
                          "Project.Stage",
+                         "Preferred.Support.Type",
+                         "Preferred.Support.Resource",
                          "User.Community.Size")]
 
 # temp fix for limited dataset - comment out/remove for full dataset
@@ -310,7 +326,9 @@ flossDataTest <- prepareForMI(flossData)
 # 'License.Category' doesn't vary, when sampled,
 # so it is excluded here (just for MVN tests, not for MI)
 mvnResult <- mvnTests(flossDataTest[setdiff(names(flossDataTest),
-                                            "License.Category")])
+                                            c("License.Category",
+                                              "Preferred.Support.Type",
+                                              "Preferred.Support.Resource"))])
 
 # Results show that the data is not multivariate normal. Therefore,
 # we cannot use Amelia to perform MI, as it requires MV normality.
@@ -327,9 +345,6 @@ if (DO_MISSING_ANALYSIS) {
   
   # test data for being MCAR
   testMCAR(flossData)
-  
-  # transform data prior to MI (log)
-  transformData(flossData)
 }
 
 
@@ -337,6 +352,9 @@ if (DO_MISSING_ANALYSIS) {
 
 if (DO_MISSING_MAIN_MI) {
   
+  # transform data prior to MI (log)
+  flossData <- transformData(flossData)
+
   # perform multiple imputation, using 'mice'
   imputedCombined <- performMI(flossData)
   
