@@ -134,3 +134,15 @@ sanitize <- function(str) {
 
 # TBD, for now will use pandoc.table()
 #print.pander <- function (x, ...) UseMethod("pander")
+
+
+plspm.innerprint <- function(object, digits = 3) {
+  
+  res1 <- do.call(rbind, lapply(names(object$inner_model), function(n) {
+    data.frame(Outcome = n, object$inner_model[[n]])
+  }))
+  
+  colnames(res1)[3:5] <- c("SE", "Tvalue", "Pvalue")
+  res1$Pvalue <- format.pval(res1$Pvalue, digits = digits)
+  pander(res1, split.tables = 200, round = digits)
+}
