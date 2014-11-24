@@ -47,38 +47,6 @@ GGPLOT2_PALETTE_LINE <- scale_color_manual(values = COLOR_PALETTE)
 DEBUG <- FALSE  # local setting
 
 
-##### MISC FUNCTIONS #####
-
-
-# generate R Markdown table with results of SEM analysis
-genSEMtable <- function (obj, type, caption, label, format = "latex") {
-  
-  # if LaTeX, add label to the caption for cross-referencing
-  if (format == "latex")
-    caption <- paste0(caption, "\\label{tab:", label, "}")
-  
-  # set the caption, but don't re-use for next table(s)
-  set.caption(caption, permanent = FALSE)
-  
-  # don't split tables
-  panderOptions("table.split.table", Inf)
-  
-  # create table in R Markdown format
-  pandoc.table(obj)  # more flexible alternative: pander()
-}
-
-
-# generate R Markdown table with results of SEM analysis
-genSEMfigure <- function (obj, caption, label) {
-  
-  # add label to the caption for cross-referencing
-  caption <- paste0(caption, "\\label{fig:", label, "}")
-  
-  # return both caption/label and plot in a list
-  list(caption = caption, plot = obj)
-}
-
-
 ##### ANALYSIS #####
 
 ## @knitr PerformSEM

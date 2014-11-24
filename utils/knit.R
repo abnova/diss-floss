@@ -1,4 +1,16 @@
-# Dynamically generate knit-ready chunk code for objects (figures/tables),
+#
+# This module contains functions, implementing RR-related functionality:
+#
+# 1. General functions (dynamic chunks, etc.)
+# 2. Specialized functions (creating tables/figures for various analyses)
+# 3. Miscellaneous (utility) functions
+
+
+##### GENERAL FUNCTIONS
+
+## CHUNKS
+
+# Dynamically generates knit-ready chunk code for objects (figures/tables),
 # ready for cross-referencing in a report document (supports .Rmd to LaTeX).
 
 # Currently supports figures only,
@@ -35,6 +47,49 @@ genDynChunks <- function (refInfo, multi = FALSE, hold = TRUE,
   return (unlist(objChunks))
 }
 
+
+## REFERENCES
+
+# Produces string with LaTeX ref. labels for figures/tables of specific type
+
+genObjRefs <- function (objType, objTypePrefix) {
+  
+  objs <- ls(pattern = objTypePrefix, envir = .GlobalEnv)
+  if (length(objs) == 0)
+    stop(paste("No objects of type", objTypePrefix, "found!"))
+  
+  split <- strsplit(objs, objTypePrefix)
+  objRefs <- sapply(split, `[[`, 2)
+  #objRefs <- split[[seq(split)]][2]
+  
+  objAllRefs <- c()
+  for (i in seq(objRefs)) objAllRefs <- c(objAllRefs, objRefs[[i]])
+  refKeyword <- ifelse(objType == "fig", "\\ref{fig:", "\\ref{tab:")
+  refStr <- sapply(objAllRefs, function (x) {paste0(refKeyword, x, "}")})
+  
+  colFlag <- ""; refStrTemp <- ""
+  objWord <- ifelse(objType == "fig", "Figures ", "Tables ")
+  
+  if (length(refStr) < 2) {
+    objWord <- ifelse(objType == "fig", "Figure ", "Table")
+    refStrFinal <- paste(objWord, refStr[length(refStr)])
+  }
+  else {
+    if (length(refStr) == 2) colFlag <- " and "
+    else if (length(refStr) > 2) colFlag <- ", "
+    
+    refStrTemp <- paste(refStr[-length(refStr)], collapse = colFlag)
+    refStrFinal <- paste(objWord, refStrTemp, " and ", refStr[length(refStr)])
+  }
+  
+  list(objs = objs, str = refStrFinal,
+       objType = objType, objTypePrefix = objTypePrefix)
+}
+
+
+##### SPECIALIZED FUNCTIONS - EDA
+
+## TABLES
 
 genEDAdescStatsTable <- function (df, label = "edaDescStats",
                                   caption = "EDA descriptive statistics",
@@ -75,40 +130,65 @@ genEDAdescStatsTable <- function (df, label = "edaDescStats",
 }
 
 
-# produces string with LaTeX reference labels for figures/tables of specific type
-genObjRefs <- function (objType, objTypePrefix) {
+##### SPECIALIZED FUNCTIONS - EFA
+
+
+##### SPECIALIZED FUNCTIONS - CFA
+
+
+##### SPECIALIZED FUNCTIONS - SEM
+
+## TABLES
+
+# Generate R Markdown table with results of SEM analysis ('pander' 2nd ver.)
+
+plspm.innerprint <- function(object, digits = 3) {
   
-  objs <- ls(pattern = objTypePrefix, envir = .GlobalEnv)
-  if (length(objs) == 0)
-    stop(paste("No objects of type", objTypePrefix, "found!"))
+  res1 <- do.call(rbind, lapply(names(object$inner_model), function(n) {
+    data.frame(Outcome = n, object$inner_model[[n]])
+  }))
   
-  split <- strsplit(objs, objTypePrefix)
-  objRefs <- sapply(split, `[[`, 2)
-  #objRefs <- split[[seq(split)]][2]
-  
-  objAllRefs <- c()
-  for (i in seq(objRefs)) objAllRefs <- c(objAllRefs, objRefs[[i]])
-  refKeyword <- ifelse(objType == "fig", "\\ref{fig:", "\\ref{tab:")
-  refStr <- sapply(objAllRefs, function (x) {paste0(refKeyword, x, "}")})
-  
-  colFlag <- ""; refStrTemp <- ""
-  objWord <- ifelse(objType == "fig", "Figures ", "Tables ")
-  
-  if (length(refStr) < 2) {
-    objWord <- ifelse(objType == "fig", "Figure ", "Table")
-    refStrFinal <- paste(objWord, refStr[length(refStr)])
-  }
-  else {
-    if (length(refStr) == 2) colFlag <- " and "
-    else if (length(refStr) > 2) colFlag <- ", "
-    
-    refStrTemp <- paste(refStr[-length(refStr)], collapse = colFlag)
-    refStrFinal <- paste(objWord, refStrTemp, " and ", refStr[length(refStr)])
-  }
-  
-  list(objs = objs, str = refStrFinal,
-       objType = objType, objTypePrefix = objTypePrefix)
+  colnames(res1)[3:5] <- c("SE", "Tvalue", "Pvalue")
+  res1$Pvalue <- format.pval(res1$Pvalue, digits = digits)
+  pander(res1, split.tables = 200, round = digits)
 }
+
+
+# Generate R Markdown table with results of SEM analysis ('pander' 1st ver.)
+
+# currently uses pandoc.table(); using methods is TBD:
+# print.pander <- function (x, ...) UseMethod("pander")
+
+genSEMtable <- function (obj, type, caption, label, format = "latex") {
+  
+  # if LaTeX, add label to the caption for cross-referencing
+  if (format == "latex")
+    caption <- paste0(caption, "\\label{tab:", label, "}")
+  
+  # set the caption, but don't re-use for next table(s)
+  set.caption(caption, permanent = FALSE)
+  
+  # don't split tables
+  panderOptions("table.split.table", Inf)
+  
+  # create table in R Markdown format
+  pandoc.table(obj)  # more flexible alternative: pander()
+}
+
+
+## FIGURES
+
+genSEMfigure <- function (obj, caption, label) {
+  
+  # add label to the caption for cross-referencing
+  caption <- paste0(caption, "\\label{fig:", label, "}")
+  
+  # return both caption/label and plot in a list
+  list(caption = caption, plot = obj)
+}
+
+
+##### MISC FUNCTIONS #####
 
 
 sanitize <- function(str) {
@@ -129,20 +209,4 @@ sanitize <- function(str) {
   result <- gsub("SANITIZE.BACKSLASH", "$\\backslash$", 
                  result, fixed = TRUE)
   return(result)
-}
-
-
-# TBD, for now will use pandoc.table()
-#print.pander <- function (x, ...) UseMethod("pander")
-
-
-plspm.innerprint <- function(object, digits = 3) {
-  
-  res1 <- do.call(rbind, lapply(names(object$inner_model), function(n) {
-    data.frame(Outcome = n, object$inner_model[[n]])
-  }))
-  
-  colnames(res1)[3:5] <- c("SE", "Tvalue", "Pvalue")
-  res1$Pvalue <- format.pval(res1$Pvalue, digits = digits)
-  pander(res1, split.tables = 200, round = digits)
 }
