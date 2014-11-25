@@ -230,7 +230,20 @@ mergeData <- function (dataSource, prefix = "", fileName = "Merged") {
       flossData[is.na(flossData[["Development.Team.Size"]]) | 
                   flossData[["Development.Team.Size"]] <= outLim_DevTeamSize, ]
   }
-  
+
+  # exclude projects with low number of indicators with data
+  if (FALSE) {
+    x <- rowSums(is.na(flossData))
+    i <- min(which(cumsum(table(x)) > MIN_NUM_PROJECTS))
+    number <- names(table(x))[i]
+  }
+
+  flossData <- flossData[rowSums(!is.na(flossData)) > MIN_NUM_INDICATORS, ]
+
+  # sub-sampling only if the sample is large enough
+  if (nrow(flossData) > MIN_NUM_PROJECTS * 2)
+    flossData <- sampleDF(flossData, MIN_NUM_PROJECTS)
+
   # verify the data frame structure
   if (DEBUG) str(flossData)
   
