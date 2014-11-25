@@ -36,6 +36,14 @@ CFA_RESULTS_DIR <- file.path(PRJ_HOME, "results/cfa")
 SEM_RESULTS_DIR <- file.path(PRJ_HOME, "results/sem")
 
 
+# domain-specific constants
+
+# condition for selecting projects (after merging),
+# based on amount of missing data
+MIN_NUM_INDICATORS <- 10
+MIN_NUM_PROJECTS   <- 50000
+
+
 # manuscript's body vs. appendix control
 DO_APPENDIX = FALSE
 
