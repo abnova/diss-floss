@@ -164,14 +164,28 @@ visualizeMixtures <- function (data, mix, indicator, colName) {
   
   # or, better, use a palette with more color differentiation:
   numComponents <- length(mix$mu)
-  DISTRIB_COLORS <- brewer.pal(numComponents, "Set1")
+
+  # set color for components: currently, single color for all
+  DISTRIB_COLORS <- rep("red", numComponents)
+  
+  #DISTRIB_COLORS <- suppressWarnings(brewer.pal(numComponents, "Reds"))
+  #DISTRIB_COLORS <- suppressWarnings(brewer.pal(numComponents, "Set1"))
+  
+  if (FALSE) {  # an attempt to dynamically change color, if in "Blues" range
+    DISTRIB_COLORS <- unlist(lapply(DISTRIB_COLORS, function (x) {
+      x <- substr(x, 2, nchar(x))
+      hVal <- as.hexmode(x)
+      if (hVal < as.hexmode("000066") && hVal > as.hexmode("66CCCC"))
+        hVal <- hVal - 10  # TBD: delta for color shift (blue -> other)
+      hVal <- as.character(as.hexmode(hVal))
+    }))
+  }
   
   distComps <- lapply(seq(numComponents), function(i)
     stat_function(fun = calc.components,
                   arg = list(mix = mix, comp.number = i,
                              length(data), bwidth),
-                  geom = "line", # use alpha=.5 for "polygon"
-                  #position = "identity",
+                  geom = "line",
                   size = 1,
                   color = DISTRIB_COLORS[i]))
   
