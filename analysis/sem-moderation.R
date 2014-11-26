@@ -175,16 +175,16 @@ successModeration <- function (flossData) {
   
   # specification of indicator products for MAT x SPON
   
-  flossDataModer$PrjAgeLicCat <- 
+  flossDataModer$PrjAgeSuppType <- 
     flossDataModer$Project.Age * flossDataModer$Preferred.Support.Type
   
-  flossDataModer$PrjAgeLicRestr <- 
+  flossDataModer$PrjAgeSuppRes <- 
     flossDataModer$Project.Age * flossDataModer$Preferred.Support.Resource
   
-  flossDataModer$PrjStageLicCat <- 
+  flossDataModer$PrjStageSuppType <- 
     flossDataModer$Project.Stage * flossDataModer$Preferred.Support.Type
   
-  flossDataModer$PrjStageLicRestr <- 
+  flossDataModer$PrjStageSuppRes <- 
     flossDataModer$Project.Stage * flossDataModer$Preferred.Support.Resource
 
   return (flossDataModer)
@@ -220,8 +220,8 @@ blockGovernance   <- c("License.Category", "License.Restrictiveness")
 blockSponsorship  <- c("Preferred.Support.Type", "Preferred.Support.Resource")
 blockMaturityGov  <- c("PrjAgeLicCat", "PrjAgeLicRestr", "PrjStageLicCat", 
                        "PrjStageLicRestr")
-blockMaturitySpon <- c("PrjAgeLicCat", "PrjAgeLicRestr", "PrjStageLicCat",
-                       "PrjStageLicRestr")
+blockMaturitySpon <- c("PrjAgeLicCat", "PrjAgeLicRestr", "PrjAgeSuppType",
+                       "PrjAgeSuppRes")
 blockMaturity     <- c("Project.Age", "Project.Stage")
 blockSuccess      <- c("Development.Team.Size", "User.Community.Size")
 
