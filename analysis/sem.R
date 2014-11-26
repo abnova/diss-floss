@@ -120,7 +120,7 @@ flossData[["Preferred.Support.Resource"]] <-
 
 message("\n\n*** Building model...")
 
-modelTypeSEM <- "no-mediation" # TODO: consider moving to main config. file
+modelTypeSEM <- "directEffects" # TODO: consider moving to main config. file
 
 if (modelTypeSEM == "mediation") {
   
@@ -130,7 +130,9 @@ if (modelTypeSEM == "mediation") {
   Maturity     <- c(0, 0, 0, 0)
   Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
   
-} else {
+}
+
+if (modelTypeSEM == "directEffects") {
   
   # define rows of the path matrix (for inner model) - no mediation
   Governance   <- c(0, 0, 0, 0)
@@ -189,10 +191,8 @@ print(summary(successPLS), digits = DIGITS)
 # 4.3. Measurement Model Assessment: Reflective Indicators
 ##########################################################
 
-
 # plotting loadings
-gLoadDiag <- plot(successPLS, what = "loadings",
-                  box.prop = 2, box.cex = 1.5, cex.txt = 1.2)
+gLoadDiag <- plot(successPLS, what = "loadings")
 
 # Not needed, since we have to call plot() method in .Rmd
 if (KNITR) {
@@ -240,8 +240,7 @@ if (.Platform$GUI == "RStudio") {print(gLoadBarChart)}
 #print(subset(successPLS$outer_model, block == "Governance"))
 
 # plotting weights
-gWeights <- plot(successPLS, what = "weights",
-                 box.prop = 2, box.cex = 1.5, cex.txt = 1.2)
+gWeights <- plot(successPLS, what = "weights")
 
 
 # TODO: potential model's modifications/adjustments HERE
@@ -338,9 +337,19 @@ print(successPLS$gof, digits = DIGITS)
 # matrix with values based on path coeffs
 arrow_lwd <- 10 * round(successPLS$path_coefs, 2)
 
+# save model diagrams due to issue, related to 'diagram' in RStudio envir.
+
+if (modelTypeSEM == "mediation") {
+  modFileName <- "semInnerModelMediate.png"
+} else
+  modFileName <- "semInnerModelDirect.png"
+
+png(file = modFileName)
+
 # visual: SEM path diagram (inner model)
 plot(successPLS, arr.lwd = arrow_lwd)
 
+dev.off()
 
 ## Effects Analysis
 
@@ -387,14 +396,20 @@ if (DO_SEM_BOOT) {
   message("\n\n*** Performing bootstrap validation...")
   
   # running bootstrap validation (100 samples)
-  successVal <- plspm(flossData, successPath, successBlocks,
+  successPLS <- plspm(flossData, successPath, successBlocks,
                       modes = successModes,
                       boot.val = TRUE, br = 100)
   
   
   # bootstrap results
-  print(successVal$boot, digits = DIGITS)
+  print(successPLS$boot, digits = DIGITS)
 }
+
+
+# save results of SEM analysis in files for model comparison
+fileName <- paste0(modelTypeSEM, RDS_EXT)
+semResultsFile <- file.path(SEM_RESULTS_DIR, fileName)
+saveRDS(successPLS, semResultsFile)
 
 
 message("\n===== SEM-PLS analysis completed, results are ",
