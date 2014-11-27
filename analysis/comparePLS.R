@@ -40,9 +40,54 @@ mediationFile <- file.path(SEM_RESULTS_DIR, models[["mediation"]])
 directEffResults <- loadData(directEffFile)
 mediationResults <- loadData(mediationFile)
 
-# compare GoF and R2
-message("GoF for model with direct effects: ",
-        round(directEffResults$gof, DIGITS))
+# present summary statistics (GoF, R2, etc.) for models comparison
+message("Summary statistics for model with direct effects:\n",
+        "-------------------------------------------------\n\n",
+        "GoF: ", sprintf(FMT_FP_DECIMAL, directEffResults$gof), "\n",
+        "R2:  ", sprintf(FMT_FP_DECIMAL,
+                         directEffResults$inner_summary$R2), "\n")
 
-message("GoF for model with mediation: ",
-        round(mediationResults$gof, DIGITS))
+message("Summary statistics for model with mediation:\n",
+        "--------------------------------------------\n\n",
+        "GoF: ", sprintf(FMT_FP_DECIMAL, mediationResults$gof), "\n",
+        "R2:  ", sprintf(FMT_FP_DECIMAL,
+                         mediationResults$inner_summary$R2), "\n")
+
+
+# bootstrapping validation statistics
+
+models <- c("directEffects-boot.rds", "mediation-boot.rds")
+names(models) <- c("directEffects", "mediation")
+
+directEffFile <- file.path(SEM_RESULTS_DIR, models[["directEffects"]])
+mediationFile <- file.path(SEM_RESULTS_DIR, models[["mediation"]])
+
+directEffResults <- loadData(directEffFile)
+mediationResults <- loadData(mediationFile)
+
+# present summary statistics (GoF, R2, etc.) for models comparison
+message("Summary statistics for model with direct effects:\n",
+        "-------------------------------------------------\n\n",
+        "Outer weights: ",
+        sprintf(FMT_FP_DECIMAL, directEffResults$boot$weights), "\n",
+        "Loadings: ",
+        sprintf(FMT_FP_DECIMAL, directEffResults$boot$loadings), "\n",
+        "Path coefficients: ",
+        sprintf(FMT_FP_DECIMAL, directEffResults$boot$paths), "\n",
+        "R2:  ",
+        sprintf(FMT_FP_DECIMAL, directEffResults$boot$rsq), "\n",
+        "Total effects: ",
+        sprintf(FMT_FP_DECIMAL, directEffResults$boot$total.efs), "\n")
+
+message("Summary statistics for model with mediation:\n",
+        "--------------------------------------------\n\n",
+        "Outer weights: ",
+        sprintf(FMT_FP_DECIMAL, mediationResults$boot$weights), "\n",
+        "Loadings: ",
+        sprintf(FMT_FP_DECIMAL, mediationResults$boot$loadings), "\n",
+        "Path coefficients: ",
+        sprintf(FMT_FP_DECIMAL, mediationResults$boot$paths), "\n",
+        "R2:  ",
+        sprintf(FMT_FP_DECIMAL, mediationResults$boot$rsq), "\n",
+        "Total effects: ",
+        sprintf(FMT_FP_DECIMAL, mediationResults$boot$total.efs), "\n")

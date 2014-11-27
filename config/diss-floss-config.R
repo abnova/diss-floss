@@ -51,6 +51,9 @@ DO_APPENDIX = FALSE
 # general statistical control
 DIGITS <- 2
 
+# construct format string, based on the configuration setting
+FMT_FP_DECIMAL <- paste0("%.", DIGITS, "f  ")
+
 
 # nissing data analysis control
 DO_MISSING_ANALYSIS <- FALSE
@@ -63,7 +66,7 @@ DO_MULTI_VISUAL <- TRUE
 
 
 # SEM analysis control
-DO_SEM_BOOT <- FALSE
+DO_SEM_BOOT <- TRUE
 
 
 # reproducibility

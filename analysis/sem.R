@@ -120,7 +120,17 @@ flossData[["Preferred.Support.Resource"]] <-
 
 message("\n\n*** Building model...")
 
-modelTypeSEM <- "directEffects" # TODO: consider moving to main config. file
+#modelTypeSEM <- "directEffects" # TODO: consider moving to main config. file
+modelTypeSEM <- "mediation"
+
+if (modelTypeSEM == "directEffects") {
+  
+  # define rows of the path matrix (for inner model) - no mediation
+  Governance   <- c(0, 0, 0, 0)
+  Sponsorship  <- c(0, 0, 0, 0)
+  Maturity     <- c(0, 0, 0, 0)
+  Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
+}
 
 if (modelTypeSEM == "mediation") {
   
@@ -130,15 +140,6 @@ if (modelTypeSEM == "mediation") {
   Maturity     <- c(0, 0, 0, 0)
   Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
   
-}
-
-if (modelTypeSEM == "directEffects") {
-  
-  # define rows of the path matrix (for inner model) - no mediation
-  Governance   <- c(0, 0, 0, 0)
-  Sponsorship  <- c(0, 0, 0, 0)
-  Maturity     <- c(0, 0, 0, 0)
-  Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
 }
 
 
@@ -388,21 +389,21 @@ par(op)
 # move GoF here?
 
 
-# 4.6. Validation
-##########################################################
+# 4.6. Validation (estimating precision of PLS parameters estimates)
+####################################################################
 
 if (DO_SEM_BOOT) {
   
   message("\n\n*** Performing bootstrap validation...")
   
   # running bootstrap validation (100 samples)
-  successPLS <- plspm(flossData, successPath, successBlocks,
+  successVal <- plspm(flossData, successPath, successBlocks,
                       modes = successModes,
                       boot.val = TRUE, br = 100)
   
   
   # bootstrap results
-  print(successPLS$boot, digits = DIGITS)
+  print(successVal$boot, digits = DIGITS)
 }
 
 
@@ -410,6 +411,11 @@ if (DO_SEM_BOOT) {
 fileName <- paste0(modelTypeSEM, RDS_EXT)
 semResultsFile <- file.path(SEM_RESULTS_DIR, fileName)
 saveRDS(successPLS, semResultsFile)
+
+# save SEM analysis validation results
+fileName <- paste0(modelTypeSEM, "-boot", RDS_EXT)
+semResultsFile <- file.path(SEM_RESULTS_DIR, fileName)
+saveRDS(successVal, semResultsFile)
 
 
 message("\n===== SEM-PLS analysis completed, results are ",
