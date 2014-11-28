@@ -66,7 +66,7 @@ DO_MULTI_VISUAL <- TRUE
 
 
 # SEM analysis control
-DO_SEM_BOOT <- TRUE
+DO_SEM_BOOT <- FALSE
 
 
 # reproducibility

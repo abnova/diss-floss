@@ -47,72 +47,91 @@ GGPLOT2_PALETTE_LINE <- scale_color_manual(values = COLOR_PALETTE)
 DEBUG <- FALSE  # local setting
 
 
-##### ANALYSIS #####
+##### FUNCTIONS #####
 
-## @knitr PerformSEM
 
-message("\n\n===== STRUCTURED EQUATION MODELING (SEM-PLS) ANALYSIS =====")
-
-fileName <- paste0(READY4SEM_FILE, RDS_EXT)
-ready4semFile <- file.path(READY4SEM_DIR, fileName)
-
-# Create results directory, if it doesn't exist
-if (!file.exists(SEM_RESULTS_DIR)) {
-  dir.create(SEM_RESULTS_DIR, recursive = TRUE, showWarnings = FALSE)
+semLoadData <- function () {
+  
+  fileName <- paste0(READY4SEM_FILE, RDS_EXT)
+  ready4semFile <- file.path(READY4SEM_DIR, fileName)
+  
+  # Create results directory, if it doesn't exist
+  if (!file.exists(SEM_RESULTS_DIR)) {
+    dir.create(SEM_RESULTS_DIR, recursive = TRUE, showWarnings = FALSE)
+  }
+  
+  # load data
+  message("\n\n*** Loading data...")
+  flossData <- loadData(ready4semFile)
 }
 
-# load data
-message("\n\n*** Loading data...")
-flossData <- loadData(ready4semFile)
 
-# due to very small amount of projects with "Non-OSI" licesnse
-# and their disapperance due to calculating correlations,
-# we don't include "License Category" into EFA (consider analyzing it
-# at later phases with inclusion of imputed data)
+semSelectData <- function (flossData) {
+  
+  # due to very small amount of projects with "Non-OSI" licesnse
+  # and their disapperance due to calculating correlations,
+  # we don't include "License Category" into EFA (consider analyzing it
+  # at later phases with inclusion of imputed data)
+  
+  # we also remove "Repo URL" due to injection of large # of NAs
+  # due to limiting conditions at the end of the merge process
+  
+  # consider using "Use.Wiki" and "Use.Forum"
+  # after transforming their values from character to integer
+  
+  # select imputed dataset
+  flossData <- mice::complete(flossData, 1)
+  
+  # NOTES on model structure and indicators availability:
+  # -----------------------------------------------------
+  # Currently, a second-order factor "Project.Maturity" is used in lieu of
+  # the "Sponsorship" factor (TODO: consider indicators for "Sponsorship").
+  
+  # "Project.License" is excluded from analysis, as it's unordered factor.
+  
+  factors4analysis <- c("License.Category", "License.Restrictiveness",
+                        "Preferred.Support.Type", "Preferred.Support.Resource",
+                        "Project.Age", "Project.Stage",
+                        "Development.Team.Size", "User.Community.Size")
+  flossData <- flossData[, factors4analysis]
+  
+  # save name of the data set (seems redundant, but it will be useful,
+  # when there will be more than one data set, i.e. 'pilot' and 'main')
+  # [currently used for KNITR only]
+  datasetName <- deparse(substitute(flossData))
 
-# we also remove "Repo URL" due to injection of large # of NAs
-# due to limiting conditions at the end of the merge process
-
-# consider using "Use.Wiki" and "Use.Forum"
-# after transforming their values from character to integer
-
-# select imputed dataset
-flossData <- mice::complete(flossData, 1)
-
-# NOTES on model structure and indicators availability:
-# -----------------------------------------------------
-# Currently, a second-order factor "Project.Maturity" is used in lieu of
-# the "Sponsorship" factor (TODO: consider indicators for "Sponsorship").
-
-# "Project.License" is excluded from analysis, as it's unordered factor.
-
-factors4analysis <- c("License.Category", "License.Restrictiveness",
-                      "Preferred.Support.Type", "Preferred.Support.Resource",
-                      "Project.Age", "Project.Stage",
-                      "Development.Team.Size", "User.Community.Size")
-flossData <- flossData[, factors4analysis]
-
-# save name of the data set (seems redundant, but it will be useful,
-# when there will be more than one data set, i.e. 'pilot' and 'main')
-# [currently used for KNITR only]
-datasetName <- deparse(substitute(flossData))
+  flossData
+}
 
 
-message("\n\n*** Transforming data...")
+semTransformData <- function (flossData) {
+  
+  message("\n\n*** Transforming data...")
+  
+  # convert to unordered factors
+  # (factor(..., ordered = FALSE) DOESN'T work here)
+  
+  flossData[["License.Category"]] <- 
+    as.integer(flossData[["License.Category"]])
+  flossData[["License.Restrictiveness"]] <- 
+    as.integer(flossData[["License.Restrictiveness"]])
+  flossData[["Project.Stage"]] <- 
+    as.integer(flossData[["Project.Stage"]])
+  flossData[["Preferred.Support.Type"]] <- 
+    as.integer(flossData[["Preferred.Support.Type"]])
+  flossData[["Preferred.Support.Resource"]] <- 
+    as.integer(flossData[["Preferred.Support.Resource"]])
+  
+  flossData
+}
 
-# convert to unordered factors
-# (factor(..., ordered = FALSE) DOESN'T work here)
 
-flossData[["License.Category"]] <- 
-  as.integer(flossData[["License.Category"]])
-flossData[["License.Restrictiveness"]] <- 
-  as.integer(flossData[["License.Restrictiveness"]])
-flossData[["Project.Stage"]] <- 
-  as.integer(flossData[["Project.Stage"]])
-flossData[["Preferred.Support.Type"]] <- 
-  as.integer(flossData[["Preferred.Support.Type"]])
-flossData[["Preferred.Support.Resource"]] <- 
-  as.integer(flossData[["Preferred.Support.Resource"]])
+semPrepareData <- function () {
+  
+  flossData <- semLoadData()
+  flossData <- semSelectData(flossData)
+  flossData <- semTransformData(flossData)
+}
 
 
 # sets up data frame with product terms for moderation
@@ -156,9 +175,9 @@ successModeration <- function (flossData) {
 # Initial model specification
 ##########################################################
 
-specifyModel <- function (modelTypeSEM) {
+specifyModel <- function (modelTypeSEM, flossData) {
   
-  message("\n\n*** Building model ", modelTypeSEM, "...")
+  message("\n\n*** Building model \"", modelTypeSEM, "\"...")
   
   if (modelTypeSEM == "directEffects") {
     
@@ -182,7 +201,7 @@ specifyModel <- function (modelTypeSEM) {
   if (modelTypeSEM == "moderation") {
     
     # set up data frame with product terms for moderation
-    flossDataModer <- successModeration(flossData)
+    flossData <- successModeration(flossData)
     
     # define rows of the path matrix (for inner model) - single DV
     Governance   <- c(0, 0, 0, 0, 0, 0)
@@ -221,7 +240,6 @@ specifyModel <- function (modelTypeSEM) {
     # specify model's vector of modes ('A' is reflective)
     successModes <- rep("A", 6)
     
-    
     # specify measurement scale for manifest variables
     successScales <- list(c("ord", "num"), c("ord", "num"), c("num"))
     
@@ -254,29 +272,43 @@ specifyModel <- function (modelTypeSEM) {
 
   # construct a model object and return it
   list(path = successPath, blocks = successBlocks,
-       modes = successModes, scales = successScales)
+       modes = successModes, scales = successScales,
+       data = flossData)
 }
 
 
 # Run PLS-PM Analysis
 ##########################################################
 
-runAnalysis <- function (data, model) {
+runAnalysis <- function (data, model, boot = FALSE) {
   
   message("\n\n*** Running PLS-PM analysis...")
   
   # run PLS-PM analysis
-  successPLS <- plspm(data,
-                      path = model$path,
-                      blocks = model$blocks,
-                      modes = model$modes)  # scaling = model$scales
+  if (boot) {
+    
+    message("\n\n*** Performing bootstrap validation...")
+    
+    # running bootstrap validation (100 samples)
+    successPLS <- plspm(data,
+                        path = model$path,
+                        blocks = model$blocks,
+                        modes = model$modes,
+                        # scaling = model$scales,
+                        boot.val = TRUE, br = 100)
+  }
+  else
+    successPLS <- plspm(data,
+                        path = model$path,
+                        blocks = model$blocks,
+                        modes = model$modes)  # scaling = model$scales
 }
 
 
 # 4.2. Handling PLS-PM Results
 ##########################################################
 
-reportResults <- function (successPLS) {
+reportResults <- function (successPLS, boot = FALSE) {
   
   message("\n\n*** SEM-PLS analysis results:\n")
   
@@ -284,11 +316,67 @@ reportResults <- function (successPLS) {
   if (DEBUG) print(successPLS)
   
   # summarized results
-  print(summary(successPLS), digits = DIGITS)
-  
+  if (boot) {
+    print(successPLS$boot, digits = DIGITS)  # bootstrap results
+  } else {
+    print(summary(successPLS), digits = DIGITS)
+  }
   
   # 4.3. Measurement Model Assessment: Reflective Indicators
   ##########################################################
+  
+  # outer model results (in a matrix way, unlike tabular in summary())
+  print(successPLS$outer_model, digits = DIGITS)
+
+  # unidimensionality
+  print(successPLS$unidim)
+  
+  # 4.4. Measurement Model Assessment: Formative Indicators
+  ##########################################################
+  
+  
+  # 4.5. Structural Model Assessment
+  ##########################################################
+  
+  # inner model
+  print(successPLS$inner_model, digits = DIGITS)
+  
+  # matrix of path coefficients
+  print(successPLS$path_coefs, digits = DIGITS)
+  
+  # inner model summary
+  print(successPLS$inner_summary, digits = DIGITS)
+  
+  # select R2
+  print(successPLS$inner_summary[, "R2", drop = FALSE], digits = DIGITS)
+  
+  # GoF index
+  print(successPLS$gof, digits = DIGITS)
+  
+  ## Effects Analysis
+  
+  # effects summary (don't use summary() here)
+  print(successPLS$effects, digits = DIGITS)
+  
+  # select effects ('active' rows)
+  activeRows <- na.omit(successPLS$effects[successPLS$effects[, -1] != 0, ])
+  activeRows <- as.integer(rownames(activeRows))
+  
+  # 'active' effects in matrix format
+  path_effs <- as.matrix(successPLS$effects[activeRows, -1])
+  
+  # add rownames to path_effs
+  rownames(path_effs) <- successPLS$effects[activeRows, 1]
+  
+  # active effects summary
+  print(path_effs, digits = DIGITS)
+  
+  # move inner model summary here?
+  # move GoF here?
+}
+
+
+vizResults <- function (successPLS, modelTypeSEM) {
   
   # plotting loadings
   gLoadDiag <- plot(successPLS, what = "loadings")
@@ -298,10 +386,6 @@ reportResults <- function (successPLS) {
     plspm_var <- paste0("plspm_", datasetName)
     assign(plspm_var, successPLS, envir = .GlobalEnv)
   }
-  
-  
-  # outer model results (in a matrix way, unlike tabular in summary())
-  print(successPLS$outer_model, digits = DIGITS)
   
   
   # display barchart of loadings with threshold value line
@@ -335,37 +419,9 @@ reportResults <- function (successPLS) {
   if (.Platform$GUI == "RStudio") {print(gLoadBarChart)}
   
   
-  # Governance outer model results
-  #print(subset(successPLS$outer_model, block == "Governance"))
-  
   # plotting weights
   gWeights <- plot(successPLS, what = "weights")
   
-  
-  # TODO: potential model's modifications/adjustments HERE
-  modSuccessBlocks <- successBlocks
-  
-  # TODO: if made adjustments, uncomment below to re-estimate the model(s)
-  #modSuccessPLS <- plspm(flossData,
-  #                       successPath, modSuccessBlocks,
-  #                       modes = successModes)
-  
-  # plot modified model's loadings
-  #gModLoadings <- plot(modSuccessPLS, "loadings")
-  #print(gModLoadings)
-  
-  # unidimensionality - better results
-  #print(modSuccessPLS$unidim)
-  
-  # loadings and communalities
-  #print(modSuccessPLS$outer_model)
-  
-  # cross-loadings
-  #print(modSuccessPLS$crossloadings)
-  
-  
-  ### The following visual output is for the original model
-  ### (update, if analysis of several models is performed).
   
   # reshape crossloadings data frame for ggplot2
   xloads <- melt(successPLS$crossloadings, id.vars = c("name", "block"),
@@ -410,50 +466,20 @@ reportResults <- function (successPLS) {
   # display the crossloadings barchart panel
   if (.Platform$GUI == "RStudio") {print(gCrossLoadBlocks)}
   
-  
-  # 4.4. Measurement Model Assessment: Formative Indicators
-  ##########################################################
-  
-  
-  # 4.5. Structural Model Assessment
-  ##########################################################
-  
-  # inner model
-  print(successPLS$inner_model, digits = DIGITS)
-  
-  # matrix of path coefficients
-  print(successPLS$path_coefs, digits = DIGITS)
-  
-  # inner model summary
-  print(successPLS$inner_summary, digits = DIGITS)
-  
-  # select R2
-  print(successPLS$inner_summary[, "R2", drop = FALSE], digits = DIGITS)
-  
-  # GoF index
-  print(successPLS$gof, digits = DIGITS)
-  
+
   # matrix with values based on path coeffs
   arrow_lwd <- 10 * round(successPLS$path_coefs, 2)
   
   # save model diagrams due to issue, related to 'diagram' in RStudio envir.
-  
-  if (modelTypeSEM == "mediation") {
-    modFileName <- "semInnerModelMediate.png"
-  } else
-    modFileName <- "semInnerModelDirect.png"
-  
+  modFileName <- paste0("semInnerModel-", modelTypeSEM, ".png")
   png(file = modFileName)
   
   # visual: SEM path diagram (inner model)
   plot(successPLS, arr.lwd = arrow_lwd)
-  
   dev.off()
-  
-  ## Effects Analysis
-  
-  # effects summary (don't use summary() here)
-  print(successPLS$effects, digits = DIGITS)
+
+  # visual: LV effects diagram
+  # TODO: convert to ggplot2 version, rotate x-axis labels, etc.
   
   # select effects ('active' rows)
   activeRows <- na.omit(successPLS$effects[successPLS$effects[, -1] != 0, ])
@@ -465,78 +491,84 @@ reportResults <- function (successPLS) {
   # add rownames to path_effs
   rownames(path_effs) <- successPLS$effects[activeRows, 1]
   
-  # active effects summary
-  print(path_effs, digits = DIGITS)
-  
-  # visual: LV effects diagram
-  # TODO: convert to ggplot2 version, rotate x-axis labels, etc.
-  
   # setting margin size
   op <- par(mar = c(8, 3, 1, 0.5))
+  
   # barplots of total effects (direct + indirect)
   barplot(t(path_effs), border = NA, col = c("#9E9AC8", "#DADAEB"),
           las = 2, cex.names = 0.8, cex.axis = 0.8,
           legend = c("Direct", "Indirect"),
           args.legend = list(x = "top", ncol = 2, border = NA,
                              bty = "n", title = "Effects"))
+  
   # resetting default margins
   par(op)
-  
-  
-  # move inner model summary here?
-  # move GoF here?
 }
 
 
-vizResults <- function () {
+# save results of SEM analysis/validation on disk for model comparison
+
+saveResults <- function (semResults, modelTypeSEM, boot = FALSE) {
   
+  bootSuffix <- ifelse (boot, paste0("-", "boot"), "")
+  
+  fileName <- paste0(modelTypeSEM, bootSuffix, RDS_EXT)
+  semResultsFile <- file.path(SEM_RESULTS_DIR, fileName)
+  saveRDS(semResults, semResultsFile)
 }
 
 
-# 4.6. Validation (estimating precision of PLS parameters estimates)
-####################################################################
-
-if (DO_SEM_BOOT) {
+validateResults <- function (semResults) {
   
-  message("\n\n*** Performing bootstrap validation...")
-  
-  # running bootstrap validation (100 samples)
-  successVal <- plspm(flossData, successPath, successBlocks,
-                      modes = successModes,
-                      boot.val = TRUE, br = 100)
-  
-  
-  # bootstrap results
-  print(successVal$boot, digits = DIGITS)
-  
-  successVal
+  TRUE
 }
 
 
-# save results of SEM analysis in files for model comparison
-fileName <- paste0(modelTypeSEM, RDS_EXT)
-semResultsFile <- file.path(SEM_RESULTS_DIR, fileName)
-saveRDS(successPLS, semResultsFile)
+adjustModel <- function (semModel) {
+  
+  semModel
+}
 
-# save SEM analysis validation results
-fileName <- paste0(modelTypeSEM, "-boot", RDS_EXT)
-semResultsFile <- file.path(SEM_RESULTS_DIR, fileName)
-saveRDS(successVal, semResultsFile)
 
+##### ANALYSIS #####
+
+## @knitr PerformSEM
+
+message("\n\n===== STRUCTURED EQUATION MODELING (SEM-PLS) ANALYSIS =====")
 
 # available model types for SEM analysis
 semModelTypes <- c("directEffects", "mediation", "moderation")
 
+# prepare data for SEM analysis
+flossData <- semPrepareData()
+
+# analyze each model
 for (modelType in semModelTypes) {
   
-  flossModel <- specifyModel(modelType)
-  successPLS <- runAnalysis(flossData, flossModel)
+  # analyze the model
+  flossModel <- specifyModel(modelType, flossData)
+  successPLS <- runAnalysis(flossModel$data, flossModel)
+  
+  # validate results against pre-defined criteria (not bootstrapping!)
+  success <- validateResults(successPLS)  # consider 'criteria' parameter
+  
+  # if results are not adequate, adjust model and re-run analysis
+  if (!success) {
+    flossModel <- adjustModel(flossModel)
+    successPLS <- runAnalysis(flossData, flossModel)
+  }
+  
+  # report, visualize and save results of the analysis
   reportResults(successPLS)
-  vizResults(successPLS)
-  saveResults(successPLS)
+  vizResults(successPLS, modelType)
+  saveResults(successPLS, modelType)
+  
+  # additionally, perform bootstrap validation, if enabled
   if (DO_SEM_BOOT) {
+    # validation (estimating precision of PLS parameters estimates)
     successVal <- runAnalysis(flossData, flossModel, boot = TRUE)
-    saveResults(successVal)
+    reportResults(successVal, boot = TRUE)
+    saveResults(successVal, modelType, boot = TRUE)
   }
 }
 
