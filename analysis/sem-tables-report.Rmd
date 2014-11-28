@@ -1,0 +1,69 @@
+---
+title: "SEM Summary Tables Report"
+author: "Aleksandr Blekh"
+output:
+  word_document:
+    fig_width: 6.5
+  md_document:
+    toc: yes
+    toc_depth: 3
+  pdf_document:
+    highlight: kate
+    includes:
+      in_header: ~/diss-floss/config/diss-floss.sty
+    keep_tex: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+  html_document:
+    css: ~/diss-floss/config/knitr/markdown.css
+    number_sections: yes
+    theme: united
+    toc: yes
+---
+
+```{r KnitrSetup, child='../config/knitr/knitr-setup-global.Rmd'}
+# empty
+```
+
+```{r ReadChunksSEM}
+read_chunk('sem.R')
+```
+
+```{r CleanEnv}
+# empty
+```
+
+```{r ConfigReport}
+outFmt <- opts_knit$get('out.format')
+param1 <- TRUE
+param2 <- FALSE
+param3 <- 'TEST'
+```
+
+```{r LoadPackages}
+# empty
+```
+
+```{r PrepareSEM}
+# empty
+```
+
+```{r PerformSEM, cache=FALSE}
+# empty
+```
+
+Results of SEM analysis for a direct effects model are summarized in Table \ref{tab:semResultsDirectTable}:
+
+```{r semReportDirect, include=TRUE, results='asis', fig.cap='SEM Results Summary: Direct Effects'}
+plspm.innerprint(successPLS, DIGITS)
+```
+
+Results of CFA in a form of a model diagram are presented in Figure \ref{fig:cfaModelDiagram}:
+
+\begin{figure}
+  \centering
+  \input{cfaModDiag.tex}
+  \caption{CFA model diagram}
+  \label{fig:cfaModelDiagram}
+\end{figure}
