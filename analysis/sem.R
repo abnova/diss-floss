@@ -46,6 +46,8 @@ GGPLOT2_PALETTE_LINE <- scale_color_manual(values = COLOR_PALETTE)
 
 DEBUG <- FALSE  # local setting
 
+datasetName <- ""
+
 
 ##### FUNCTIONS #####
 
@@ -94,13 +96,6 @@ semSelectData <- function (flossData) {
                         "Project.Age", "Project.Stage",
                         "Development.Team.Size", "User.Community.Size")
   flossData <- flossData[, factors4analysis]
-  
-  # save name of the data set (seems redundant, but it will be useful,
-  # when there will be more than one data set, i.e. 'pilot' and 'main')
-  # [currently used for KNITR only]
-  datasetName <- deparse(substitute(flossData))
-
-  flossData
 }
 
 
@@ -131,6 +126,13 @@ semPrepareData <- function () {
   flossData <- semLoadData()
   flossData <- semSelectData(flossData)
   flossData <- semTransformData(flossData)
+
+  # save name of the data set (seems redundant, but it will be useful,
+  # when there will be more than one data set, i.e. 'pilot' and 'main')
+  # [currently used for KNITR only]
+  datasetName <- deparse(substitute(flossData))
+
+  flossData
 }
 
 
@@ -537,7 +539,12 @@ adjustModel <- function (semModel) {
 message("\n\n===== STRUCTURED EQUATION MODELING (SEM-PLS) ANALYSIS =====")
 
 # available model types for SEM analysis
-semModelTypes <- c("directEffects", "mediation", "moderation")
+semModelTypes <- c()  # "directEffects", "mediation", "moderation"
+
+# include into analysis models, enabled in configuration
+if (DO_SEM_DIRECT_EFF) semModelTypes <- c(semModelTypes, "directEffects")
+if (DO_SEM_MEDIATION) semModelTypes  <- c(semModelTypes, "mediation")
+if (DO_SEM_MODERATION) semModelTypes <- c(semModelTypes, "moderation")
 
 # prepare data for SEM analysis
 flossData <- semPrepareData()
