@@ -68,7 +68,7 @@ semLoadData <- function () {
 }
 
 
-semSelectData <- function (flossData) {
+semSelectData <- function (flossData, impDataSet) {
   
   # due to very small amount of projects with "Non-OSI" licesnse
   # and their disapperance due to calculating correlations,
@@ -82,7 +82,7 @@ semSelectData <- function (flossData) {
   # after transforming their values from character to integer
   
   # select imputed dataset
-  flossData <- mice::complete(flossData, 1)
+  flossData <- mice::complete(flossData, impDataSet)
   
   # NOTES on model structure and indicators availability:
   # -----------------------------------------------------
@@ -121,10 +121,10 @@ semTransformData <- function (flossData) {
 }
 
 
-semPrepareData <- function () {
+semPrepareData <- function (impDataSet) {
   
   flossData <- semLoadData()
-  flossData <- semSelectData(flossData)
+  flossData <- semSelectData(flossData, impDataSet)
   flossData <- semTransformData(flossData)
 
   # save name of the data set (seems redundant, but it will be useful,
@@ -510,11 +510,13 @@ vizResults <- function (successPLS, modelTypeSEM) {
 
 # save results of SEM analysis/validation on disk for model comparison
 
-saveResults <- function (semResults, modelTypeSEM, boot = FALSE) {
+saveResults <- function (semResults, modelTypeSEM, impDataSet,
+                         boot = FALSE) {
   
+  impSuffix <- paste0("-", impDataSet)
   bootSuffix <- ifelse (boot, paste0("-", "boot"), "")
   
-  fileName <- paste0(modelTypeSEM, bootSuffix, RDS_EXT)
+  fileName <- paste0(modelTypeSEM, impSuffix, bootSuffix, RDS_EXT)
   semResultsFile <- file.path(SEM_RESULTS_DIR, fileName)
   saveRDS(semResults, semResultsFile)
 }
@@ -532,6 +534,50 @@ adjustModel <- function (semModel) {
 }
 
 
+
+getPooledParam <- function (i, result, n) {
+  
+  est <- do.call(rbind, lapply(result, function (x) {
+    cbind(x[i, "Estimate"], x[i, "Std..Error"])
+  }))
+  
+  pooledResults <- 
+    pool.scalar(est[, 1], (est[, 2])^2, n = n)
+  
+  retVal <- list(est = pooledResults$qbar,
+                 se = sqrt(pooledResults$t),
+                 df = pooledResults$df,
+                 p = NULL)
+  
+  retVal$p <- 2 * pt(-abs(retVal$est / retVal$se), df = retVal$df)
+  as.data.frame(retVal)
+}
+
+
+# extracts parameter estimates from SEM inner model and pools them together
+poolPLS <- function (semResults) {
+  
+  result <- list()
+  
+  for (obj in semResults) {
+    
+    res <- do.call(rbind, lapply(names(obj$inner_model), function (n) {
+      data.frame(Outcome = n, obj$inner_model[[n]])
+    }))
+    
+    result <- c(result, list(res))
+  }
+
+  pooledParams <- lapply(1:nrow(result[[1]]), function (i) {
+    getPooledParam(i, result, n = nrow(semResults[[1]]$data))
+  })
+  
+  res <- do.call(rbind, pooledParams)
+  
+  lapply(semResults, function (x) print(summary(x$inner_model)))
+}
+
+
 ##### ANALYSIS #####
 
 ## @knitr PerformSEM
@@ -541,43 +587,55 @@ message("\n\n===== STRUCTURED EQUATION MODELING (SEM-PLS) ANALYSIS =====")
 # available model types for SEM analysis
 semModelTypes <- c()  # "directEffects", "mediation", "moderation"
 
+semResultsList <- list()
+
 # include into analysis models, enabled in configuration
 if (DO_SEM_DIRECT_EFF) semModelTypes <- c(semModelTypes, "directEffects")
 if (DO_SEM_MEDIATION) semModelTypes  <- c(semModelTypes, "mediation")
 if (DO_SEM_MODERATION) semModelTypes <- c(semModelTypes, "moderation")
 
-# prepare data for SEM analysis
-flossData <- semPrepareData()
-
-# analyze each model
-for (modelType in semModelTypes) {
+# perform SEM for each imputed data set
+for (impDataSet in 1:NUM_IMP_EXTRACT) {
   
-  # analyze the model
-  flossModel <- specifyModel(modelType, flossData)
-  successPLS <- runAnalysis(flossModel$data, flossModel)
+  # prepare data for SEM analysis
+  flossData <- semPrepareData(impDataSet)
   
-  # validate results against pre-defined criteria (not bootstrapping!)
-  success <- validateResults(successPLS)  # consider 'criteria' parameter
-  
-  # if results are not adequate, adjust model and re-run analysis
-  if (!success) {
-    flossModel <- adjustModel(flossModel)
-    successPLS <- runAnalysis(flossData, flossModel)
-  }
-  
-  # report, visualize and save results of the analysis
-  reportResults(successPLS)
-  vizResults(successPLS, modelType)
-  saveResults(successPLS, modelType)
-  
-  # additionally, perform bootstrap validation, if enabled
-  if (DO_SEM_BOOT) {
-    # validation (estimating precision of PLS parameters estimates)
-    successVal <- runAnalysis(flossData, flossModel, boot = TRUE)
-    reportResults(successVal, boot = TRUE)
-    saveResults(successVal, modelType, boot = TRUE)
+  # analyze each model
+  for (modelType in semModelTypes) {
+    
+    # analyze the model
+    flossModel <- specifyModel(modelType, flossData)
+    successPLS <- runAnalysis(flossModel$data, flossModel)
+    
+    # validate results against pre-defined criteria (not bootstrapping!)
+    success <- validateResults(successPLS)  # consider 'criteria' parameter
+    
+    # if results are not adequate, adjust model and re-run analysis
+    if (!success) {
+      flossModel <- adjustModel(flossModel)
+      successPLS <- runAnalysis(flossData, flossModel)
+    }
+    
+    # report, visualize and save results of the analysis
+    reportResults(successPLS)
+    vizResults(successPLS, modelType)
+    saveResults(successPLS, modelType, impDataSet)
+    
+    semResultsList <- c(semResultsList, list(successPLS))
+    
+    # additionally, perform bootstrap validation, if enabled
+    if (DO_SEM_BOOT) {
+      # validation (estimating precision of PLS parameters estimates)
+      successVal <- runAnalysis(flossData, flossModel, boot = TRUE)
+      reportResults(successVal, boot = TRUE)
+      saveResults(successVal, modelType, impDataSet, boot = TRUE)
+    }
   }
 }
+
+
+pooledResults <- poolPLS(semResultsList)
+print(str(pooledResults))
 
 
 message("\n===== SEM-PLS analysis completed, results are ",

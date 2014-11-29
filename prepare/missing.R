@@ -48,8 +48,6 @@ DEBUG <- FALSE  # local setting
 # (disadvantage: would require loading 'parallel' project-wide, so TBD)
 NUM_CORES <- getOption("mc.cores")  # for parallel processing
 
-NUM_IMPUTATIONS <- 1  # minimum recommended number of imputations
-
 
 # additional transformations needed for data testing
 prepareForMI <- function (data) {
