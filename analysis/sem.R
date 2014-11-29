@@ -505,6 +505,8 @@ vizResults <- function (successPLS, modelTypeSEM) {
   
   # resetting default margins
   par(op)
+  
+  list(loadBarChart = gLoadBarChart, crossLoadBlocks = gCrossLoadBlocks)
 }
 
 
@@ -619,8 +621,11 @@ for (impDataSet in 1:NUM_IMP_EXTRACT) {
     
     # report, visualize and save results of the analysis
     reportResults(successPLS)
-    vizResults(successPLS, modelType)
+    g <- vizResults(successPLS, modelType)
     saveResults(successPLS, modelType, impDataSet)
+
+    resObj <- paste0("successPLS", modelType)
+    assign(resObj, successPLS)
     
     semResultsList <- c(semResultsList, list(successPLS))
     

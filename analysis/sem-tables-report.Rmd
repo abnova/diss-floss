@@ -56,14 +56,17 @@ param3 <- 'TEST'
 Results of SEM analysis for a direct effects model are summarized in Table \ref{tab:semResultsDirectTable}:
 
 ```{r semReportDirect, include=TRUE, results='asis', fig.cap='SEM Results Summary: Direct Effects'}
-plspm.innerprint(successPLS, DIGITS)
+plspm.innerprint(successPLSdirectEffects, DIGITS)
 ```
 
-Results of CFA in a form of a model diagram are presented in Figure \ref{fig:cfaModelDiagram}:
+Results of SEM analysis for a mediation model are summarized in Table \ref{tab:semResultsMediationTable}:
 
-\begin{figure}
-  \centering
-  \input{cfaModDiag.tex}
-  \caption{CFA model diagram}
-  \label{fig:cfaModelDiagram}
-\end{figure}
+```{r semReportMediation, include=TRUE, results='asis', fig.cap='SEM Results Summary: Direct Effects'}
+plspm.innerprint(successPLSmediation, DIGITS)
+```
+
+Results of SEM analysis for a moderation model are summarized in Table \ref{tab:semResultsModerationTable}:
+
+```{r semReportModeration, include=TRUE, results='asis', fig.cap='SEM Results Summary: Direct Effects'}
+plspm.innerprint(successPLSmoderation, DIGITS)
+```

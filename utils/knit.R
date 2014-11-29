@@ -142,7 +142,7 @@ genEDAdescStatsTable <- function (df, label = "edaDescStats",
 
 # Generate R Markdown table with results of SEM analysis ('pander' 2nd ver.)
 
-plspm.innerprint <- function(object, digits = 3) {
+plspm.innerprint <- function(object, digits = DIGITS) {
   
   res1 <- do.call(rbind, lapply(names(object$inner_model), function(n) {
     data.frame(Outcome = n, object$inner_model[[n]])
@@ -150,6 +150,7 @@ plspm.innerprint <- function(object, digits = 3) {
   
   colnames(res1)[3:5] <- c("SE", "Tvalue", "Pvalue")
   res1$Pvalue <- format.pval(res1$Pvalue, digits = digits)
+
   pander(res1, split.tables = 200, round = digits)
 }
 
@@ -159,7 +160,8 @@ plspm.innerprint <- function(object, digits = 3) {
 # currently uses pandoc.table(); using methods is TBD:
 # print.pander <- function (x, ...) UseMethod("pander")
 
-genSEMtable <- function (obj, type, caption, label, format = "latex") {
+genSEMtable <- function (obj, caption, label,
+                         type = "1", format = "latex") {
   
   # if LaTeX, add label to the caption for cross-referencing
   if (format == "latex")
@@ -169,10 +171,15 @@ genSEMtable <- function (obj, type, caption, label, format = "latex") {
   set.caption(caption, permanent = FALSE)
   
   # don't split tables
-  panderOptions("table.split.table", Inf)
+  ##panderOptions("table.split.table", Inf)
   
   # create table in R Markdown format
-  pandoc.table(obj)  # more flexible alternative: pander()
+  ##pandoc.table(obj)  # more flexible alternative: pander()
+  
+  ##pander(obj, split.tables = 200, round = DIGITS)
+  
+  # return both caption/label and table in a list
+  list(caption = caption, table = obj)
 }
 
 

@@ -65,23 +65,25 @@ param3 <- 'TEST'
 
 Descriptive statistics. The SourceForge pilot data set consists of `r length(dir(file.path(TRANSFORMED_DIR, "SourceForge")))` indicators. The descriptive statistics of the pilot data set, including measures of central tendency (_mean, median_), position (_minimum, maximum, quantiles_), dispersion (_variance, standard deviation, range and interquartile range_) and shape (_modality, skewness and kurtosis_), is summarized in Table \ref{tab:semResultsTable1} below.
 
-```{r semReportSummary, include=TRUE, render=pander, results='asis'}
-genSEMtable(summary(successPLS), type = "1", caption = "SEM results summary", label = "semResultsTable1")
+`r summTable <- genSEMtable(successPLS, caption = "SEM results summary", label = "semResultsTable1")`
+
+```{r semReportSummary, include=TRUE, results='asis', fig.cap=summTable$caption}
+plspm.innerprint(summTable$table)
 ```
 
 A visual presentation of SEM results includes various types of graphical output. In particular, factor loadings are visually presented in Figure \ref{fig:semLoadingsDiagram}. Discussion continues.
 
-`r loadDiag <- genSEMfigure(plspm_flossData, caption = "SEM: Loadings diagram", label = "semLoadingsDiagram")`
+`r loadDiag <- genSEMfigure(successPLS, caption = "SEM: Loadings diagram", label = "semLoadingsDiagram")`
 
 ```{r semLoadingsDiag, include=TRUE, results='asis', fig.cap=loadDiag$caption}
-plot(plspm_flossData, what = "loadings")
+plot(successPLS, what = "loadings")
 ```
 
 `r lowLoadingsIndicators <- "License.Restrictiveness and Project.Stage"`
 
 Barchart of loadings, shown in Figure \ref{fig:semLoadingsBarChart}, presents information in relation to the threshold value (`r LOADINGS_THRESHOLD`) and grouped by latent factors (blocks). As we see, loadings for _`r lowLoadingsIndicators`_ are insufficient for this data set and original SEM model.
 
-`r loadBarChart <- genSEMfigure(gLoadBarChart, caption = "SEM: Barchart of loadings", label = "semLoadingsBarChart")`
+`r loadBarChart <- genSEMfigure(g$loadBarChart, caption = "SEM: Barchart of loadings", label = "semLoadingsBarChart")`
 
 ```{r semLoadingsBChart, include=TRUE, results='asis', fig.cap=loadBarChart$caption}
 print(loadBarChart$plot)
@@ -89,17 +91,18 @@ print(loadBarChart$plot)
 
 A diagram with estimated factor weights is presented in Figure \ref{fig:semWeightsDiagram}. Discussion continues.
 
-`r weightsDiag <- genSEMfigure(gLoadDiag, caption = "SEM: Weights diagram", label = "semWeightsDiagram")`
+`r weightsDiag <- genSEMfigure(successPLS, caption = "SEM: Weights diagram", label = "semWeightsDiagram")`
 
 ```{r semWeightsDiag, include=TRUE, results='asis', fig.cap=weightsDiag$caption}
-plot(plspm_flossData, what = "weights")
+plot(successPLS, what = "weights")
 ```
 
 Chart, shown in Figure \ref{fig:semCrossLoadBlocks}, presents cross-loadings between indicators, grouped by latent factors (blocks). As we see, TBD.
 
-`r crossLoadBlocks <- genSEMfigure(gCrossLoadBlocks, caption = "SEM: Barchart of cross-loadings by factors", label = "semCrossLoadBlocks")`
+`r crossLoadBlocks <- genSEMfigure(g$crossLoadBlocks, caption = "SEM: Barchart of cross-loadings by factors", label = "semCrossLoadBlocks")`
 
-```{r semCrossLoadBlocksChart, include=TRUE, results='asis', fig.cap=crossLoadBlocks$caption}
+```{r semCrossLoadBlocksChart, include=TRUE, results='asis', fig.height=10, fig.width=10, fig.cap=crossLoadBlocks$caption}
+# DOESN'T WORK: <, out.extra='angle=90'>
 print(crossLoadBlocks$plot)
 ```
 
