@@ -57,7 +57,7 @@ FMT_FP_DECIMAL <- paste0("%.", DIGITS, "f  ")
 
 # nissing data analysis control
 NUM_IMPUTATIONS <- 5  # minimum recommended number of imputations
-NUM_IMP_EXTRACT <- 5  # number of imputed data sets to extract
+NUM_IMP_EXTRACT <- 1  # number of imputed data sets to extract
 
 DO_MISSING_ANALYSIS <- FALSE
 DO_MISSING_MAIN_MI  <- TRUE
@@ -70,8 +70,8 @@ DO_MULTI_VISUAL <- TRUE
 
 # SEM analysis control
 DO_SEM_DIRECT_EFF <- TRUE
-DO_SEM_MEDIATION  <- FALSE
-DO_SEM_MODERATION <- FALSE
+DO_SEM_MEDIATION  <- TRUE
+DO_SEM_MODERATION <- TRUE
 
 DO_SEM_BOOT <- FALSE
 

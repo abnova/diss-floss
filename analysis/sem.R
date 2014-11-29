@@ -574,6 +574,7 @@ poolPLS <- function (semResults) {
   
   res <- do.call(rbind, pooledParams)
   
+  ##TEMP DEBUG
   lapply(semResults, function (x) print(summary(x$inner_model)))
 }
 
@@ -634,8 +635,13 @@ for (impDataSet in 1:NUM_IMP_EXTRACT) {
 }
 
 
-pooledResults <- poolPLS(semResultsList)
-print(str(pooledResults))
+##TEMP DISABLED
+if (FALSE) {
+  pooledResults <- poolPLS(semResultsList)
+
+  ##TEMP DEBUG
+  print(str(pooledResults))
+}
 
 
 message("\n===== SEM-PLS analysis completed, results are ",
