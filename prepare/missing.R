@@ -62,6 +62,10 @@ prepareForMI <- function (data) {
     as.integer(data[["License.Restrictiveness"]])
   data[["Project.Stage"]] <- 
     as.integer(data[["Project.Stage"]])
+  data[["Preferred.Support.Type"]] <- 
+    as.integer(data[["Preferred.Support.Type"]])
+  data[["Preferred.Support.Resource"]] <- 
+    as.integer(data[["Preferred.Support.Resource"]])
   
   return (data)
 }
