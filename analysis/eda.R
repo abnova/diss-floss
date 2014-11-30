@@ -592,6 +592,51 @@ ggQQplot <- function (df, colName) # argument: vector of numbers
 }
 
 
+ggQQplotMV <- function(dat) {
+
+  title <- "Q-Q plot of Mahalanobis distance"
+  
+  descStat <- list(mu = colMeans(dat, na.rm = TRUE),
+                   sigma = cov(dat, use = "pairwise.complete.obs"))
+  
+  dat <- na.omit(dat)
+  D2 <- mahalanobis(dat, descStat$mu, descStat$sigma)
+  
+  results <- 
+    data.frame(theor = sort(qchisq(ppoints(nrow(dat)), df = ncol(dat))),
+               observ = sort(D2))
+  
+  # handle platform's version differences for 'ggplot2' API
+  if (compareVersion(GGPLOT2_VER, "0.9.1") == 1)  # later version
+    myTitle <- ggtitle(label=title)
+  else
+    myTitle <- opts(title=title)
+  
+  # build the plot
+  g <- ggplot(results, aes(x = theor, y = observ)) +
+    geom_point() +
+    geom_abline(slope = 1, intercept = 0) +
+    scale_x_continuous("Theoretical Quantiles") +
+    scale_y_continuous("Sample Quantiles")
+  
+  # title will be saved as & extracted from an attribute (for fig. caption)
+  attr(g, "title") <- title
+  
+  if (.Platform$GUI == "RStudio") {
+    g <- g + myTitle
+    print(g)
+  }
+  
+  #TODO: consider moving to main
+  if (!KNITR) {
+    edaFile <- file.path(EDA_RESULTS_DIR, paste0("QQ-MV", edaFile, ".svg"))
+    suppressMessages(ggsave(file=edaFile, plot=g, width=8.5, height=11))
+  }
+  
+  return (g)
+}
+
+
 ##### Multivariate Visual EDA: see above
 
 
