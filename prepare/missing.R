@@ -67,6 +67,9 @@ prepareForMI <- function (data) {
   data[["Preferred.Support.Resource"]] <- 
     as.integer(data[["Preferred.Support.Resource"]])
   
+  data <- data[setdiff(names(data), c("Preferred.Support.Resource"))]
+  data <- data[setdiff(names(data), c("License.Category"))]
+  
   return (data)
 }
 
@@ -111,9 +114,17 @@ testMCAR <- function (flossData) {
   # test MCAR using 'MissMech' package
   TestMCARNormality(prepareForMI(flossData[sample(nrow(flossData), 10000), ]))
   
+  flossData <- 
+    flossData[setdiff(names(flossData), c("Preferred.Support.Resource"))]
+  flossData <- 
+    flossData[setdiff(names(flossData), c("License.Category"))]
+  
   # let's also test, using 'BaylorEdPsych' package;
   # set index condition to all rows that contain at least some data
   # (partial missingness)
+  
+  flossData <- flossData[sample(nrow(flossData), 10000), ]
+  
   mcar.little <- 
     LittleMCAR(flossData[rowSums(is.na(flossData)) < ncol(flossData),])
   
