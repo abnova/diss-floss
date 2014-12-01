@@ -38,6 +38,7 @@ source(file.path(PRJ_HOME, "utils/graphics.R")) # for golden ratio
 source(file.path(PRJ_HOME, "utils/knit.R"))
 
 LOADINGS_THRESHOLD <- 0.7  # minimum value for acceptable loadings
+GOF_THRESHOLD      <- 0.25  # minimum value for acceptable GoF (medium effect)
 
 COLOR_PALETTE <- brewer.pal(8, "Set2") # OR "Accent"
 
@@ -277,6 +278,112 @@ specifyModel <- function (modelTypeSEM, flossData) {
        modes = successModes, scales = successScales,
        data = flossData)
 }
+
+
+# SEM Model Modifications
+##########################################################
+
+# Change: moved Project.Age and Project.Stage from MAT to SPON
+# Result: no substantial changes in effects and model fit
+
+specifyModel_Modif_1 <- function (semModel) {
+  
+  message("\n\n*** Building modified model \"", modelTypeSEM, "\"...")
+  
+  if (modelTypeSEM == "directEffects") {
+    
+    Governance   <- c(0, 0, 0)
+    Sponsorship  <- c(0, 0, 0)
+    Success      <- c(1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
+  }
+  
+  if (modelTypeSEM == "mediation") {
+    
+    # define rows of the path matrix (for inner model) - mediation
+    Governance   <- c(0, 0, 0, 0)
+    Sponsorship  <- c(1, 0, 0, 0)  # GOV affects SPON
+    Maturity     <- c(0, 0, 0, 0)
+    Success      <- c(1, 1, 1, 0)  # GOV, SPON, MAT affect SUCCESS
+    
+  }
+  
+  if (modelTypeSEM == "moderation") {
+    
+    # set up data frame with product terms for moderation
+    flossData <- successModeration(flossData)
+    
+    # define rows of the path matrix (for inner model) - single DV
+    Governance   <- c(0, 0, 0, 0, 0, 0)
+    Sponsorship  <- c(0, 0, 0, 0, 0, 0)
+    MaturityGov  <- c(0, 0, 0, 0, 0, 0)
+    MaturitySpon <- c(0, 0, 0, 0, 0, 0)
+    Maturity     <- c(0, 0, 0, 0, 0, 0)
+    Success      <- c(1, 1, 1, 1, 1, 0)
+    
+    # build the inner model matrix
+    successPath <- rbind(Governance, Sponsorship,
+                         MaturityGov, MaturitySpon, Maturity,
+                         Success) 
+    
+    # add column/row names
+    colnames(successPath) <- rownames(successPath) <-
+      c("Governance", "Sponsorship", "MaturityGov", "MaturitySpon", "Maturity",
+        "Success")
+    
+    # specify blocks of indicators (outer model), using variable names
+    
+    blockGovernance   <- c("License.Category", "License.Restrictiveness")
+    blockSponsorship  <- c("Preferred.Support.Type", "Preferred.Support.Resource")
+    blockMaturityGov  <- c("PrjAgeLicCat", "PrjAgeLicRestr", "PrjStageLicCat", 
+                           "PrjStageLicRestr")
+    blockMaturitySpon <- c("PrjAgeLicCat", "PrjAgeLicRestr", "PrjAgeSuppType",
+                           "PrjAgeSuppRes")
+    blockMaturity     <- c("Project.Age", "Project.Stage")
+    blockSuccess      <- c("Development.Team.Size", "User.Community.Size")
+    
+    # build list of blocks (outer model)
+    successBlocks <- list(blockGovernance, blockSponsorship,
+                          blockMaturityGov, blockMaturitySpon,
+                          blockMaturity, blockSuccess)
+    
+    # specify model's vector of modes ('A' is reflective)
+    successModes <- rep("A", 6)
+    
+    # specify measurement scale for manifest variables
+    successScales <- list(c("ord", "num"), c("ord", "num"), c("num"))
+    
+  } else {
+    
+    # build the inner model matrix
+    successPath <- rbind(Governance, Sponsorship, Success)
+    
+    # add column/row names
+    colnames(successPath) <- rownames(successPath) <-
+      c("Governance", "Sponsorship", "Success")
+    
+    # specify blocks of indicators (outer model), using variable names
+    
+    blockGovernance   <- c("License.Category", "License.Restrictiveness")
+    blockSponsorship  <- c("Preferred.Support.Type", "Preferred.Support.Resource",
+                           "Project.Age", "Project.Stage")
+    blockSuccess      <- c("Development.Team.Size", "User.Community.Size")
+    
+    # build list of blocks (outer model)
+    successBlocks <- list(blockGovernance, blockSponsorship, blockSuccess)
+    
+    # specify model's vector of modes ('A' is reflective)
+    successModes <- rep("A", 3)
+    
+    # specify measurement scale for manifest variables
+    successScales <- list(c("ord", "num"), c("ord", "num"), c("num"))
+  }
+  
+  # construct a model object and return it
+  list(path = successPath, blocks = successBlocks,
+       modes = successModes, scales = successScales,
+       data = flossData)
+}
+
 
 
 # Run PLS-PM Analysis
@@ -526,15 +633,14 @@ saveResults <- function (semResults, modelTypeSEM, impDataSet,
 
 validateResults <- function (semResults) {
   
-  TRUE
+  ifelse(semResults$gof >= GOF_THRESHOLD, TRUE, FALSE)
 }
 
 
 adjustModel <- function (semModel) {
   
-  semModel
+  specifyModel_Modif_1()
 }
-
 
 
 getPooledParam <- function (i, result, n) {
@@ -625,7 +731,7 @@ for (impDataSet in 1:NUM_IMP_EXTRACT) {
     saveResults(successPLS, modelType, impDataSet)
 
     resObj <- paste0("successPLS", modelType)
-    assign(resObj, successPLS)
+    assign(resObj, successPLS, envir = .GlobalEnv)
     
     semResultsList <- c(semResultsList, list(successPLS))
     
