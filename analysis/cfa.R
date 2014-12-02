@@ -128,13 +128,15 @@ genCFAmodelDiagram <- function (cfa.fit, latex = FALSE,
   cfaModDiag <-
     semPaths(cfa.fit, whatLabels = "std",
              intercepts = FALSE, thresholds = FALSE,
-             rotation = 4,    # H: factors on the right
-             #nCharNodes = 0, # 0 disables abbreviation
+             rotation = 4,           # H: factors on the right
+             #nCharNodes = 0,        # 0 disables abbreviation
              #label.cex = 5,
-             #vsize = 20,     # node size
+             #vsize = 20,            # node size
              edge.label.cex = 1.25,  # 1 is default
-             curve = 2,
-             curvature = 1.2,
+             curve = 2.5,            # 2
+             curvature = 1,          # 1.2
+             optimizeLatRes = TRUE,
+             #curvePivot = TRUE,
              sizeMan = 10,
              sizeLat = 10,
              sizeInt = 10,

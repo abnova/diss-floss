@@ -59,13 +59,9 @@ param3 <- 'TEST'
 
 The SourceForge pilot data set consists of `r ncol(readRDS(file.path(READY4CFA_DIR, "flossData.rds")))` indicators. The following is the summary descriptive statistics of the data set.
 
-\begin{lstlisting}
-
-```{r cfaReportSummary, include=TRUE, background='grey90', output.lines=1:34}
+```{r cfaReportSummary, include=TRUE, background='grey90', output.lines=1:120}
 summary(cfaFit_flossData, fit.measures = TRUE, standardize = TRUE)
 ```
-
-\end{lstlisting}
 
 Let's see how equations work:
 
@@ -92,6 +88,7 @@ genCFAmodelDiagram(cfaFit_flossData, latex = TRUE, caption = "CFA model diagram"
 
 \begin{figure}
   \centering
+  % \scalebox{1.0}[1.25]{\input{cfaModDiag.tex}}
   \input{cfaModDiag.tex}
   \caption{CFA model diagram}
   \label{fig:cfaModelDiagram}
