@@ -54,9 +54,12 @@ genCFAresultsTable <- function (caption = "CFA results summary",
   names(fit.info) <- c("$\\chi^{2}$", "df", "p", "CFI", "RMSEA")
   
   cfa.table <- cfaPrettyPrint(cfa.fit, digits = digits)
+  
   numCols <- ncol(cfa.table)
-  cfa.table <- cbind(cfa.table, "", "")
-  colnames(cfa.table)[numCols + 1:2] <- c(" ", " ")
+  numColsToAdd <- length(fit.info) - ncol(cfa.table)
+  colsToAdd <- matrix(NA, nrow(cfa.table), numColsToAdd)
+  cfa.table <- cbind(cfa.table, colsToAdd)
+  colnames(cfa.table)[numCols + 1:numColsToAdd] <- rep(" ", numColsToAdd)
   
   numRows <- nrow(cfa.table)
   lines2Add <- 2
@@ -223,8 +226,8 @@ cfaPrettyPrint <- function(object, digits = getOption("digits")) {
 
 message("\n\n===== PERFORMING CONFIRMATORY FACTOR ANALYSIS (CFA) =====")
 
-fileName <- paste0(IMPUTED_FILE, RDS_EXT)
-ready4cfaFile <- file.path(IMPUTED_DIR, fileName)
+fileName <- paste0(READY4CFA_FILE, RDS_EXT)
+ready4cfaFile <- file.path(READY4CFA_DIR, fileName)
 
 # Create results directory, if it doesn't exist
 if (!file.exists(CFA_RESULTS_DIR)) {
@@ -247,9 +250,11 @@ flossData <- mice::complete(flossData, 1)
 # we also remove "Repo URL" due to injection of large # of NAs
 # due to limiting conditions at the end of the merge process
 
-factors4analysis <- c("Development.Team.Size", "User.Community.Size",
-                      "License.Restrictiveness", "License.Category",
-                      "Project.Age", "Project.Stage")
+factors4analysis <- c("License.Category", "License.Restrictiveness",
+                      "Preferred.Support.Type", "Preferred.Support.Resource",
+                      "Project.Age", "Project.Stage",
+                      "Development.Team.Size", "User.Community.Size")
+                      
 flossData <- flossData[, factors4analysis]
 
 # sample the sample (use 1%) to reduce processing time
@@ -260,20 +265,18 @@ flossData <- flossData[, factors4analysis]
 # [currently used for KNITR only]
 datasetName <- deparse(substitute(flossData))
 
-# log transform continuous data to normalize
-flossData["Project.Age"] <- log(flossData["Project.Age"])
-flossData["Development.Team.Size"] <- log(flossData["Development.Team.Size"])
-
 # exclude outliers
 flossData <- 
   subset(flossData,
-         User.Community.Size > quantile(flossData$User.Community.Size, probs = .005) &
-           User.Community.Size < quantile(flossData$User.Community.Size, probs = .995))
+         User.Community.Size > quantile(flossData$User.Community.Size,
+                                        probs = .005) &
+           User.Community.Size < quantile(flossData$User.Community.Size,
+                                          probs = .995))
 
 # rescale some variables as lavaan is not very happy if the
 # variance of different variables are too different
-flossData$User.Community.Size <- flossData$User.Community.Size / 10000 # 0
-#flossData$Project.Age <- flossData$Project.Age / 10
+##flossData$User.Community.Size <- flossData$User.Community.Size / 10000 # 0
+##flossData$Project.Age <- flossData$Project.Age / 10
 
 # ===
 
@@ -289,21 +292,28 @@ model <- "
 
 # factor structure (fix factors' loadings to 1)
 
-f1 =~ 1 * Development.Team.Size + User.Community.Size
-f2 =~ 1 * License.Restrictiveness + License.Category
-f3 =~ 1 * Project.Age + Project.Stage
+Governance =~ 1 * License.Category + License.Restrictiveness
+Sponsorship =~ 1 * Preferred.Support.Type + Preferred.Support.Resource
+Maturity =~ 1 * Project.Age + Project.Stage
+Success =~ 1 * Development.Team.Size + User.Community.Size
 
 # variances (fix one variances to one)
 
-f1 ~~ f1
-f2 ~~ 1 * f2 
-f3 ~~ f3
+Governance ~~ Governance
+Sponsorship ~~ Sponsorship
+Maturity ~~ Maturity
+Success ~~ Success
 
 # covariances between the latent variables
 
-f1 ~~ f2
-f1 ~~ f3
-f2 ~~ f3
+Governance ~~ Sponsorship
+Governance ~~ Maturity
+Governance ~~ Success
+
+Sponsorship ~~ Maturity
+Sponsorship ~~ Success
+
+Maturity ~~ Success
 "
 
 # perform CFA
