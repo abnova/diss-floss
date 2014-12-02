@@ -40,6 +40,7 @@ if (!suppressMessages(require(tables))) install.packages('tables')
 if (!suppressMessages(require(Hmisc))) install.packages('Hmisc') # for 'tables'
 if (!suppressMessages(require(qgraph))) install.packages('qgraph')
 if (!suppressMessages(require(RColorBrewer))) install.packages('RColorBrewer')
+if (!suppressMessages(require(mice))) install.packages('mice')
 
 library(psych)
 library(GPArotation)
@@ -50,6 +51,7 @@ library(tables)
 library(Hmisc)
 library(qgraph)
 library(RColorBrewer)
+library(mice)
 
 
 ##### SETUP #####
@@ -256,18 +258,24 @@ if (!file.exists(EFA_RESULTS_DIR)) {
 message("\n\n*** Loading data...")
 flossData <- loadData(ready4efaFile)
 
+# select imputed dataset
+flossData <- mice::complete(flossData, 1)
+
 # due to very small amount of projects with "Non-OSI" licesnse
 # and their disapperance due to calculating correlations,
 # we don't include "License Category" into EFA (consider analyzing it
 # at later phases with inclusion of imputed data)
+# FIXED THE ABOVE-MENTIONED PROBLEM BY USING IMPUTED DATA
 
 # we also remove "Repo URL" due to injection of large # of NAs
 # due to limiting conditionsat the end of the merge process
 
-factors4Analysis <- c("Development.Team.Size", "Project.Age",
-                      "License.Restrictiveness", "Project.Stage",
-                      "Software.Type")
-flossData <- flossData[factors4Analysis]
+factors4analysis <- c("License.Category", "License.Restrictiveness",
+                      "Preferred.Support.Type", "Preferred.Support.Resource",
+                      "Project.Age", "Project.Stage",
+                      "Development.Team.Size", "User.Community.Size")
+
+flossData <- flossData[, factors4analysis]
 
 # sample the sample (use 1%) to reduce processing time
 #flossData <- sampleDF(flossData, nrow(flossData) / 100)
