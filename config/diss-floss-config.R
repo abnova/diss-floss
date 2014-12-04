@@ -49,7 +49,7 @@ DO_APPENDIX = FALSE
 
 
 # general statistical control
-DIGITS <- 2
+DIGITS <- 3
 
 # construct format string, based on the configuration setting
 FMT_FP_DECIMAL <- paste0("%.", DIGITS, "f  ")
